@@ -1,17 +1,16 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit";
-import { Component as Split } from "./Split";
 
 export interface Props { timer: LiveSplit.Timer }
 
-export class Component extends React.Component<Props, LiveSplit.SplitsComponentState> {
-    inner: LiveSplit.SplitsComponent;
+export class Component extends React.Component<Props, LiveSplit.PreviousSegmentComponentState> {
+    inner: LiveSplit.PreviousSegmentComponent;
     timerID: number;
 
     constructor(props: Props) {
         super(props);
 
-        this.inner = new LiveSplit.SplitsComponent();
+        this.inner = new LiveSplit.PreviousSegmentComponent();
 
         this.state = this.inner.getState(this.props.timer);
     }
@@ -34,10 +33,15 @@ export class Component extends React.Component<Props, LiveSplit.SplitsComponentS
 
     render() {
         return (
-            <div className="splits">
-                {
-                    this.state.splits.map((s, i) => <Split split={s} key={i.toString()} />)
-                }
+            <div className="previous-segment">
+                <table>
+                    <tbody>
+                        <tr>
+                            <td className="previous-segment-text">{this.state.text}</td>
+                            <td className="previous-segment-time">{this.state.time}</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         );
     }

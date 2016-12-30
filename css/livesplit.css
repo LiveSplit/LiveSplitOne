@@ -11,10 +11,10 @@ html {
 
 body {
     font-family: 'Roboto', sans-serif;
-    font-size: 12px;
+    font-size: 16px;
     width: 286px;
     height: 519px;
-    background: #121212;
+    background: hsla(0, 0%, 9%, 1);
     overflow: hidden;
 }
 
@@ -28,9 +28,13 @@ body {
     /*width: 100%;*/
     /*height: 100%;*/
     width: 300px;
-    background: #121212;
+    background: hsla(0, 0%, 9%, 1);
     color: #eee;
     overflow: hidden;
+}
+
+.previous-segment {
+    background: linear-gradient(rgb(42, 42, 42) 0%, hsla(0, 0%, 10%, 1) 100%);
 }
 
 .title {
@@ -38,7 +42,7 @@ body {
     width: 100%;
     margin-bottom: -14px;
     display: inline-block;
-    background: linear-gradient(rgb(42, 42, 42) 0%, rgb(19, 19, 19) 100%);
+    background: linear-gradient(rgb(42, 42, 42) 0%, hsla(0, 0%, 10%, 1) 100%);
 }
 
 .title .title-game {
@@ -49,21 +53,44 @@ body {
     display: inherit;
 }
 
-#Splits-Component {
-    border-top: 1px solid #444;
-    border-bottom: 1px solid #444;
+.splits {
     display: table;
     width: 100%;
 }
 
-#split {
-    display: inherit;
-    height: 24px;
-    line-height: 20px
+.splits span.split:nth-child(2n+2) {
+    background-color: hsla(0, 0%, 100%, 0.05);
 }
+
+.splits span.split:nth-child(2n+2) div {
+    border-bottom: 1px solid hsla(0, 0%, 100%, 0.10);
+    border-top: 1px solid hsla(0, 0%, 100%, 0.10);
+}
+
+.split {
+    display: table-row;
+    height: 24px;
+    line-height: 20px;
+}
+
+.split div {
+    display: table-cell;
+    text-align: right;
+    padding: 2px 6px;
+}
+
+.split div:first-child {
+    text-align: left;
+    width: 100%;
+}
+
+.splits table tbody .split {
+    background-color: rgb(23, 23, 23);
+}
+
 span.title-category {
     display: inherit;
-    font-size: 14px;
+    font-size: 16px;
     text-align: center;
     width: inherit;
 }
@@ -91,12 +118,29 @@ table tr td {
     padding: 0px 6px;
 }
 
+.split-delta, .split-time {
+    font-weight: bold;
+}
+
+.split-delta, .previous-segment-time {
+    font-weight: bold;
+    color: hsla(130, 90%, 45%, 1);
+}
+
 div.timer-time {
-    width: inherit;
-    height: auto;
-    font-size: 40px;
+    font-size: 55px;
     font-weight: bold;
     text-align: right;
+    background: linear-gradient(hsla(130, 50%, 70%, 1) 0%, hsla(130, 100%, 58%, 1) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    padding-left: 6px;
+    padding-right: 6px;
+}
+
+.timer-fraction {
+    font-size: 40px;
 }
 
 table tr td:first-child {

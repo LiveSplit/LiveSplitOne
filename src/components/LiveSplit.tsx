@@ -3,6 +3,7 @@ import { Run, Segment, SegmentList, Timer } from "../livesplit";
 import { Component as TimerComponent } from "./Timer";
 import { Component as TitleComponent } from "./Title";
 import { Component as SplitsComponent } from "./Splits";
+import { Component as PreviousSegmentComponent } from "./PreviousSegment";
 
 export interface Props { }
 export interface State { }
@@ -42,6 +43,10 @@ export class LiveSplit extends React.Component<Props, State> {
         this.timer.reset();
     }
 
+    onPause() {
+        this.timer.pause();
+    }
+
     onUndo() {
         this.timer.undoSplit();
     }
@@ -60,9 +65,13 @@ export class LiveSplit extends React.Component<Props, State> {
                 <TitleComponent timer={this.timer} />
                 <SplitsComponent timer={this.timer} />
                 <TimerComponent timer={this.timer} />
+                <PreviousSegmentComponent timer={this.timer} />
+                <br />
+                <br />
                 <button onClick={(e) => this.onStart()}>Start</button>
                 <button onClick={(e) => this.onSplit()}>Split</button>
                 <button onClick={(e) => this.onReset()}>Reset</button>
+                <button onClick={(e) => this.onPause()}>Pause</button>
                 <button onClick={(e) => this.onUndo()}>Undo</button>
                 <button onClick={(e) => this.onSkip()}>Skip</button>
                 <button onClick={(e) => this.onPrintDebug()}>Debug</button>

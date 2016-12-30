@@ -110,6 +110,7 @@ export class Timer extends LSClass {
 
 export interface TimerComponentState {
     time: string;
+    fraction: string;
 }
 
 export class TimerComponent extends LSClass {
@@ -174,8 +175,50 @@ export class SplitsComponent extends LSClass {
                     name: "Outset",
                     delta: "-1.4",
                     time: "15:59",
+                },
+                {
+                    name: "Outset",
+                    delta: "-1.4",
+                    time: "15:59",
+                },
+                {
+                    name: "Outset",
+                    delta: "-1.4",
+                    time: "15:59",
+                },
+                {
+                    name: "Outset",
+                    delta: "-1.4",
+                    time: "15:59",
+                },
+                {
+                    name: "Outset",
+                    delta: "-1.4",
+                    time: "15:59",
                 }
             ]
+        };
+    }
+}
+
+export interface PreviousSegmentComponentState {
+    text: string;
+    time: string;
+}
+
+export class PreviousSegmentComponent extends LSClass {
+    constructor() {
+        super(0);
+    }
+
+    drop() {
+
+    }
+
+    getState(timer: Timer): PreviousSegmentComponentState {
+        return {
+            text: "Previous Segment",
+            time: "-1.4",
         };
     }
 }

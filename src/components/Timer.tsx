@@ -34,7 +34,7 @@ export class Component extends React.Component<Props, LiveSplit.TimerComponentSt
     render() {
         return (
             <div className="timer-time">
-                {this.state.time}
+                {this.state.time}<span className="timer-fraction">{this.state.fraction}</span>
             </div>
         );
     }
