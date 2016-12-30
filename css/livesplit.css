@@ -1,0 +1,105 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    position: fixed;
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px;
+    width: 286px;
+    height: 519px;
+    background: #121212;
+    overflow: hidden;
+}
+
+#wrapper {
+    transition: all 0.5s ease;
+}
+
+.livesplit {
+    z-index: 1000;
+    position: fixed;
+    /*width: 100%;*/
+    /*height: 100%;*/
+    width: 300px;
+    background: #121212;
+    color: #eee;
+    overflow: hidden;
+}
+
+.title {
+    height: auto;
+    width: 100%;
+    margin-bottom: -14px;
+    display: inline-block;
+    background: linear-gradient(rgb(42, 42, 42) 0%, rgb(19, 19, 19) 100%);
+}
+
+.title .title-game {
+    word-wrap: normal;
+    font-size: 16px !important;
+    text-align: center;
+    width: inherit;
+    display: inherit;
+}
+
+#Splits-Component {
+    border-top: 1px solid #444;
+    border-bottom: 1px solid #444;
+    display: table;
+    width: 100%;
+}
+
+#split {
+    display: inherit;
+    height: 24px;
+    line-height: 20px
+}
+span.title-category {
+    display: inherit;
+    font-size: 14px;
+    text-align: center;
+    width: inherit;
+}
+
+span.title-attempts {
+    display: block;
+    position: relative;
+    text-align: right;
+    right: 3px;
+    bottom: 15px;
+}
+/*
+#Splits-Component tr td:first-child {
+    width: 100%;
+    text-align: left;
+}*/
+
+td#dif {
+    border-right: 10px solid transparent;
+    text-align: right;
+}
+
+table tr td {
+    text-align: right;
+    padding: 0px 6px;
+}
+
+div.timer-time {
+    width: inherit;
+    height: auto;
+    font-size: 40px;
+    font-weight: bold;
+    text-align: right;
+}
+
+table tr td:first-child {
+    width: 100%;
+    text-align: left;
+}

@@ -1,13 +1,11 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import { Hello } from "./components/Hello";
-import { LoggingButton } from "./components/LoggingButton";
+import { LiveSplit } from "./components/LiveSplit";
 
 ReactDOM.render(
     <div>
-        <Hello compiler="TypeScript" framework="React" />
-        <LoggingButton initialValue={5} />
+        <LiveSplit />
     </div>,
     document.getElementById("example")
 );

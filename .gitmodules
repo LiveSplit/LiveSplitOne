@@ -1,0 +1,3 @@
+[submodule "livesplit-core"]
+	path = livesplit-core
+	url = https://github.com/CryZe/livesplit-core
