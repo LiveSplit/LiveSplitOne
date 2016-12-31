@@ -15,8 +15,21 @@ export class LiveSplit extends React.Component<Props, State> {
         super(props);
 
         let segments = new SegmentList();
-        segments.push(new Segment("hi"));
-        segments.push(new Segment("blargh"));
+        segments.push(new Segment("Hero's Sword"));
+        segments.push(new Segment("Leaving Outset"));
+        segments.push(new Segment("Forsaken Fortress 1"));
+        segments.push(new Segment("Wind Waker"));
+        segments.push(new Segment("Empty Bottle"));
+        segments.push(new Segment("Delivery Bag"));
+        segments.push(new Segment("Kargoroc Key"));
+        segments.push(new Segment("Grappling Hook"));
+        segments.push(new Segment("Enter Gohma"));
+        segments.push(new Segment("Dragon Roost Cavern"));
+        segments.push(new Segment("Northern Triangle"));
+        segments.push(new Segment("Greatfish"));
+        segments.push(new Segment("Bombs"));
+        segments.push(new Segment("Deku Leaf"));
+        segments.push(new Segment("Enter Kalle Demos"));
 
         let run = new Run(segments);
         run.setGame("The Legend of Zelda: The Wind Waker");

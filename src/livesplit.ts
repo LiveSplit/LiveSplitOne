@@ -28,6 +28,14 @@ var TitleComponent_new = ls.cwrap('TitleComponent_new', 'number', []);
 var TitleComponent_drop = ls.cwrap('TitleComponent_drop', null, ['number']);
 var TitleComponent_state = ls.cwrap('TitleComponent_state', 'string', ['number', 'number']);
 
+var SplitsComponent_new = ls.cwrap('SplitsComponent_new', 'number', []);
+var SplitsComponent_drop = ls.cwrap('SplitsComponent_drop', null, ['number']);
+var SplitsComponent_state = ls.cwrap('SplitsComponent_state', 'string', ['number', 'number']);
+
+var PreviousSegmentComponent_new = ls.cwrap('PreviousSegmentComponent_new', 'number', []);
+var PreviousSegmentComponent_drop = ls.cwrap('PreviousSegmentComponent_drop', null, ['number']);
+var PreviousSegmentComponent_state = ls.cwrap('PreviousSegmentComponent_state', 'string', ['number', 'number']);
+
 class LSClass {
     constructor(public ptr: number) { }
 
@@ -157,47 +165,21 @@ export interface SplitState {
     name: string;
     delta: string;
     time: string;
+    is_current_split: boolean;
 }
 
 export class SplitsComponent extends LSClass {
     constructor() {
-        super(0);
+        super(SplitsComponent_new());
     }
 
     drop() {
-
+        SplitsComponent_drop(this.ptr);
+        this.dropped();
     }
 
     getState(timer: Timer): SplitsComponentState {
-        return {
-            splits: [
-                {
-                    name: "Outset",
-                    delta: "-1.4",
-                    time: "15:59",
-                },
-                {
-                    name: "Outset",
-                    delta: "-1.4",
-                    time: "15:59",
-                },
-                {
-                    name: "Outset",
-                    delta: "-1.4",
-                    time: "15:59",
-                },
-                {
-                    name: "Outset",
-                    delta: "-1.4",
-                    time: "15:59",
-                },
-                {
-                    name: "Outset",
-                    delta: "-1.4",
-                    time: "15:59",
-                }
-            ]
-        };
+        return JSON.parse(SplitsComponent_state(this.ptr, timer.ptr));
     }
 }
 
@@ -208,17 +190,15 @@ export interface PreviousSegmentComponentState {
 
 export class PreviousSegmentComponent extends LSClass {
     constructor() {
-        super(0);
+        super(PreviousSegmentComponent_new());
     }
 
     drop() {
-
+        PreviousSegmentComponent_drop(this.ptr);
+        this.dropped();
     }
 
     getState(timer: Timer): PreviousSegmentComponentState {
-        return {
-            text: "Previous Segment",
-            time: "-1.4",
-        };
+        return JSON.parse(PreviousSegmentComponent_state(this.ptr, timer.ptr));
     }
 }

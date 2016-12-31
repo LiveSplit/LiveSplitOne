@@ -34,7 +34,7 @@ export class Component extends React.Component<Props, LiveSplit.TimerComponentSt
     render() {
         return (
             <div className="timer-time">
-                {this.state.time}<span className="timer-fraction">{this.state.fraction}</span>
+                {this.state.time.split('').map((c, i) => <span className={(c >= '0' && c <= '9') ? "monospace" : ""} key={i}>{c}</span>)}<span className="timer-fraction">{this.state.fraction.split('').map((c, i) => <span className={(c >= '0' && c <= '9') ? "monospace" : ""} key={i}>{c}</span>)}</span>
             </div>
         );
     }

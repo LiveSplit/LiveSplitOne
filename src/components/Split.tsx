@@ -10,7 +10,7 @@ export class Component extends React.Component<Props, undefined> {
 
     render() {
         return (
-            <span className="split">
+            <span className={this.props.split.is_current_split ? "split current-split" : "split"}>
                 <div className="split-name">{this.props.split.name}</div>
                 <div className="split-delta">{this.props.split.delta}</div>
                 <div className="split-time">{this.props.split.time}</div>
