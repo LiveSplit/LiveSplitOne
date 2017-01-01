@@ -80,7 +80,7 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     onKeyPress(e: KeyboardEvent) {
-        switch (e.keyCode) {
+        switch (e.charCode) {
             case 49: {
                 // NumPad 1
                 this.onSplit();

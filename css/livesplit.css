@@ -127,12 +127,11 @@ table tr td {
     text-overflow: ellipsis;
 }
 
-.split-delta, .split-time {
+.time {
     font-weight: bold;
 }
 
-.split-delta, .previous-segment-time {
-    font-weight: bold;
+.time-ahead {
     color: hsla(136, 90%, 45%, 1);
 }
 

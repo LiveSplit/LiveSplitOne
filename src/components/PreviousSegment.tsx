@@ -38,7 +38,7 @@ export class Component extends React.Component<Props, LiveSplit.PreviousSegmentC
                     <tbody>
                         <tr>
                             <td className="previous-segment-text">{this.state.text}</td>
-                            <td className="previous-segment-time">{this.state.time}</td>
+                            <td className={"previous-segment-time time " + (this.state.time.indexOf('+') == 0 ? "time-behind" : this.state.time.indexOf('−') == 0 ? "time-ahead" : "")}>{this.state.time}</td>
                         </tr>
                     </tbody>
                 </table>
