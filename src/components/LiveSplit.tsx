@@ -10,6 +10,7 @@ export interface State { }
 
 export class LiveSplit extends React.Component<Props, State> {
     timer: Timer;
+    event: EventListenerObject;
 
     constructor(props: Props) {
         super(props);
@@ -40,7 +41,13 @@ export class LiveSplit extends React.Component<Props, State> {
         this.state = { };
     }
 
+    componentWillMount() {
+        this.event = { handleEvent: (e: KeyboardEvent) => this.onKeyPress(e) };
+        window.addEventListener('keypress', this.event);
+    }
+
     componentWillUnmount() {
+        window.removeEventListener('keypress', this.event);
         this.timer.drop();
     }
 
@@ -53,7 +60,7 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     onReset() {
-        this.timer.reset();
+        this.timer.reset(true);
     }
 
     onPause() {
@@ -72,6 +79,42 @@ export class LiveSplit extends React.Component<Props, State> {
         this.timer.printDebug();
     }
 
+    onKeyPress(e: KeyboardEvent) {
+        switch (e.keyCode) {
+            case 49: {
+                // NumPad 1
+                this.onSplit();
+                this.onStart();
+                break;
+            }
+            case 50: {
+                // NumPad 2
+                this.onSkip();
+                break;
+            }
+            case 51: {
+                // NumPad 3
+                this.onReset();
+                break;
+            }
+            case 53: {
+                // NumPad 5
+                this.onPause();
+                break;
+            }
+            case 55: {
+                // NumPad 7
+                this.onPrintDebug();
+                break;
+            }
+            case 56: {
+                // NumPad 8
+                this.onUndo();
+                break;
+            }
+        }
+    }
+
     render() {
         return (
             <div className="livesplit">
@@ -79,15 +122,6 @@ export class LiveSplit extends React.Component<Props, State> {
                 <SplitsComponent timer={this.timer} />
                 <TimerComponent timer={this.timer} />
                 <PreviousSegmentComponent timer={this.timer} />
-                <br />
-                <br />
-                <button onClick={(e) => this.onStart()}>Start</button>
-                <button onClick={(e) => this.onSplit()}>Split</button>
-                <button onClick={(e) => this.onReset()}>Reset</button>
-                <button onClick={(e) => this.onPause()}>Pause</button>
-                <button onClick={(e) => this.onUndo()}>Undo</button>
-                <button onClick={(e) => this.onSkip()}>Skip</button>
-                <button onClick={(e) => this.onPrintDebug()}>Debug</button>
             </div>
         );
     }

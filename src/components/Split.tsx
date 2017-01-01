@@ -12,7 +12,7 @@ export class Component extends React.Component<Props, undefined> {
         return (
             <span className={this.props.split.is_current_split ? "split current-split" : "split"}>
                 <div className="split-name">{this.props.split.name}</div>
-                <div className="split-delta">{this.props.split.delta}</div>
+                <div className={this.props.split.delta.indexOf('+') == 0 ? "split-delta time-behind" : "split-delta"}>{this.props.split.delta}</div>
                 <div className="split-time">{this.props.split.time}</div>
             </span>
         );

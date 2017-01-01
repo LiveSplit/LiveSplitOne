@@ -123,6 +123,10 @@ table tr td {
     padding: 0px 6px;
 }
 
+.split-name {
+    text-overflow: ellipsis;
+}
+
 .split-delta, .split-time {
     font-weight: bold;
 }
@@ -130,6 +134,10 @@ table tr td {
 .split-delta, .previous-segment-time {
     font-weight: bold;
     color: hsla(136, 90%, 45%, 1);
+}
+
+.time-behind {
+    color: hsla(0, 90%, 45%, 1);
 }
 
 div.timer-time {
