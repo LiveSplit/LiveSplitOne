@@ -5,22 +5,8 @@
     src: url(greycliff-cf-extra-bold.woff2);
 }
 
-/* * {
-    margin: 0;
-    padding: 0;
-}*/
-
-html {
-    position: fixed;
-}
-
 body {
-    font-family: 'Roboto', sans-serif;
-    font-size: 16px;
-    width: 286px;
-    height: 519px;
     background: hsla(0, 0%, 9%, 1);
-    overflow: hidden;
 }
 
 #wrapper {
@@ -28,14 +14,10 @@ body {
 }
 
 .livesplit {
-    z-index: 1000;
-    position: fixed;
-    /*width: 100%;*/
-    /*height: 100%;*/
+    font-family: 'Roboto', sans-serif;
     width: 300px;
     background: hsl(0, 0%, 7%);
     color: #eee;
-    overflow: hidden;
     text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
 }
 
@@ -163,4 +145,38 @@ div.timer-time {
 table tr td:first-child {
     width: 100%;
     text-align: left;
+}
+
+.buttons {
+    margin-top: 10px;
+    width: 300px;
+}
+
+.buttons > button {
+    width: 98%;
+    height: 40px !important;
+    font-size: 25px;
+}
+
+.buttons > button, .buttons > div > button {
+    margin-bottom: 8px;
+    height: 30px;
+    margin-right: 1%;
+    margin-left: 1%;
+    background: linear-gradient(hsl(0, 0%, 11%) 0%, hsl(0, 0%, 7%) 100%);
+    color: #eee;
+    cursor: pointer;
+    border-width: 1px;
+    border-style: solid;
+    border-color: hsl(0, 0%, 25%);
+    border-image: initial;
+    border-radius: 5px;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: 'Roboto', sans-serif;
+}
+
+.buttons > div > button {
+    float: left;
+    width: 48%;
 }

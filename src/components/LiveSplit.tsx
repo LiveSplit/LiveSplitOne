@@ -51,12 +51,9 @@ export class LiveSplit extends React.Component<Props, State> {
         this.state.timer.drop();
     }
 
-    onStart() {
-        this.state.timer.start();
-    }
-
     onSplit() {
         this.state.timer.split();
+        this.state.timer.start();
     }
 
     onReset() {
@@ -92,8 +89,9 @@ export class LiveSplit extends React.Component<Props, State> {
             var reader = new FileReader();
             reader.onload = function(e: any) {
                 var contents = e.target.result;
-                component.state.timer.drop();
+                let oldTimer = component.state.timer;
                 component.setState({ timer: new Timer(Run.fromLSS(contents)) });
+                oldTimer.drop();
             };
             reader.readAsText(file);
         };
@@ -105,7 +103,6 @@ export class LiveSplit extends React.Component<Props, State> {
             case 49: {
                 // NumPad 1
                 this.onSplit();
-                this.onStart();
                 break;
             }
             case 50: {
@@ -143,11 +140,25 @@ export class LiveSplit extends React.Component<Props, State> {
 
     render() {
         return (
-            <div className="livesplit">
-                <TitleComponent timer={this.state.timer} />
-                <SplitsComponent timer={this.state.timer} />
-                <TimerComponent timer={this.state.timer} />
-                <PreviousSegmentComponent timer={this.state.timer} />
+            <div>
+                <div className="livesplit">
+                    <TitleComponent timer={this.state.timer} />
+                    <SplitsComponent timer={this.state.timer} />
+                    <TimerComponent timer={this.state.timer} />
+                    <PreviousSegmentComponent timer={this.state.timer} />
+                </div>
+                <div className="buttons">
+                    <button onClick={(e) => this.onSplit()}>Split</button>
+                    <div className="small">
+                        <button onClick={(e) => this.onUndo()}>Undo</button>
+                        <button onClick={(e) => this.onPause()}>Pause</button>
+                    </div>
+                    <div className="small">
+                        <button onClick={(e) => this.onSkip()}>Skip</button>
+                        <button onClick={(e) => this.onReset()}>Reset</button>
+                    </div>
+                    <button onClick={(e) => this.openSplits()}>Open</button>
+                </div>
             </div>
         );
     }
