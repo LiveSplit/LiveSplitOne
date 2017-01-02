@@ -7,6 +7,7 @@ var SegmentList_new = ls.cwrap('SegmentList_new', 'number', []);
 var SegmentList_push = ls.cwrap('SegmentList_push', null, ['number', 'number']);
 
 var Run_new = ls.cwrap('Run_new', 'number', []);
+var Run_from_lss = ls.cwrap('Run_from_lss', 'number', ['string']);
 var Run_set_game = ls.cwrap('Run_set_game', null, ['number', 'string']);
 var Run_set_category = ls.cwrap('Run_set_category', null, ['number','string']);
 
@@ -62,9 +63,17 @@ export class SegmentList extends LSClass {
 }
 
 export class Run extends LSClass {
-    constructor(segments: SegmentList) {
-        super(Run_new(segments.ptr));
-        segments.dropped();
+    constructor(segments?: SegmentList) {
+        if (segments) {
+            super(Run_new(segments.ptr));
+            segments.dropped();
+        }
+    }
+
+    static fromLSS(file: string): Run {
+        let run = new Run();
+        run.ptr = Run_from_lss(file);
+        return run;
     }
 
     setGame(game: string) {

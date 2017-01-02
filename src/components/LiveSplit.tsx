@@ -6,7 +6,9 @@ import { Component as SplitsComponent } from "./Splits";
 import { Component as PreviousSegmentComponent } from "./PreviousSegment";
 
 export interface Props { }
-export interface State { }
+export interface State {
+    timer: Timer,
+}
 
 export class LiveSplit extends React.Component<Props, State> {
     timer: Timer;
@@ -36,9 +38,7 @@ export class LiveSplit extends React.Component<Props, State> {
         run.setGame("The Legend of Zelda: The Wind Waker");
         run.setCategory("Any% (Tuner)");
 
-        this.timer = new Timer(run);
-
-        this.state = { };
+        this.state = { timer: new Timer(run) };
     }
 
     componentWillMount() {
@@ -48,35 +48,56 @@ export class LiveSplit extends React.Component<Props, State> {
 
     componentWillUnmount() {
         window.removeEventListener('keypress', this.event);
-        this.timer.drop();
+        this.state.timer.drop();
     }
 
     onStart() {
-        this.timer.start();
+        this.state.timer.start();
     }
 
     onSplit() {
-        this.timer.split();
+        this.state.timer.split();
     }
 
     onReset() {
-        this.timer.reset(true);
+        this.state.timer.reset(true);
     }
 
     onPause() {
-        this.timer.pause();
+        this.state.timer.pause();
     }
 
     onUndo() {
-        this.timer.undoSplit();
+        this.state.timer.undoSplit();
     }
 
     onSkip() {
-        this.timer.skipSplit();
+        this.state.timer.skipSplit();
     }
 
     onPrintDebug() {
-        this.timer.printDebug();
+        this.state.timer.printDebug();
+    }
+
+    openSplits() {
+        let component = this;
+
+        var input = document.createElement('input');
+        input.setAttribute("type", "file");
+        input.onchange = (e: any) => {
+            var file = e.target.files[0];
+            if (!file) {
+                return;
+            }
+            var reader = new FileReader();
+            reader.onload = function(e: any) {
+                var contents = e.target.result;
+                component.state.timer.drop();
+                component.setState({ timer: new Timer(Run.fromLSS(contents)) });
+            };
+            reader.readAsText(file);
+        };
+        input.click();
     }
 
     onKeyPress(e: KeyboardEvent) {
@@ -112,16 +133,21 @@ export class LiveSplit extends React.Component<Props, State> {
                 this.onUndo();
                 break;
             }
+            case 57: {
+                // NumPad 9
+                this.openSplits();
+                break;
+            }
         }
     }
 
     render() {
         return (
             <div className="livesplit">
-                <TitleComponent timer={this.timer} />
-                <SplitsComponent timer={this.timer} />
-                <TimerComponent timer={this.timer} />
-                <PreviousSegmentComponent timer={this.timer} />
+                <TitleComponent timer={this.state.timer} />
+                <SplitsComponent timer={this.state.timer} />
+                <TimerComponent timer={this.state.timer} />
+                <PreviousSegmentComponent timer={this.state.timer} />
             </div>
         );
     }
