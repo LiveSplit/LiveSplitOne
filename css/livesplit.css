@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css?family=Roboto');
+
 @font-face {
     font-family: greycliff;
     src: url(greycliff-cf-extra-bold.woff2);
@@ -98,7 +100,8 @@ span.title-attempts {
     position: relative;
     text-align: right;
     right: 6px;
-    bottom: 15px;
+    bottom: 18px;
+    font-family: 'Roboto', sans-serif;
 }
 
 td#dif {
@@ -117,6 +120,7 @@ table tr td {
 
 .time {
     font-weight: bold;
+    font-family: 'Roboto', sans-serif;
 }
 
 .time-ahead {
