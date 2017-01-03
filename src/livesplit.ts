@@ -20,6 +20,7 @@ var Timer_undo_split = ls.cwrap('Timer_undo_split', null, ['number']);
 var Timer_reset = ls.cwrap('Timer_reset', null, ['number', 'number']);
 var Timer_pause = ls.cwrap('Timer_pause', null, ['number']);
 var Timer_print_debug = ls.cwrap('Timer_print_debug', null, ['number']);
+var Timer_save_run_as_lss = ls.cwrap('Timer_save_run_as_lss', 'string', ['number']);
 
 var TimerComponent_new = ls.cwrap('TimerComponent_new', 'number', []);
 var TimerComponent_drop = ls.cwrap('TimerComponent_drop', null, ['number']);
@@ -122,6 +123,10 @@ export class Timer extends LSClass {
 
     printDebug() {
         Timer_print_debug(this.ptr);
+    }
+
+    saveRunAsLSS(): string {
+        return Timer_save_run_as_lss(this.ptr);
     }
 }
 

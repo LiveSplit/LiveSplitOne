@@ -98,6 +98,24 @@ export class LiveSplit extends React.Component<Props, State> {
         input.click();
     }
 
+    saveSplits() {
+        function download(filename: any, text: any) {
+            var element = document.createElement('a');
+            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('download', filename);
+
+            element.style.display = 'none';
+            document.body.appendChild(element);
+
+            element.click();
+
+            document.body.removeChild(element);
+        }
+
+        let lss = this.state.timer.saveRunAsLSS();
+        download("splits.lss", lss);
+    }
+
     onKeyPress(e: KeyboardEvent) {
         switch (e.charCode) {
             case 49: {
@@ -150,14 +168,15 @@ export class LiveSplit extends React.Component<Props, State> {
                 <div className="buttons">
                     <button onClick={(e) => this.onSplit()}>Split</button>
                     <div className="small">
-                        <button onClick={(e) => this.onUndo()}>Undo</button>
-                        <button onClick={(e) => this.onPause()}>Pause</button>
+                        <button onClick={(e) => this.onUndo()}>🡅</button>
+                        <button onClick={(e) => this.onPause()}>⏸</button>
                     </div>
                     <div className="small">
-                        <button onClick={(e) => this.onSkip()}>Skip</button>
-                        <button onClick={(e) => this.onReset()}>Reset</button>
+                        <button onClick={(e) => this.onSkip()}>🡇</button>
+                        <button onClick={(e) => this.onReset()}>✖</button>
                     </div>
-                    <button onClick={(e) => this.openSplits()}>Open</button>
+                    <button onClick={(e) => this.openSplits()}>📂 Open</button>
+                    <button onClick={(e) => this.saveSplits()}>💾 Save</button>
                 </div>
             </div>
         );
