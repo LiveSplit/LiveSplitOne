@@ -101,7 +101,7 @@ export class LiveSplit extends React.Component<Props, State> {
     saveSplits() {
         function download(filename: any, text: any) {
             var element = document.createElement('a');
-            element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+            element.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(text));
             element.setAttribute('download', filename);
 
             element.style.display = 'none';
@@ -168,15 +168,15 @@ export class LiveSplit extends React.Component<Props, State> {
                 <div className="buttons">
                     <button onClick={(e) => this.onSplit()}>Split</button>
                     <div className="small">
-                        <button onClick={(e) => this.onUndo()}>🡅</button>
-                        <button onClick={(e) => this.onPause()}>⏸</button>
+                        <button onClick={(e) => this.onUndo()}>Undo</button>
+                        <button onClick={(e) => this.onPause()}>Pause</button>
                     </div>
                     <div className="small">
-                        <button onClick={(e) => this.onSkip()}>🡇</button>
-                        <button onClick={(e) => this.onReset()}>✖</button>
+                        <button onClick={(e) => this.onSkip()}>Skip</button>
+                        <button onClick={(e) => this.onReset()}>Reset</button>
                     </div>
-                    <button onClick={(e) => this.openSplits()}>📂 Open</button>
-                    <button onClick={(e) => this.saveSplits()}>💾 Save</button>
+                    <button onClick={(e) => this.openSplits()}>Open</button>
+                    <button onClick={(e) => this.saveSplits()}>Save</button>
                 </div>
             </div>
         );
