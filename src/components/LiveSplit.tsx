@@ -90,7 +90,7 @@ export class LiveSplit extends React.Component<Props, State> {
             reader.onload = function(e: any) {
                 var contents = e.target.result;
                 let oldTimer = component.state.timer;
-                component.setState({ timer: new Timer(Run.fromLSS(contents)) });
+                component.setState({ timer: new Timer(Run.fromFile(contents)) });
                 oldTimer.drop();
             };
             reader.readAsText(file);
