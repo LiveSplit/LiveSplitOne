@@ -32,6 +32,14 @@ body {
     line-height: 20px;
 }
 
+.previous-segment-text {
+    width: 100%;
+}
+
+.previous-segment-time {
+    text-align: right;
+}
+
 .title {
     height: auto;
     width: 100%;
@@ -79,11 +87,6 @@ body {
     padding: 2px 6px;
 }
 
-.split div:first-child {
-    text-align: left;
-    width: 100%;
-}
-
 .splits table tbody .split {
     background-color: rgb(23, 23, 23);
 }
@@ -110,12 +113,28 @@ td#dif {
 }
 
 table tr td {
-    text-align: right;
     padding: 0px 6px;
 }
 
 .split-name {
     text-overflow: ellipsis;
+    width: 100%;
+    padding-left: 2px !important;
+    text-align: left !important;
+}
+
+.split-icon-container {
+    padding-right: 5px !important;
+}
+
+.split-icon-container-empty {
+    padding-right: 0px !important;
+}
+
+.split-icon, .title-icon {
+    max-width: 18px;
+    height: 18px;
+    vertical-align: middle;
 }
 
 .time {
@@ -150,11 +169,6 @@ div.timer-time {
 
 .timer-fraction {
     font-size: 45px;
-}
-
-table tr td:first-child {
-    width: 100%;
-    text-align: left;
 }
 
 .buttons {

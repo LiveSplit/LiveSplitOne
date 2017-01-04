@@ -151,6 +151,7 @@ export class TimerComponent extends LSClass {
 }
 
 export interface TitleComponentState {
+    icon_change?: string;
     game: string;
     category: string;
     attempts: number;
@@ -176,6 +177,7 @@ export interface SplitsComponentState {
 }
 
 export interface SplitState {
+    icon_change?: string;
     name: string;
     delta: string;
     time: string;

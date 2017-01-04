@@ -7,13 +7,25 @@ export interface Props { timer: LiveSplit.Timer }
 export class Component extends React.Component<Props, LiveSplit.SplitsComponentState> {
     inner: LiveSplit.SplitsComponent;
     timerID: number;
+    iconUrls: string[];
 
     constructor(props: Props) {
         super(props);
 
         this.inner = new LiveSplit.SplitsComponent();
+        this.iconUrls = [];
 
         this.state = this.inner.getState(this.props.timer);
+    }
+
+    getIconUrl(index: number): string {
+        while (index >= this.iconUrls.length) {
+            this.iconUrls.push("");
+        }
+        if (this.state.splits[index].icon_change != null) {
+            this.iconUrls[index] = this.state.splits[index].icon_change;
+        }
+        return this.iconUrls[index];
     }
 
     componentDidMount() {
@@ -36,7 +48,7 @@ export class Component extends React.Component<Props, LiveSplit.SplitsComponentS
         return (
             <div className="splits">
                 {
-                    this.state.splits.map((s, i) => <Split split={s} key={i.toString()} />)
+                    this.state.splits.map((s, i) => <Split split={s} icon={this.getIconUrl(i)} key={i.toString()} />)
                 }
             </div>
         );
