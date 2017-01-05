@@ -40,6 +40,19 @@ body {
     text-align: right;
 }
 
+.sum-of-best {
+    height: 24px;
+    line-height: 20px;
+}
+
+.sum-of-best-text {
+    width: 100%;
+}
+
+.sum-of-best-time {
+    text-align: right;
+}
+
 .title {
     height: auto;
     width: 100%;
