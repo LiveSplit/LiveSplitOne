@@ -32,25 +32,22 @@ body {
     line-height: 20px;
 }
 
-.previous-segment-text {
+.previous-segment-text,
+.sum-of-best-text,
+.possible-time-save-text {
     width: 100%;
 }
 
-.previous-segment-time {
+.previous-segment-time,
+.sum-of-best-time,
+.possible-time-save-time {
     text-align: right;
 }
 
-.sum-of-best {
+.sum-of-best,
+.possible-time-save {
     height: 24px;
     line-height: 20px;
-}
-
-.sum-of-best-text {
-    width: 100%;
-}
-
-.sum-of-best-time {
-    text-align: right;
 }
 
 .title {

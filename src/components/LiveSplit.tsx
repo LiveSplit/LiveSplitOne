@@ -5,6 +5,7 @@ import { Component as TitleComponent } from "./Title";
 import { Component as SplitsComponent } from "./Splits";
 import { Component as PreviousSegmentComponent } from "./PreviousSegment";
 import { Component as SumOfBestComponent } from "./SumOfBest";
+import { Component as PossibleTimeSaveComponent } from "./PossibleTimeSave";
 
 export interface Props { }
 export interface State {
@@ -166,6 +167,7 @@ export class LiveSplit extends React.Component<Props, State> {
                     <TimerComponent timer={this.state.timer} />
                     <PreviousSegmentComponent timer={this.state.timer} />
                     <SumOfBestComponent timer={this.state.timer} />
+                    <PossibleTimeSaveComponent timer={this.state.timer} />
                 </div>
                 <div className="buttons">
                     <button onClick={(e) => this.onSplit()}>Split</button>
