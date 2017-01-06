@@ -38,6 +38,10 @@ var PreviousSegmentComponent_new = ls.cwrap('PreviousSegmentComponent_new', 'num
 var PreviousSegmentComponent_drop = ls.cwrap('PreviousSegmentComponent_drop', null, ['number']);
 var PreviousSegmentComponent_state = ls.cwrap('PreviousSegmentComponent_state', 'string', ['number', 'number']);
 
+var SumOfBestComponent_new = ls.cwrap('SumOfBestComponent_new', 'number', []);
+var SumOfBestComponent_drop = ls.cwrap('SumOfBestComponent_drop', null, ['number']);
+var SumOfBestComponent_state = ls.cwrap('SumOfBestComponent_state', 'string', ['number', 'number']);
+
 class LSClass {
     constructor(public ptr: number) { }
 
@@ -216,5 +220,25 @@ export class PreviousSegmentComponent extends LSClass {
 
     getState(timer: Timer): PreviousSegmentComponentState {
         return JSON.parse(PreviousSegmentComponent_state(this.ptr, timer.ptr));
+    }
+}
+
+export interface SumOfBestComponentState {
+    text: string;
+    time: string;
+}
+
+export class SumOfBestComponent extends LSClass {
+    constructor() {
+        super(SumOfBestComponent_new());
+    }
+
+    drop() {
+        SumOfBestComponent_drop(this.ptr);
+        this.dropped();
+    }
+
+    getState(timer: Timer): SumOfBestComponentState {
+        return JSON.parse(SumOfBestComponent_state(this.ptr, timer.ptr));
     }
 }
