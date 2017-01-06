@@ -42,6 +42,10 @@ var SumOfBestComponent_new = ls.cwrap('SumOfBestComponent_new', 'number', []);
 var SumOfBestComponent_drop = ls.cwrap('SumOfBestComponent_drop', null, ['number']);
 var SumOfBestComponent_state = ls.cwrap('SumOfBestComponent_state', 'string', ['number', 'number']);
 
+var PossibleTimeSaveComponent_new = ls.cwrap('PossibleTimeSaveComponent_new', 'number', []);
+var PossibleTimeSaveComponent_drop = ls.cwrap('PossibleTimeSaveComponent_drop', null, ['number']);
+var PossibleTimeSaveComponent_state = ls.cwrap('PossibleTimeSaveComponent_state', 'string', ['number', 'number']);
+
 class LSClass {
     constructor(public ptr: number) { }
 
@@ -240,5 +244,25 @@ export class SumOfBestComponent extends LSClass {
 
     getState(timer: Timer): SumOfBestComponentState {
         return JSON.parse(SumOfBestComponent_state(this.ptr, timer.ptr));
+    }
+}
+
+export interface PossibleTimeSaveComponentState {
+    text: string;
+    time: string;
+}
+
+export class PossibleTimeSaveComponent extends LSClass {
+    constructor() {
+        super(PossibleTimeSaveComponent_new());
+    }
+
+    drop() {
+        PossibleTimeSaveComponent_drop(this.ptr);
+        this.dropped();
+    }
+
+    getState(timer: Timer): SumOfBestComponentState {
+        return JSON.parse(PossibleTimeSaveComponent_state(this.ptr, timer.ptr));
     }
 }
