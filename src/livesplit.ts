@@ -184,11 +184,19 @@ export interface SplitsComponentState {
     splits: SplitState[];
 }
 
+export type SplitColor = "Default" |
+    "AheadGainingTime" |
+    "AheadLosingTime" |
+    "BehindLosingTime" |
+    "BehindGainingTime" |
+    "BestSegment";
+
 export interface SplitState {
     icon_change?: string;
     name: string;
     delta: string;
     time: string;
+    color: SplitColor;
     is_current_split: boolean;
 }
 
