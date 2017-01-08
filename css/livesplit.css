@@ -141,6 +141,7 @@ table tr td {
     max-width: 18px;
     height: 18px;
     vertical-align: middle;
+    filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.3));
 }
 
 .time {
@@ -165,7 +166,7 @@ table tr td {
 }
 
 .split-color-bestsegment {
-    color: #e2aa3d;
+    color: hsla(50, 100%, 50%, 1);
 }
 
 div.timer-time {
