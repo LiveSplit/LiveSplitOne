@@ -90,6 +90,18 @@ export class Run extends LSClass {
         return run;
     }
 
+    static parseString(text: string): Run {
+        let run = new Run();
+
+        let len = (text.length << 2) + 1;
+        let buf = ls._malloc(len);
+        let actualLen = ls.stringToUTF8(text, buf, len);
+        run.ptr = Run_parse(buf, actualLen);
+        ls._free(buf);
+
+        return run;
+    }
+
     setGame(game: string) {
         Run_set_game(this.ptr, game);
     }

@@ -102,6 +102,52 @@ export class LiveSplit extends React.Component<Props, State> {
         input.click();
     }
 
+    openFromSplitsIO () {
+        var component = this;
+        var id = prompt("Specify the splits i/o URL or ID");
+        if (id == null) {
+            return;
+        }
+        if (id.indexOf("https://splits.io/") == 0) {
+            id = id.substr("https://splits.io/".length);
+        }
+        let apiXhr = new XMLHttpRequest();
+        apiXhr.open('GET', "https://splits.io/api/v4/runs/" + id, true);
+        apiXhr.onload = function () {
+            let response = JSON.parse(apiXhr.responseText);
+            if (response != null && response.run != null && response.run.program != null) {
+                var xhr = new XMLHttpRequest();
+                xhr.open('GET', "https://splits.io/" + id + "/download/" + response.run.program, true);
+                xhr.responseType = 'arraybuffer';
+                xhr.onload = function () {
+                    var oldTimer = component.state.timer;
+                    component.setState({
+                        timer: new Timer(Run.parse(new Int8Array(xhr.response)))
+                    });
+                    oldTimer.drop();
+                };
+                xhr.onerror = function () {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('GET', "https://splits.io/api/v4/runs/" + id + "/splits", true);
+                    xhr.onload = function () {
+                        response.splits = JSON.parse(xhr.responseText);
+                        var oldTimer = component.state.timer;
+                        component.setState({
+                            timer: new Timer(Run.parseString(JSON.stringify(response)))
+                        });
+                        oldTimer.drop();
+                        alert("Due to a Cross-Origin Resource Sharing problem, the original splits file could not be loaded. " +
+                        "A reconstruction of the splits file via the splits i/o API was loaded instead. " +
+                        "While this may look like your original splits, some information might be lost.");
+                    }
+                    xhr.send(null);
+                };
+                xhr.send(null);
+            }
+        };
+        apiXhr.send(null);
+    }
+
     saveSplits() {
         function download(filename: any, text: any) {
             var element = document.createElement('a');
@@ -183,6 +229,7 @@ export class LiveSplit extends React.Component<Props, State> {
                     </div>
                     <button onClick={(e) => this.openSplits()}>Open</button>
                     <button onClick={(e) => this.saveSplits()}>Save</button>
+                    <button onClick={(e) => this.openFromSplitsIO()}>From splits i/o</button>
                 </div>
             </div>
         );
