@@ -158,6 +158,7 @@ export class Timer extends LSClass {
 export interface TimerComponentState {
     time: string;
     fraction: string;
+    color: Color;
 }
 
 export class TimerComponent extends LSClass {
@@ -201,19 +202,22 @@ export interface SplitsComponentState {
     splits: SplitState[];
 }
 
-export type SplitColor = "Default" |
+export type Color = "Default" |
     "AheadGainingTime" |
     "AheadLosingTime" |
     "BehindLosingTime" |
     "BehindGainingTime" |
-    "BestSegment";
+    "BestSegment" |
+    "NotRunning" |
+    "Paused" |
+    "PersonalBest";
 
 export interface SplitState {
     icon_change?: string;
     name: string;
     delta: string;
     time: string;
-    color: SplitColor;
+    color: Color;
     is_current_split: boolean;
 }
 

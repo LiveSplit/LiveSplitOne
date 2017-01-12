@@ -9,7 +9,7 @@ export class Component extends React.Component<Props, undefined> {
     }
 
     getColor(): string {
-        return "split-color-" + this.props.split.color.toLowerCase();
+        return "color-" + this.props.split.color.toLowerCase();
     }
 
     render() {

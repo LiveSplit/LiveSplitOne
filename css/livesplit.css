@@ -149,24 +149,36 @@ table tr td {
     font-family: 'Roboto', sans-serif;
 }
 
-.time-ahead, .split-color-aheadgainingtime {
+.time-ahead, .color-aheadgainingtime {
     color: hsla(142, 100%, 40%, 1);
 }
 
-.split-color-aheadlosingtime {
+.color-aheadlosingtime {
     color: hsla(142, 60%, 60%, 1);
 }
 
-.split-color-behindgainingtime {
+.color-behindgainingtime {
     color: hsla(0, 60%, 60%, 1);
 }
 
-.time-behind, .split-color-behindlosingtime {
+.time-behind, .color-behindlosingtime {
     color: hsla(0, 100%, 40%, 1);
 }
 
-.split-color-bestsegment {
+.color-bestsegment {
     color: hsla(50, 100%, 50%, 1);
+}
+
+.color-notrunning {
+    color: hsla(0, 0%, 85%, 1);
+}
+
+.color-paused {
+    color: hsla(0, 0%, 60%, 1);
+}
+
+.color-personalbest {
+    color: hsla(210, 100%, 65%, 1)
 }
 
 div.timer-time {
@@ -175,7 +187,6 @@ div.timer-time {
     padding-left: 6px;
     padding-right: 6px;
     font-family: greycliff, sans-serif;
-    color: hsl(136, 75%, 50%);
     margin-top: -10px;
 }
 

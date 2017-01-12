@@ -31,9 +31,13 @@ export class Component extends React.Component<Props, LiveSplit.TimerComponentSt
         this.setState(this.inner.getState(this.props.timer));
     }
 
+    getColor(): string {
+        return "color-" + this.state.color.toLowerCase();
+    }
+
     render() {
         return (
-            <div className="timer-time">
+            <div className={"timer-time " + this.getColor()}>
                 {this.state.time.split('').map((c, i) => <span className={(c >= '0' && c <= '9') ? "monospace" : ""} key={i}>{c}</span>)}<span className="timer-fraction">{this.state.fraction.split('').map((c, i) => <span className={(c >= '0' && c <= '9') ? "monospace" : ""} key={i}>{c}</span>)}</span>
             </div>
         );
