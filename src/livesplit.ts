@@ -9,7 +9,7 @@ var SegmentList_push = ls.cwrap('SegmentList_push', null, ['number', 'number']);
 var Run_new = ls.cwrap('Run_new', 'number', []);
 var Run_parse = ls.cwrap('Run_parse', 'number', ['number', 'number']);
 var Run_set_game = ls.cwrap('Run_set_game', null, ['number', 'string']);
-var Run_set_category = ls.cwrap('Run_set_category', null, ['number','string']);
+var Run_set_category = ls.cwrap('Run_set_category', null, ['number', 'string']);
 
 var Timer_new = ls.cwrap('Timer_new', 'number', ['number']);
 var Timer_drop = ls.cwrap('Timer_drop', null, ['number']);
@@ -239,6 +239,7 @@ export class SplitsComponent extends LSClass {
 export interface PreviousSegmentComponentState {
     text: string;
     time: string;
+    color: Color;
 }
 
 export class PreviousSegmentComponent extends LSClass {
