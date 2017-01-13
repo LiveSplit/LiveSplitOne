@@ -4,7 +4,7 @@ import * as LiveSplit from "../livesplit";
 export interface Props { timer: LiveSplit.Timer };
 
 export class Component extends React.Component<Props, LiveSplit.PossibleTimeSaveComponentState> {
-	inner: LiveSplit.PreviousSegmentComponent;
+	inner: LiveSplit.PossibleTimeSaveComponent;
 	timerID: number;
 
 	constructor(props: Props) {
@@ -14,7 +14,7 @@ export class Component extends React.Component<Props, LiveSplit.PossibleTimeSave
 
 		this.state = this.inner.getState(this.props.timer);
 	}
-	
+
 	componentDidMount() {
 		this.timerID = setInterval(
 			() => this.update(),
@@ -30,7 +30,7 @@ export class Component extends React.Component<Props, LiveSplit.PossibleTimeSave
 	update() {
 		this.setState(this.inner.getState(this.props.timer));
 	}
-		
+
 	render() {
 		return (
 			<div className="possible-time-save">

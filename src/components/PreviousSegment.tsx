@@ -27,6 +27,10 @@ export class Component extends React.Component<Props, LiveSplit.PreviousSegmentC
         this.inner.drop();
     }
 
+    getColor(): string {
+        return "color-" + this.state.color.toLowerCase();
+    }
+
     update() {
         this.setState(this.inner.getState(this.props.timer));
     }
@@ -38,7 +42,7 @@ export class Component extends React.Component<Props, LiveSplit.PreviousSegmentC
                     <tbody>
                         <tr>
                             <td className="previous-segment-text">{this.state.text}</td>
-                            <td className={"previous-segment-time time " + (this.state.time.indexOf('+') == 0 ? "time-behind" : this.state.time.indexOf('−') == 0 ? "time-ahead" : "")}>{this.state.time}</td>
+                            <td className={"previous-segment-time time " + this.getColor()}>{this.state.time}</td>
                         </tr>
                     </tbody>
                 </table>
