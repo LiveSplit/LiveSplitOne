@@ -40,6 +40,10 @@ export class LiveSplit extends React.Component<Props, State> {
         run.setGame("The Legend of Zelda: The Wind Waker");
         run.setCategory("Any% (Tuner)");
 
+        if (window.location.hash.indexOf("#/splits-io/") == 0) {
+            this.loadFromSplitsIO(window.location.hash.substr("#/splits-io/".length));
+        }
+
         this.state = { timer: new Timer(run) };
     }
 
@@ -102,15 +106,8 @@ export class LiveSplit extends React.Component<Props, State> {
         input.click();
     }
 
-    openFromSplitsIO () {
+    loadFromSplitsIO(id: string) {
         var component = this;
-        var id = prompt("Specify the splits i/o URL or ID");
-        if (id == null) {
-            return;
-        }
-        if (id.indexOf("https://splits.io/") == 0) {
-            id = id.substr("https://splits.io/".length);
-        }
         let apiXhr = new XMLHttpRequest();
         apiXhr.open('GET', "https://splits.io/api/v4/runs/" + id, true);
         apiXhr.onload = function () {
@@ -148,6 +145,17 @@ export class LiveSplit extends React.Component<Props, State> {
         apiXhr.send(null);
     }
 
+    openFromSplitsIO() {
+        var id = prompt("Specify the splits i/o URL or ID");
+        if (id == null) {
+            return;
+        }
+        if (id.indexOf("https://splits.io/") == 0) {
+            id = id.substr("https://splits.io/".length);
+        }
+        this.loadFromSplitsIO(id);
+    }
+
     saveSplits() {
         function download(filename: any, text: any) {
             var element = document.createElement('a');
@@ -167,7 +175,13 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     onKeyPress(e: KeyboardEvent) {
+        console.log(e.charCode);
         switch (e.charCode) {
+            case 47: {
+                // NumPad Slash
+                this.onPrintDebug();
+                break;
+            }
             case 49: {
                 // NumPad 1
                 this.onSplit();
@@ -190,7 +204,7 @@ export class LiveSplit extends React.Component<Props, State> {
             }
             case 55: {
                 // NumPad 7
-                this.onPrintDebug();
+                this.openSplits();
                 break;
             }
             case 56: {
@@ -200,7 +214,7 @@ export class LiveSplit extends React.Component<Props, State> {
             }
             case 57: {
                 // NumPad 9
-                this.openSplits();
+                this.saveSplits();
                 break;
             }
         }
