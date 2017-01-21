@@ -33,6 +33,8 @@ var TitleComponent_state = ls.cwrap('TitleComponent_state', 'string', ['number',
 var SplitsComponent_new = ls.cwrap('SplitsComponent_new', 'number', []);
 var SplitsComponent_drop = ls.cwrap('SplitsComponent_drop', null, ['number']);
 var SplitsComponent_state = ls.cwrap('SplitsComponent_state', 'string', ['number', 'number']);
+var SplitsComponent_scroll_up = ls.cwrap('SplitsComponent_scroll_up', null, ['number']);
+var SplitsComponent_scroll_down = ls.cwrap('SplitsComponent_scroll_down', null, ['number']);
 
 var PreviousSegmentComponent_new = ls.cwrap('PreviousSegmentComponent_new', 'number', []);
 var PreviousSegmentComponent_drop = ls.cwrap('PreviousSegmentComponent_drop', null, ['number']);
@@ -200,6 +202,7 @@ export class TitleComponent extends LSClass {
 
 export interface SplitsComponentState {
     splits: SplitState[];
+    show_final_separator: boolean;
 }
 
 export type Color = "Default" |
@@ -233,6 +236,14 @@ export class SplitsComponent extends LSClass {
 
     getState(timer: Timer): SplitsComponentState {
         return JSON.parse(SplitsComponent_state(this.ptr, timer.ptr));
+    }
+
+    scrollUp() {
+        SplitsComponent_scroll_up(this.ptr);
+    }
+
+    scrollDown() {
+        SplitsComponent_scroll_down(this.ptr);
     }
 }
 

@@ -8,6 +8,7 @@ export class Component extends React.Component<Props, LiveSplit.SplitsComponentS
     inner: LiveSplit.SplitsComponent;
     timerID: number;
     iconUrls: string[];
+    event: EventListenerObject;
 
     constructor(props: Props) {
         super(props);
@@ -29,6 +30,8 @@ export class Component extends React.Component<Props, LiveSplit.SplitsComponentS
     }
 
     componentDidMount() {
+        this.event = { handleEvent: (e: MouseWheelEvent) => this.onScroll(e) };
+        window.addEventListener('mousewheel', this.event);
         this.timerID = setInterval(
             () => this.update(),
             1000 / 30
@@ -36,8 +39,18 @@ export class Component extends React.Component<Props, LiveSplit.SplitsComponentS
     }
 
     componentWillUnmount() {
+        window.removeEventListener('mousewheel', this.event);
         clearInterval(this.timerID);
         this.inner.drop();
+    }
+
+    onScroll(e: MouseWheelEvent) {
+        var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+        if (delta == 1) {
+            this.inner.scrollUp();
+        } else if (delta == -1) {
+            this.inner.scrollDown();
+        }
     }
 
     update() {

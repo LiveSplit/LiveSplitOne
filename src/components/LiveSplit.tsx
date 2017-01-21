@@ -175,7 +175,6 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     onKeyPress(e: KeyboardEvent) {
-        console.log(e.charCode);
         switch (e.charCode) {
             case 47: {
                 // NumPad Slash
