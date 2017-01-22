@@ -6,15 +6,17 @@ import { Component as SplitsComponent } from "./Splits";
 import { Component as PreviousSegmentComponent } from "./PreviousSegment";
 import { Component as SumOfBestComponent } from "./SumOfBest";
 import { Component as PossibleTimeSaveComponent } from "./PossibleTimeSave";
+import Sidebar from "react-sidebar";
 
 export interface Props { }
 export interface State {
     timer: Timer,
+    sidebarOpen: boolean,
 }
 
 export class LiveSplit extends React.Component<Props, State> {
     timer: Timer;
-    event: EventListenerObject;
+    keyEvent: EventListenerObject;
 
     constructor(props: Props) {
         super(props);
@@ -44,17 +46,27 @@ export class LiveSplit extends React.Component<Props, State> {
             this.loadFromSplitsIO(window.location.hash.substr("#/splits-io/".length));
         }
 
-        this.state = { timer: new Timer(run) };
+        this.state = {
+            timer: new Timer(run),
+            sidebarOpen: false,
+        };
     }
 
     componentWillMount() {
-        this.event = { handleEvent: (e: KeyboardEvent) => this.onKeyPress(e) };
-        window.addEventListener('keypress', this.event);
+        this.keyEvent = { handleEvent: (e: KeyboardEvent) => this.onKeyPress(e) };
+        window.addEventListener('keypress', this.keyEvent);
     }
 
     componentWillUnmount() {
-        window.removeEventListener('keypress', this.event);
+        window.removeEventListener('keypress', this.keyEvent);
         this.state.timer.drop();
+    }
+
+    onSetSidebarOpen(open: boolean) {
+        this.setState({
+            ...this.state,
+            sidebarOpen: open,
+        });
     }
 
     onSplit() {
@@ -97,7 +109,8 @@ export class LiveSplit extends React.Component<Props, State> {
                 var contents = e.target.result;
                 let oldTimer = component.state.timer;
                 component.setState({
-                    timer: new Timer(Run.parse(new Int8Array(contents)))
+                    ...component.state,
+                    timer: new Timer(Run.parse(new Int8Array(contents))),
                 });
                 oldTimer.drop();
             };
@@ -119,7 +132,8 @@ export class LiveSplit extends React.Component<Props, State> {
                 xhr.onload = function () {
                     var oldTimer = component.state.timer;
                     component.setState({
-                        timer: new Timer(Run.parse(new Int8Array(xhr.response)))
+                        ...component.state,
+                        timer: new Timer(Run.parse(new Int8Array(xhr.response))),
                     });
                     oldTimer.drop();
                 };
@@ -130,7 +144,8 @@ export class LiveSplit extends React.Component<Props, State> {
                         response.splits = JSON.parse(xhr.responseText);
                         var oldTimer = component.state.timer;
                         component.setState({
-                            timer: new Timer(Run.parseString(JSON.stringify(response)))
+                            ...component.state,
+                            timer: new Timer(Run.parseString(JSON.stringify(response))),
                         });
                         oldTimer.drop();
                         alert("Due to a Cross-Origin Resource Sharing problem, the original splits file could not be loaded. " +
@@ -220,8 +235,19 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     render() {
+        var sidebarContent = (
+            <div className="sidebar-buttons">
+                <button onClick={(e) => this.openSplits()}>Open</button>
+                <button onClick={(e) => this.saveSplits()}>Save</button>
+                <button onClick={(e) => this.openFromSplitsIO()}>From splits i/o</button>
+            </div>
+        );
+
         return (
-            <div>
+            <Sidebar sidebar={sidebarContent}
+                open={this.state.sidebarOpen}
+                onSetOpen={((e: boolean) => this.onSetSidebarOpen(e)) as any}
+                sidebarClassName="sidebar">
                 <div className="livesplit">
                     <TitleComponent timer={this.state.timer} />
                     <SplitsComponent timer={this.state.timer} />
@@ -240,11 +266,9 @@ export class LiveSplit extends React.Component<Props, State> {
                         <button onClick={(e) => this.onSkip()}>Skip</button>
                         <button onClick={(e) => this.onReset()}>Reset</button>
                     </div>
-                    <button onClick={(e) => this.openSplits()}>Open</button>
-                    <button onClick={(e) => this.saveSplits()}>Save</button>
-                    <button onClick={(e) => this.openFromSplitsIO()}>From splits i/o</button>
+                    <button onClick={(e) => this.onSetSidebarOpen(true)}>Menu</button>
                 </div>
-            </div>
+            </Sidebar>
         );
     }
 }

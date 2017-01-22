@@ -11,11 +11,21 @@
 }
 
 body {
+    font-family: 'fira', sans-serif;
+    color: #eee;
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
     background: hsla(0, 0%, 9%, 1);
 }
 
 #wrapper {
     transition: all 0.5s ease;
+}
+
+.sidebar {
+    background: hsl(0, 0%, 10%);
+    padding: 10px;
+    padding-top: 15px;
+    width: 200px;
 }
 
 .livesplit {
@@ -24,6 +34,7 @@ body {
     background: hsl(0, 0%, 7%);
     color: #eee;
     text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+    margin: 10px;
 }
 
 .previous-segment,
@@ -201,7 +212,7 @@ div.timer-time {
 }
 
 .buttons {
-    margin-top: 10px;
+    margin: 10px;
     width: 300px;
 }
 
@@ -212,21 +223,29 @@ div.timer-time {
 }
 
 .buttons > button, .buttons > div > button {
-    margin-bottom: 8px;
     height: 30px;
     margin-right: 1%;
     margin-left: 1%;
+}
+
+.buttons > button, .buttons > div > button, .sidebar-buttons > button {
+    margin-bottom: 8px;
     background: linear-gradient(hsl(0, 0%, 11%) 0%, hsl(0, 0%, 7%) 100%);
     color: #eee;
     cursor: pointer;
+    font-size: 20px;
     border-width: 1px;
     border-style: solid;
     border-color: hsl(0, 0%, 25%);
     border-image: initial;
     border-radius: 5px;
-    font-size: 20px;
     font-weight: bold;
     font-family: 'fira', sans-serif;
+}
+
+.sidebar-buttons > button {
+    width: 200px;
+    height: 40px;
 }
 
 .buttons > div > button {
