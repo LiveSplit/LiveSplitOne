@@ -5,6 +5,10 @@ body, .livesplit, .buttons {
     overflow: hidden;
 }
 
+.sidebar {
+    visibility: hidden;
+}
+
 .previous-segment, .sum-of-best, .possible-time-save, .livesplit, .title {
     background: transparent !important;
 }

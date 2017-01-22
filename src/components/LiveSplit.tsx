@@ -22,28 +22,19 @@ export class LiveSplit extends React.Component<Props, State> {
         super(props);
 
         let segments = new SegmentList();
-        segments.push(new Segment("Hero's Sword"));
-        segments.push(new Segment("Leaving Outset"));
-        segments.push(new Segment("Forsaken Fortress 1"));
-        segments.push(new Segment("Wind Waker"));
-        segments.push(new Segment("Empty Bottle"));
-        segments.push(new Segment("Delivery Bag"));
-        segments.push(new Segment("Kargoroc Key"));
-        segments.push(new Segment("Grappling Hook"));
-        segments.push(new Segment("Enter Gohma"));
-        segments.push(new Segment("Dragon Roost Cavern"));
-        segments.push(new Segment("Northern Triangle"));
-        segments.push(new Segment("Greatfish"));
-        segments.push(new Segment("Bombs"));
-        segments.push(new Segment("Deku Leaf"));
-        segments.push(new Segment("Enter Kalle Demos"));
-
+        segments.push(new Segment("Time"));
         let run = new Run(segments);
-        run.setGame("The Legend of Zelda: The Wind Waker");
-        run.setCategory("Any% (Tuner)");
+        run.setGame("Game");
+        run.setCategory("Category");
 
         if (window.location.hash.indexOf("#/splits-io/") == 0) {
             this.loadFromSplitsIO(window.location.hash.substr("#/splits-io/".length));
+        } else {
+            let lss = localStorage.getItem("splits");
+            if (lss != undefined && lss != null && lss.length > 0) {
+                new Timer(run).drop(); // TODO Drop this more nicely
+                run = Run.parseString(lss);
+            }
         }
 
         this.state = {
@@ -94,7 +85,7 @@ export class LiveSplit extends React.Component<Props, State> {
         this.state.timer.printDebug();
     }
 
-    openSplits() {
+    importSplits() {
         let component = this;
 
         var input = document.createElement('input');
@@ -171,7 +162,7 @@ export class LiveSplit extends React.Component<Props, State> {
         this.loadFromSplitsIO(id);
     }
 
-    saveSplits() {
+    exportSplits() {
         function download(filename: any, text: any) {
             var element = document.createElement('a');
             element.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(text));
@@ -187,6 +178,11 @@ export class LiveSplit extends React.Component<Props, State> {
 
         let lss = this.state.timer.saveRunAsLSS();
         download("splits.lss", lss);
+    }
+
+    saveSplits() {
+        let lss = this.state.timer.saveRunAsLSS();
+        localStorage.setItem("splits", lss);
     }
 
     onKeyPress(e: KeyboardEvent) {
@@ -218,7 +214,7 @@ export class LiveSplit extends React.Component<Props, State> {
             }
             case 55: {
                 // NumPad 7
-                this.openSplits();
+                this.importSplits();
                 break;
             }
             case 56: {
@@ -228,7 +224,7 @@ export class LiveSplit extends React.Component<Props, State> {
             }
             case 57: {
                 // NumPad 9
-                this.saveSplits();
+                this.exportSplits();
                 break;
             }
         }
@@ -237,8 +233,9 @@ export class LiveSplit extends React.Component<Props, State> {
     render() {
         var sidebarContent = (
             <div className="sidebar-buttons">
-                <button onClick={(e) => this.openSplits()}>Open</button>
                 <button onClick={(e) => this.saveSplits()}>Save</button>
+                <button onClick={(e) => this.importSplits()}>Import</button>
+                <button onClick={(e) => this.exportSplits()}>Export</button>
                 <button onClick={(e) => this.openFromSplitsIO()}>From splits i/o</button>
             </div>
         );
