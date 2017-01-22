@@ -17,6 +17,7 @@ export interface State {
 export class LiveSplit extends React.Component<Props, State> {
     timer: Timer;
     keyEvent: EventListenerObject;
+    rightClickEvent: EventListenerObject;
 
     constructor(props: Props) {
         super(props);
@@ -46,10 +47,13 @@ export class LiveSplit extends React.Component<Props, State> {
     componentWillMount() {
         this.keyEvent = { handleEvent: (e: KeyboardEvent) => this.onKeyPress(e) };
         window.addEventListener('keypress', this.keyEvent);
+        this.rightClickEvent = { handleEvent: (e: any) => this.onRightClick(e) };
+        window.addEventListener('contextmenu', this.rightClickEvent, false);
     }
 
     componentWillUnmount() {
         window.removeEventListener('keypress', this.keyEvent);
+        window.removeEventListener('contextmenu', this.rightClickEvent);
         this.state.timer.drop();
     }
 
@@ -58,6 +62,11 @@ export class LiveSplit extends React.Component<Props, State> {
             ...this.state,
             sidebarOpen: open,
         });
+    }
+
+    onRightClick(e: any) {
+        this.onSetSidebarOpen(true);
+        e.preventDefault();
     }
 
     onSplit() {
@@ -96,7 +105,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 return;
             }
             var reader = new FileReader();
-            reader.onload = function(e: any) {
+            reader.onload = function (e: any) {
                 var contents = e.target.result;
                 let oldTimer = component.state.timer;
                 component.setState({
@@ -140,8 +149,8 @@ export class LiveSplit extends React.Component<Props, State> {
                         });
                         oldTimer.drop();
                         alert("Due to a Cross-Origin Resource Sharing problem, the original splits file could not be loaded. " +
-                        "A reconstruction of the splits file via the splits i/o API was loaded instead. " +
-                        "While this may look like your original splits, some information might be lost.");
+                            "A reconstruction of the splits file via the splits i/o API was loaded instead. " +
+                            "While this may look like your original splits, some information might be lost.");
                     }
                     xhr.send(null);
                 };
@@ -263,7 +272,6 @@ export class LiveSplit extends React.Component<Props, State> {
                         <button onClick={(e) => this.onSkip()}>Skip</button>
                         <button onClick={(e) => this.onReset()}>Reset</button>
                     </div>
-                    <button onClick={(e) => this.onSetSidebarOpen(true)}>Menu</button>
                 </div>
             </Sidebar>
         );
