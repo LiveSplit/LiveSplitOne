@@ -19,6 +19,8 @@ var Timer_skip_split = ls.cwrap('Timer_skip_split', null, ['number']);
 var Timer_undo_split = ls.cwrap('Timer_undo_split', null, ['number']);
 var Timer_reset = ls.cwrap('Timer_reset', null, ['number', 'number']);
 var Timer_pause = ls.cwrap('Timer_pause', null, ['number']);
+var Timer_current_timing_method = ls.cwrap('Timer_current_timing_method', 'number', ['number']);
+var Timer_set_current_timing_method = ls.cwrap('Timer_set_current_timing_method', null, ['number', 'number']);
 var Timer_print_debug = ls.cwrap('Timer_print_debug', null, ['number']);
 var Timer_save_run_as_lss = ls.cwrap('Timer_save_run_as_lss', 'string', ['number']);
 
@@ -54,6 +56,11 @@ class LSClass {
     dropped() {
         this.ptr = undefined;
     }
+}
+
+export enum TimingMethod {
+    RealTime = 0,
+    GameTime = 1,
 }
 
 export class Segment extends LSClass {
@@ -146,6 +153,14 @@ export class Timer extends LSClass {
 
     pause() {
         Timer_pause(this.ptr);
+    }
+
+    currentTimingMethod(): TimingMethod {
+        return Timer_current_timing_method(this.ptr);
+    }
+
+    setCurrentTimingMethod(method: TimingMethod) {
+        Timer_set_current_timing_method(this.ptr, method);
     }
 
     printDebug() {

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Run, Segment, SegmentList, Timer } from "../livesplit";
+import { Run, Segment, SegmentList, Timer, TimingMethod } from "../livesplit";
 import { Component as TimerComponent } from "./Timer";
 import { Component as TitleComponent } from "./Title";
 import { Component as SplitsComponent } from "./Splits";
@@ -12,10 +12,11 @@ export interface Props { }
 export interface State {
     timer: Timer,
     sidebarOpen: boolean,
+    timingMethod?: TimingMethod,
 }
 
 export class LiveSplit extends React.Component<Props, State> {
-    timer: Timer;
+    intervalID: number;
     keyEvent: EventListenerObject;
     rightClickEvent: EventListenerObject;
 
@@ -29,6 +30,8 @@ export class LiveSplit extends React.Component<Props, State> {
         run.setCategory("Category");
 
         if (window.location.hash.indexOf("#/splits-io/") == 0) {
+            run.setGame("Loading...");
+            run.setCategory("Loading...");
             this.loadFromSplitsIO(window.location.hash.substr("#/splits-io/".length));
         } else {
             let lss = localStorage.getItem("splits");
@@ -49,12 +52,24 @@ export class LiveSplit extends React.Component<Props, State> {
         window.addEventListener('keypress', this.keyEvent);
         this.rightClickEvent = { handleEvent: (e: any) => this.onRightClick(e) };
         window.addEventListener('contextmenu', this.rightClickEvent, false);
+        this.intervalID = setInterval(
+            () => this.update(),
+            1000 / 30
+        );
     }
 
     componentWillUnmount() {
+        clearInterval(this.intervalID);
         window.removeEventListener('keypress', this.keyEvent);
         window.removeEventListener('contextmenu', this.rightClickEvent);
         this.state.timer.drop();
+    }
+
+    update() {
+        this.setState({
+            ...this.state,
+            timingMethod: this.state.timer.currentTimingMethod(),
+        });
     }
 
     onSetSidebarOpen(open: boolean) {
@@ -242,10 +257,16 @@ export class LiveSplit extends React.Component<Props, State> {
     render() {
         var sidebarContent = (
             <div className="sidebar-buttons">
-                <button onClick={(e) => this.saveSplits()}>Save</button>
-                <button onClick={(e) => this.importSplits()}>Import</button>
-                <button onClick={(e) => this.exportSplits()}>Export</button>
-                <button onClick={(e) => this.openFromSplitsIO()}>From splits i/o</button>
+                <button onClick={(e) => this.saveSplits()}><i className="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
+                <button onClick={(e) => this.importSplits()}><i className="fa fa-upload" aria-hidden="true"></i> Import</button>
+                <button onClick={(e) => this.exportSplits()}><i className="fa fa-download" aria-hidden="true"></i> Export</button>
+                <button onClick={(e) => this.openFromSplitsIO()}><i className="fa fa-cloud-download" aria-hidden="true"></i> From splits i/o</button>
+                <hr />
+                <h2>Compare Against</h2>
+                <div className="small">
+                    <button onClick={(e) => this.state.timer.setCurrentTimingMethod(TimingMethod.RealTime)} className={(this.state.timingMethod == TimingMethod.RealTime ? "button-pressed" : "") + " toggle-left"}>Real Time</button>
+                    <button onClick={(e) => this.state.timer.setCurrentTimingMethod(TimingMethod.GameTime)} className={(this.state.timingMethod == TimingMethod.GameTime ? "button-pressed" : "") + " toggle-right"}>Game Time</button>
+                </div>
             </div>
         );
 
@@ -263,14 +284,14 @@ export class LiveSplit extends React.Component<Props, State> {
                     <PossibleTimeSaveComponent timer={this.state.timer} />
                 </div>
                 <div className="buttons">
-                    <button onClick={(e) => this.onSplit()}>Split</button>
+                    <button onClick={(e) => this.onSplit()}><i className="fa fa-play" aria-hidden="true"></i></button>
                     <div className="small">
-                        <button onClick={(e) => this.onUndo()}>Undo</button>
-                        <button onClick={(e) => this.onPause()}>Pause</button>
+                        <button onClick={(e) => this.onUndo()}><i className="fa fa-arrow-up" aria-hidden="true"></i></button>
+                        <button onClick={(e) => this.onPause()}><i className="fa fa-pause" aria-hidden="true"></i></button>
                     </div>
                     <div className="small">
-                        <button onClick={(e) => this.onSkip()}>Skip</button>
-                        <button onClick={(e) => this.onReset()}>Reset</button>
+                        <button onClick={(e) => this.onSkip()}><i className="fa fa-arrow-down" aria-hidden="true"></i></button>
+                        <button onClick={(e) => this.onReset()}><i className="fa fa-times" aria-hidden="true"></i></button>
                     </div>
                 </div>
             </Sidebar>

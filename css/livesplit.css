@@ -25,7 +25,31 @@ body {
     background: hsl(0, 0%, 10%);
     padding: 10px;
     padding-top: 15px;
-    width: 200px;
+    width: 250px;
+}
+
+.sidebar > div > hr {
+    border-color: hsla(0, 0%, 30%, 1);
+}
+
+.sidebar > div > h2 {
+    font-size: 1.5em;
+    text-align: center;
+}
+
+.sidebar > div > div.small > button {
+    width: 125px;
+    height: 40px;
+}
+
+button.toggle-left {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+button.toggle-right {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
 }
 
 .livesplit {
@@ -228,7 +252,15 @@ div.timer-time {
     margin-left: 1%;
 }
 
-.buttons > button, .buttons > div > button, .sidebar-buttons > button {
+button.button-pressed, button:active {
+    background: linear-gradient(hsl(0, 0%, 8%) 0%, hsl(0, 0%, 14%) 100%);
+}
+
+button:focus {
+    outline:0;
+}
+
+button {
     margin-bottom: 8px;
     background: linear-gradient(hsl(0, 0%, 11%) 0%, hsl(0, 0%, 7%) 100%);
     color: #eee;
@@ -244,7 +276,7 @@ div.timer-time {
 }
 
 .sidebar-buttons > button {
-    width: 200px;
+    width: 250px;
     height: 40px;
 }
 
