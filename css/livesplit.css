@@ -40,6 +40,23 @@ body {
 .sidebar > div > div.small > button {
     width: 125px;
     height: 40px;
+    font-size: 18px;
+}
+
+.choose-comparison > button {
+    width: 30px;
+    height: 40px;
+    font-size: 28px;
+}
+
+.choose-comparison > span {
+    width: 190px;
+    text-align: center;
+    display: inline-block;
+    font-size: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 button.toggle-left {
@@ -252,12 +269,16 @@ div.timer-time {
     margin-left: 1%;
 }
 
-button.button-pressed, button:active {
-    background: linear-gradient(hsl(0, 0%, 8%) 0%, hsl(0, 0%, 14%) 100%);
+button.button-pressed, button.button-pressed:hover, button:active, button:active:hover {
+    background: linear-gradient(hsl(0, 0%, 7%) 0%, hsl(0, 0%, 14%) 100%);
 }
 
-button:focus {
-    outline:0;
+button:focus, div:focus {
+    outline: 0;
+}
+
+button:hover {
+    background: linear-gradient(hsl(0, 0%, 14%) 0%, hsl(0, 0%, 9%) 100%);
 }
 
 button {

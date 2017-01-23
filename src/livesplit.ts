@@ -21,6 +21,9 @@ var Timer_reset = ls.cwrap('Timer_reset', null, ['number', 'number']);
 var Timer_pause = ls.cwrap('Timer_pause', null, ['number']);
 var Timer_current_timing_method = ls.cwrap('Timer_current_timing_method', 'number', ['number']);
 var Timer_set_current_timing_method = ls.cwrap('Timer_set_current_timing_method', null, ['number', 'number']);
+var Timer_current_comparison = ls.cwrap('Timer_current_comparison', 'string', ['number']);
+var Timer_switch_to_next_comparison = ls.cwrap('Timer_switch_to_next_comparison', 'string', ['number']);
+var Timer_switch_to_previous_comparison = ls.cwrap('Timer_switch_to_previous_comparison', 'string', ['number']);
 var Timer_print_debug = ls.cwrap('Timer_print_debug', null, ['number']);
 var Timer_save_run_as_lss = ls.cwrap('Timer_save_run_as_lss', 'string', ['number']);
 
@@ -161,6 +164,18 @@ export class Timer extends LSClass {
 
     setCurrentTimingMethod(method: TimingMethod) {
         Timer_set_current_timing_method(this.ptr, method);
+    }
+
+    currentComparison(): string {
+        return Timer_current_comparison(this.ptr);
+    }
+
+    switchToNextComparison() {
+        Timer_switch_to_next_comparison(this.ptr);
+    }
+
+    switchToPreviousComparison() {
+        Timer_switch_to_previous_comparison(this.ptr);
     }
 
     printDebug() {

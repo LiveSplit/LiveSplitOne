@@ -13,6 +13,7 @@ export interface State {
     timer: Timer,
     sidebarOpen: boolean,
     timingMethod?: TimingMethod,
+    comparison?: string,
 }
 
 export class LiveSplit extends React.Component<Props, State> {
@@ -69,6 +70,7 @@ export class LiveSplit extends React.Component<Props, State> {
         this.setState({
             ...this.state,
             timingMethod: this.state.timer.currentTimingMethod(),
+            comparison: this.state.timer.currentComparison(),
         });
     }
 
@@ -103,6 +105,14 @@ export class LiveSplit extends React.Component<Props, State> {
 
     onSkip() {
         this.state.timer.skipSplit();
+    }
+
+    onPreviousComparison() {
+        this.state.timer.switchToPreviousComparison();
+    }
+
+    onNextComparison() {
+        this.state.timer.switchToNextComparison();
     }
 
     onPrintDebug() {
@@ -231,9 +241,19 @@ export class LiveSplit extends React.Component<Props, State> {
                 this.onReset();
                 break;
             }
+            case 52: {
+                // NumPad 4
+                this.onPreviousComparison();
+                break;
+            }
             case 53: {
                 // NumPad 5
                 this.onPause();
+                break;
+            }
+            case 54: {
+                // NumPad 6
+                this.onNextComparison();
                 break;
             }
             case 55: {
@@ -258,11 +278,16 @@ export class LiveSplit extends React.Component<Props, State> {
         var sidebarContent = (
             <div className="sidebar-buttons">
                 <button onClick={(e) => this.saveSplits()}><i className="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
-                <button onClick={(e) => this.importSplits()}><i className="fa fa-upload" aria-hidden="true"></i> Import</button>
-                <button onClick={(e) => this.exportSplits()}><i className="fa fa-download" aria-hidden="true"></i> Export</button>
+                <button onClick={(e) => this.importSplits()}><i className="fa fa-download" aria-hidden="true"></i> Import</button>
+                <button onClick={(e) => this.exportSplits()}><i className="fa fa-upload" aria-hidden="true"></i> Export</button>
                 <button onClick={(e) => this.openFromSplitsIO()}><i className="fa fa-cloud-download" aria-hidden="true"></i> From splits i/o</button>
                 <hr />
                 <h2>Compare Against</h2>
+                <div className="choose-comparison">
+                    <button onClick={(e) => this.onPreviousComparison()}><i className="fa fa-caret-left" aria-hidden="true"></i></button>
+                    <span>{this.state.comparison}</span>
+                    <button onClick={(e) => this.onNextComparison()}><i className="fa fa-caret-right" aria-hidden="true"></i></button>
+                </div>
                 <div className="small">
                     <button onClick={(e) => this.state.timer.setCurrentTimingMethod(TimingMethod.RealTime)} className={(this.state.timingMethod == TimingMethod.RealTime ? "button-pressed" : "") + " toggle-left"}>Real Time</button>
                     <button onClick={(e) => this.state.timer.setCurrentTimingMethod(TimingMethod.GameTime)} className={(this.state.timingMethod == TimingMethod.GameTime ? "button-pressed" : "") + " toggle-right"}>Game Time</button>
@@ -274,7 +299,8 @@ export class LiveSplit extends React.Component<Props, State> {
             <Sidebar sidebar={sidebarContent}
                 open={this.state.sidebarOpen}
                 onSetOpen={((e: boolean) => this.onSetSidebarOpen(e)) as any}
-                sidebarClassName="sidebar">
+                sidebarClassName="sidebar"
+                contentClassName="livesplit-container">
                 <div className="livesplit">
                     <TitleComponent timer={this.state.timer} />
                     <SplitsComponent timer={this.state.timer} />
