@@ -162,23 +162,6 @@ export class LiveSplit extends React.Component<Props, State> {
                     });
                     oldTimer.drop();
                 };
-                xhr.onerror = function () {
-                    var xhr = new XMLHttpRequest();
-                    xhr.open('GET', "https://splits.io/api/v4/runs/" + id + "/splits", true);
-                    xhr.onload = function () {
-                        response.splits = JSON.parse(xhr.responseText);
-                        var oldTimer = component.state.timer;
-                        component.setState({
-                            ...component.state,
-                            timer: new Timer(Run.parseString(JSON.stringify(response))),
-                        });
-                        oldTimer.drop();
-                        alert("Due to a Cross-Origin Resource Sharing problem, the original splits file could not be loaded. " +
-                            "A reconstruction of the splits file via the splits i/o API was loaded instead. " +
-                            "While this may look like your original splits, some information might be lost.");
-                    }
-                    xhr.send(null);
-                };
                 xhr.send(null);
             }
         };
@@ -194,6 +177,44 @@ export class LiveSplit extends React.Component<Props, State> {
             id = id.substr("https://splits.io/".length);
         }
         this.loadFromSplitsIO(id);
+    }
+
+    uploadToSplitsIO() {
+        let lss = this.state.timer.saveRunAsLSS();
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', "https://splits.io/api/v4/runs", true);
+        xhr.onload = function () {
+            let response = JSON.parse(xhr.responseText);
+            let claim_uri = response.uris.claim_uri;
+            let request = response.presigned_request;
+
+            xhr = new XMLHttpRequest();
+            xhr.open(request.method, request.uri, true);
+
+            let formData = new FormData();
+            let fields = request.fields;
+
+            formData.append("key", fields.key);
+            formData.append("policy", fields.policy);
+            formData.append("x-amz-credential", fields["x-amz-credential"]);
+            formData.append("x-amz-algorithm", fields["x-amz-algorithm"]);
+            formData.append("x-amz-date", fields["x-amz-date"]);
+            formData.append("x-amz-signature", fields["x-amz-signature"]);
+            formData.append("file", lss);
+
+            xhr.onload = function () {
+                window.open(claim_uri);
+            };
+            xhr.onerror = function () {
+                alert("Failed to upload the splits.");
+            };
+
+            xhr.send(formData);
+        };
+        xhr.onerror = function () {
+            alert("Failed to upload the splits.");
+        };
+        xhr.send(null);
     }
 
     exportSplits() {
@@ -281,6 +302,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 <button onClick={(e) => this.importSplits()}><i className="fa fa-download" aria-hidden="true"></i> Import</button>
                 <button onClick={(e) => this.exportSplits()}><i className="fa fa-upload" aria-hidden="true"></i> Export</button>
                 <button onClick={(e) => this.openFromSplitsIO()}><i className="fa fa-cloud-download" aria-hidden="true"></i> From splits i/o</button>
+                <button onClick={(e) => this.uploadToSplitsIO()}><i className="fa fa-cloud-upload" aria-hidden="true"></i> Upload to splits i/o</button>
                 <hr />
                 <h2>Compare Against</h2>
                 <div className="choose-comparison">
