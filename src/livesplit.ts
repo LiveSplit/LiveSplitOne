@@ -99,6 +99,9 @@ export class Run extends LSClass {
         run.ptr = Run_parse(buf, data.length);
         ls._free(buf);
 
+        if (run.ptr == 0) {
+            return null;
+        }
         return run;
     }
 

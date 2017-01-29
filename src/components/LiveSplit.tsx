@@ -133,11 +133,16 @@ export class LiveSplit extends React.Component<Props, State> {
             reader.onload = function (e: any) {
                 var contents = e.target.result;
                 let oldTimer = component.state.timer;
-                component.setState({
-                    ...component.state,
-                    timer: new Timer(Run.parse(new Int8Array(contents))),
-                });
-                oldTimer.drop();
+                let run = Run.parse(new Int8Array(contents));
+                if (run) {
+                    component.setState({
+                        ...component.state,
+                        timer: new Timer(run),
+                    });
+                    oldTimer.drop();
+                } else {
+                    alert("Couldn't parse the splits.");
+                }
             };
             reader.readAsArrayBuffer(file);
         };
