@@ -37,9 +37,29 @@ export class Component extends React.Component<Props, LiveSplit.TimerComponentSt
 
     render() {
         return (
-            <div className={"timer-time " + this.getColor()}>
-                {this.state.time.split('').map((c, i) => <span className={(c >= '0' && c <= '9') ? "monospace" : ""} key={i}>{c}</span>)}<span className="timer-fraction">{this.state.fraction.split('').map((c, i) => <span className={(c >= '0' && c <= '9') ? "monospace" : ""} key={i}>{c}</span>)}</span>
-            </div>
+            <svg height="60px">
+                <defs>
+                    <linearGradient id="text-gradient" x1="0%" x2="0%" y1="0%" y2="100%">
+                        <stop className={this.getColor() + "-top"} offset="0%"></stop>
+                        <stop className={this.getColor()} offset="100%"></stop>
+                    </linearGradient>
+                </defs>
+                <text className="timer-time" style={{
+                    "fill": "url(#text-gradient)",
+                    "font-size": "60px",
+                    "font-family": "timer, sans-serif",
+                }} x="230px" y="53px" textAnchor="end">{this.state.time}</text>
+                <text className="timer-time" style={{
+                    "fill": "url(#text-gradient)",
+                    "font-size": "45px",
+                    "font-family": "timer, sans-serif",
+                }} x="294px" y="53px" textAnchor="end">{this.state.fraction}</text>
+            </svg>
         );
+
+            // <div className={"timer-time " + this.getColor()}>
+            //     <span>{this.state.time}</span>
+            //     <span className="timer-fraction">{this.state.fraction}</span>
+            // </div>
     }
 }

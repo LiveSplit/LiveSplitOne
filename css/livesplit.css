@@ -1,8 +1,8 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto');
 
 @font-face {
-    font-family: greycliff;
-    src: url(greycliff-cf-extra-bold.woff2);
+    font-family: timer;
+    src: url(timer.woff);
 }
 
 @font-face {
@@ -203,34 +203,74 @@ table tr td {
 
 .time-ahead, .color-aheadgainingtime {
     color: hsla(142, 100%, 40%, 1);
+    stop-color: hsla(142, 100%, 40%, 1);
 }
 
 .color-aheadlosingtime {
     color: hsla(142, 60%, 60%, 1);
+    stop-color: hsla(142, 60%, 60%, 1);
 }
 
 .color-behindgainingtime {
     color: hsla(0, 60%, 60%, 1);
+    stop-color: hsla(0, 60%, 60%, 1);
 }
 
 .time-behind, .color-behindlosingtime {
     color: hsla(0, 100%, 40%, 1);
+    stop-color: hsla(0, 100%, 40%, 1);
 }
 
 .color-bestsegment {
     color: hsla(50, 100%, 50%, 1);
+    stop-color: hsla(50, 100%, 50%, 1);
 }
 
 .color-notrunning {
-    color: hsla(0, 0%, 85%, 1);
+    color: hsla(0, 0%, 60%, 1);
+    stop-color: hsla(0, 0%, 60%, 1);
 }
 
 .color-paused {
-    color: hsla(0, 0%, 60%, 1);
+    color: hsla(0, 0%, 40%, 1);
+    stop-color: hsla(0, 0%, 40%, 1);
 }
 
 .color-personalbest {
-    color: hsla(210, 100%, 65%, 1)
+    color: hsla(210, 100%, 65%, 1);
+    stop-color: hsla(210, 100%, 65%, 1);
+}
+
+.color-aheadgainingtime-top {
+    stop-color: hsla(142, 100%, 80%, 1);
+}
+
+.color-aheadlosingtime-top {
+    stop-color: hsla(142, 60%, 80%, 1);
+}
+
+.color-behindgainingtime-top {
+    stop-color: hsla(0, 60%, 80%, 1);
+}
+
+.color-behindlosingtime-top {
+    stop-color: hsla(0, 100%, 80%, 1);
+}
+
+.color-bestsegment-top {
+    stop-color: hsla(50, 100%, 80%, 1);
+}
+
+.color-notrunning-top {
+    stop-color: hsla(0, 0%, 95%, 1);
+}
+
+.color-paused-top {
+    stop-color: hsla(0, 0%, 80%, 1);
+}
+
+.color-personalbest-top {
+    stop-color: hsla(210, 100%, 80%, 1);
 }
 
 div.timer-time {
@@ -238,14 +278,8 @@ div.timer-time {
     text-align: right;
     padding-left: 6px;
     padding-right: 6px;
-    font-family: greycliff, sans-serif;
+    font-family: timer, sans-serif;
     margin-top: -10px;
-}
-
-.monospace {
-  display: inline-block;
-  width: 0.6em;
-  text-align: center;
 }
 
 .timer-fraction {
