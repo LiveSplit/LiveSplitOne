@@ -61,7 +61,13 @@ export class Component extends React.Component<Props, LiveSplit.SplitsComponentS
         return (
             <div className="splits">
                 {
-                    this.state.splits.map((s, i) => <Split split={s} icon={this.getIconUrl(i)} key={i.toString()} />)
+                    this.state.splits.map((s, i) =>
+                        <Split
+                            split={s}
+                            icon={this.getIconUrl(i)}
+                            key={i.toString()}
+                            separatorInFrontOfSplit={this.state.show_final_separator && i + 1 == this.state.splits.length}
+                            />)
                 }
             </div>
         );

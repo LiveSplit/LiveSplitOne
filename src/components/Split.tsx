@@ -1,7 +1,11 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit";
 
-export interface Props { split: LiveSplit.SplitState, icon: string }
+export interface Props {
+    split: LiveSplit.SplitState,
+    icon: string,
+    separatorInFrontOfSplit: boolean,
+}
 
 export class Component extends React.Component<Props, undefined> {
     constructor(props: Props) {
@@ -13,8 +17,10 @@ export class Component extends React.Component<Props, undefined> {
     }
 
     render() {
+        let currentSplit = this.props.split.is_current_split ? "current-split" : "";
+        let separator = this.props.separatorInFrontOfSplit ? "split-separator" : "";
         return (
-            <span className={this.props.split.is_current_split ? "split current-split" : "split"}>
+            <span className={["split", separator, currentSplit].filter(s => s.length > 0).join(" ")}>
                 <div className={this.props.icon != "" ? "split-icon-container" : "split-icon-container-empty"}><img className={this.props.icon != "" ? "split-icon" : ""} src={this.props.icon}></img></div>
                 <div className="split-name">{this.props.split.name}</div>
                 <div className={"split-delta time " + this.getColor()}>{this.props.split.delta}</div>

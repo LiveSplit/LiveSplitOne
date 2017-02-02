@@ -129,6 +129,11 @@ button.toggle-right {
     border-top: 1px solid hsl(0, 0%, 15%);
 }
 
+div.splits span.split.split-separator div {
+    border-top: 2px solid hsla(0, 0%, 43%, 1);
+    line-height: 18px;
+}
+
 .current-split {
     background: linear-gradient(hsl(220, 67%, 51%) 0%, hsl(220, 69%, 28%) 100%);
 }
