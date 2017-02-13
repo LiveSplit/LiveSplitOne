@@ -395,6 +395,10 @@ button {
     color: hsla(50, 100%, 50%, 1);
 }
 
+.group.invalid > input:focus ~ label {
+    color: hsla(0, 100%, 50%, 1);
+}
+
 /* BOTTOM BARS ================================= */
 .group > .bar 	{ position:relative; display:block; width:300px; }
 .group > .bar:before, .group > .bar:after 	{
@@ -413,6 +417,10 @@ button {
 }
 .group > .bar:after {
     right:50%;
+}
+
+.group.invalid > .bar:before, .group.invalid > .bar:after {
+    background: hsla(0, 100%, 50%, 1);
 }
 
 /* active state */

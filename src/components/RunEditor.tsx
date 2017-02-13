@@ -2,16 +2,28 @@ import * as React from "react";
 import * as LiveSplit from "../livesplit";
 
 export interface Props { editor: LiveSplit.RunEditor };
+export interface State {
+    editor: LiveSplit.RunEditorState,
+    offsetIsValid: boolean,
+    attemptCountIsValid: boolean,
+}
 
-export class RunEditor extends React.Component<Props, LiveSplit.RunEditorState> {
+export class RunEditor extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
 
-        this.state = props.editor.state();
+        this.state = {
+            editor: props.editor.state(),
+            offsetIsValid: true,
+            attemptCountIsValid: true,
+        };
     }
 
     update() {
-        this.setState(this.props.editor.state());
+        this.setState({
+            ...this.state,
+            editor: this.props.editor.state()
+        });
     }
 
     handleGameChange(event: any) {
@@ -25,49 +37,87 @@ export class RunEditor extends React.Component<Props, LiveSplit.RunEditorState> 
     }
 
     handleOffsetChange(event: any) {
-        this.setState({
-            ...this.state,
-            offset: event.target.value,
-        });
+        let valid = this.props.editor.parseAndSetOffset(event.target.value);
+        if (valid) {
+            this.setState({
+                ...this.state,
+                offsetIsValid: true,
+                editor: {
+                    ...this.state.editor,
+                    offset: event.target.value,
+                }
+            });
+        } else {
+            this.setState({
+                ...this.state,
+                offsetIsValid: false,
+                editor: {
+                    ...this.state.editor,
+                    offset: event.target.value,
+                }
+            });
+        }
     }
 
-    handleOffsetSubmit(event: any) {
-        this.props.editor.parseAndSetOffset(this.state.offset);
-        this.update();
+    handleOffsetBlur(event: any) {
+        this.setState({
+            ...this.state,
+            offsetIsValid: true,
+            editor: this.props.editor.state(),
+        });
     }
 
     handleAttemptsChange(event: any) {
-        this.setState({
-            ...this.state,
-            attempts: event.target.value,
-        });
+        let valid = this.props.editor.parseAndSetAttemptCount(event.target.value);
+        if (valid) {
+            this.setState({
+                ...this.state,
+                attemptCountIsValid: true,
+                editor: {
+                    ...this.state.editor,
+                    attempts: event.target.value,
+                }
+            });
+        } else {
+            this.setState({
+                ...this.state,
+                attemptCountIsValid: false,
+                editor: {
+                    ...this.state.editor,
+                    attempts: event.target.value,
+                }
+            });
+        }
     }
 
-    handleAttemptsSubmit(event: any) {
-        this.props.editor.parseAndSetAttemptCount(this.state.attempts);
-        this.update();
+    handleAttemptsBlur(event: any) {
+        this.setState({
+            ...this.state,
+            attemptCountIsValid: true,
+            editor: this.props.editor.state(),
+        });
     }
 
     render() {
         return (
             <div className="run-editor">
                 <div className="group">
-                    <input type="text" required className="run-editor-game" value={this.state.game} onChange={(e) => this.handleGameChange(e)} />
+                    <input type="text" required className="run-editor-game" value={this.state.editor.game} onChange={(e) => this.handleGameChange(e)} />
                     <span className="bar"></span>
                     <label>Game</label>
                 </div>
                 <div className="group">
-                    <input type="text" required className="run-editor-category" value={this.state.category} onChange={(e) => this.handleCategoryChange(e)} />
+                    <input type="text" required className="run-editor-category" value={this.state.editor.category} onChange={(e) => this.handleCategoryChange(e)} />
                     <span className="bar"></span>
                     <label>Category</label>
                 </div>
-                <div className="group">
-                    <input type="text" required className="run-editor-offset" value={this.state.offset} onChange={(e) => this.handleOffsetChange(e)} onBlur={(e) => this.handleOffsetSubmit(e)} />
+                <div className={this.state.offsetIsValid ? "group" : "group invalid"}>
+                    <input type="text" required className="run-editor-offset" value={this.state.editor.offset} onChange={(e) => this.handleOffsetChange(e)} onBlur={(e) => this.handleOffsetBlur(e)} />
                     <span className="bar"></span>
                     <label>Offset</label>
                 </div>
-                <div className="group">
-                    <input type="text" required className="run-editor-attempts" value={this.state.attempts} onChange={(e) => this.handleAttemptsChange(e)} onBlur={(e) => this.handleAttemptsSubmit(e)} />
+                <div className={this.state.attemptCountIsValid ? "group" : "group invalid"}>
+                    <input type="text" required className="run-editor-attempts" value={this.state.editor.attempts} onChange={(e) => this.handleAttemptsChange(e)} onBlur={(e) => this.handleAttemptsBlur(e)} />
                     <span className="bar"></span>
                     <label>Attempts</label>
                 </div>
