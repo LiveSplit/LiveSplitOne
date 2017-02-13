@@ -391,6 +391,10 @@ button {
     font-size: 14px;
 }
 
+.group > input:focus ~ label {
+    color: hsla(50, 100%, 50%, 1);
+}
+
 /* BOTTOM BARS ================================= */
 .group > .bar 	{ position:relative; display:block; width:300px; }
 .group > .bar:before, .group > .bar:after 	{
