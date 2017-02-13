@@ -2,6 +2,10 @@ core:
 	@make -C livesplit-core/js
 	@cp livesplit-core/js/livesplit.js src/livesplit_core.js
 
+optimized:
+	@make optimized -C livesplit-core/js
+	@cp livesplit-core/js/livesplit.js src/livesplit_core.js
+
 wasm:
 	@make wasm -C livesplit-core/js
 	@cp livesplit-core/js/livesplit.js src/livesplit_core.js

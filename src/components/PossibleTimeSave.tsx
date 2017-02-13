@@ -12,7 +12,7 @@ export class Component extends React.Component<Props, LiveSplit.PossibleTimeSave
 
 		this.inner = new LiveSplit.PossibleTimeSaveComponent();
 
-		this.state = this.inner.getState(this.props.timer);
+		this.state = this.inner.state(this.props.timer);
 	}
 
 	componentDidMount() {
@@ -28,7 +28,7 @@ export class Component extends React.Component<Props, LiveSplit.PossibleTimeSave
 	}
 
 	update() {
-		this.setState(this.inner.getState(this.props.timer));
+		this.setState(this.inner.state(this.props.timer));
 	}
 
 	render() {

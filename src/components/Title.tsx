@@ -14,7 +14,7 @@ export class Component extends React.Component<Props, LiveSplit.TitleComponentSt
         this.iconUrl = "";
         this.inner = new LiveSplit.TitleComponent();
 
-        this.state = this.inner.getState(this.props.timer);
+        this.state = this.inner.state(this.props.timer);
     }
 
     getIconUrl(): string {
@@ -37,7 +37,7 @@ export class Component extends React.Component<Props, LiveSplit.TitleComponentSt
     }
 
     update() {
-        this.setState(this.inner.getState(this.props.timer));
+        this.setState(this.inner.state(this.props.timer));
     }
 
     render() {

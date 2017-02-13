@@ -12,7 +12,7 @@ export class Component extends React.Component<Props, LiveSplit.TimerComponentSt
 
         this.inner = new LiveSplit.TimerComponent();
 
-        this.state = this.inner.getState(this.props.timer);
+        this.state = this.inner.state(this.props.timer);
     }
 
     componentDidMount() {
@@ -28,7 +28,7 @@ export class Component extends React.Component<Props, LiveSplit.TimerComponentSt
     }
 
     update() {
-        this.setState(this.inner.getState(this.props.timer));
+        this.setState(this.inner.state(this.props.timer));
     }
 
     getColor(): string {

@@ -1,11 +1,12 @@
 import * as React from "react";
-import { Run, Segment, SegmentList, Timer, TimingMethod } from "../livesplit";
+import { Run, Segment, SegmentList, Timer, TimerPhase, TimingMethod, RunEditor } from "../livesplit";
 import { Component as TimerComponent } from "./Timer";
 import { Component as TitleComponent } from "./Title";
 import { Component as SplitsComponent } from "./Splits";
 import { Component as PreviousSegmentComponent } from "./PreviousSegment";
 import { Component as SumOfBestComponent } from "./SumOfBest";
 import { Component as PossibleTimeSaveComponent } from "./PossibleTimeSave";
+import { RunEditor as RunEditorComponent } from "./RunEditor";
 import Sidebar from "react-sidebar";
 
 export interface Props { }
@@ -14,6 +15,7 @@ export interface State {
     sidebarOpen: boolean,
     timingMethod?: TimingMethod,
     comparison?: string,
+    editor?: RunEditor,
 }
 
 export class LiveSplit extends React.Component<Props, State> {
@@ -24,26 +26,26 @@ export class LiveSplit extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
 
-        let segments = new SegmentList();
-        segments.push(new Segment("Time"));
-        let run = new Run(segments);
-        run.setGame("Game");
-        run.setCategory("Category");
+        let segments = SegmentList.new();
+        segments.push(Segment.new("Time"));
+        let run = Run.new(segments);
+        run.setGameName("Game");
+        run.setCategoryName("Category");
 
         if (window.location.hash.indexOf("#/splits-io/") == 0) {
-            run.setGame("Loading...");
-            run.setCategory("Loading...");
+            run.setGameName("Loading...");
+            run.setCategoryName("Loading...");
             this.loadFromSplitsIO(window.location.hash.substr("#/splits-io/".length));
         } else {
             let lss = localStorage.getItem("splits");
             if (lss != undefined && lss != null && lss.length > 0) {
-                new Timer(run).drop(); // TODO Drop this more nicely
+                run.drop();
                 run = Run.parseString(lss);
             }
         }
 
         this.state = {
-            timer: new Timer(run),
+            timer: Timer.new(run),
             sidebarOpen: false,
         };
     }
@@ -67,11 +69,13 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     update() {
-        this.setState({
-            ...this.state,
-            timingMethod: this.state.timer.currentTimingMethod(),
-            comparison: this.state.timer.currentComparison(),
-        });
+        if (!this.state.editor) {
+            this.setState({
+                ...this.state,
+                timingMethod: this.state.timer.currentTimingMethod(),
+                comparison: this.state.timer.currentComparison(),
+            });
+        }
     }
 
     onSetSidebarOpen(open: boolean) {
@@ -137,7 +141,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 if (run) {
                     component.setState({
                         ...component.state,
-                        timer: new Timer(run),
+                        timer: Timer.new(run),
                     });
                     oldTimer.drop();
                 } else {
@@ -163,7 +167,7 @@ export class LiveSplit extends React.Component<Props, State> {
                     var oldTimer = component.state.timer;
                     component.setState({
                         ...component.state,
-                        timer: new Timer(Run.parse(new Int8Array(xhr.response))),
+                        timer: Timer.new(Run.parse(new Int8Array(xhr.response))),
                     });
                     oldTimer.drop();
                 };
@@ -245,7 +249,45 @@ export class LiveSplit extends React.Component<Props, State> {
         localStorage.setItem("splits", lss);
     }
 
+    openRunEditor() {
+        if (this.state.timer.getCurrentPhase() == TimerPhase.NotRunning) {
+            let run = this.state.timer.cloneRun();
+            let editor = RunEditor.new(run);
+            this.setState({
+                ...this.state,
+                editor: editor,
+                sidebarOpen: false,
+            });
+        } else {
+            alert("Not ok");
+        }
+    }
+
+    closeRunEditor(save: boolean) {
+        if (save) {
+            let run = this.state.editor.close();
+            let timer = Timer.new(run);
+            this.state.timer.drop();
+            this.setState({
+                ...this.state,
+                timer: timer,
+                editor: null,
+                sidebarOpen: false,
+            });
+        } else {
+            this.setState({
+                ...this.state,
+                editor: null,
+                sidebarOpen: false,
+            });
+        }
+    }
+
     onKeyPress(e: KeyboardEvent) {
+        if (this.state.editor) {
+            return;
+        }
+
         switch (e.charCode) {
             case 47: {
                 // NumPad Slash
@@ -301,8 +343,17 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     render() {
-        var sidebarContent = (
+        var sidebarContent = this.state.editor ? (
             <div className="sidebar-buttons">
+                <div className="small">
+                    <button className="toggle-left" onClick={(e) => this.closeRunEditor(true)}><i className="fa fa-check" aria-hidden="true"></i> OK</button>
+                    <button className="toggle-right" onClick={(e) => this.closeRunEditor(false)}><i className="fa fa-times" aria-hidden="true"></i> Cancel</button>
+                </div>
+            </div>
+        ) : (
+            <div className="sidebar-buttons">
+                <button onClick={(e) => this.openRunEditor()}><i className="fa fa-pencil-square-o" aria-hidden="true"></i> Edit Splits</button>
+                <hr />
                 <button onClick={(e) => this.saveSplits()}><i className="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
                 <button onClick={(e) => this.importSplits()}><i className="fa fa-download" aria-hidden="true"></i> Import</button>
                 <button onClick={(e) => this.exportSplits()}><i className="fa fa-upload" aria-hidden="true"></i> Export</button>
@@ -328,25 +379,33 @@ export class LiveSplit extends React.Component<Props, State> {
                 onSetOpen={((e: boolean) => this.onSetSidebarOpen(e)) as any}
                 sidebarClassName="sidebar"
                 contentClassName="livesplit-container">
-                <div className="livesplit">
-                    <TitleComponent timer={this.state.timer} />
-                    <SplitsComponent timer={this.state.timer} />
-                    <TimerComponent timer={this.state.timer} />
-                    <PreviousSegmentComponent timer={this.state.timer} />
-                    <SumOfBestComponent timer={this.state.timer} />
-                    <PossibleTimeSaveComponent timer={this.state.timer} />
-                </div>
-                <div className="buttons">
-                    <button onClick={(e) => this.onSplit()}><i className="fa fa-play" aria-hidden="true"></i></button>
-                    <div className="small">
-                        <button onClick={(e) => this.onUndo()}><i className="fa fa-arrow-up" aria-hidden="true"></i></button>
-                        <button onClick={(e) => this.onPause()}><i className="fa fa-pause" aria-hidden="true"></i></button>
-                    </div>
-                    <div className="small">
-                        <button onClick={(e) => this.onSkip()}><i className="fa fa-arrow-down" aria-hidden="true"></i></button>
-                        <button onClick={(e) => this.onReset()}><i className="fa fa-times" aria-hidden="true"></i></button>
-                    </div>
-                </div>
+                {
+                    this.state.editor ? (
+                        <RunEditorComponent editor={this.state.editor} />
+                    ) : (
+                            <div>
+                                <div className="livesplit">
+                                    <TitleComponent timer={this.state.timer} />
+                                    <SplitsComponent timer={this.state.timer} />
+                                    <TimerComponent timer={this.state.timer} />
+                                    <PreviousSegmentComponent timer={this.state.timer} />
+                                    <SumOfBestComponent timer={this.state.timer} />
+                                    <PossibleTimeSaveComponent timer={this.state.timer} />
+                                </div>
+                                <div className="buttons">
+                                    <button onClick={(e) => this.onSplit()}><i className="fa fa-play" aria-hidden="true"></i></button>
+                                    <div className="small">
+                                        <button onClick={(e) => this.onUndo()}><i className="fa fa-arrow-up" aria-hidden="true"></i></button>
+                                        <button onClick={(e) => this.onPause()}><i className="fa fa-pause" aria-hidden="true"></i></button>
+                                    </div>
+                                    <div className="small">
+                                        <button onClick={(e) => this.onSkip()}><i className="fa fa-arrow-down" aria-hidden="true"></i></button>
+                                        <button onClick={(e) => this.onReset()}><i className="fa fa-times" aria-hidden="true"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                }
             </Sidebar>
         );
     }

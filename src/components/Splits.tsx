@@ -16,7 +16,7 @@ export class Component extends React.Component<Props, LiveSplit.SplitsComponentS
         this.inner = new LiveSplit.SplitsComponent();
         this.iconUrls = [];
 
-        this.state = this.inner.getState(this.props.timer);
+        this.state = this.inner.state(this.props.timer);
     }
 
     getIconUrl(index: number): string {
@@ -54,7 +54,7 @@ export class Component extends React.Component<Props, LiveSplit.SplitsComponentS
     }
 
     update() {
-        this.setState(this.inner.getState(this.props.timer));
+        this.setState(this.inner.state(this.props.timer));
     }
 
     render() {
