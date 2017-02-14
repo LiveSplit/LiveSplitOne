@@ -6,6 +6,14 @@ export interface State {
     editor: LiveSplit.RunEditorState,
     offsetIsValid: boolean,
     attemptCountIsValid: boolean,
+    rowState: RowState,
+}
+
+interface RowState {
+    splitTimeIsValid: boolean,
+    segmentTimeIsValid: boolean,
+    bestSegmentTimeIsValid: boolean,
+    index: number,
 }
 
 export class RunEditor extends React.Component<Props, State> {
@@ -16,10 +24,17 @@ export class RunEditor extends React.Component<Props, State> {
             editor: props.editor.state(),
             offsetIsValid: true,
             attemptCountIsValid: true,
+            rowState: {
+                splitTimeIsValid: true,
+                segmentTimeIsValid: true,
+                bestSegmentTimeIsValid: true,
+                index: 0,
+            },
         };
     }
 
     update() {
+
         this.setState({
             ...this.state,
             editor: this.props.editor.state()
@@ -38,25 +53,14 @@ export class RunEditor extends React.Component<Props, State> {
 
     handleOffsetChange(event: any) {
         let valid = this.props.editor.parseAndSetOffset(event.target.value);
-        if (valid) {
-            this.setState({
-                ...this.state,
-                offsetIsValid: true,
-                editor: {
-                    ...this.state.editor,
-                    offset: event.target.value,
-                }
-            });
-        } else {
-            this.setState({
-                ...this.state,
-                offsetIsValid: false,
-                editor: {
-                    ...this.state.editor,
-                    offset: event.target.value,
-                }
-            });
-        }
+        this.setState({
+            ...this.state,
+            offsetIsValid: valid,
+            editor: {
+                ...this.state.editor,
+                offset: event.target.value,
+            }
+        });
     }
 
     handleOffsetBlur(event: any) {
@@ -69,25 +73,14 @@ export class RunEditor extends React.Component<Props, State> {
 
     handleAttemptsChange(event: any) {
         let valid = this.props.editor.parseAndSetAttemptCount(event.target.value);
-        if (valid) {
-            this.setState({
-                ...this.state,
-                attemptCountIsValid: true,
-                editor: {
-                    ...this.state.editor,
-                    attempts: event.target.value,
-                }
-            });
-        } else {
-            this.setState({
-                ...this.state,
-                attemptCountIsValid: false,
-                editor: {
-                    ...this.state.editor,
-                    attempts: event.target.value,
-                }
-            });
-        }
+        this.setState({
+            ...this.state,
+            attemptCountIsValid: valid,
+            editor: {
+                ...this.state.editor,
+                attempts: event.target.value,
+            }
+        });
     }
 
     handleAttemptsBlur(event: any) {
@@ -96,6 +89,138 @@ export class RunEditor extends React.Component<Props, State> {
             attemptCountIsValid: true,
             editor: this.props.editor.state(),
         });
+    }
+
+    focusSegment(i: number) {
+        this.props.editor.selectOnly(i);
+        this.setState({
+            ...this.state,
+            rowState: {
+                ...this.state.rowState,
+                index: i,
+            },
+            editor: this.props.editor.state(),
+        });
+    }
+
+    handleSegmentNameChange(event: any) {
+        this.props.editor.selectedSetName(event.target.value);
+        this.update();
+    }
+
+    handleSplitTimeChange(event: any) {
+        let valid = this.props.editor.selectedParseAndSetSplitTime(event.target.value);
+        let editor = {
+            ...this.state.editor,
+        };
+        editor.segments[this.state.rowState.index].split_time = event.target.value;
+        this.setState({
+            ...this.state,
+            rowState: {
+                ...this.state.rowState,
+                splitTimeIsValid: valid,
+            },
+            editor: editor,
+        });
+    }
+
+    handleSegmentTimeChange(event: any) {
+        let valid = this.props.editor.selectedParseAndSetSegmentTime(event.target.value);
+        let editor = {
+            ...this.state.editor,
+        };
+        editor.segments[this.state.rowState.index].segment_time = event.target.value;
+        this.setState({
+            ...this.state,
+            rowState: {
+                ...this.state.rowState,
+                segmentTimeIsValid: valid,
+            },
+            editor: editor,
+        });
+    }
+
+    handleBestSegmentTimeChange(event: any) {
+        let valid = this.props.editor.selectedParseAndSetBestSegmentTime(event.target.value);
+        let editor = {
+            ...this.state.editor,
+        };
+        editor.segments[this.state.rowState.index].best_segment_time = event.target.value;
+        this.setState({
+            ...this.state,
+            rowState: {
+                ...this.state.rowState,
+                bestSegmentTimeIsValid: valid,
+            },
+            editor: editor,
+        });
+    }
+
+    handleSplitTimeBlur(event: any) {
+        this.setState({
+            ...this.state,
+            rowState: {
+                ...this.state.rowState,
+                splitTimeIsValid: true,
+            },
+            editor: this.props.editor.state(),
+        });
+    }
+
+    handleSegmentTimeBlur(event: any) {
+        this.setState({
+            ...this.state,
+            rowState: {
+                ...this.state.rowState,
+                segmentTimeIsValid: true,
+            },
+            editor: this.props.editor.state(),
+        });
+    }
+
+    handleBestSegmentTimeBlur(event: any) {
+        this.setState({
+            ...this.state,
+            rowState: {
+                ...this.state.rowState,
+                bestSegmentTimeIsValid: true,
+            },
+            editor: this.props.editor.state(),
+        });
+    }
+
+    insertSegmentAbove() {
+        this.props.editor.insertSegmentAbove();
+        this.update();
+    }
+
+    insertSegmentBelow() {
+        this.props.editor.insertSegmentBelow();
+        this.update();
+    }
+
+    removeSegments() {
+        this.props.editor.removeSegments();
+        this.update();
+    }
+
+    moveSegmentsUp() {
+        this.props.editor.moveSegmentsUp();
+        this.update();
+    }
+
+    moveSegmentsDown() {
+        this.props.editor.moveSegmentsDown();
+        this.update();
+    }
+
+    changeSegmentSelection(event: any, i: number) {
+        if (event.target.checked) {
+            this.props.editor.selectAdditionally(i);
+        } else {
+            this.props.editor.unselect(i);
+        }
+        this.update();
     }
 
     render() {
@@ -121,6 +246,27 @@ export class RunEditor extends React.Component<Props, State> {
                     <span className="bar"></span>
                     <label>Attempts</label>
                 </div>
+                <div>
+                    {
+                        this.state.editor.segments.map((s, i) =>
+                            <div key={i.toString()}>
+                                <input type="checkbox" checked={s.selected == "Selected" || s.selected == "CurrentRow"} onChange={(e) => this.changeSegmentSelection(e, i)} />
+                                <input type="text" value={s.name} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSegmentNameChange(e)} />
+                                <input className={this.state.rowState.index != i || this.state.rowState.splitTimeIsValid ? "" : "invalid"}
+                                    type="text" value={s.split_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSplitTimeChange(e)} onBlur={(e) => this.handleSplitTimeBlur(e)} />
+                                <input className={this.state.rowState.index != i || this.state.rowState.segmentTimeIsValid ? "" : "invalid"}
+                                    type="text" value={s.segment_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSegmentTimeChange(e)} onBlur={(e) => this.handleSegmentTimeBlur(e)} />
+                                <input className={this.state.rowState.index != i || this.state.rowState.bestSegmentTimeIsValid ? "" : "invalid"}
+                                    type="text" value={s.best_segment_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleBestSegmentTimeChange(e)} onBlur={(e) => this.handleBestSegmentTimeBlur(e)} />
+                            </div>
+                        )
+                    }
+                </div>
+                <button onClick={(e) => this.insertSegmentAbove()}>Insert Above</button>
+                <button onClick={(e) => this.insertSegmentBelow()}>Insert Below</button>
+                <button onClick={(e) => this.removeSegments()}>Remove Segment</button>
+                <button onClick={(e) => this.moveSegmentsUp()}>Move Up</button>
+                <button onClick={(e) => this.moveSegmentsDown()}>Move Down</button>
             </div>
         )
     }

@@ -19,3 +19,6 @@ run:
 
 build: core
 	webpack
+
+clean:
+	@make clean -C livesplit-core/js
