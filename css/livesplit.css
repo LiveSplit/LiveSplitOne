@@ -352,40 +352,39 @@ button {
     padding: 10px 10px 10px 10px;
 }
 
-/* form starting stylings ------------------------------- */
-.group 			  {
+.group {
     position: relative;
     margin-top: 20px;
     margin-bottom: 25px;
 }
 .group > input {
-    font-size:18px;
-    padding:10px 10px 10px 5px;
+    font-size: 18px;
+    padding: 10px 10px 10px 5px;
     display: block;
     width: 285px;
-    border:none;
-    border-bottom:1px solid #aaa;
+    border: none;
+    border-bottom: 1px solid #aaa;
     background: transparent;
     color: white;
     font-family: 'fira', sans-serif;
 }
-.group > input:focus 		{ outline:none; }
-
-/* LABEL ======================================= */
-.group > label 				 {
-    color:hsla(50, 0%, 75%, 1);
-    font-size:18px;
-    font-weight:normal;
-    position:absolute;
-    pointer-events:none;
-    left:5px;
-    top:10px;
-    transition:0.2s ease all;
-    -moz-transition:0.2s ease all;
-    -webkit-transition:0.2s ease all;
+.group > input:focus {
+    outline: none;
 }
 
-/* active state */
+.group > label 				 {
+    color:hsla(50, 0%, 75%, 1);
+    font-size: 18px;
+    font-weight: normal;
+    position: absolute;
+    pointer-events: none;
+    left: 5px;
+    top: 10px;
+    transition: 0.2s ease all;
+    -moz-transition: 0.2s ease all;
+    -webkit-transition: 0.2s ease all;
+}
+
 .group > input:focus ~ label, .group > input:valid ~ label 		{
     top: -13px;
     font-size: 14px;
@@ -399,18 +398,17 @@ button {
     color: hsla(0, 100%, 50%, 1);
 }
 
-/* BOTTOM BARS ================================= */
-.group > .bar 	{ position:relative; display:block; width:300px; }
+.group > .bar { position: relative; display: block; width: 300px; }
 .group > .bar:before, .group > .bar:after 	{
-    content:'';
-    height:2px;
-    width:0;
+    content: '';
+    height: 2px;
+    width: 0;
     bottom: 0px;
-    position:absolute;
+    position: absolute;
     background: hsla(50, 100%, 50%, 1);
-    transition:0.2s ease all;
-    -moz-transition:0.2s ease all;
-    -webkit-transition:0.2s ease all;
+    transition: 0.2s ease all;
+    -moz-transition: 0.2s ease all;
+    -webkit-transition: 0.2s ease all;
 }
 .group > .bar:before {
     left:50%;
@@ -423,7 +421,6 @@ button {
     background: hsla(0, 100%, 50%, 1);
 }
 
-/* active state */
 .group > input:focus ~ .bar:before, .group > input:focus ~ .bar:after {
     width:50%;
 }

@@ -39,6 +39,8 @@ var Run_set_game_name = ls.cwrap('Run_set_game_name', null, ['number', 'string']
 var Run_game_icon = ls.cwrap('Run_game_icon', 'string', ['number']);
 var Run_category_name = ls.cwrap('Run_category_name', 'string', ['number']);
 var Run_set_category_name = ls.cwrap('Run_set_category_name', null, ['number', 'string']);
+var Run_extended_file_name = ls.cwrap('Run_extended_file_name', 'string', ['number', 'number']);
+var Run_extended_name = ls.cwrap('Run_extended_name', 'string', ['number', 'number']);
 var Run_extended_category_name = ls.cwrap('Run_extended_category_name', 'string', ['number', 'number', 'number', 'number']);
 var Run_attempt_count = ls.cwrap('Run_attempt_count', 'number', ['number']);
 var Run_metadata = ls.cwrap('Run_metadata', 'number', ['number']);
@@ -70,6 +72,7 @@ var Timer_current_comparison = ls.cwrap('Timer_current_comparison', 'string', ['
 var Timer_switch_to_next_comparison = ls.cwrap('Timer_switch_to_next_comparison', null, ['number']);
 var Timer_switch_to_previous_comparison = ls.cwrap('Timer_switch_to_previous_comparison', null, ['number']);
 var Timer_current_phase = ls.cwrap('Timer_current_phase', 'number', ['number']);
+var Timer_get_run = ls.cwrap('Timer_get_run', 'number', ['number']);
 var Timer_clone_run = ls.cwrap('Timer_clone_run', 'number', ['number']);
 var Timer_print_debug = ls.cwrap('Timer_print_debug', null, ['number']);
 var Timer_save_run_as_lss = ls.cwrap('Timer_save_run_as_lss', 'string', ['number']);
@@ -327,6 +330,14 @@ export class Run extends LSClass {
         Run_set_category_name(this.ptr, category);
     }
 
+    extendedFileName(useExtendedCategoryName: boolean): string {
+        return Run_extended_file_name(this.ptr, useExtendedCategoryName ? 1 : 0);
+    }
+
+    extendedName(useExtendedCategoryName: boolean): string {
+        return Run_extended_name(this.ptr, useExtendedCategoryName ? 1 : 0);
+    }
+
     extendedCategoryName(showRegion: boolean, showPlatform: boolean, showVariables: boolean): string {
         return Run_extended_category_name(this.ptr, showRegion ? 1 : 0, showPlatform ? 1 : 0, showVariables ? 1 : 0);
     }
@@ -446,6 +457,10 @@ export class Timer extends LSClass {
 
     getCurrentPhase(): TimerPhase {
         return Timer_current_phase(this.ptr);
+    }
+
+    getRun(): Run {
+        return new Run(Timer_get_run(this.ptr));
     }
 
     cloneRun(): Run {

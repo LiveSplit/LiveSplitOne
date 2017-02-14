@@ -241,7 +241,7 @@ export class LiveSplit extends React.Component<Props, State> {
         }
 
         let lss = this.state.timer.saveRunAsLSS();
-        download("splits.lss", lss);
+        download(this.state.timer.getRun().extendedFileName(true) + ".lss", lss);
     }
 
     saveSplits() {
