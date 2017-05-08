@@ -3,7 +3,7 @@ import * as LiveSplit from "../livesplit";
 
 export interface Props { editor: LiveSplit.RunEditor };
 export interface State {
-    editor: LiveSplit.RunEditorState,
+    editor: LiveSplit.RunEditorStateJson,
     offsetIsValid: boolean,
     attemptCountIsValid: boolean,
     rowState: RowState,
@@ -21,7 +21,7 @@ export class RunEditor extends React.Component<Props, State> {
         super(props);
 
         this.state = {
-            editor: props.editor.state(),
+            editor: props.editor.stateAsJson(),
             offsetIsValid: true,
             attemptCountIsValid: true,
             rowState: {
@@ -37,7 +37,7 @@ export class RunEditor extends React.Component<Props, State> {
 
         this.setState({
             ...this.state,
-            editor: this.props.editor.state()
+            editor: this.props.editor.stateAsJson()
         });
     }
 
@@ -67,7 +67,7 @@ export class RunEditor extends React.Component<Props, State> {
         this.setState({
             ...this.state,
             offsetIsValid: true,
-            editor: this.props.editor.state(),
+            editor: this.props.editor.stateAsJson(),
         });
     }
 
@@ -87,7 +87,7 @@ export class RunEditor extends React.Component<Props, State> {
         this.setState({
             ...this.state,
             attemptCountIsValid: true,
-            editor: this.props.editor.state(),
+            editor: this.props.editor.stateAsJson(),
         });
     }
 
@@ -99,7 +99,7 @@ export class RunEditor extends React.Component<Props, State> {
                 ...this.state.rowState,
                 index: i,
             },
-            editor: this.props.editor.state(),
+            editor: this.props.editor.stateAsJson(),
         });
     }
 
@@ -163,7 +163,7 @@ export class RunEditor extends React.Component<Props, State> {
                 ...this.state.rowState,
                 splitTimeIsValid: true,
             },
-            editor: this.props.editor.state(),
+            editor: this.props.editor.stateAsJson(),
         });
     }
 
@@ -174,7 +174,7 @@ export class RunEditor extends React.Component<Props, State> {
                 ...this.state.rowState,
                 segmentTimeIsValid: true,
             },
-            editor: this.props.editor.state(),
+            editor: this.props.editor.stateAsJson(),
         });
     }
 
@@ -185,7 +185,7 @@ export class RunEditor extends React.Component<Props, State> {
                 ...this.state.rowState,
                 bestSegmentTimeIsValid: true,
             },
-            editor: this.props.editor.state(),
+            editor: this.props.editor.stateAsJson(),
         });
     }
 
@@ -223,6 +223,11 @@ export class RunEditor extends React.Component<Props, State> {
         this.update();
     }
 
+    switchTimingMethod(timingMethod: LiveSplit.TimingMethod) {
+        this.props.editor.selectTimingMethod(timingMethod);
+        this.update();
+    }
+
     render() {
         return (
             <div className="run-editor">
@@ -247,8 +252,12 @@ export class RunEditor extends React.Component<Props, State> {
                     <label>Attempts</label>
                 </div>
                 <div>
+                    <button onClick={(e) => this.switchTimingMethod(LiveSplit.TimingMethod.RealTime)}>Real Time</button>
+                    <button onClick={(e) => this.switchTimingMethod(LiveSplit.TimingMethod.GameTime)}>Game Time</button>
+                </div>
+                <div>
                     {
-                        this.state.editor.segments.map((s, i) =>
+                        this.state.editor.segments.map((s: any, i: number) =>
                             <div key={i.toString()}>
                                 <input type="checkbox" checked={s.selected == "Selected" || s.selected == "CurrentRow"} onChange={(e) => this.changeSegmentSelection(e, i)} />
                                 <input type="text" value={s.name} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSegmentNameChange(e)} />
@@ -262,11 +271,13 @@ export class RunEditor extends React.Component<Props, State> {
                         )
                     }
                 </div>
-                <button onClick={(e) => this.insertSegmentAbove()}>Insert Above</button>
-                <button onClick={(e) => this.insertSegmentBelow()}>Insert Below</button>
-                <button onClick={(e) => this.removeSegments()}>Remove Segment</button>
-                <button onClick={(e) => this.moveSegmentsUp()}>Move Up</button>
-                <button onClick={(e) => this.moveSegmentsDown()}>Move Down</button>
+                <div>
+                    <button onClick={(e) => this.insertSegmentAbove()}>Insert Above</button>
+                    <button onClick={(e) => this.insertSegmentBelow()}>Insert Below</button>
+                    <button onClick={(e) => this.removeSegments()}>Remove Segment</button>
+                    <button onClick={(e) => this.moveSegmentsUp()}>Move Up</button>
+                    <button onClick={(e) => this.moveSegmentsDown()}>Move Down</button>
+                </div>
             </div>
         )
     }

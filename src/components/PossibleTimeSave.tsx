@@ -3,16 +3,16 @@ import * as LiveSplit from "../livesplit";
 
 export interface Props { timer: LiveSplit.Timer };
 
-export class Component extends React.Component<Props, LiveSplit.PossibleTimeSaveComponentState> {
+export class Component extends React.Component<Props, LiveSplit.PossibleTimeSaveComponentStateJson> {
 	inner: LiveSplit.PossibleTimeSaveComponent;
 	timerID: number;
 
 	constructor(props: Props) {
 		super(props);
 
-		this.inner = new LiveSplit.PossibleTimeSaveComponent();
+		this.inner = LiveSplit.PossibleTimeSaveComponent.new();
 
-		this.state = this.inner.state(this.props.timer);
+		this.state = this.inner.stateAsJson(this.props.timer);
 	}
 
 	componentDidMount() {
@@ -24,11 +24,11 @@ export class Component extends React.Component<Props, LiveSplit.PossibleTimeSave
 
 	componentWillUnmount() {
 		clearInterval(this.timerID);
-		this.inner.drop();
+		this.inner.dispose();
 	}
 
 	update() {
-		this.setState(this.inner.state(this.props.timer));
+		this.setState(this.inner.stateAsJson(this.props.timer));
 	}
 
 	render() {

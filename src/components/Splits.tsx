@@ -4,7 +4,7 @@ import { Component as Split } from "./Split";
 
 export interface Props { timer: LiveSplit.Timer }
 
-export class Component extends React.Component<Props, LiveSplit.SplitsComponentState> {
+export class Component extends React.Component<Props, LiveSplit.SplitsComponentStateJson> {
     inner: LiveSplit.SplitsComponent;
     timerID: number;
     iconUrls: string[];
@@ -13,10 +13,10 @@ export class Component extends React.Component<Props, LiveSplit.SplitsComponentS
     constructor(props: Props) {
         super(props);
 
-        this.inner = new LiveSplit.SplitsComponent();
+        this.inner = LiveSplit.SplitsComponent.new();
         this.iconUrls = [];
 
-        this.state = this.inner.state(this.props.timer);
+        this.state = this.inner.stateAsJson(this.props.timer);
     }
 
     getIconUrl(index: number): string {
@@ -41,7 +41,7 @@ export class Component extends React.Component<Props, LiveSplit.SplitsComponentS
     componentWillUnmount() {
         window.removeEventListener('mousewheel', this.event);
         clearInterval(this.timerID);
-        this.inner.drop();
+        this.inner.dispose();
     }
 
     onScroll(e: MouseWheelEvent) {
@@ -54,20 +54,20 @@ export class Component extends React.Component<Props, LiveSplit.SplitsComponentS
     }
 
     update() {
-        this.setState(this.inner.state(this.props.timer));
+        this.setState(this.inner.stateAsJson(this.props.timer));
     }
 
     render() {
         return (
             <div className="splits">
                 {
-                    this.state.splits.map((s, i) =>
+                    this.state.splits.map((s: any, i: number) =>
                         <Split
                             split={s}
                             icon={this.getIconUrl(i)}
                             key={i.toString()}
                             separatorInFrontOfSplit={this.state.show_final_separator && i + 1 == this.state.splits.length}
-                            />)
+                        />)
                 }
             </div>
         );

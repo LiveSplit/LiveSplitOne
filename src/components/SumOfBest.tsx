@@ -3,16 +3,16 @@ import * as LiveSplit from "../livesplit";
 
 export interface Props { timer: LiveSplit.Timer };
 
-export class Component extends React.Component<Props, LiveSplit.SumOfBestComponentState> {
+export class Component extends React.Component<Props, LiveSplit.SumOfBestComponentStateJson> {
 	inner: LiveSplit.SumOfBestComponent;
 	timerID: number;
 
 	constructor(props: Props) {
 		super(props);
 
-		this.inner = new LiveSplit.SumOfBestComponent();
+		this.inner = LiveSplit.SumOfBestComponent.new();
 
-		this.state = this.inner.state(this.props.timer);
+		this.state = this.inner.stateAsJson(this.props.timer);
 	}
 
 	componentDidMount() {
@@ -24,11 +24,11 @@ export class Component extends React.Component<Props, LiveSplit.SumOfBestCompone
 
 	componentWillUnmount() {
 		clearInterval(this.timerID);
-		this.inner.drop();
+		this.inner.dispose();
 	}
 
 	update() {
-		this.setState(this.inner.state(this.props.timer));
+		this.setState(this.inner.stateAsJson(this.props.timer));
 	}
 
 	render() {

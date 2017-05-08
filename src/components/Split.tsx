@@ -2,7 +2,7 @@ import * as React from "react";
 import * as LiveSplit from "../livesplit";
 
 export interface Props {
-    split: LiveSplit.SplitState,
+    split: LiveSplit.SplitStateJson,
     icon: string,
     separatorInFrontOfSplit: boolean,
 }

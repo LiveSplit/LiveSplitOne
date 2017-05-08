@@ -3,16 +3,16 @@ import * as LiveSplit from "../livesplit";
 
 export interface Props { timer: LiveSplit.Timer }
 
-export class Component extends React.Component<Props, LiveSplit.PreviousSegmentComponentState> {
+export class Component extends React.Component<Props, LiveSplit.PreviousSegmentComponentStateJson> {
     inner: LiveSplit.PreviousSegmentComponent;
     timerID: number;
 
     constructor(props: Props) {
         super(props);
 
-        this.inner = new LiveSplit.PreviousSegmentComponent();
+        this.inner = LiveSplit.PreviousSegmentComponent.new();
 
-        this.state = this.inner.state(this.props.timer);
+        this.state = this.inner.stateAsJson(this.props.timer);
     }
 
     componentDidMount() {
@@ -24,7 +24,7 @@ export class Component extends React.Component<Props, LiveSplit.PreviousSegmentC
 
     componentWillUnmount() {
         clearInterval(this.timerID);
-        this.inner.drop();
+        this.inner.dispose();
     }
 
     getColor(): string {
@@ -32,7 +32,7 @@ export class Component extends React.Component<Props, LiveSplit.PreviousSegmentC
     }
 
     update() {
-        this.setState(this.inner.state(this.props.timer));
+        this.setState(this.inner.stateAsJson(this.props.timer));
     }
 
     render() {

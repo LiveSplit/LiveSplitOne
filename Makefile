@@ -6,6 +6,14 @@ optimized:
 	@make optimized -C livesplit-core/js
 	@cp livesplit-core/js/livesplit.js src/livesplit_core.js
 
+small:
+	@make small -C livesplit-core/js
+	@cp livesplit-core/js/livesplit.js src/livesplit_core.js
+
+supersmall:
+	@make supersmall -C livesplit-core/js
+	@cp livesplit-core/js/livesplit.js src/livesplit_core.js
+
 wasm:
 	@make wasm -C livesplit-core/js
 	@cp livesplit-core/js/livesplit.js src/livesplit_core.js

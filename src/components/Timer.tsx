@@ -3,16 +3,16 @@ import * as LiveSplit from "../livesplit";
 
 export interface Props { timer: LiveSplit.Timer }
 
-export class Component extends React.Component<Props, LiveSplit.TimerComponentState> {
+export class Component extends React.Component<Props, LiveSplit.TimerComponentStateJson> {
     inner: LiveSplit.TimerComponent;
     timerID: number;
 
     constructor(props: Props) {
         super(props);
 
-        this.inner = new LiveSplit.TimerComponent();
+        this.inner = LiveSplit.TimerComponent.new();
 
-        this.state = this.inner.state(this.props.timer);
+        this.state = this.inner.stateAsJson(this.props.timer);
     }
 
     componentDidMount() {
@@ -24,11 +24,11 @@ export class Component extends React.Component<Props, LiveSplit.TimerComponentSt
 
     componentWillUnmount() {
         clearInterval(this.timerID);
-        this.inner.drop();
+        this.inner.dispose();
     }
 
     update() {
-        this.setState(this.inner.state(this.props.timer));
+        this.setState(this.inner.stateAsJson(this.props.timer));
     }
 
     getColor(): string {
@@ -57,9 +57,9 @@ export class Component extends React.Component<Props, LiveSplit.TimerComponentSt
             </svg>
         );
 
-            // <div className={"timer-time " + this.getColor()}>
-            //     <span>{this.state.time}</span>
-            //     <span className="timer-fraction">{this.state.fraction}</span>
-            // </div>
+        // <div className={"timer-time " + this.getColor()}>
+        //     <span>{this.state.time}</span>
+        //     <span className="timer-fraction">{this.state.fraction}</span>
+        // </div>
     }
 }
