@@ -181,15 +181,19 @@ table tr td {
     padding: 0px 6px;
 }
 
+table {
+    border-spacing: 0px 2px;
+}
+
 .split-name {
     text-overflow: ellipsis;
     width: 100%;
-    padding-left: 2px !important;
+    padding-left: 0px !important;
     text-align: left !important;
 }
 
 .split-icon-container {
-    padding-right: 5px !important;
+    padding-right: 6px !important;
 }
 
 .split-icon-container-empty {
