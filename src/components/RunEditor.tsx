@@ -241,42 +241,51 @@ export class RunEditor extends React.Component<Props, State> {
                     <span className="bar"></span>
                     <label>Category</label>
                 </div>
-                <div className={this.state.offsetIsValid ? "group" : "group invalid"}>
-                    <input type="text" required className="run-editor-offset" value={this.state.editor.offset} onChange={(e) => this.handleOffsetChange(e)} onBlur={(e) => this.handleOffsetBlur(e)} />
-                    <span className="bar"></span>
-                    <label>Offset</label>
+                <div className="bottom">
+                    <div className={this.state.offsetIsValid ? "group small" : "group invalid small"}>
+                        <input type="text" required className="run-editor-offset" value={this.state.editor.offset} onChange={(e) => this.handleOffsetChange(e)} onBlur={(e) => this.handleOffsetBlur(e)} />
+                        <span className="bar"></span>
+                        <label>Offset</label>
+                    </div>
+                    <div className={this.state.attemptCountIsValid ? "group small" : "group invalid small"}>
+                        <input type="text" required className="run-editor-attempts" value={this.state.editor.attempts} onChange={(e) => this.handleAttemptsChange(e)} onBlur={(e) => this.handleAttemptsBlur(e)} />
+                        <span className="bar"></span>
+                        <label>Attempts</label>
+                    </div>
                 </div>
-                <div className={this.state.attemptCountIsValid ? "group" : "group invalid"}>
-                    <input type="text" required className="run-editor-attempts" value={this.state.editor.attempts} onChange={(e) => this.handleAttemptsChange(e)} onBlur={(e) => this.handleAttemptsBlur(e)} />
-                    <span className="bar"></span>
-                    <label>Attempts</label>
+                <div className="timing-selection">
+                    <button className="toggle-left" onClick={(e) => this.switchTimingMethod(LiveSplit.TimingMethod.RealTime)}>Real Time</button>
+                    <button className="toggle-right" onClick={(e) => this.switchTimingMethod(LiveSplit.TimingMethod.GameTime)}>Game Time</button>
                 </div>
-                <div>
-                    <button onClick={(e) => this.switchTimingMethod(LiveSplit.TimingMethod.RealTime)}>Real Time</button>
-                    <button onClick={(e) => this.switchTimingMethod(LiveSplit.TimingMethod.GameTime)}>Game Time</button>
-                </div>
-                <div>
-                    {
-                        this.state.editor.segments.map((s: any, i: number) =>
-                            <div key={i.toString()}>
-                                <input type="checkbox" checked={s.selected == "Selected" || s.selected == "CurrentRow"} onChange={(e) => this.changeSegmentSelection(e, i)} />
-                                <input type="text" value={s.name} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSegmentNameChange(e)} />
-                                <input className={this.state.rowState.index != i || this.state.rowState.splitTimeIsValid ? "" : "invalid"}
-                                    type="text" value={s.split_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSplitTimeChange(e)} onBlur={(e) => this.handleSplitTimeBlur(e)} />
-                                <input className={this.state.rowState.index != i || this.state.rowState.segmentTimeIsValid ? "" : "invalid"}
-                                    type="text" value={s.segment_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSegmentTimeChange(e)} onBlur={(e) => this.handleSegmentTimeBlur(e)} />
-                                <input className={this.state.rowState.index != i || this.state.rowState.bestSegmentTimeIsValid ? "" : "invalid"}
-                                    type="text" value={s.best_segment_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleBestSegmentTimeChange(e)} onBlur={(e) => this.handleBestSegmentTimeBlur(e)} />
-                            </div>
-                        )
-                    }
-                </div>
-                <div>
-                    <button onClick={(e) => this.insertSegmentAbove()}>Insert Above</button>
-                    <button onClick={(e) => this.insertSegmentBelow()}>Insert Below</button>
-                    <button onClick={(e) => this.removeSegments()}>Remove Segment</button>
-                    <button onClick={(e) => this.moveSegmentsUp()}>Move Up</button>
-                    <button onClick={(e) => this.moveSegmentsDown()}>Move Down</button>
+                <div className="editer-group">
+                    <div className="btn-group">
+                        <button onClick={(e) => this.insertSegmentAbove()}>Insert Above</button>
+                        <button onClick={(e) => this.insertSegmentBelow()}>Insert Below</button>
+                        <button onClick={(e) => this.removeSegments()}>Remove Segment</button>
+                        <button onClick={(e) => this.moveSegmentsUp()}>Move Up</button>
+                        <button onClick={(e) => this.moveSegmentsDown()}>Move Down</button>
+                    </div>
+                    <div className="table">
+                        <div className="table-header">
+                            <div>Segment Name</div>
+                            <div>Split Time</div>
+                            <div>Segment Time</div>
+                            <div>Best Segment</div>
+                        </div>
+                        {
+                            this.state.editor.segments.map((s: any, i: number) =>
+                                <form key={i.toString()} className={(s.selected == "Selected" || s.selected == "CurrentRow") ? "selected" : ""} onClick={(e) => this.changeSegmentSelection(e, i)}>
+                                    <div><input className="name" type="text" value={s.name} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSegmentNameChange(e)} /></div>
+                                    <div><input className={this.state.rowState.index != i || this.state.rowState.splitTimeIsValid ? "" : "invalid"}
+                                        type="text" value={s.split_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSplitTimeChange(e)} onBlur={(e) => this.handleSplitTimeBlur(e)} /></div>
+                                    <div><input className={this.state.rowState.index != i || this.state.rowState.segmentTimeIsValid ? "" : "invalid"}
+                                        type="text" value={s.segment_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSegmentTimeChange(e)} onBlur={(e) => this.handleSegmentTimeBlur(e)} /></div>
+                                    <div><input className={this.state.rowState.index != i || this.state.rowState.bestSegmentTimeIsValid ? "" : "invalid"}
+                                        type="text" value={s.best_segment_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleBestSegmentTimeChange(e)} onBlur={(e) => this.handleBestSegmentTimeBlur(e)} /></div>
+                                </form>
+                            )
+                        }
+                    </div>
                 </div>
             </div>
         )

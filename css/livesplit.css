@@ -428,3 +428,116 @@ button {
 .group > input:focus ~ .bar:before, .group > input:focus ~ .bar:after {
     width:50%;
 }
+
+/* Run Editer */
+.table {
+	margin: 0 0 40px 0;
+	width: 100%;
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+	display: table;
+	float: right;
+}
+.table>* {
+	display: table-row;
+	background: rgba(0, 0, 0, 0.5);
+}
+.table>*:nth-of-type(odd) {
+	background: rgba(0, 0, 0, 0.2);
+}
+.table>*>* {
+	padding: 4px 12px;
+	display: table-cell;
+}
+.btn-group button {
+	width: 138px;
+	height: 49px;
+	margin-right: 5px;
+	display: block;
+}
+.editer-group {
+	display: inline-flex
+}
+
+form > div >input {
+    width: 100px;
+    margin-right: -40px;
+}
+
+input.name {
+    width: 160px;
+}
+
+.table-header>div {
+    width: 78px;
+}
+@media screen and (max-width: 425px) {
+    .editer-group {
+        display: list-item;
+    }
+    .btn-group {
+        display:flex;
+    }
+    .table {
+        display: flex;
+        width: 100%;
+        overflow-x: auto;
+    }
+    .table>* {
+        display: block;
+    }
+    .table>*>* {
+        display: flex;
+    }
+    input.name {
+        width: 100px;
+    }
+    form > div >input {
+        width: 100px;
+        margin-right: -7px;
+    }
+
+}
+
+div.checkbox,
+input[type="checkbox"]{
+    width: 20px !important;
+    padding-right: 0px;
+}
+
+form > div > input {
+    font-size: 14px;
+    border: none;
+    border-bottom: white;
+    background: transparent;
+    color: white;
+    text-overflow: ellipsis;
+}
+
+form>div:not(.checkbox):after {
+    content:' ';
+    width:100%;
+    position:relative;
+    display:block;
+    border-top:1px solid hsla(0, 0%, 100%, 0.2);
+    bottom: 1px;
+}
+
+form>div>input:not(.name) {
+    text-align: right;
+}
+
+.btn-group>button {
+    font-size: 15px;
+}
+
+.timing-selection>button {
+    font-size: 15px;
+    height: 30px;
+    position: relative;
+    left: 142px;
+    width: 100px;
+}
+
+form.selected {
+    background: rgba(0, 67, 255, 0.26) !important;
+}
