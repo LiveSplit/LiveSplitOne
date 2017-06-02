@@ -431,29 +431,40 @@ button {
 
 /* Run Editer */
 .table {
-	margin: 0 0 40px 0;
 	width: 100%;
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 	display: table;
-	float: right;
+    border: 1px solid hsl(0, 0%, 25%);
+    border-collapse: collapse;
 }
-.table>* {
+.table-body{
+    display: table-row-group;
+}
+.table>.table-header,
+.table-body>* {
 	display: table-row;
 	background: rgba(0, 0, 0, 0.5);
 }
-.table>*:nth-of-type(odd) {
+.table-body>*:nth-of-type(odd) {
 	background: rgba(0, 0, 0, 0.2);
 }
-.table>*>* {
-	padding: 4px 12px;
+.table>.table-header>*,
+.table-body>*>* {
+	padding: 3px 12px;
 	display: table-cell;
 }
 .btn-group button {
+    font-size: 15px;
 	width: 138px;
-	height: 49px;
+	height: 30px;
 	margin-right: 5px;
 	display: block;
 }
+
+.btn-group button:nth-child(1) {
+    margin-top: 0;
+}
+
 .editer-group {
 	display: inline-flex
 }
@@ -469,7 +480,19 @@ input.name {
 
 .table-header>div {
     width: 78px;
+    font-weight: bold;
+    text-align: center;
 }
+
+.table-header>div:after {
+    content:' ';
+    position: relative;
+    display:block;
+    border-top: 1.5px solid hsla(0, 0%, 100%, 0.2);
+    margin: 0 -12px;
+    bottom: -4px;
+}
+
 @media screen and (max-width: 425px) {
     .editer-group {
         display: list-item;
@@ -481,6 +504,9 @@ input.name {
         display: flex;
         width: 100%;
         overflow-x: auto;
+    }
+    .table {
+        display: block;
     }
     .table>* {
         display: block;
@@ -498,38 +524,20 @@ input.name {
 
 }
 
-div.checkbox,
-input[type="checkbox"]{
-    width: 20px !important;
-    padding-right: 0px;
-}
-
 form > div > input {
-    font-size: 14px;
+    font-size: 15px;
     border: none;
-    border-bottom: white;
+    border-bottom: 1px solid hsl(0, 0%, 25%);
     background: transparent;
     color: white;
     text-overflow: ellipsis;
     font-family: 'fira', sans-serif;
 }
 
-form>div:not(.checkbox):after {
-    content:' ';
-    width:100%;
-    position:relative;
-    display:block;
-    border-top:1px solid hsla(0, 0%, 100%, 0.2);
-    bottom: 1px;
-}
-
 form>div>input:not(.name) {
     text-align: right;
 }
 
-.btn-group>button {
-    font-size: 15px;
-}
 
 .timing-selection>button {
     font-size: 15px;
@@ -541,4 +549,17 @@ form>div>input:not(.name) {
 
 form.selected {
     background: rgba(0, 67, 255, 0.26) !important;
+}
+
+input[Type="text"] {
+    font-family:inherit;
+}
+
+.table>.table-header>*:nth-child(1), 
+.table-body>*>*:nth-child(1) {
+    padding-left: 16px;
+}
+
+.table-header>div:nth-child(1):after {
+     margin-left: -16px;
 }

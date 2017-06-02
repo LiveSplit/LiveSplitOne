@@ -34,7 +34,6 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     update() {
-
         this.setState({
             ...this.state,
             editor: this.props.editor.stateAsJson()
@@ -215,7 +214,7 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     changeSegmentSelection(event: any, i: number) {
-        if (event.target.checked) {
+        if (!event.currentTarget.classList.contains("selected")) {
             this.props.editor.selectAdditionally(i);
         } else {
             this.props.editor.unselect(i);
@@ -265,27 +264,29 @@ export class RunEditor extends React.Component<Props, State> {
                         <button onClick={(e) => this.moveSegmentsUp()}>Move Up</button>
                         <button onClick={(e) => this.moveSegmentsDown()}>Move Down</button>
                     </div>
-                    <div className="table">
-                        <div className="table-header">
+                    <table className="table">
+                        <thead className="table-header">
                             <div>Segment Name</div>
                             <div>Split Time</div>
                             <div>Segment Time</div>
                             <div>Best Segment</div>
-                        </div>
-                        {
-                            this.state.editor.segments.map((s: any, i: number) =>
-                                <form key={i.toString()} className={(s.selected == "Selected" || s.selected == "CurrentRow") ? "selected" : ""} onClick={(e) => this.changeSegmentSelection(e, i)}>
-                                    <div><input className="name" type="text" value={s.name} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSegmentNameChange(e)} /></div>
-                                    <div><input className={this.state.rowState.index != i || this.state.rowState.splitTimeIsValid ? "" : "invalid"}
-                                        type="text" value={s.split_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSplitTimeChange(e)} onBlur={(e) => this.handleSplitTimeBlur(e)} /></div>
-                                    <div><input className={this.state.rowState.index != i || this.state.rowState.segmentTimeIsValid ? "" : "invalid"}
-                                        type="text" value={s.segment_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSegmentTimeChange(e)} onBlur={(e) => this.handleSegmentTimeBlur(e)} /></div>
-                                    <div><input className={this.state.rowState.index != i || this.state.rowState.bestSegmentTimeIsValid ? "" : "invalid"}
-                                        type="text" value={s.best_segment_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleBestSegmentTimeChange(e)} onBlur={(e) => this.handleBestSegmentTimeBlur(e)} /></div>
-                                </form>
-                            )
-                        }
-                    </div>
+                        </thead>
+                        <tbody className="table-body">
+                            {
+                                this.state.editor.segments.map((s: any, i: number) =>
+                                    <form key={i.toString()} className={(s.selected == "Selected" || s.selected == "CurrentRow") ? "selected" : ""} onClick={(e) => this.changeSegmentSelection(e, i)}>
+                                        <div><input className="name" type="text" value={s.name} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSegmentNameChange(e)} /></div>
+                                        <div><input className={this.state.rowState.index != i || this.state.rowState.splitTimeIsValid ? "" : "invalid"}
+                                            type="text" value={s.split_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSplitTimeChange(e)} onBlur={(e) => this.handleSplitTimeBlur(e)} /></div>
+                                        <div><input className={this.state.rowState.index != i || this.state.rowState.segmentTimeIsValid ? "" : "invalid"}
+                                            type="text" value={s.segment_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSegmentTimeChange(e)} onBlur={(e) => this.handleSegmentTimeBlur(e)} /></div>
+                                        <div><input className={this.state.rowState.index != i || this.state.rowState.bestSegmentTimeIsValid ? "" : "invalid"}
+                                            type="text" value={s.best_segment_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleBestSegmentTimeChange(e)} onBlur={(e) => this.handleBestSegmentTimeBlur(e)} /></div>
+                                    </form>
+                                )
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
         )
