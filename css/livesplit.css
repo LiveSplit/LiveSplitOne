@@ -437,15 +437,20 @@ button {
 	display: table;
 	float: right;
 }
-.table>* {
+.table-body{
+    display: table-row-group;
+}
+.table>.table-header,
+.table-body>* {
 	display: table-row;
 	background: rgba(0, 0, 0, 0.5);
 }
-.table>*:nth-of-type(odd) {
+.table-body>*:nth-of-type(odd) {
 	background: rgba(0, 0, 0, 0.2);
 }
-.table>*>* {
-	padding: 4px 12px;
+.table>.table-header>*,
+.table-body>*>* {
+	padding: 3px 12px;
 	display: table-cell;
 }
 .btn-group button {
@@ -469,7 +474,18 @@ input.name {
 
 .table-header>div {
     width: 78px;
+    font-weight: bold;
 }
+
+.table-header>div:after {
+    content:' ';
+    position: relative;
+    display:block;
+    border-top: 1.5px solid hsla(0, 0%, 100%, 0.2);
+    margin: 0 -12px;
+    bottom: -4px;
+}
+
 @media screen and (max-width: 425px) {
     .editer-group {
         display: list-item;
@@ -481,6 +497,9 @@ input.name {
         display: flex;
         width: 100%;
         overflow-x: auto;
+    }
+    .table {
+        display: block;
     }
     .table>* {
         display: block;
@@ -498,14 +517,8 @@ input.name {
 
 }
 
-div.checkbox,
-input[type="checkbox"]{
-    width: 20px !important;
-    padding-right: 0px;
-}
-
 form > div > input {
-    font-size: 14px;
+    font-size: 15px;
     border: none;
     border-bottom: white;
     background: transparent;
@@ -540,4 +553,17 @@ form>div>input:not(.name) {
 
 form.selected {
     background: rgba(0, 67, 255, 0.26) !important;
+}
+
+input[Type="text"] {
+    font-family:inherit;
+}
+
+.table>.table-header>*:nth-child(1), 
+.table-body>*>*:nth-child(1) {
+    padding-left: 16px;
+}
+
+.table-header>div:nth-child(1):after {
+     margin-left: -16px;
 }
