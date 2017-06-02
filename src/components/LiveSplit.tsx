@@ -250,7 +250,7 @@ export class LiveSplit extends React.Component<Props, State> {
 
     openRunEditor() {
         if (this.state.timer.currentPhase() == TimerPhase.NotRunning) {
-            let run = this.state.timer.cloneRun();
+            let run = this.state.timer.getRun().clone();
             let editor = RunEditor.new(run);
             this.setState({
                 ...this.state,

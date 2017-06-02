@@ -1,26 +1,30 @@
-core:
+core: bindings
 	@make -C livesplit-core/js
 	@cp livesplit-core/js/livesplit.js src/livesplit_core.js
 
-optimized:
+optimized: bindings
 	@make optimized -C livesplit-core/js
 	@cp livesplit-core/js/livesplit.js src/livesplit_core.js
 
-small:
+small: bindings
 	@make small -C livesplit-core/js
 	@cp livesplit-core/js/livesplit.js src/livesplit_core.js
 
-supersmall:
+supersmall: bindings
 	@make supersmall -C livesplit-core/js
 	@cp livesplit-core/js/livesplit.js src/livesplit_core.js
 
-wasm:
+wasm: bindings
 	@make wasm -C livesplit-core/js
 	@cp livesplit-core/js/livesplit.js src/livesplit_core.js
 
-debug:
+debug: bindings
 	@make debug -C livesplit-core/js
 	@cp livesplit-core/js/livesplit.js src/livesplit_core.js
+
+bindings:
+	@make bindings -C livesplit-core/js
+	@cp livesplit-core/capi/bindings/emscripten/livesplit_core.ts src/livesplit.ts
 
 run:
 	@python -m SimpleHTTPServer 8080

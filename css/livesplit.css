@@ -319,7 +319,7 @@ button.button-pressed, button.button-pressed:hover, button:active, button:active
     background: linear-gradient(hsl(0, 0%, 7%) 0%, hsl(0, 0%, 14%) 100%);
 }
 
-button:focus, div:focus {
+button:focus, div:focus, form > div > input:focus {
     outline: 0;
 }
 
@@ -511,6 +511,7 @@ form > div > input {
     background: transparent;
     color: white;
     text-overflow: ellipsis;
+    font-family: 'fira', sans-serif;
 }
 
 form>div:not(.checkbox):after {
