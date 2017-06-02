@@ -467,7 +467,7 @@ input.name {
     width: 160px;
 }
 
-.table-header>.cell {
+.table-header>div {
     width: 78px;
 }
 @media screen and (max-width: 425px) {
@@ -528,4 +528,16 @@ form>div>input:not(.name) {
 
 .btn-group>button {
     font-size: 15px;
+}
+
+.timing-selection>button {
+    font-size: 15px;
+    height: 30px;
+    position: relative;
+    left: 142px;
+    width: 100px;
+}
+
+form.selected {
+    background: rgba(0, 67, 255, 0.26) !important;
 }

@@ -253,9 +253,9 @@ export class RunEditor extends React.Component<Props, State> {
                         <label>Attempts</label>
                     </div>
                 </div>
-                <div>
-                    <button onClick={(e) => this.switchTimingMethod(LiveSplit.TimingMethod.RealTime)}>Real Time</button>
-                    <button onClick={(e) => this.switchTimingMethod(LiveSplit.TimingMethod.GameTime)}>Game Time</button>
+                <div className="timing-selection">
+                    <button className="toggle-left" onClick={(e) => this.switchTimingMethod(LiveSplit.TimingMethod.RealTime)}>Real Time</button>
+                    <button className="toggle-right" onClick={(e) => this.switchTimingMethod(LiveSplit.TimingMethod.GameTime)}>Game Time</button>
                 </div>
                 <div className="editer-group">
                     <div className="btn-group">
@@ -267,16 +267,14 @@ export class RunEditor extends React.Component<Props, State> {
                     </div>
                     <div className="table">
                         <div className="table-header">
-                            <div className="cell checkbox"></div>
-                            <div className="cell">Segment Name</div>
-                            <div className="cell">Split Time</div>
-                            <div className="cell">Segment Time</div>
-                            <div className="cell">Best Segment</div>
+                            <div>Segment Name</div>
+                            <div>Split Time</div>
+                            <div>Segment Time</div>
+                            <div>Best Segment</div>
                         </div>
                         {
                             this.state.editor.segments.map((s: any, i: number) =>
-                                <form key={i.toString()}>
-                                    <div className="checkbox" ><input type="checkbox" checked={s.selected == "Selected" || s.selected == "CurrentRow"} onChange={(e) => this.changeSegmentSelection(e, i)} /></div>
+                                <form key={i.toString()} className={(s.selected == "Selected" || s.selected == "CurrentRow") ? "selected" : ""} onClick={(e) => this.changeSegmentSelection(e, i)}>
                                     <div><input className="name" type="text" value={s.name} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSegmentNameChange(e)} /></div>
                                     <div><input className={this.state.rowState.index != i || this.state.rowState.splitTimeIsValid ? "" : "invalid"}
                                         type="text" value={s.split_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSplitTimeChange(e)} onBlur={(e) => this.handleSplitTimeBlur(e)} /></div>
