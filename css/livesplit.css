@@ -534,17 +534,21 @@ form > div > input {
     font-family: 'fira', sans-serif;
 }
 
-form>div>input:not(.name) {
+form > div > input:not(.name) {
     text-align: right;
 }
 
 
-.timing-selection>button {
+.timing-selection > button {
     font-size: 15px;
     height: 30px;
     position: relative;
-    left: 142px;
+    left: 143px;
     width: 100px;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    margin-bottom: 0px;
+    border-bottom: 0px;
 }
 
 form.selected {
@@ -555,7 +559,7 @@ input[Type="text"] {
     font-family:inherit;
 }
 
-.table>.table-header>*:nth-child(1), 
+.table>.table-header>*:nth-child(1),
 .table-body>*>*:nth-child(1) {
     padding-left: 16px;
 }

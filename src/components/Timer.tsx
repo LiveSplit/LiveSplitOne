@@ -56,10 +56,5 @@ export class Component extends React.Component<Props, LiveSplit.TimerComponentSt
                 }} x="294px" y="53px" textAnchor="end">{this.state.fraction}</text>
             </svg>
         );
-
-        // <div className={"timer-time " + this.getColor()}>
-        //     <span>{this.state.time}</span>
-        //     <span className="timer-fraction">{this.state.fraction}</span>
-        // </div>
     }
 }
