@@ -65,6 +65,15 @@ export interface GraphComponentStateJson {
     is_live_delta_active: boolean;
 }
 
+export type TextComponentStateJson =
+	{ Center: String } |
+	{ Split: String[2] };
+
+export interface TotalPlaytimeComponentStateJson {
+    text: string;
+    time: string;
+}
+
 export interface RunEditorStateJson {
     icon_change?: string,
     game: string,
@@ -294,6 +303,13 @@ liveSplitCoreNative.TitleComponentState_icon_change = emscriptenModule.cwrap('Ti
 liveSplitCoreNative.TitleComponentState_game = emscriptenModule.cwrap('TitleComponentState_game', "string", ["number"]);
 liveSplitCoreNative.TitleComponentState_category = emscriptenModule.cwrap('TitleComponentState_category', "string", ["number"]);
 liveSplitCoreNative.TitleComponentState_attempts = emscriptenModule.cwrap('TitleComponentState_attempts', "number", ["number"]);
+liveSplitCoreNative.TotalPlaytimeComponent_new = emscriptenModule.cwrap('TotalPlaytimeComponent_new', "number", []);
+liveSplitCoreNative.TotalPlaytimeComponent_drop = emscriptenModule.cwrap('TotalPlaytimeComponent_drop', null, ["number"]);
+liveSplitCoreNative.TotalPlaytimeComponent_state_as_json = emscriptenModule.cwrap('TotalPlaytimeComponent_state_as_json', "string", ["number", "number"]);
+liveSplitCoreNative.TotalPlaytimeComponent_state = emscriptenModule.cwrap('TotalPlaytimeComponent_state', "number", ["number", "number"]);
+liveSplitCoreNative.TotalPlaytimeComponentState_drop = emscriptenModule.cwrap('TotalPlaytimeComponentState_drop', null, ["number"]);
+liveSplitCoreNative.TotalPlaytimeComponentState_text = emscriptenModule.cwrap('TotalPlaytimeComponentState_text', "string", ["number"]);
+liveSplitCoreNative.TotalPlaytimeComponentState_time = emscriptenModule.cwrap('TotalPlaytimeComponentState_time', "string", ["number"]);
 
 export class AttemptRef {
     ptr: number;
@@ -2408,6 +2424,102 @@ export class TitleComponentState extends TitleComponentStateRefMut {
     dispose() {
         if (this.ptr != 0) {
             liveSplitCoreNative.TitleComponentState_drop(this.ptr);
+            this.ptr = 0;
+        }
+    }
+}
+
+export class TotalPlaytimeComponentRef {
+    ptr: number;
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+export class TotalPlaytimeComponentRefMut extends TotalPlaytimeComponentRef {
+    stateAsJson(timer: TimerRef): any {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (timer.ptr == 0) {
+            throw "timer is disposed";
+        }
+        var result = liveSplitCoreNative.TotalPlaytimeComponent_state_as_json(this.ptr, timer.ptr);
+        return JSON.parse(result);
+    }
+    state(timer: TimerRef): TotalPlaytimeComponentState {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (timer.ptr == 0) {
+            throw "timer is disposed";
+        }
+        var result = new TotalPlaytimeComponentState(liveSplitCoreNative.TotalPlaytimeComponent_state(this.ptr, timer.ptr));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+}
+
+export class TotalPlaytimeComponent extends TotalPlaytimeComponentRefMut {
+    with(closure: (obj: TotalPlaytimeComponent) => void) {
+        try {
+            closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    dispose() {
+        if (this.ptr != 0) {
+            liveSplitCoreNative.TotalPlaytimeComponent_drop(this.ptr);
+            this.ptr = 0;
+        }
+    }
+    static new(): TotalPlaytimeComponent {
+        var result = new TotalPlaytimeComponent(liveSplitCoreNative.TotalPlaytimeComponent_new());
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+}
+
+export class TotalPlaytimeComponentStateRef {
+    ptr: number;
+    text(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.TotalPlaytimeComponentState_text(this.ptr);
+        return result;
+    }
+    time(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.TotalPlaytimeComponentState_time(this.ptr);
+        return result;
+    }
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+export class TotalPlaytimeComponentStateRefMut extends TotalPlaytimeComponentStateRef {
+}
+
+export class TotalPlaytimeComponentState extends TotalPlaytimeComponentStateRefMut {
+    with(closure: (obj: TotalPlaytimeComponentState) => void) {
+        try {
+            closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    dispose() {
+        if (this.ptr != 0) {
+            liveSplitCoreNative.TotalPlaytimeComponentState_drop(this.ptr);
             this.ptr = 0;
         }
     }
