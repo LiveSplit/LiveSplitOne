@@ -101,6 +101,7 @@ button.toggle-right {
 .possible-time-save-time,
 .total-playtime-time {
     text-align: right;
+    white-space: nowrap;
 }
 
 .title {
