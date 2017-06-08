@@ -74,6 +74,11 @@ export interface TotalPlaytimeComponentStateJson {
     time: string;
 }
 
+export interface CurrentPaceComponentStateJson {
+    text: string;
+    time: string;
+}
+
 export interface RunEditorStateJson {
     icon_change?: string,
     game: string,
@@ -114,6 +119,13 @@ export type Color = "Default" |
 
 liveSplitCoreNative.Attempt_index = emscriptenModule.cwrap('Attempt_index', "number", ["number"]);
 liveSplitCoreNative.Attempt_time = emscriptenModule.cwrap('Attempt_time', "number", ["number"]);
+liveSplitCoreNative.CurrentPaceComponent_new = emscriptenModule.cwrap('CurrentPaceComponent_new', "number", []);
+liveSplitCoreNative.CurrentPaceComponent_drop = emscriptenModule.cwrap('CurrentPaceComponent_drop', null, ["number"]);
+liveSplitCoreNative.CurrentPaceComponent_state_as_json = emscriptenModule.cwrap('CurrentPaceComponent_state_as_json', "string", ["number", "number"]);
+liveSplitCoreNative.CurrentPaceComponent_state = emscriptenModule.cwrap('CurrentPaceComponent_state', "number", ["number", "number"]);
+liveSplitCoreNative.CurrentPaceComponentState_drop = emscriptenModule.cwrap('CurrentPaceComponentState_drop', null, ["number"]);
+liveSplitCoreNative.CurrentPaceComponentState_text = emscriptenModule.cwrap('CurrentPaceComponentState_text', "string", ["number"]);
+liveSplitCoreNative.CurrentPaceComponentState_time = emscriptenModule.cwrap('CurrentPaceComponentState_time', "string", ["number"]);
 liveSplitCoreNative.GraphComponent_new = emscriptenModule.cwrap('GraphComponent_new', "number", []);
 liveSplitCoreNative.GraphComponent_drop = emscriptenModule.cwrap('GraphComponent_drop', null, ["number"]);
 liveSplitCoreNative.GraphComponent_state_as_json = emscriptenModule.cwrap('GraphComponent_state_as_json', "string", ["number", "number"]);
@@ -348,6 +360,102 @@ export class Attempt extends AttemptRefMut {
     }
     dispose() {
         if (this.ptr != 0) {
+            this.ptr = 0;
+        }
+    }
+}
+
+export class CurrentPaceComponentRef {
+    ptr: number;
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+export class CurrentPaceComponentRefMut extends CurrentPaceComponentRef {
+    stateAsJson(timer: TimerRef): any {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (timer.ptr == 0) {
+            throw "timer is disposed";
+        }
+        var result = liveSplitCoreNative.CurrentPaceComponent_state_as_json(this.ptr, timer.ptr);
+        return JSON.parse(result);
+    }
+    state(timer: TimerRef): CurrentPaceComponentState {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (timer.ptr == 0) {
+            throw "timer is disposed";
+        }
+        var result = new CurrentPaceComponentState(liveSplitCoreNative.CurrentPaceComponent_state(this.ptr, timer.ptr));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+}
+
+export class CurrentPaceComponent extends CurrentPaceComponentRefMut {
+    with(closure: (obj: CurrentPaceComponent) => void) {
+        try {
+            closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    dispose() {
+        if (this.ptr != 0) {
+            liveSplitCoreNative.CurrentPaceComponent_drop(this.ptr);
+            this.ptr = 0;
+        }
+    }
+    static new(): CurrentPaceComponent {
+        var result = new CurrentPaceComponent(liveSplitCoreNative.CurrentPaceComponent_new());
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+}
+
+export class CurrentPaceComponentStateRef {
+    ptr: number;
+    text(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.CurrentPaceComponentState_text(this.ptr);
+        return result;
+    }
+    time(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.CurrentPaceComponentState_time(this.ptr);
+        return result;
+    }
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+export class CurrentPaceComponentStateRefMut extends CurrentPaceComponentStateRef {
+}
+
+export class CurrentPaceComponentState extends CurrentPaceComponentStateRefMut {
+    with(closure: (obj: CurrentPaceComponentState) => void) {
+        try {
+            closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    dispose() {
+        if (this.ptr != 0) {
+            liveSplitCoreNative.CurrentPaceComponentState_drop(this.ptr);
             this.ptr = 0;
         }
     }

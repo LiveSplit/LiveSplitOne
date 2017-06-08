@@ -83,7 +83,8 @@ button.toggle-right {
 .previous-segment,
 .sum-of-best,
 .possible-time-save,
-.total-playtime {
+.total-playtime,
+.current-pace {
     background: linear-gradient(hsl(0, 0%, 11%) 0%, hsl(0, 0%, 7%) 100%);
     height: 24px;
     line-height: 20px;
@@ -92,14 +93,16 @@ button.toggle-right {
 .previous-segment-text,
 .sum-of-best-text,
 .possible-time-save-text,
-.total-playtime-text {
+.total-playtime-text,
+.current-pace-text {
     width: 100%;
 }
 
 .previous-segment-time,
 .sum-of-best-time,
 .possible-time-save-time,
-.total-playtime-time {
+.total-playtime-time,
+.current-pace-time {
     text-align: right;
     white-space: nowrap;
 }
