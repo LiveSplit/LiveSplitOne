@@ -111,31 +111,87 @@ button.toggle-right {
 }
 
 .title {
+    display: flex;
     height: 45px;
     width: 100%;
     background: linear-gradient(hsl(0, 0%, 16%) 0%, hsl(0, 0%, 7%) 100%);
 }
 
-.title > span {
-    display: inherit;
+.title > div >  span,
+div#lower-row > div {
+    display: block;
     width: inherit;
     text-align: center;
     font-size: 16px;
 }
 
-.title .title-game {
-    word-wrap: normal;
-}
 span.title-game {
     line-height: 24px;
+    width: 95% !important;
 }
 
-span.title-attempts {
-    position: relative;
+span.title-game,
+div#lower-row {
+    padding: 0px 6px;
+}
+
+div#lower-row > * {
+    display: inline-block !important;
+}
+
+div#lower-row > div.title-attempts {
+    width: 40px;
     text-align: right;
-    right: 6px;
-    bottom: 18px;
-    font-family: 'Roboto', sans-serif;
+}
+
+div#lower-row > div.title-category {
+    width: calc(100% - 80px);
+    padding-left: 40px;
+}
+
+.title > div.meta-left {
+    min-width: 0;
+    width: initial;
+}
+
+div.meta-left > span.title-game {
+    margin-right: 0px;
+}
+
+.title > div.meta-left > span,
+div.meta-left > div#lower-row > div:not(.title-attempts) {
+    text-align: left;
+}
+
+div.meta-left > div#lower-row > div.title-category {
+    width: calc(100% - 40px);
+    padding: 0;
+}
+
+.game-icon-container {
+    flex: 1;
+    max-width: 40px;
+    min-width: 40px;
+    padding: 4px;
+    height: auto;
+}
+
+.run-meta {
+    flex: 2;
+    width: 100%;
+}
+
+.run-meta > span,
+.run-meta > div#lower-row > div {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+img.title-icon {
+    min-width: 100%;
+    max-height: 100%;
+    height: auto;
 }
 
 .splits {
