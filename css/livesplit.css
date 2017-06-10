@@ -108,20 +108,31 @@ button.toggle-right {
 }
 
 .title {
-    height: auto;
+    height: 45px;
     width: 100%;
-    margin-bottom: -14px;
-    overflow: hidden;
     background: linear-gradient(hsl(0, 0%, 16%) 0%, hsl(0, 0%, 7%) 100%);
+}
+
+.title > span {
+    display: inherit;
+    width: inherit;
+    text-align: center;
+    font-size: 16px;
 }
 
 .title .title-game {
     word-wrap: normal;
-    font-size: 16px;
+}
+span.title-game {
     line-height: 24px;
-    text-align: center;
-    width: inherit;
-    display: inherit;
+}
+
+span.title-attempts {
+    position: relative;
+    text-align: right;
+    right: 6px;
+    bottom: 18px;
+    font-family: 'Roboto', sans-serif;
 }
 
 .splits {
@@ -161,22 +172,6 @@ div.splits span.split.split-separator div {
 
 .splits table tbody .split {
     background-color: rgb(23, 23, 23);
-}
-
-span.title-category {
-    display: inherit;
-    font-size: 16px;
-    text-align: center;
-    width: inherit;
-}
-
-span.title-attempts {
-    display: block;
-    position: relative;
-    text-align: right;
-    right: 6px;
-    bottom: 18px;
-    font-family: 'Roboto', sans-serif;
 }
 
 td#dif {
