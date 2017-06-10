@@ -41,13 +41,24 @@ export class Component extends React.Component<Props, LiveSplit.TitleComponentSt
     }
 
     render() {
+        let icon_url = this.getIconUrl();
+
+        let icon = icon_url != "" ? (
+            <div className="game-icon-container">
+                <img className="title-icon" src={icon_url}></img>
+            </div>
+        ) : (<div style={{ display: "none" }} />)
+
         return (
             <div className="title">
-                {//<img className="title-icon" src={this.getIconUrl()}></img>
-                }
-                <span className="title-game">{this.state.game}</span>
-                <span className="title-category">{this.state.category}</span>
-                <span className="title-attempts">{this.state.attempts}</span>
+                {icon}
+                <div className={"run-meta" + (icon_url != "" ? " meta-left" : "")}>
+                    <span className="title-game">{this.state.game}</span>
+                    <div id="lower-row">
+                        <div className="title-category">{this.state.category}</div>
+                        <div className="title-attempts">{this.state.attempts}</div>
+                    </div>
+                </div>
             </div>
         );
     }
