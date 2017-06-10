@@ -200,6 +200,9 @@ table {
     width: 100%;
     padding-left: 0px !important;
     text-align: left !important;
+    max-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .split-icon-container {
