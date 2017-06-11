@@ -9,6 +9,7 @@ import { Component as PossibleTimeSaveComponent } from "./PossibleTimeSave";
 import { Component as TotalPlaytimeComponent } from "./TotalPlaytime";
 import { Component as CurrentPaceComponent } from "./CurrentPace";
 import { Component as DeltaComponent } from "./Delta";
+import { Component as CurrentComparisonComponent } from "./CurrentComparison";
 import { Component as GraphComponent } from "./Graph";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
 import Sidebar from "react-sidebar";
@@ -396,6 +397,7 @@ export class LiveSplit extends React.Component<Props, State> {
                                     <TotalPlaytimeComponent timer={this.state.timer} />
                                     <CurrentPaceComponent timer={this.state.timer} />
                                     <DeltaComponent timer={this.state.timer} />
+                                    <CurrentComparisonComponent timer={this.state.timer} />
                                     <GraphComponent timer={this.state.timer} />
                                 </div>
                                 <div className="buttons">

@@ -85,6 +85,11 @@ export interface DeltaComponentStateJson {
     color: Color;
 }
 
+export interface CurrentComparisonComponentStateJson {
+    text: string;
+    comparison: string;
+}
+
 export interface RunEditorStateJson {
     icon_change?: string,
     game: string,
@@ -132,6 +137,13 @@ liveSplitCoreNative.Attempt_time = emscriptenModule.cwrap('Attempt_time', "numbe
 liveSplitCoreNative.Attempt_pause_time = emscriptenModule.cwrap('Attempt_pause_time', "number", ["number"]);
 liveSplitCoreNative.Attempt_started = emscriptenModule.cwrap('Attempt_started', "number", ["number"]);
 liveSplitCoreNative.Attempt_ended = emscriptenModule.cwrap('Attempt_ended', "number", ["number"]);
+liveSplitCoreNative.CurrentComparisonComponent_new = emscriptenModule.cwrap('CurrentComparisonComponent_new', "number", []);
+liveSplitCoreNative.CurrentComparisonComponent_drop = emscriptenModule.cwrap('CurrentComparisonComponent_drop', null, ["number"]);
+liveSplitCoreNative.CurrentComparisonComponent_state_as_json = emscriptenModule.cwrap('CurrentComparisonComponent_state_as_json', "string", ["number", "number"]);
+liveSplitCoreNative.CurrentComparisonComponent_state = emscriptenModule.cwrap('CurrentComparisonComponent_state', "number", ["number", "number"]);
+liveSplitCoreNative.CurrentComparisonComponentState_drop = emscriptenModule.cwrap('CurrentComparisonComponentState_drop', null, ["number"]);
+liveSplitCoreNative.CurrentComparisonComponentState_text = emscriptenModule.cwrap('CurrentComparisonComponentState_text', "string", ["number"]);
+liveSplitCoreNative.CurrentComparisonComponentState_comparison = emscriptenModule.cwrap('CurrentComparisonComponentState_comparison', "string", ["number"]);
 liveSplitCoreNative.CurrentPaceComponent_new = emscriptenModule.cwrap('CurrentPaceComponent_new', "number", []);
 liveSplitCoreNative.CurrentPaceComponent_drop = emscriptenModule.cwrap('CurrentPaceComponent_drop', null, ["number"]);
 liveSplitCoreNative.CurrentPaceComponent_state_as_json = emscriptenModule.cwrap('CurrentPaceComponent_state_as_json', "string", ["number", "number"]);
@@ -465,6 +477,102 @@ export class Attempt extends AttemptRefMut {
     }
     dispose() {
         if (this.ptr != 0) {
+            this.ptr = 0;
+        }
+    }
+}
+
+export class CurrentComparisonComponentRef {
+    ptr: number;
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+export class CurrentComparisonComponentRefMut extends CurrentComparisonComponentRef {
+    stateAsJson(timer: TimerRef): any {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (timer.ptr == 0) {
+            throw "timer is disposed";
+        }
+        var result = liveSplitCoreNative.CurrentComparisonComponent_state_as_json(this.ptr, timer.ptr);
+        return JSON.parse(result);
+    }
+    state(timer: TimerRef): CurrentComparisonComponentState {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (timer.ptr == 0) {
+            throw "timer is disposed";
+        }
+        var result = new CurrentComparisonComponentState(liveSplitCoreNative.CurrentComparisonComponent_state(this.ptr, timer.ptr));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+}
+
+export class CurrentComparisonComponent extends CurrentComparisonComponentRefMut {
+    with(closure: (obj: CurrentComparisonComponent) => void) {
+        try {
+            closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    dispose() {
+        if (this.ptr != 0) {
+            liveSplitCoreNative.CurrentComparisonComponent_drop(this.ptr);
+            this.ptr = 0;
+        }
+    }
+    static new(): CurrentComparisonComponent {
+        var result = new CurrentComparisonComponent(liveSplitCoreNative.CurrentComparisonComponent_new());
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+}
+
+export class CurrentComparisonComponentStateRef {
+    ptr: number;
+    text(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.CurrentComparisonComponentState_text(this.ptr);
+        return result;
+    }
+    comparison(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.CurrentComparisonComponentState_comparison(this.ptr);
+        return result;
+    }
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+export class CurrentComparisonComponentStateRefMut extends CurrentComparisonComponentStateRef {
+}
+
+export class CurrentComparisonComponentState extends CurrentComparisonComponentStateRefMut {
+    with(closure: (obj: CurrentComparisonComponentState) => void) {
+        try {
+            closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    dispose() {
+        if (this.ptr != 0) {
+            liveSplitCoreNative.CurrentComparisonComponentState_drop(this.ptr);
             this.ptr = 0;
         }
     }

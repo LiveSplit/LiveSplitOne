@@ -85,7 +85,8 @@ button.toggle-right {
 .possible-time-save,
 .total-playtime,
 .current-pace,
-.delta-component {
+.delta-component,
+.current-comparison {
     background: linear-gradient(hsl(0, 0%, 11%) 0%, hsl(0, 0%, 7%) 100%);
     height: 24px;
     line-height: 20px;
@@ -96,7 +97,8 @@ button.toggle-right {
 .possible-time-save-text,
 .total-playtime-text,
 .current-pace-text,
-.delta-component-text {
+.delta-component-text,
+.current-comparison-text {
     width: 100%;
 }
 
@@ -105,7 +107,8 @@ button.toggle-right {
 .possible-time-save-time,
 .total-playtime-time,
 .current-pace-time,
-.delta-component-time {
+.delta-component-time,
+.current-comparison-comparison {
     text-align: right;
     white-space: nowrap;
 }
