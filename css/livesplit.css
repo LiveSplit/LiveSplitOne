@@ -634,3 +634,7 @@ input[Type="text"] {
 .table-header>div:nth-child(1):after {
      margin-left: -16px;
 }
+
+svg {
+    display: block;
+}
