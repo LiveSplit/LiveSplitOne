@@ -1,43 +1,22 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit";
 
-export interface Props { timer: LiveSplit.Timer }
+export interface Props { state: LiveSplit.TitleComponentStateJson }
 
-export class Component extends React.Component<Props, LiveSplit.TitleComponentStateJson> {
-    inner: LiveSplit.TitleComponent;
-    timerID: number;
+export class Component extends React.Component<Props, undefined> {
     iconUrl: string;
 
     constructor(props: Props) {
         super(props);
 
         this.iconUrl = "";
-        this.inner = LiveSplit.TitleComponent.new();
-
-        this.state = this.inner.stateAsJson(this.props.timer);
     }
 
     getIconUrl(): string {
-        if (this.state.icon_change != null) {
-            this.iconUrl = this.state.icon_change;
+        if (this.props.state.icon_change != null) {
+            this.iconUrl = this.props.state.icon_change;
         }
         return this.iconUrl;
-    }
-
-    componentDidMount() {
-        this.timerID = setInterval(
-            () => this.update(),
-            1000 / 30
-        );
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.timerID);
-        this.inner.dispose();
-    }
-
-    update() {
-        this.setState(this.inner.stateAsJson(this.props.timer));
     }
 
     render() {
@@ -53,10 +32,10 @@ export class Component extends React.Component<Props, LiveSplit.TitleComponentSt
             <div className="title">
                 {icon}
                 <div className={"run-meta" + (icon_url != "" ? " meta-left" : "")}>
-                    <span className="title-game">{this.state.game}</span>
+                    <span className="title-game">{this.props.state.game}</span>
                     <div id="lower-row">
-                        <div className="title-category">{this.state.category}</div>
-                        <div className="title-attempts">{this.state.attempts}</div>
+                        <div className="title-category">{this.props.state.category}</div>
+                        <div className="title-attempts">{this.props.state.attempts}</div>
                     </div>
                 </div>
             </div>

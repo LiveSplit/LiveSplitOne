@@ -1,40 +1,43 @@
 import * as React from "react";
-import { Run, Segment, Timer, TimerPhase, TimingMethod, RunEditor } from "../livesplit";
-import { Component as TimerComponent } from "./Timer";
-import { Component as TitleComponent } from "./Title";
-import { Component as SplitsComponent } from "./Splits";
-import { Component as PreviousSegmentComponent } from "./PreviousSegment";
-import { Component as SumOfBestComponent } from "./SumOfBest";
-import { Component as PossibleTimeSaveComponent } from "./PossibleTimeSave";
-import { Component as TotalPlaytimeComponent } from "./TotalPlaytime";
+import * as Core from "../livesplit";
+import { Component as CurrentComparisonComponent } from "./CurrentComparison";
 import { Component as CurrentPaceComponent } from "./CurrentPace";
 import { Component as DeltaComponent } from "./Delta";
-import { Component as CurrentComparisonComponent } from "./CurrentComparison";
 import { Component as GraphComponent } from "./Graph";
+import { Component as PossibleTimeSaveComponent } from "./PossibleTimeSave";
+import { Component as PreviousSegmentComponent } from "./PreviousSegment";
+import { Component as SplitsComponent } from "./Splits";
+import { Component as SumOfBestComponent } from "./SumOfBest";
+import { Component as TimerComponent } from "./Timer";
+import { Component as TitleComponent } from "./Title";
+import { Component as TotalPlaytimeComponent } from "./TotalPlaytime";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
 import Sidebar from "react-sidebar";
 
 export interface Props { }
 export interface State {
-    timer: Timer,
+    timer: Core.Timer,
+    layout: Core.Layout,
+    layoutState: Core.ComponentStateJson[],
     sidebarOpen: boolean,
-    timingMethod?: TimingMethod,
+    timingMethod?: Core.TimingMethod,
     comparison?: string,
-    editor?: RunEditor,
+    editor?: Core.RunEditor,
 }
 
 export class LiveSplit extends React.Component<Props, State> {
     intervalID: number;
     keyEvent: EventListenerObject;
+    scrollEvent: EventListenerObject;
     rightClickEvent: EventListenerObject;
 
     constructor(props: Props) {
         super(props);
 
-        let run = Run.new();
+        let run = Core.Run.new();
         run.setGameName("Game");
         run.setCategoryName("Category");
-        run.pushSegment(Segment.new("Time"));
+        run.pushSegment(Core.Segment.new("Time"));
 
         if (window.location.hash.indexOf("#/splits-io/") == 0) {
             run.setGameName("Loading...");
@@ -44,17 +47,34 @@ export class LiveSplit extends React.Component<Props, State> {
             let lss = localStorage.getItem("splits");
             if (lss != undefined && lss != null && lss.length > 0) {
                 run.dispose();
-                run = Run.parseString(lss);
+                run = Core.Run.parseString(lss);
             }
         }
 
+        var layout: Core.Layout = null;
+        try {
+            let data = localStorage.getItem("layout");
+            layout = Core.Layout.parseJson(JSON.parse(data));
+        } catch (e) { }
+        if (layout == null) {
+            layout = Core.Layout.new();
+            layout.push(Core.TitleComponent.new().intoGeneric());
+            layout.push(Core.SplitsComponent.new().intoGeneric());
+            layout.push(Core.TimerComponent.new().intoGeneric());
+            layout.push(Core.PreviousSegmentComponent.new().intoGeneric());
+        }
+
         this.state = {
-            timer: Timer.new(run),
+            timer: Core.Timer.new(run),
+            layout: layout,
+            layoutState: [],
             sidebarOpen: false,
         };
     }
 
     componentWillMount() {
+        this.scrollEvent = { handleEvent: (e: MouseWheelEvent) => this.onScroll(e) };
+        window.addEventListener('mousewheel', this.scrollEvent);
         this.keyEvent = { handleEvent: (e: KeyboardEvent) => this.onKeyPress(e) };
         window.addEventListener('keypress', this.keyEvent);
         this.rightClickEvent = { handleEvent: (e: any) => this.onRightClick(e) };
@@ -67,15 +87,29 @@ export class LiveSplit extends React.Component<Props, State> {
 
     componentWillUnmount() {
         clearInterval(this.intervalID);
+        window.removeEventListener('mousewheel', this.scrollEvent);
         window.removeEventListener('keypress', this.keyEvent);
         window.removeEventListener('contextmenu', this.rightClickEvent);
         this.state.timer.dispose();
+        this.state.layout.dispose();
+    }
+
+    onScroll(e: MouseWheelEvent) {
+        var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+        if (delta == 1) {
+            this.state.layout.scrollUp();
+        } else if (delta == -1) {
+            this.state.layout.scrollDown();
+        }
     }
 
     update() {
         if (!this.state.editor) {
+            let layoutState = this.state.layout.stateAsJson(this.state.timer);
+
             this.setState({
                 ...this.state,
+                layoutState: layoutState,
                 timingMethod: this.state.timer.currentTimingMethod(),
                 comparison: this.state.timer.currentComparison(),
             });
@@ -140,11 +174,11 @@ export class LiveSplit extends React.Component<Props, State> {
             reader.onload = function (e: any) {
                 var contents = e.target.result;
                 let oldTimer = component.state.timer;
-                let run = Run.parseArray(new Int8Array(contents));
+                let run = Core.Run.parseArray(new Int8Array(contents));
                 if (run) {
                     component.setState({
                         ...component.state,
-                        timer: Timer.new(run),
+                        timer: Core.Timer.new(run),
                     });
                     oldTimer.dispose();
                 } else {
@@ -170,7 +204,7 @@ export class LiveSplit extends React.Component<Props, State> {
                     var oldTimer = component.state.timer;
                     component.setState({
                         ...component.state,
-                        timer: Timer.new(Run.parseArray(new Int8Array(xhr.response))),
+                        timer: Core.Timer.new(Core.Run.parseArray(new Int8Array(xhr.response))),
                     });
                     oldTimer.dispose();
                 };
@@ -252,10 +286,15 @@ export class LiveSplit extends React.Component<Props, State> {
         localStorage.setItem("splits", lss);
     }
 
+    saveLayout() {
+        let layout = this.state.layout.settingsAsJson();
+        localStorage.setItem("layout", JSON.stringify(layout));
+    }
+
     openRunEditor() {
-        if (this.state.timer.currentPhase() == TimerPhase.NotRunning) {
+        if (this.state.timer.currentPhase() == Core.TimerPhase.NotRunning) {
             let run = this.state.timer.getRun().clone();
-            let editor = RunEditor.new(run);
+            let editor = Core.RunEditor.new(run);
             this.setState({
                 ...this.state,
                 editor: editor,
@@ -269,7 +308,7 @@ export class LiveSplit extends React.Component<Props, State> {
     closeRunEditor(save: boolean) {
         if (save) {
             let run = this.state.editor.close();
-            let timer = Timer.new(run);
+            let timer = Core.Timer.new(run);
             this.state.timer.dispose();
             this.setState({
                 ...this.state,
@@ -284,6 +323,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 sidebarOpen: false,
             });
         }
+        this.state.layout.remount();
     }
 
     onKeyPress(e: KeyboardEvent) {
@@ -363,6 +403,8 @@ export class LiveSplit extends React.Component<Props, State> {
                     <button onClick={(e) => this.openFromSplitsIO()}><i className="fa fa-cloud-download" aria-hidden="true"></i> From splits i/o</button>
                     <button onClick={(e) => this.uploadToSplitsIO()}><i className="fa fa-cloud-upload" aria-hidden="true"></i> Upload to splits i/o</button>
                     <hr />
+                    <button onClick={(e) => this.saveLayout()}><i className="fa fa-floppy-o" aria-hidden="true"></i> Save Layout</button>
+                    <hr />
                     <h2>Compare Against</h2>
                     <div className="choose-comparison">
                         <button onClick={(e) => this.onPreviousComparison()}><i className="fa fa-caret-left" aria-hidden="true"></i></button>
@@ -370,11 +412,95 @@ export class LiveSplit extends React.Component<Props, State> {
                         <button onClick={(e) => this.onNextComparison()}><i className="fa fa-caret-right" aria-hidden="true"></i></button>
                     </div>
                     <div className="small">
-                        <button onClick={(e) => this.state.timer.setCurrentTimingMethod(TimingMethod.RealTime)} className={(this.state.timingMethod == TimingMethod.RealTime ? "button-pressed" : "") + " toggle-left"}>Real Time</button>
-                        <button onClick={(e) => this.state.timer.setCurrentTimingMethod(TimingMethod.GameTime)} className={(this.state.timingMethod == TimingMethod.GameTime ? "button-pressed" : "") + " toggle-right"}>Game Time</button>
+                        <button onClick={(e) => this.state.timer.setCurrentTimingMethod(Core.TimingMethod.RealTime)} className={(this.state.timingMethod == Core.TimingMethod.RealTime ? "button-pressed" : "") + " toggle-left"}>Real Time</button>
+                        <button onClick={(e) => this.state.timer.setCurrentTimingMethod(Core.TimingMethod.GameTime)} className={(this.state.timingMethod == Core.TimingMethod.GameTime ? "button-pressed" : "") + " toggle-right"}>Game Time</button>
                     </div>
                 </div>
             );
+
+
+        var content;
+        if (this.state.editor) {
+            content = <RunEditorComponent editor={this.state.editor} />;
+        } else {
+            let components: any[] = [];
+
+            this.state.layoutState.forEach((componentState: any) => {
+                var component;
+                switch (Object.keys(componentState)[0]) {
+                    case "CurrentComparison": {
+                        component = <CurrentComparisonComponent state={componentState.CurrentComparison} />;
+                        break;
+                    }
+                    case "CurrentPace": {
+                        component = <CurrentPaceComponent state={componentState.CurrentPace} />;
+                        break;
+                    }
+                    case "Delta": {
+                        component = <DeltaComponent state={componentState.Delta} />;
+                        break;
+                    }
+                    case "Graph": {
+                        component = <GraphComponent state={componentState.Graph} />;
+                        break;
+                    }
+                    case "PossibleTimeSave": {
+                        component = <PossibleTimeSaveComponent state={componentState.PossibleTimeSave} />;
+                        break;
+                    }
+                    case "PreviousSegment": {
+                        component = <PreviousSegmentComponent state={componentState.PreviousSegment} />;
+                        break;
+                    }
+                    case "Splits": {
+                        component = <SplitsComponent state={componentState.Splits} />;
+                        break;
+                    }
+                    case "SumOfBest": {
+                        component = <SumOfBestComponent state={componentState.SumOfBest} />;
+                        break;
+                    }
+                    case "Text": {
+                        return;
+                        // component = <TextComponent state={componentState.Text} />;
+                        // break;
+                    }
+                    case "Timer": {
+                        component = <TimerComponent state={componentState.Timer} />;
+                        break;
+                    }
+                    case "Title": {
+                        component = <TitleComponent state={componentState.Title} />;
+                        break;
+                    }
+                    case "TotalPlaytime": {
+                        component = <TotalPlaytimeComponent state={componentState.TotalPlaytime} />;
+                        break;
+                    }
+                    default: return;
+                }
+                components.push(component);
+            });
+
+            content = <div>
+                <div className="livesplit">
+                    {
+                        components
+                    }
+                </div>
+                <div className="buttons">
+                    <button onClick={(e) => this.onSplit()}><i className="fa fa-play" aria-hidden="true"></i></button>
+                    <div className="small">
+                        <button onClick={(e) => this.onUndo()}><i className="fa fa-arrow-up" aria-hidden="true"></i></button>
+                        <button onClick={(e) => this.onPause()}><i className="fa fa-pause" aria-hidden="true"></i></button>
+                    </div>
+                    <div className="small">
+                        <button onClick={(e) => this.onSkip()}><i className="fa fa-arrow-down" aria-hidden="true"></i></button>
+                        <button onClick={(e) => this.onReset()}><i className="fa fa-times" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            </div>;
+        }
 
         return (
             <Sidebar sidebar={sidebarContent}
@@ -383,36 +509,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 sidebarClassName="sidebar"
                 contentClassName="livesplit-container">
                 {
-                    this.state.editor ? (
-                        <RunEditorComponent editor={this.state.editor} />
-                    ) : (
-                            <div>
-                                <div className="livesplit">
-                                    <TitleComponent timer={this.state.timer} />
-                                    <SplitsComponent timer={this.state.timer} />
-                                    <TimerComponent timer={this.state.timer} />
-                                    <PreviousSegmentComponent timer={this.state.timer} />
-                                    <SumOfBestComponent timer={this.state.timer} />
-                                    <PossibleTimeSaveComponent timer={this.state.timer} />
-                                    <TotalPlaytimeComponent timer={this.state.timer} />
-                                    <CurrentPaceComponent timer={this.state.timer} />
-                                    <DeltaComponent timer={this.state.timer} />
-                                    <CurrentComparisonComponent timer={this.state.timer} />
-                                    <GraphComponent timer={this.state.timer} />
-                                </div>
-                                <div className="buttons">
-                                    <button onClick={(e) => this.onSplit()}><i className="fa fa-play" aria-hidden="true"></i></button>
-                                    <div className="small">
-                                        <button onClick={(e) => this.onUndo()}><i className="fa fa-arrow-up" aria-hidden="true"></i></button>
-                                        <button onClick={(e) => this.onPause()}><i className="fa fa-pause" aria-hidden="true"></i></button>
-                                    </div>
-                                    <div className="small">
-                                        <button onClick={(e) => this.onSkip()}><i className="fa fa-arrow-down" aria-hidden="true"></i></button>
-                                        <button onClick={(e) => this.onReset()}><i className="fa fa-times" aria-hidden="true"></i></button>
-                                    </div>
-                                </div>
-                            </div>
-                        )
+                    content
                 }
             </Sidebar>
         );

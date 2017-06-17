@@ -1,38 +1,11 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit";
 
-export interface Props { timer: LiveSplit.Timer }
+export interface Props { state: LiveSplit.TimerComponentStateJson }
 
-export class Component extends React.Component<Props, LiveSplit.TimerComponentStateJson> {
-    inner: LiveSplit.TimerComponent;
-    timerID: number;
-
-    constructor(props: Props) {
-        super(props);
-
-        this.inner = LiveSplit.TimerComponent.new();
-
-        this.state = this.inner.stateAsJson(this.props.timer);
-    }
-
-    componentDidMount() {
-        this.timerID = setInterval(
-            () => this.update(),
-            1000 / 30
-        );
-    }
-
-    componentWillUnmount() {
-        clearInterval(this.timerID);
-        this.inner.dispose();
-    }
-
-    update() {
-        this.setState(this.inner.stateAsJson(this.props.timer));
-    }
-
+export class Component extends React.Component<Props, undefined> {
     getColor(): string {
-        return "color-" + this.state.color.toLowerCase();
+        return "color-" + this.props.state.color.toLowerCase();
     }
 
     render() {
@@ -48,12 +21,12 @@ export class Component extends React.Component<Props, LiveSplit.TimerComponentSt
                     "fill": "url(#text-gradient)",
                     "font-size": "60px",
                     "font-family": "timer, sans-serif",
-                }} x="230px" y="53px" textAnchor="end">{this.state.time}</text>
+                }} x="230px" y="53px" textAnchor="end">{this.props.state.time}</text>
                 <text className="timer-time" style={{
                     "fill": "url(#text-gradient)",
                     "font-size": "45px",
                     "font-family": "timer, sans-serif",
-                }} x="294px" y="53px" textAnchor="end">{this.state.fraction}</text>
+                }} x="294px" y="53px" textAnchor="end">{this.props.state.fraction}</text>
             </svg>
         );
     }

@@ -2,18 +2,6 @@ core: bindings
 	@make -C livesplit-core/js
 	@cp livesplit-core/js/livesplit.js src/livesplit_core.js
 
-optimized: bindings
-	@make optimized -C livesplit-core/js
-	@cp livesplit-core/js/livesplit.js src/livesplit_core.js
-
-small: bindings
-	@make small -C livesplit-core/js
-	@cp livesplit-core/js/livesplit.js src/livesplit_core.js
-
-supersmall: bindings
-	@make supersmall -C livesplit-core/js
-	@cp livesplit-core/js/livesplit.js src/livesplit_core.js
-
 wasm: bindings
 	@make wasm -C livesplit-core/js
 	@cp livesplit-core/js/livesplit.js src/livesplit_core.js

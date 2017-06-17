@@ -2,6 +2,20 @@ declare var LiveSplitCore: any;
 var emscriptenModule = LiveSplitCore({});
 var liveSplitCoreNative: any = {};
 
+export type ComponentStateJson =
+    { CurrentComparison: CurrentComparisonComponentStateJson } |
+    { CurrentPace: CurrentPaceComponentStateJson } |
+    { Delta: DeltaComponentStateJson } |
+    { Graph: GraphComponentStateJson } |
+    { PossibleTimeSave: PossibleTimeSaveComponentStateJson } |
+    { PreviousSegment: PreviousSegmentComponentStateJson } |
+    { Splits: SplitsComponentStateJson } |
+    { SumOfBest: SumOfBestComponentStateJson } |
+    { Text: TextComponentStateJson } |
+    { Timer: TimerComponentStateJson } |
+    { Title: TitleComponentStateJson } |
+    { TotalPLaytime: TotalPlaytimeComponentStateJson };
+
 export enum TimingMethod {
     RealTime = 0,
     GameTime = 1,
@@ -137,8 +151,10 @@ liveSplitCoreNative.Attempt_time = emscriptenModule.cwrap('Attempt_time', "numbe
 liveSplitCoreNative.Attempt_pause_time = emscriptenModule.cwrap('Attempt_pause_time', "number", ["number"]);
 liveSplitCoreNative.Attempt_started = emscriptenModule.cwrap('Attempt_started', "number", ["number"]);
 liveSplitCoreNative.Attempt_ended = emscriptenModule.cwrap('Attempt_ended', "number", ["number"]);
+liveSplitCoreNative.Component_drop = emscriptenModule.cwrap('Component_drop', null, ["number"]);
 liveSplitCoreNative.CurrentComparisonComponent_new = emscriptenModule.cwrap('CurrentComparisonComponent_new', "number", []);
 liveSplitCoreNative.CurrentComparisonComponent_drop = emscriptenModule.cwrap('CurrentComparisonComponent_drop', null, ["number"]);
+liveSplitCoreNative.CurrentComparisonComponent_into_generic = emscriptenModule.cwrap('CurrentComparisonComponent_into_generic', "number", ["number"]);
 liveSplitCoreNative.CurrentComparisonComponent_state_as_json = emscriptenModule.cwrap('CurrentComparisonComponent_state_as_json', "string", ["number", "number"]);
 liveSplitCoreNative.CurrentComparisonComponent_state = emscriptenModule.cwrap('CurrentComparisonComponent_state', "number", ["number", "number"]);
 liveSplitCoreNative.CurrentComparisonComponentState_drop = emscriptenModule.cwrap('CurrentComparisonComponentState_drop', null, ["number"]);
@@ -146,6 +162,7 @@ liveSplitCoreNative.CurrentComparisonComponentState_text = emscriptenModule.cwra
 liveSplitCoreNative.CurrentComparisonComponentState_comparison = emscriptenModule.cwrap('CurrentComparisonComponentState_comparison', "string", ["number"]);
 liveSplitCoreNative.CurrentPaceComponent_new = emscriptenModule.cwrap('CurrentPaceComponent_new', "number", []);
 liveSplitCoreNative.CurrentPaceComponent_drop = emscriptenModule.cwrap('CurrentPaceComponent_drop', null, ["number"]);
+liveSplitCoreNative.CurrentPaceComponent_into_generic = emscriptenModule.cwrap('CurrentPaceComponent_into_generic', "number", ["number"]);
 liveSplitCoreNative.CurrentPaceComponent_state_as_json = emscriptenModule.cwrap('CurrentPaceComponent_state_as_json', "string", ["number", "number"]);
 liveSplitCoreNative.CurrentPaceComponent_state = emscriptenModule.cwrap('CurrentPaceComponent_state', "number", ["number", "number"]);
 liveSplitCoreNative.CurrentPaceComponentState_drop = emscriptenModule.cwrap('CurrentPaceComponentState_drop', null, ["number"]);
@@ -153,6 +170,7 @@ liveSplitCoreNative.CurrentPaceComponentState_text = emscriptenModule.cwrap('Cur
 liveSplitCoreNative.CurrentPaceComponentState_time = emscriptenModule.cwrap('CurrentPaceComponentState_time', "string", ["number"]);
 liveSplitCoreNative.DeltaComponent_new = emscriptenModule.cwrap('DeltaComponent_new', "number", []);
 liveSplitCoreNative.DeltaComponent_drop = emscriptenModule.cwrap('DeltaComponent_drop', null, ["number"]);
+liveSplitCoreNative.DeltaComponent_into_generic = emscriptenModule.cwrap('DeltaComponent_into_generic', "number", ["number"]);
 liveSplitCoreNative.DeltaComponent_state_as_json = emscriptenModule.cwrap('DeltaComponent_state_as_json', "string", ["number", "number"]);
 liveSplitCoreNative.DeltaComponent_state = emscriptenModule.cwrap('DeltaComponent_state', "number", ["number", "number"]);
 liveSplitCoreNative.DeltaComponentState_drop = emscriptenModule.cwrap('DeltaComponentState_drop', null, ["number"]);
@@ -161,6 +179,7 @@ liveSplitCoreNative.DeltaComponentState_time = emscriptenModule.cwrap('DeltaComp
 liveSplitCoreNative.DeltaComponentState_color = emscriptenModule.cwrap('DeltaComponentState_color', "string", ["number"]);
 liveSplitCoreNative.GraphComponent_new = emscriptenModule.cwrap('GraphComponent_new', "number", []);
 liveSplitCoreNative.GraphComponent_drop = emscriptenModule.cwrap('GraphComponent_drop', null, ["number"]);
+liveSplitCoreNative.GraphComponent_into_generic = emscriptenModule.cwrap('GraphComponent_into_generic', "number", ["number"]);
 liveSplitCoreNative.GraphComponent_state_as_json = emscriptenModule.cwrap('GraphComponent_state_as_json', "string", ["number", "number"]);
 liveSplitCoreNative.GraphComponent_state = emscriptenModule.cwrap('GraphComponent_state', "number", ["number", "number"]);
 liveSplitCoreNative.GraphComponentState_drop = emscriptenModule.cwrap('GraphComponentState_drop', null, ["number"]);
@@ -175,8 +194,18 @@ liveSplitCoreNative.GraphComponentState_middle = emscriptenModule.cwrap('GraphCo
 liveSplitCoreNative.GraphComponentState_is_live_delta_active = emscriptenModule.cwrap('GraphComponentState_is_live_delta_active', "number", ["number"]);
 liveSplitCoreNative.HotkeySystem_new = emscriptenModule.cwrap('HotkeySystem_new', "number", ["number"]);
 liveSplitCoreNative.HotkeySystem_drop = emscriptenModule.cwrap('HotkeySystem_drop', null, ["number"]);
+liveSplitCoreNative.Layout_new = emscriptenModule.cwrap('Layout_new', "number", []);
+liveSplitCoreNative.Layout_parse_json = emscriptenModule.cwrap('Layout_parse_json', "number", ["string"]);
+liveSplitCoreNative.Layout_drop = emscriptenModule.cwrap('Layout_drop', null, ["number"]);
+liveSplitCoreNative.Layout_settings_as_json = emscriptenModule.cwrap('Layout_settings_as_json', "string", ["number"]);
+liveSplitCoreNative.Layout_state_as_json = emscriptenModule.cwrap('Layout_state_as_json', "string", ["number", "number"]);
+liveSplitCoreNative.Layout_push = emscriptenModule.cwrap('Layout_push', null, ["number", "number"]);
+liveSplitCoreNative.Layout_scroll_up = emscriptenModule.cwrap('Layout_scroll_up', null, ["number"]);
+liveSplitCoreNative.Layout_scroll_down = emscriptenModule.cwrap('Layout_scroll_down', null, ["number"]);
+liveSplitCoreNative.Layout_remount = emscriptenModule.cwrap('Layout_remount', null, ["number"]);
 liveSplitCoreNative.PossibleTimeSaveComponent_new = emscriptenModule.cwrap('PossibleTimeSaveComponent_new', "number", []);
 liveSplitCoreNative.PossibleTimeSaveComponent_drop = emscriptenModule.cwrap('PossibleTimeSaveComponent_drop', null, ["number"]);
+liveSplitCoreNative.PossibleTimeSaveComponent_into_generic = emscriptenModule.cwrap('PossibleTimeSaveComponent_into_generic', "number", ["number"]);
 liveSplitCoreNative.PossibleTimeSaveComponent_state_as_json = emscriptenModule.cwrap('PossibleTimeSaveComponent_state_as_json', "string", ["number", "number"]);
 liveSplitCoreNative.PossibleTimeSaveComponent_state = emscriptenModule.cwrap('PossibleTimeSaveComponent_state', "number", ["number", "number"]);
 liveSplitCoreNative.PossibleTimeSaveComponentState_drop = emscriptenModule.cwrap('PossibleTimeSaveComponentState_drop', null, ["number"]);
@@ -184,6 +213,7 @@ liveSplitCoreNative.PossibleTimeSaveComponentState_text = emscriptenModule.cwrap
 liveSplitCoreNative.PossibleTimeSaveComponentState_time = emscriptenModule.cwrap('PossibleTimeSaveComponentState_time', "string", ["number"]);
 liveSplitCoreNative.PreviousSegmentComponent_new = emscriptenModule.cwrap('PreviousSegmentComponent_new', "number", []);
 liveSplitCoreNative.PreviousSegmentComponent_drop = emscriptenModule.cwrap('PreviousSegmentComponent_drop', null, ["number"]);
+liveSplitCoreNative.PreviousSegmentComponent_into_generic = emscriptenModule.cwrap('PreviousSegmentComponent_into_generic', "number", ["number"]);
 liveSplitCoreNative.PreviousSegmentComponent_state_as_json = emscriptenModule.cwrap('PreviousSegmentComponent_state_as_json', "string", ["number", "number"]);
 liveSplitCoreNative.PreviousSegmentComponent_state = emscriptenModule.cwrap('PreviousSegmentComponent_state', "number", ["number", "number"]);
 liveSplitCoreNative.PreviousSegmentComponentState_drop = emscriptenModule.cwrap('PreviousSegmentComponentState_drop', null, ["number"]);
@@ -263,6 +293,7 @@ liveSplitCoreNative.SharedTimer_read = emscriptenModule.cwrap('SharedTimer_read'
 liveSplitCoreNative.SharedTimer_write = emscriptenModule.cwrap('SharedTimer_write', "number", ["number"]);
 liveSplitCoreNative.SplitsComponent_new = emscriptenModule.cwrap('SplitsComponent_new', "number", []);
 liveSplitCoreNative.SplitsComponent_drop = emscriptenModule.cwrap('SplitsComponent_drop', null, ["number"]);
+liveSplitCoreNative.SplitsComponent_into_generic = emscriptenModule.cwrap('SplitsComponent_into_generic', "number", ["number"]);
 liveSplitCoreNative.SplitsComponent_state_as_json = emscriptenModule.cwrap('SplitsComponent_state_as_json', "string", ["number", "number"]);
 liveSplitCoreNative.SplitsComponent_state = emscriptenModule.cwrap('SplitsComponent_state', "number", ["number", "number"]);
 liveSplitCoreNative.SplitsComponent_scroll_up = emscriptenModule.cwrap('SplitsComponent_scroll_up', null, ["number"]);
@@ -282,6 +313,7 @@ liveSplitCoreNative.SplitsComponentState_color = emscriptenModule.cwrap('SplitsC
 liveSplitCoreNative.SplitsComponentState_is_current_split = emscriptenModule.cwrap('SplitsComponentState_is_current_split', "number", ["number", "number"]);
 liveSplitCoreNative.SumOfBestComponent_new = emscriptenModule.cwrap('SumOfBestComponent_new', "number", []);
 liveSplitCoreNative.SumOfBestComponent_drop = emscriptenModule.cwrap('SumOfBestComponent_drop', null, ["number"]);
+liveSplitCoreNative.SumOfBestComponent_into_generic = emscriptenModule.cwrap('SumOfBestComponent_into_generic', "number", ["number"]);
 liveSplitCoreNative.SumOfBestComponent_state_as_json = emscriptenModule.cwrap('SumOfBestComponent_state_as_json', "string", ["number", "number"]);
 liveSplitCoreNative.SumOfBestComponent_state = emscriptenModule.cwrap('SumOfBestComponent_state', "number", ["number", "number"]);
 liveSplitCoreNative.SumOfBestComponentState_drop = emscriptenModule.cwrap('SumOfBestComponentState_drop', null, ["number"]);
@@ -289,6 +321,7 @@ liveSplitCoreNative.SumOfBestComponentState_text = emscriptenModule.cwrap('SumOf
 liveSplitCoreNative.SumOfBestComponentState_time = emscriptenModule.cwrap('SumOfBestComponentState_time', "string", ["number"]);
 liveSplitCoreNative.TextComponent_new = emscriptenModule.cwrap('TextComponent_new', "number", []);
 liveSplitCoreNative.TextComponent_drop = emscriptenModule.cwrap('TextComponent_drop', null, ["number"]);
+liveSplitCoreNative.TextComponent_into_generic = emscriptenModule.cwrap('TextComponent_into_generic', "number", ["number"]);
 liveSplitCoreNative.TextComponent_state_as_json = emscriptenModule.cwrap('TextComponent_state_as_json', "string", ["number"]);
 liveSplitCoreNative.TextComponent_state = emscriptenModule.cwrap('TextComponent_state', "number", ["number"]);
 liveSplitCoreNative.TextComponent_set_center = emscriptenModule.cwrap('TextComponent_set_center', null, ["number", "string"]);
@@ -336,6 +369,7 @@ liveSplitCoreNative.Timer_set_game_time = emscriptenModule.cwrap('Timer_set_game
 liveSplitCoreNative.Timer_set_loading_times = emscriptenModule.cwrap('Timer_set_loading_times', null, ["number", "number"]);
 liveSplitCoreNative.TimerComponent_new = emscriptenModule.cwrap('TimerComponent_new', "number", []);
 liveSplitCoreNative.TimerComponent_drop = emscriptenModule.cwrap('TimerComponent_drop', null, ["number"]);
+liveSplitCoreNative.TimerComponent_into_generic = emscriptenModule.cwrap('TimerComponent_into_generic', "number", ["number"]);
 liveSplitCoreNative.TimerComponent_state_as_json = emscriptenModule.cwrap('TimerComponent_state_as_json', "string", ["number", "number"]);
 liveSplitCoreNative.TimerComponent_state = emscriptenModule.cwrap('TimerComponent_state', "number", ["number", "number"]);
 liveSplitCoreNative.TimerComponentState_drop = emscriptenModule.cwrap('TimerComponentState_drop', null, ["number"]);
@@ -348,6 +382,7 @@ liveSplitCoreNative.TimerWriteLock_drop = emscriptenModule.cwrap('TimerWriteLock
 liveSplitCoreNative.TimerWriteLock_timer = emscriptenModule.cwrap('TimerWriteLock_timer', "number", ["number"]);
 liveSplitCoreNative.TitleComponent_new = emscriptenModule.cwrap('TitleComponent_new', "number", []);
 liveSplitCoreNative.TitleComponent_drop = emscriptenModule.cwrap('TitleComponent_drop', null, ["number"]);
+liveSplitCoreNative.TitleComponent_into_generic = emscriptenModule.cwrap('TitleComponent_into_generic', "number", ["number"]);
 liveSplitCoreNative.TitleComponent_state_as_json = emscriptenModule.cwrap('TitleComponent_state_as_json', "string", ["number", "number"]);
 liveSplitCoreNative.TitleComponent_state = emscriptenModule.cwrap('TitleComponent_state', "number", ["number", "number"]);
 liveSplitCoreNative.TitleComponentState_drop = emscriptenModule.cwrap('TitleComponentState_drop', null, ["number"]);
@@ -357,6 +392,7 @@ liveSplitCoreNative.TitleComponentState_category = emscriptenModule.cwrap('Title
 liveSplitCoreNative.TitleComponentState_attempts = emscriptenModule.cwrap('TitleComponentState_attempts', "number", ["number"]);
 liveSplitCoreNative.TotalPlaytimeComponent_new = emscriptenModule.cwrap('TotalPlaytimeComponent_new', "number", []);
 liveSplitCoreNative.TotalPlaytimeComponent_drop = emscriptenModule.cwrap('TotalPlaytimeComponent_drop', null, ["number"]);
+liveSplitCoreNative.TotalPlaytimeComponent_into_generic = emscriptenModule.cwrap('TotalPlaytimeComponent_into_generic', "number", ["number"]);
 liveSplitCoreNative.TotalPlaytimeComponent_state_as_json = emscriptenModule.cwrap('TotalPlaytimeComponent_state_as_json', "string", ["number", "number"]);
 liveSplitCoreNative.TotalPlaytimeComponent_state = emscriptenModule.cwrap('TotalPlaytimeComponent_state', "number", ["number", "number"]);
 liveSplitCoreNative.TotalPlaytimeComponentState_drop = emscriptenModule.cwrap('TotalPlaytimeComponentState_drop', null, ["number"]);
@@ -482,6 +518,32 @@ export class Attempt extends AttemptRefMut {
     }
 }
 
+export class ComponentRef {
+    ptr: number;
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+export class ComponentRefMut extends ComponentRef {
+}
+
+export class Component extends ComponentRefMut {
+    with(closure: (obj: Component) => void) {
+        try {
+            closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    dispose() {
+        if (this.ptr != 0) {
+            liveSplitCoreNative.Component_drop(this.ptr);
+            this.ptr = 0;
+        }
+    }
+}
+
 export class CurrentComparisonComponentRef {
     ptr: number;
     constructor(ptr: number) {
@@ -531,6 +593,17 @@ export class CurrentComparisonComponent extends CurrentComparisonComponentRefMut
     }
     static new(): CurrentComparisonComponent {
         var result = new CurrentComparisonComponent(liveSplitCoreNative.CurrentComparisonComponent_new());
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    intoGeneric(): Component {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = new Component(liveSplitCoreNative.CurrentComparisonComponent_into_generic(this.ptr));
+        this.ptr = 0;
         if (result.ptr == 0) {
             return null;
         }
@@ -632,6 +705,17 @@ export class CurrentPaceComponent extends CurrentPaceComponentRefMut {
         }
         return result;
     }
+    intoGeneric(): Component {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = new Component(liveSplitCoreNative.CurrentPaceComponent_into_generic(this.ptr));
+        this.ptr = 0;
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
 }
 
 export class CurrentPaceComponentStateRef {
@@ -723,6 +807,17 @@ export class DeltaComponent extends DeltaComponentRefMut {
     }
     static new(): DeltaComponent {
         var result = new DeltaComponent(liveSplitCoreNative.DeltaComponent_new());
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    intoGeneric(): Component {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = new Component(liveSplitCoreNative.DeltaComponent_into_generic(this.ptr));
+        this.ptr = 0;
         if (result.ptr == 0) {
             return null;
         }
@@ -826,6 +921,17 @@ export class GraphComponent extends GraphComponentRefMut {
     }
     static new(): GraphComponent {
         var result = new GraphComponent(liveSplitCoreNative.GraphComponent_new());
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    intoGeneric(): Component {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = new Component(liveSplitCoreNative.GraphComponent_into_generic(this.ptr));
+        this.ptr = 0;
         if (result.ptr == 0) {
             return null;
         }
@@ -959,6 +1065,91 @@ export class HotkeySystem extends HotkeySystemRefMut {
     }
 }
 
+export class LayoutRef {
+    ptr: number;
+    settingsAsJson(): any {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.Layout_settings_as_json(this.ptr);
+        return JSON.parse(result);
+    }
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+export class LayoutRefMut extends LayoutRef {
+    stateAsJson(timer: TimerRef): any {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (timer.ptr == 0) {
+            throw "timer is disposed";
+        }
+        var result = liveSplitCoreNative.Layout_state_as_json(this.ptr, timer.ptr);
+        return JSON.parse(result);
+    }
+    push(component: Component) {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (component.ptr == 0) {
+            throw "component is disposed";
+        }
+        liveSplitCoreNative.Layout_push(this.ptr, component.ptr);
+        component.ptr = 0;
+    }
+    scrollUp() {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.Layout_scroll_up(this.ptr);
+    }
+    scrollDown() {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.Layout_scroll_down(this.ptr);
+    }
+    remount() {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.Layout_remount(this.ptr);
+    }
+}
+
+export class Layout extends LayoutRefMut {
+    with(closure: (obj: Layout) => void) {
+        try {
+            closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    dispose() {
+        if (this.ptr != 0) {
+            liveSplitCoreNative.Layout_drop(this.ptr);
+            this.ptr = 0;
+        }
+    }
+    static new(): Layout {
+        var result = new Layout(liveSplitCoreNative.Layout_new());
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    static parseJson(settings: any): Layout {
+        var result = new Layout(liveSplitCoreNative.Layout_parse_json(JSON.stringify(settings)));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+}
+
 export class PossibleTimeSaveComponentRef {
     ptr: number;
     stateAsJson(timer: TimerRef): any {
@@ -1008,6 +1199,17 @@ export class PossibleTimeSaveComponent extends PossibleTimeSaveComponentRefMut {
     }
     static new(): PossibleTimeSaveComponent {
         var result = new PossibleTimeSaveComponent(liveSplitCoreNative.PossibleTimeSaveComponent_new());
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    intoGeneric(): Component {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = new Component(liveSplitCoreNative.PossibleTimeSaveComponent_into_generic(this.ptr));
+        this.ptr = 0;
         if (result.ptr == 0) {
             return null;
         }
@@ -1104,6 +1306,17 @@ export class PreviousSegmentComponent extends PreviousSegmentComponentRefMut {
     }
     static new(): PreviousSegmentComponent {
         var result = new PreviousSegmentComponent(liveSplitCoreNative.PreviousSegmentComponent_new());
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    intoGeneric(): Component {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = new Component(liveSplitCoreNative.PreviousSegmentComponent_into_generic(this.ptr));
+        this.ptr = 0;
         if (result.ptr == 0) {
             return null;
         }
@@ -2038,6 +2251,17 @@ export class SplitsComponent extends SplitsComponentRefMut {
         }
         return result;
     }
+    intoGeneric(): Component {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = new Component(liveSplitCoreNative.SplitsComponent_into_generic(this.ptr));
+        this.ptr = 0;
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
 }
 
 export class SplitsComponentStateRef {
@@ -2176,6 +2400,17 @@ export class SumOfBestComponent extends SumOfBestComponentRefMut {
         }
         return result;
     }
+    intoGeneric(): Component {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = new Component(liveSplitCoreNative.SumOfBestComponent_into_generic(this.ptr));
+        this.ptr = 0;
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
 }
 
 export class SumOfBestComponentStateRef {
@@ -2279,6 +2514,17 @@ export class TextComponent extends TextComponentRefMut {
     }
     static new(): TextComponent {
         var result = new TextComponent(liveSplitCoreNative.TextComponent_new());
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    intoGeneric(): Component {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = new Component(liveSplitCoreNative.TextComponent_into_generic(this.ptr));
+        this.ptr = 0;
         if (result.ptr == 0) {
             return null;
         }
@@ -2715,6 +2961,17 @@ export class TimerComponent extends TimerComponentRefMut {
         }
         return result;
     }
+    intoGeneric(): Component {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = new Component(liveSplitCoreNative.TimerComponent_into_generic(this.ptr));
+        this.ptr = 0;
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
 }
 
 export class TimerComponentStateRef {
@@ -2890,6 +3147,17 @@ export class TitleComponent extends TitleComponentRefMut {
         }
         return result;
     }
+    intoGeneric(): Component {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = new Component(liveSplitCoreNative.TitleComponent_into_generic(this.ptr));
+        this.ptr = 0;
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
 }
 
 export class TitleComponentStateRef {
@@ -2995,6 +3263,17 @@ export class TotalPlaytimeComponent extends TotalPlaytimeComponentRefMut {
     }
     static new(): TotalPlaytimeComponent {
         var result = new TotalPlaytimeComponent(liveSplitCoreNative.TotalPlaytimeComponent_new());
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    intoGeneric(): Component {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = new Component(liveSplitCoreNative.TotalPlaytimeComponent_into_generic(this.ptr));
+        this.ptr = 0;
         if (result.ptr == 0) {
             return null;
         }
