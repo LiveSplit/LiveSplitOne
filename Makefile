@@ -12,13 +12,19 @@ debug: bindings
 
 bindings:
 	@make bindings -C livesplit-core/js
-	@cp livesplit-core/capi/bindings/emscripten/livesplit_core.ts src/livesplit.ts
 
 run:
 	@python -m SimpleHTTPServer 8080
 
-build: core
+web: core
+	@cp livesplit-core/capi/bindings/emscripten/livesplit_core.ts src/livesplit.ts
 	webpack
 
+electron:
+	@rm src/livesplit_core.js 2>/dev/null || :
+	@rm dist/bundle.js 2>/dev/null || :
+	@cp livesplit-core/capi/bindings/node/livesplit_core.ts src/livesplit.ts
+	@tsc src/index.tsx --jsx 'react' --outDir 'dist/electron/'
+	
 clean:
 	@make clean -C livesplit-core/js

@@ -16,17 +16,22 @@ import Sidebar from "react-sidebar";
 
 export interface Props { }
 export interface State {
-    timer: Core.Timer,
+    timer: Core.SharedTimer,
     layout: Core.Layout,
     layoutState: Core.ComponentStateJson[],
     sidebarOpen: boolean,
+    hotkeySystem: Core.HotkeySystem,
     timingMethod?: Core.TimingMethod,
     comparison?: string,
     editor?: Core.RunEditor,
 }
 
+let isElectron = global.process !== undefined;
+let isWeb = !isElectron;
+console.log("isWeb: " + isWeb + "  isElectron: " + isElectron);
+
 export class LiveSplit extends React.Component<Props, State> {
-    intervalID: number;
+    intervalID: any;
     keyEvent: EventListenerObject;
     scrollEvent: EventListenerObject;
     rightClickEvent: EventListenerObject;
@@ -47,7 +52,7 @@ export class LiveSplit extends React.Component<Props, State> {
             let lss = localStorage.getItem("splits");
             if (lss != undefined && lss != null && lss.length > 0) {
                 run.dispose();
-                run = Core.Run.parseString(lss);
+                //run = Core.Run.parseString(lss);
             }
         }
 
@@ -64,10 +69,14 @@ export class LiveSplit extends React.Component<Props, State> {
             layout.push(Core.PreviousSegmentComponent.new().intoGeneric());
         }
 
+        let timer = Core.Timer.new(run).intoShared();
+        let system = Core.HotkeySystem.new(timer.share());
+
         this.state = {
-            timer: Core.Timer.new(run),
+            timer: timer,
             layout: layout,
             layoutState: [],
+            hotkeySystem: system,
             sidebarOpen: false,
         };
     }
@@ -75,8 +84,12 @@ export class LiveSplit extends React.Component<Props, State> {
     componentWillMount() {
         this.scrollEvent = { handleEvent: (e: MouseWheelEvent) => this.onScroll(e) };
         window.addEventListener('mousewheel', this.scrollEvent);
-        this.keyEvent = { handleEvent: (e: KeyboardEvent) => this.onKeyPress(e) };
-        window.addEventListener('keypress', this.keyEvent);
+
+        if (isWeb) {
+            this.keyEvent = { handleEvent: (e: KeyboardEvent) => this.onKeyPress(e) };
+            window.addEventListener('keypress', this.keyEvent);
+        }
+
         this.rightClickEvent = { handleEvent: (e: any) => this.onRightClick(e) };
         window.addEventListener('contextmenu', this.rightClickEvent, false);
         this.intervalID = setInterval(
@@ -88,9 +101,14 @@ export class LiveSplit extends React.Component<Props, State> {
     componentWillUnmount() {
         clearInterval(this.intervalID);
         window.removeEventListener('mousewheel', this.scrollEvent);
-        window.removeEventListener('keypress', this.keyEvent);
+
+        if (isWeb) {
+            window.removeEventListener('keypress', this.keyEvent);
+        }
+
         window.removeEventListener('contextmenu', this.rightClickEvent);
         this.state.timer.dispose();
+        this.state.hotkeySystem.dispose();
         this.state.layout.dispose();
     }
 
@@ -105,13 +123,21 @@ export class LiveSplit extends React.Component<Props, State> {
 
     update() {
         if (!this.state.editor) {
-            let layoutState = this.state.layout.stateAsJson(this.state.timer);
+            let layoutState = undefined;
+            let timingMethod = undefined;
+            let currentComparison = undefined;
+
+            this.state.timer.readWith(timer => {
+                layoutState = this.state.layout.stateAsJson(timer);
+                timingMethod = timer.currentTimingMethod();
+                currentComparison = timer.currentComparison();
+            });
 
             this.setState({
                 ...this.state,
                 layoutState: layoutState,
-                timingMethod: this.state.timer.currentTimingMethod(),
-                comparison: this.state.timer.currentComparison(),
+                timingMethod: timingMethod,
+                comparison: currentComparison,
             });
         }
     }
@@ -129,35 +155,56 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     onSplit() {
-        this.state.timer.split();
+        this.state.timer.writeWith(timer => {
+            timer.split();
+        });
     }
 
     onReset() {
-        this.state.timer.reset(true);
+        this.state.timer.writeWith(timer => {
+            timer.reset(true);
+        });
     }
 
     onPause() {
-        this.state.timer.pause();
+        this.state.timer.writeWith(timer => {
+            timer.pause();
+        });
     }
 
     onUndo() {
-        this.state.timer.undoSplit();
+        this.state.timer.writeWith(timer => {
+            timer.undoSplit();
+        });
     }
 
     onSkip() {
-        this.state.timer.skipSplit();
+        this.state.timer.writeWith(timer => {
+            timer.skipSplit();
+        });
     }
 
     onPreviousComparison() {
-        this.state.timer.switchToPreviousComparison();
+        this.state.timer.writeWith(timer => {
+            timer.switchToPreviousComparison();
+        });
     }
 
     onNextComparison() {
-        this.state.timer.switchToNextComparison();
+        this.state.timer.writeWith(timer => {
+            timer.switchToNextComparison();
+        });
     }
 
     onPrintDebug() {
-        this.state.timer.printDebug();
+        this.state.timer.readWith(timer => {
+            timer.printDebug();
+        });
+    }
+    setCurrentTimingMethod(timingMethod: Core.TimingMethod) {
+        this.state.timer.writeWith(timer => {
+            timer.setCurrentTimingMethod(timingMethod);
+        });
     }
 
     importSplits() {
@@ -174,16 +221,16 @@ export class LiveSplit extends React.Component<Props, State> {
             reader.onload = function (e: any) {
                 var contents = e.target.result;
                 let oldTimer = component.state.timer;
-                let run = Core.Run.parseArray(new Int8Array(contents));
-                if (run) {
-                    component.setState({
-                        ...component.state,
-                        timer: Core.Timer.new(run),
-                    });
-                    oldTimer.dispose();
-                } else {
-                    alert("Couldn't parse the splits.");
-                }
+                //let run = Core.Run.parseArray(new Int8Array(contents));
+                //if (run) {
+                //    component.setState({
+                //        ...component.state,
+                //        timer: Core.Timer.new(run),
+                //    });
+                //    oldTimer.dispose();
+                //} else {
+                //    alert("Couldn't parse the splits.");
+                //}
             };
             reader.readAsArrayBuffer(file);
         };
@@ -204,7 +251,7 @@ export class LiveSplit extends React.Component<Props, State> {
                     var oldTimer = component.state.timer;
                     component.setState({
                         ...component.state,
-                        timer: Core.Timer.new(Core.Run.parseArray(new Int8Array(xhr.response))),
+                        //timer: Core.Timer.new(Core.Run.parseArray(new Int8Array(xhr.response))),
                     });
                     oldTimer.dispose();
                 };
@@ -226,7 +273,10 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     uploadToSplitsIO() {
-        let lss = this.state.timer.getRun().saveAsLss();
+        let lss = "";
+        this.state.timer.readWith(timer => {
+            lss = timer.getRun().saveAsLss();
+        });
         var xhr = new XMLHttpRequest();
         xhr.open('POST', "https://splits.io/api/v4/runs", true);
         xhr.onload = function () {
@@ -277,12 +327,20 @@ export class LiveSplit extends React.Component<Props, State> {
             document.body.removeChild(element);
         }
 
-        let lss = this.state.timer.getRun().saveAsLss();
-        download(this.state.timer.getRun().extendedFileName(true) + ".lss", lss);
+        let lss = undefined;
+
+        this.state.timer.readWith(timer => {
+            lss = timer.getRun().saveAsLss();
+            download(timer.getRun().extendedFileName(true) + ".lss", lss);
+        });
+
     }
 
     saveSplits() {
-        let lss = this.state.timer.getRun().saveAsLss();
+        let lss = undefined;
+        this.state.timer.readWith(timer => {
+            lss = timer.getRun().saveAsLss();
+        });
         localStorage.setItem("splits", lss);
     }
 
@@ -292,23 +350,25 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     openRunEditor() {
-        if (this.state.timer.currentPhase() == Core.TimerPhase.NotRunning) {
-            let run = this.state.timer.getRun().clone();
-            let editor = Core.RunEditor.new(run);
-            this.setState({
-                ...this.state,
-                editor: editor,
-                sidebarOpen: false,
-            });
-        } else {
-            alert("Not ok");
-        }
+        this.state.timer.readWith(timer => {
+            if (timer.currentPhase() == Core.TimerPhase.NotRunning) {
+                let run = timer.getRun().clone();
+                let editor = Core.RunEditor.new(run);
+                this.setState({
+                    ...this.state,
+                    editor: editor,
+                    sidebarOpen: false,
+                });
+            } else {
+                alert("Not ok");
+            }
+        })
     }
 
     closeRunEditor(save: boolean) {
         if (save) {
             let run = this.state.editor.close();
-            let timer = Core.Timer.new(run);
+            let timer = Core.Timer.new(run).intoShared();
             this.state.timer.dispose();
             this.setState({
                 ...this.state,
@@ -412,8 +472,8 @@ export class LiveSplit extends React.Component<Props, State> {
                         <button onClick={(e) => this.onNextComparison()}><i className="fa fa-caret-right" aria-hidden="true"></i></button>
                     </div>
                     <div className="small">
-                        <button onClick={(e) => this.state.timer.setCurrentTimingMethod(Core.TimingMethod.RealTime)} className={(this.state.timingMethod == Core.TimingMethod.RealTime ? "button-pressed" : "") + " toggle-left"}>Real Time</button>
-                        <button onClick={(e) => this.state.timer.setCurrentTimingMethod(Core.TimingMethod.GameTime)} className={(this.state.timingMethod == Core.TimingMethod.GameTime ? "button-pressed" : "") + " toggle-right"}>Game Time</button>
+                        <button onClick={(e) => this.setCurrentTimingMethod(Core.TimingMethod.RealTime)} className={(this.state.timingMethod == Core.TimingMethod.RealTime ? "button-pressed" : "") + " toggle-left"}>Real Time</button>
+                        <button onClick={(e) => this.setCurrentTimingMethod(Core.TimingMethod.GameTime)} className={(this.state.timingMethod == Core.TimingMethod.GameTime ? "button-pressed" : "") + " toggle-right"}>Game Time</button>
                     </div>
                 </div>
             );

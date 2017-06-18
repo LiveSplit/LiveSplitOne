@@ -2,3 +2,5 @@ node_modules
 dist
 npm-debug.log
 src/livesplit_core.js
+src/livsplit.ts
+livesplit_core.dll
