@@ -28,7 +28,7 @@ export interface State {
 
 let isElectron = global.process !== undefined;
 let isWeb = !isElectron;
-console.log("isWeb: " + isWeb + "  isElectron: " + isElectron);
+
 
 export class LiveSplit extends React.Component<Props, State> {
     intervalID: any;
@@ -52,7 +52,7 @@ export class LiveSplit extends React.Component<Props, State> {
             let lss = localStorage.getItem("splits");
             if (lss != undefined && lss != null && lss.length > 0) {
                 run.dispose();
-                //run = Core.Run.parseString(lss);
+                run = Core.Run.parseString(lss);
             }
         }
 
@@ -220,17 +220,12 @@ export class LiveSplit extends React.Component<Props, State> {
             var reader = new FileReader();
             reader.onload = function (e: any) {
                 var contents = e.target.result;
-                let oldTimer = component.state.timer;
-                //let run = Core.Run.parseArray(new Int8Array(contents));
-                //if (run) {
-                //    component.setState({
-                //        ...component.state,
-                //        timer: Core.Timer.new(run),
-                //    });
-                //    oldTimer.dispose();
-                //} else {
-                //    alert("Couldn't parse the splits.");
-                //}
+                let run = Core.Run.parseArray(new Int8Array(contents));
+                if (run) {
+                    component.state.timer.replaceInner(Core.Timer.new(run));
+                } else {
+                    alert("Couldn't parse the splits.");
+                }
             };
             reader.readAsArrayBuffer(file);
         };
@@ -248,12 +243,12 @@ export class LiveSplit extends React.Component<Props, State> {
                 xhr.open('GET', "https://splits.io/" + id + "/download/" + response.run.program, true);
                 xhr.responseType = 'arraybuffer';
                 xhr.onload = function () {
-                    var oldTimer = component.state.timer;
-                    component.setState({
-                        ...component.state,
-                        //timer: Core.Timer.new(Core.Run.parseArray(new Int8Array(xhr.response))),
-                    });
-                    oldTimer.dispose();
+                    let run = Core.Run.parseArray(new Int8Array(xhr.response));
+                    if (run) {
+                        component.state.timer.replaceInner(Core.Timer.new(run));
+                    } else {
+                        alert("Couldn't parse the splits.");
+                    }
                 };
                 xhr.send(null);
             }

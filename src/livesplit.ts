@@ -293,6 +293,7 @@ var liveSplitCoreNative = ffi.Library('livesplit_core', {
     'SharedTimer_share': ['pointer', ['pointer']],
     'SharedTimer_read': ['pointer', ['pointer']],
     'SharedTimer_write': ['pointer', ['pointer']],
+    'SharedTimer_replace_inner': ['void', ['pointer', 'pointer']],
     'SplitsComponent_new': ['pointer', []],
     'SplitsComponent_drop': ['void', ['pointer']],
     'SplitsComponent_into_generic': ['pointer', ['pointer']],
@@ -1554,8 +1555,19 @@ export class Run extends RunRefMut {
         }
         return result;
     }
+    static parseArray(data: Int8Array): Run {
+        var buf = Buffer.from(data.buffer);
+        if (data.byteLength !== data.buffer.byteLength) {
+            buf = buf.slice(data.byteOffset, data.byteOffset + data.byteLength);
+        }
+        return Run.parse(buf, buf.byteLength);
+    }
     static parseFile(file: any) {
         var data = fs.readFileSync(file);
+        return Run.parse(data, data.byteLength);
+    }
+    static parseString(text: string): Run {
+        let data = new Buffer(text);
         return Run.parse(data, data.byteLength);
     }
 }
@@ -2110,6 +2122,16 @@ export class SharedTimerRef {
             return null;
         }
         return result;
+    }
+    replaceInner(timer: Timer) {
+        if (ref.isNull(this.ptr)) {
+            throw "this is disposed";
+        }
+        if (ref.isNull(timer.ptr)) {
+            throw "timer is disposed";
+        }
+        liveSplitCoreNative.SharedTimer_replace_inner(this.ptr, timer.ptr);
+        timer.ptr = ref.NULL;
     }
     readWith(action: (timer: TimerRef) => void) {
         this.read().with(function (lock) {
