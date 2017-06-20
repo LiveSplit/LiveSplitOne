@@ -1,0 +1,25 @@
+@import "./livesplit.css";
+.livesplit,
+.buttons {
+  margin: 0;
+  width: 100%;
+}
+body {
+  overflow: hidden;
+}
+.graph > svg {
+  width: 100%
+}
+
+.timer > svg {
+  margin-right: 0;
+  margin-left: auto;
+}
+.title-bar {
+  -webkit-app-region: drag;
+}
+::-webkit-scrollbar {
+   background: transparent;
+   width: 0;
+}
+

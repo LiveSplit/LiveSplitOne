@@ -7,11 +7,50 @@
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<title>LiveSplit One</title>
-	<link href="./css/livesplit.css" rel="stylesheet">
+	<link href="./css/livesplit.electron.css" rel="stylesheet">
 	<link rel="icon" href="images/icon.ico">
+	<script>
+		window.setSize = function (w, h) {
+			var win = require('electron').remote.getCurrentWindow();
+
+			var width, height;
+			if (typeof (w) !== 'number') {
+				width = win.getSize()[0];
+			} else {
+				width = w;
+			}
+			if (typeof (h) !== 'number') {
+				height = win.getSize()[1];
+			} else {
+				height = h;
+			}
+
+			win.setSize(width, height);
+		};
+		
+		window.wrapSize = function () {
+			var win = require('electron').remote.getCurrentWindow();
+			var width = win.getSize()[0];
+			var livesplit = document.getElementsByClassName("livesplit")[0];
+			var height = livesplit.clientHeight;
+
+			// Add the buttons (remove?)
+			var buttons = document.getElementsByClassName("buttons")[0];
+			height = height + buttons.clientHeight;
+
+			window.setSize(null, height);
+		}
+	</script>
 </head>
 
 <body>
+	<div class="title-bar" style="
+    height: 20px;
+    position: absolute;
+    top: 0;
+    right: 0;
+    left: 0;
+	"></div>
 	<div id="example"></div>
 
 	<!-- Dependencies -->
@@ -21,7 +60,27 @@
 
 	<!-- Main -->
 	<script>
+		const remote = require('electron').remote;
+
 		require('./dist/electron/index');
+
+		// Create a close button for the App
+		var button = document.createElement("button");
+		var text = document.createTextNode("Close LiveSplit");
+		button.appendChild(text);
+		button.onclick = function () {
+			var window = remote.getCurrentWindow();
+			window.close();
+		};
+
+		// Add close button to the sidebar
+		var sidebar = document.getElementsByClassName("sidebar-buttons")[0];
+		sidebar.appendChild(button);
+
+		// Set the height of Livesplit to the size of the components
+		window.onload = (e) => {
+			window.wrapSize();
+		};
 	</script>
 </body>
 

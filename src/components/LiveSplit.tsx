@@ -28,7 +28,7 @@ export interface State {
 
 let isElectron = global.process !== undefined;
 let isWeb = !isElectron;
-
+let resize = false;
 
 export class LiveSplit extends React.Component<Props, State> {
     intervalID: any;
@@ -139,6 +139,12 @@ export class LiveSplit extends React.Component<Props, State> {
                 timingMethod: timingMethod,
                 comparison: currentComparison,
             });
+            if (resize) {
+                if (isElectron) {
+                    window.wrapSize();
+                }
+                resize = false;
+            }
         }
     }
 
@@ -223,6 +229,9 @@ export class LiveSplit extends React.Component<Props, State> {
                 let run = Core.Run.parseArray(new Int8Array(contents));
                 if (run) {
                     component.state.timer.replaceInner(Core.Timer.new(run));
+                    if (isElectron) {
+                        resize = true;
+                    }
                 } else {
                     alert("Couldn't parse the splits.");
                 }
@@ -230,6 +239,11 @@ export class LiveSplit extends React.Component<Props, State> {
             reader.readAsArrayBuffer(file);
         };
         input.click();
+
+        this.setState({
+            ...this.state,
+            sidebarOpen: false
+        });
     }
 
     loadFromSplitsIO(id: string) {

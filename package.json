@@ -5,7 +5,8 @@
   "main": "dist/bundle.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "electron ."
+    "start": "electron .",
+    "debug": "electron . --remote-debugging-port=9222"
   },
   "author": "",
   "license": "ISC",

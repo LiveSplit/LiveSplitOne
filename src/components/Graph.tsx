@@ -84,6 +84,7 @@ export class Component extends React.Component<Props, undefined> {
         }
 
         let svg = React.createElement("svg", { "height": height }, children);
-        return svg;
+        let div = React.createElement("div", {"className": "graph"}, svg);
+        return div;
     }
 }
