@@ -638,3 +638,38 @@ input[Type="text"] {
 svg {
     display: block;
 }
+
+.modal-dialog > *,
+.modal-dialog > div > * {
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+    padding: 5px;
+    position: relative;
+    text-align: center;
+}
+
+.modal-dialog > .input {
+    display: flex;
+}
+
+.modal-dialog > div >input {
+    margin-right: 10px;
+    font-size: 14px;
+    border: 1px solid hsl(0, 0%, 25%);
+    width: 60%;
+    flex: 1;
+}
+
+
+.modal-dialog > div > button {
+    font-size: 15px;
+    flex: 0 0 30px;
+}
+
+span.modal-close:hover,
+span.modal-close:focus {
+    color: #555 !important;
+    text-decoration: none;
+    cursor: pointer;
+}

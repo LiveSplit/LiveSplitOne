@@ -12,6 +12,7 @@ import { Component as TimerComponent } from "./Timer";
 import { Component as TitleComponent } from "./Title";
 import { Component as TotalPlaytimeComponent } from "./TotalPlaytime";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
+import { ModalDialog } from "../ModalDialog";
 import Sidebar from "react-sidebar";
 
 export interface Props { }
@@ -21,9 +22,10 @@ export interface State {
     layoutState: Core.ComponentStateJson[],
     sidebarOpen: boolean,
     hotkeySystem: Core.HotkeySystem,
+    modalOpen: boolean,
     timingMethod?: Core.TimingMethod,
     comparison?: string,
-    editor?: Core.RunEditor,
+    editor?: Core.RunEditor
 }
 
 let isElectron = global.process !== undefined;
@@ -78,6 +80,7 @@ export class LiveSplit extends React.Component<Props, State> {
             layoutState: [],
             hotkeySystem: system,
             sidebarOpen: false,
+            modalOpen: false
         };
     }
 
@@ -240,10 +243,7 @@ export class LiveSplit extends React.Component<Props, State> {
         };
         input.click();
 
-        this.setState({
-            ...this.state,
-            sidebarOpen: false
-        });
+        this.onSetSidebarOpen(false);
     }
 
     loadFromSplitsIO(id: string) {
@@ -260,6 +260,9 @@ export class LiveSplit extends React.Component<Props, State> {
                     let run = Core.Run.parseArray(new Int8Array(xhr.response));
                     if (run) {
                         component.state.timer.replaceInner(Core.Timer.new(run));
+                        if (isElectron) {
+                            resize = true;
+                        }
                     } else {
                         alert("Couldn't parse the splits.");
                     }
@@ -271,14 +274,22 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     openFromSplitsIO() {
-        var id = prompt("Specify the splits i/o URL or ID");
-        if (id == null) {
-            return;
+        if (isElectron) {
+            this.setState({
+                ...this.state,
+                modalOpen: true,
+                sidebarOpen: false
+            });
+        } else {
+            var id = prompt("Specify the splits i/o URL or ID");
+            if (id == null) {
+                return;
+            }
+            if (id.indexOf("https://splits.io/") == 0) {
+                id = id.substr("https://splits.io/".length);
+            }
+            this.loadFromSplitsIO(id);
         }
-        if (id.indexOf("https://splits.io/") == 0) {
-            id = id.substr("https://splits.io/".length);
-        }
-        this.loadFromSplitsIO(id);
     }
 
     uploadToSplitsIO() {
@@ -454,6 +465,25 @@ export class LiveSplit extends React.Component<Props, State> {
         }
     }
 
+    modalSubmitClick() {
+        let input = document.getElementById("modal-input") as HTMLInputElement;
+        let value = input.value;
+
+        if (value == null) {
+            return;
+        }
+
+        if (value.indexOf("https://splits.io/") == 0) {
+            value = value.substr("https://splits.io/".length);
+        }
+        this.loadFromSplitsIO(value);
+
+        this.setState({
+            ...this.state,
+            modalOpen: false
+        });
+    }
+
     render() {
         var sidebarContent = this.state.editor ? (
             <div className="sidebar-buttons">
@@ -571,12 +601,25 @@ export class LiveSplit extends React.Component<Props, State> {
             </div>;
         }
 
+        var input = "";
+
+        var modalDialog = this.state.modalOpen ? (
+            <ModalDialog className="modal-dialog" onClose={() => { this.setState({ ...this.state, modalOpen: false }); }}>
+                <div>Specify the splits i/o URL or ID</div>
+                <div className="input">
+                    <input id="modal-input" type="text" required placeholder="https://splits.io/1ep8 or 1ep8" />
+                    <button onClick={(e) => this.modalSubmitClick()}>Submit</button>
+                </div>
+            </ModalDialog>
+        ) : <div />;
+
         return (
             <Sidebar sidebar={sidebarContent}
                 open={this.state.sidebarOpen}
                 onSetOpen={((e: boolean) => this.onSetSidebarOpen(e)) as any}
                 sidebarClassName="sidebar"
                 contentClassName="livesplit-container">
+                {modalDialog}
                 {
                     content
                 }
