@@ -14,7 +14,9 @@ function createWindow() {
 		frame: false,
 		movable: true,
 		minWidth: 300,
-		minHeight: 60
+		minHeight: 60,
+		icon: './images/icon.ico',
+		show: false
 	})
 
 	// and load the index.html of the app.
@@ -23,6 +25,9 @@ function createWindow() {
 		protocol: 'file:',
 		slashes: true
 	}))
+	win.once('ready-to-show', () => {
+		win.show();
+	});
 
 	// Open the DevTools.
 	//win.webContents.openDevTools()

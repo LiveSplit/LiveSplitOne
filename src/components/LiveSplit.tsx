@@ -23,6 +23,7 @@ export interface State {
     sidebarOpen: boolean,
     hotkeySystem: Core.HotkeySystem,
     modalOpen: boolean,
+    aboutOpen: boolean,
     timingMethod?: Core.TimingMethod,
     comparison?: string,
     editor?: Core.RunEditor
@@ -80,7 +81,8 @@ export class LiveSplit extends React.Component<Props, State> {
             layoutState: [],
             hotkeySystem: system,
             sidebarOpen: false,
-            modalOpen: false
+            modalOpen: false,
+            aboutOpen: false
         };
     }
 
@@ -319,7 +321,11 @@ export class LiveSplit extends React.Component<Props, State> {
             formData.append("file", lss);
 
             xhr.onload = function () {
-                window.open(claim_uri);
+                if (isElectron) {
+                    window.openNewWindow(claim_uri, false, null, 800, 800);
+                } else {
+                    window.open(claim_uri);
+                }
             };
             xhr.onerror = function () {
                 alert("Failed to upload the splits.");
@@ -604,7 +610,9 @@ export class LiveSplit extends React.Component<Props, State> {
         var input = "";
 
         var modalDialog = this.state.modalOpen ? (
-            <ModalDialog className="modal-dialog" onClose={() => { this.setState({ ...this.state, modalOpen: false }); }}>
+            <ModalDialog className="modal-dialog"
+                onClose={() => { this.setState({ ...this.state, modalOpen: false }); }}
+                onSubmit={() => this.modalSubmitClick()}>
                 <div>Specify the splits i/o URL or ID</div>
                 <div className="input">
                     <input id="modal-input" type="text" required placeholder="https://splits.io/1ep8 or 1ep8" />
@@ -612,6 +620,12 @@ export class LiveSplit extends React.Component<Props, State> {
                 </div>
             </ModalDialog>
         ) : <div />;
+
+        var aboutDialog = this.state.aboutOpen ? (
+            <div />
+        ) : (
+                <div />
+            );
 
         return (
             <Sidebar sidebar={sidebarContent}

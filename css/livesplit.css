@@ -639,6 +639,10 @@ svg {
     display: block;
 }
 
+.modal-dialog > div {
+    text-shadow: 1px 1px 1px rgba(0,0,0,.3);
+}
+
 .modal-dialog > *,
 .modal-dialog > div > * {
     margin: 0 auto;
@@ -665,6 +669,7 @@ svg {
 .modal-dialog > div > button {
     font-size: 15px;
     flex: 0 0 30px;
+    box-shadow: 1px 2px 1px rgba(0,0,0,.3);
 }
 
 span.modal-close:hover,

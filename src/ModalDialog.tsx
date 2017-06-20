@@ -2,25 +2,30 @@ import * as React from "react";
 
 export interface Props {
 	onClose(): void,
+	onSubmit(): void,
 	className?: string,
 	children?: any,
+	style?: object
 }
 export interface State { }
 
-const styles = {
-	dialog: {
-		boxSizing: 'border-box',
-		position: 'relative',
-		background: 'white',
-		padding: 20,
-		color: '#333',
-		boxShadow: '0px 2px 15px rgba(0, 0, 0, 0.4)',
-		borderRadius: 10,
-	}
+var styles = {
+	boxSizing: 'border-box',
+	position: 'relative',
+	background: 'white',
+	padding: 20,
+	color: '#333',
+	boxShadow: '0px 2px 15px rgba(0, 0, 0, 0.4)',
+	borderRadius: 10
 };
 
 export class ModalDialog extends React.Component<Props, State> {
 	keyEvent: EventListenerObject;
+
+	constructor(props: Props) {
+		super(props);
+
+	}
 
 	componentWillMount() {
 		this.keyEvent = { handleEvent: (e: KeyboardEvent) => this.onKeyDown(e) };
@@ -34,6 +39,8 @@ export class ModalDialog extends React.Component<Props, State> {
 	onKeyDown(e: KeyboardEvent) {
 		if (e.keyCode === 27) { // Escape Key
 			this.onClose();
+		} else if (e.keyCode === 13) { // Enter Key
+			this.props.onSubmit();
 		}
 	}
 
@@ -42,7 +49,7 @@ export class ModalDialog extends React.Component<Props, State> {
 	}
 
 	render() {
-		const style = {
+		var style: Object = {
 			boxSizing: "border-box",
 			border: "black",
 			background: "white",
@@ -50,8 +57,15 @@ export class ModalDialog extends React.Component<Props, State> {
 			padding: 12,
 			color: "black",
 			margin: 13,
-			boxShadow: "0px 2px 15px #000000",
+			boxShadow: "0px 2px 15px #000000"
 		};
+
+		if (this.props.style !== null) {
+			style = {
+				...style,
+				...this.props.style
+			};
+		}
 
 		const containerStyle = {
 			position: "fixed", /* Stay in place */
@@ -77,7 +91,7 @@ export class ModalDialog extends React.Component<Props, State> {
 
 		return (
 			<div className="modal-container" style={containerStyle} >
-				<div className={this.props.className} style={style}>
+				<div className={this.props.className} style={style} >
 					<span className="modal-close" style={closeStyle} onClick={(e) => this.onClose()}>&times;</span>
 					{this.props.children}
 				</div>
