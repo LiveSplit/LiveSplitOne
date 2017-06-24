@@ -26,7 +26,7 @@ export interface State {
 }
 
 export class LiveSplit extends React.Component<Props, State> {
-    intervalID: number;
+    intervalID: any;
     keyEvent: EventListenerObject;
     scrollEvent: EventListenerObject;
     rightClickEvent: EventListenerObject;
@@ -74,7 +74,7 @@ export class LiveSplit extends React.Component<Props, State> {
 
     componentWillMount() {
         this.scrollEvent = { handleEvent: (e: MouseWheelEvent) => this.onScroll(e) };
-        window.addEventListener('mousewheel', this.scrollEvent);
+        window.addEventListener('wheel', this.scrollEvent);
         this.keyEvent = { handleEvent: (e: KeyboardEvent) => this.onKeyPress(e) };
         window.addEventListener('keypress', this.keyEvent);
         this.rightClickEvent = { handleEvent: (e: any) => this.onRightClick(e) };
@@ -87,15 +87,15 @@ export class LiveSplit extends React.Component<Props, State> {
 
     componentWillUnmount() {
         clearInterval(this.intervalID);
-        window.removeEventListener('mousewheel', this.scrollEvent);
+        window.removeEventListener('wheel', this.scrollEvent);
         window.removeEventListener('keypress', this.keyEvent);
         window.removeEventListener('contextmenu', this.rightClickEvent);
         this.state.timer.dispose();
         this.state.layout.dispose();
     }
 
-    onScroll(e: MouseWheelEvent) {
-        var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
+    onScroll(e: WheelEvent) {
+        var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.deltaY)));
         if (delta == 1) {
             this.state.layout.scrollUp();
         } else if (delta == -1) {
