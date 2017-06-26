@@ -1,5 +1,5 @@
 dist: trusty
-language: rust
+language: node_js
 services: docker
 sudo: required
 env:
@@ -17,12 +17,18 @@ install:
 script:
 - bash ci/script.sh
 after_script: set +e
-cache: cargo
+cache:
+  directories:
+    - $HOME/.cargo
+    - $TRAVIS_BUILD_DIR/livesplit-core/target
 before_cache:
 - chmod -R a+r $HOME/.cargo
 notifications:
   email:
     on_success: never
+
+node_js:
+  - "6"
 
 # Temporary fix for emscripten
 group: deprecated-2017Q2

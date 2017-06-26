@@ -1,8 +1,9 @@
 set -ex
 
 main() {
-    curl -sL https://deb.nodesource.com/setup_8.x | sudo -E bash -
-    sudo apt-get install -y nodejs
+    curl -sSf https://build.travis-ci.org/files/rustup-init.sh | sh -s -- --default-toolchain=nightly -y
+    export PATH=$HOME/.cargo/bin:$PATH
+
     npm install -g webpack
 
     local target=

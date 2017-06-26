@@ -9,11 +9,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/react": "^0.14.55",
-    "@types/react-dom": "^0.14.19",
-    "@types/react-sidebar": "^2.2.0-next.0",
+    "@types/node": "^8.0.2",
+    "@types/react": "^15.0.31",
+    "@types/react-dom": "^15.5.1",
+    "@types/react-sidebar": "^2.2.1",
     "react": "^15.4.1",
-    "react-dom": "^15.4.1",
+    "react-dom": "^15.6.1",
     "react-sidebar": "^2.2.1"
   },
   "devDependencies": {

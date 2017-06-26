@@ -83,7 +83,6 @@ export class Component extends React.Component<Props, undefined> {
             }
         }
 
-        let svg = React.createElement("svg", { "height": height }, children);
-        return svg;
+        return (<svg height={height}>{children}</svg>);
     }
 }
