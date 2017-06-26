@@ -24,3 +24,5 @@ notifications:
   email:
     on_success: never
 
+# Temporary fix for emscripten
+group: deprecated-2017Q2

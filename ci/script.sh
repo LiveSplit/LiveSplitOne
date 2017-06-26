@@ -10,6 +10,7 @@ doCompile() {
     (cd livesplit-core/capi/bind_gen && cargo run)
 
     cp livesplit-core/target/asmjs-unknown-emscripten/release/livesplit*.js* src/livesplit_core.js
+    cat livesplit-core/js/exports.js >> src/livesplit_core.js
     cp livesplit-core/capi/bindings/emscripten/livesplit_core.ts src/livesplit.ts
 
     npm install

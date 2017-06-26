@@ -152,6 +152,17 @@ div#lower-row > div.title-category {
     padding-left: 40px;
 }
 
+.detailed-timer {
+    position: relative;
+}
+
+.detailed-timer-left-side {
+    position: absolute;
+    left: 6px;
+    bottom: 2px;
+    font-size: 11px;
+}
+
 .title > div.meta-left {
     min-width: 0;
     width: initial;
@@ -304,6 +315,10 @@ table {
     stop-color: hsla(50, 100%, 50%, 1);
 }
 
+.color-default {
+    stop-color: hsla(0, 0%, 60%, 1);
+}
+
 .color-notrunning {
     color: hsla(0, 0%, 60%, 1);
     stop-color: hsla(0, 0%, 60%, 1);
@@ -339,7 +354,7 @@ table {
     stop-color: hsla(50, 100%, 80%, 1);
 }
 
-.color-notrunning-top {
+.color-notrunning-top, .color-default-top {
     stop-color: hsla(0, 0%, 95%, 1);
 }
 

@@ -22,6 +22,20 @@ export class Component extends React.Component<Props, undefined> {
     render() {
         let icon_url = this.getIconUrl();
 
+        let finishedRunsExist = this.props.state.finished_runs != null;
+        let attemptsExist = this.props.state.attempts != null;
+        let attemptsLabel = "";
+
+        if (finishedRunsExist) {
+            attemptsLabel += this.props.state.finished_runs;
+            if (attemptsExist) {
+                attemptsLabel += "/";
+            }
+        }
+        if (attemptsExist) {
+            attemptsLabel += this.props.state.attempts;
+        }
+
         let icon = icon_url != "" ? (
             <div className="game-icon-container">
                 <img className="title-icon" src={icon_url}></img>
@@ -35,7 +49,7 @@ export class Component extends React.Component<Props, undefined> {
                     <span className="title-game">{this.props.state.game}</span>
                     <div id="lower-row">
                         <div className="title-category">{this.props.state.category}</div>
-                        <div className="title-attempts">{this.props.state.attempts}</div>
+                        <div className="title-attempts">{attemptsLabel}</div>
                     </div>
                 </div>
             </div>

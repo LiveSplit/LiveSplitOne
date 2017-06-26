@@ -1,5 +1,5 @@
-declare var LiveSplitCore: any;
-var emscriptenModule = LiveSplitCore({});
+var LiveSplitCore = require('./livesplit_core');
+var emscriptenModule = LiveSplitCore.Module;
 var liveSplitCoreNative: any = {};
 
 export type ComponentStateJson =
@@ -38,7 +38,8 @@ export interface TitleComponentStateJson {
     icon_change?: string;
     game: string;
     category: string;
-    attempts: number;
+    finished_runs?: number;
+    attempts?: number;
 }
 
 export interface SplitsComponentStateJson {
@@ -102,6 +103,18 @@ export interface DeltaComponentStateJson {
 export interface CurrentComparisonComponentStateJson {
     text: string;
     comparison: string;
+}
+
+export interface DetailedTimerComponentStateJson {
+    timer: TimerComponentStateJson;
+    segment_timer: TimerComponentStateJson;
+    comparison1: DetailedTimerComponentComparisonStateJson;
+    comparison2: DetailedTimerComponentComparisonStateJson;
+}
+
+export interface DetailedTimerComponentComparisonStateJson {
+    name: string;
+    time: string;
 }
 
 export interface RunEditorStateJson {
@@ -177,6 +190,24 @@ liveSplitCoreNative.DeltaComponentState_drop = emscriptenModule.cwrap('DeltaComp
 liveSplitCoreNative.DeltaComponentState_text = emscriptenModule.cwrap('DeltaComponentState_text', "string", ["number"]);
 liveSplitCoreNative.DeltaComponentState_time = emscriptenModule.cwrap('DeltaComponentState_time', "string", ["number"]);
 liveSplitCoreNative.DeltaComponentState_color = emscriptenModule.cwrap('DeltaComponentState_color', "string", ["number"]);
+liveSplitCoreNative.DetailedTimerComponent_new = emscriptenModule.cwrap('DetailedTimerComponent_new', "number", []);
+liveSplitCoreNative.DetailedTimerComponent_drop = emscriptenModule.cwrap('DetailedTimerComponent_drop', null, ["number"]);
+liveSplitCoreNative.DetailedTimerComponent_into_generic = emscriptenModule.cwrap('DetailedTimerComponent_into_generic', "number", ["number"]);
+liveSplitCoreNative.DetailedTimerComponent_state_as_json = emscriptenModule.cwrap('DetailedTimerComponent_state_as_json', "string", ["number", "number"]);
+liveSplitCoreNative.DetailedTimerComponent_state = emscriptenModule.cwrap('DetailedTimerComponent_state', "number", ["number", "number"]);
+liveSplitCoreNative.DetailedTimerComponentState_drop = emscriptenModule.cwrap('DetailedTimerComponentState_drop', null, ["number"]);
+liveSplitCoreNative.DetailedTimerComponentState_timer_time = emscriptenModule.cwrap('DetailedTimerComponentState_timer_time', "string", ["number"]);
+liveSplitCoreNative.DetailedTimerComponentState_timer_fraction = emscriptenModule.cwrap('DetailedTimerComponentState_timer_fraction', "string", ["number"]);
+liveSplitCoreNative.DetailedTimerComponentState_timer_color = emscriptenModule.cwrap('DetailedTimerComponentState_timer_color', "string", ["number"]);
+liveSplitCoreNative.DetailedTimerComponentState_segment_timer_visible = emscriptenModule.cwrap('DetailedTimerComponentState_segment_timer_visible', "number", ["number"]);
+liveSplitCoreNative.DetailedTimerComponentState_segment_timer_time = emscriptenModule.cwrap('DetailedTimerComponentState_segment_timer_time', "string", ["number"]);
+liveSplitCoreNative.DetailedTimerComponentState_segment_timer_fraction = emscriptenModule.cwrap('DetailedTimerComponentState_segment_timer_fraction', "string", ["number"]);
+liveSplitCoreNative.DetailedTimerComponentState_comparison1_visible = emscriptenModule.cwrap('DetailedTimerComponentState_comparison1_visible', "number", ["number"]);
+liveSplitCoreNative.DetailedTimerComponentState_comparison1_name = emscriptenModule.cwrap('DetailedTimerComponentState_comparison1_name', "string", ["number"]);
+liveSplitCoreNative.DetailedTimerComponentState_comparison1_time = emscriptenModule.cwrap('DetailedTimerComponentState_comparison1_time', "string", ["number"]);
+liveSplitCoreNative.DetailedTimerComponentState_comparison2_visible = emscriptenModule.cwrap('DetailedTimerComponentState_comparison2_visible', "number", ["number"]);
+liveSplitCoreNative.DetailedTimerComponentState_comparison2_name = emscriptenModule.cwrap('DetailedTimerComponentState_comparison2_name', "string", ["number"]);
+liveSplitCoreNative.DetailedTimerComponentState_comparison2_time = emscriptenModule.cwrap('DetailedTimerComponentState_comparison2_time', "string", ["number"]);
 liveSplitCoreNative.GraphComponent_new = emscriptenModule.cwrap('GraphComponent_new', "number", []);
 liveSplitCoreNative.GraphComponent_drop = emscriptenModule.cwrap('GraphComponent_drop', null, ["number"]);
 liveSplitCoreNative.GraphComponent_into_generic = emscriptenModule.cwrap('GraphComponent_into_generic', "number", ["number"]);
@@ -291,6 +322,7 @@ liveSplitCoreNative.SharedTimer_drop = emscriptenModule.cwrap('SharedTimer_drop'
 liveSplitCoreNative.SharedTimer_share = emscriptenModule.cwrap('SharedTimer_share', "number", ["number"]);
 liveSplitCoreNative.SharedTimer_read = emscriptenModule.cwrap('SharedTimer_read', "number", ["number"]);
 liveSplitCoreNative.SharedTimer_write = emscriptenModule.cwrap('SharedTimer_write', "number", ["number"]);
+liveSplitCoreNative.SharedTimer_replace_inner = emscriptenModule.cwrap('SharedTimer_replace_inner', null, ["number", "number"]);
 liveSplitCoreNative.SplitsComponent_new = emscriptenModule.cwrap('SplitsComponent_new', "number", []);
 liveSplitCoreNative.SplitsComponent_drop = emscriptenModule.cwrap('SplitsComponent_drop', null, ["number"]);
 liveSplitCoreNative.SplitsComponent_into_generic = emscriptenModule.cwrap('SplitsComponent_into_generic', "number", ["number"]);
@@ -389,6 +421,9 @@ liveSplitCoreNative.TitleComponentState_drop = emscriptenModule.cwrap('TitleComp
 liveSplitCoreNative.TitleComponentState_icon_change = emscriptenModule.cwrap('TitleComponentState_icon_change', "string", ["number"]);
 liveSplitCoreNative.TitleComponentState_game = emscriptenModule.cwrap('TitleComponentState_game', "string", ["number"]);
 liveSplitCoreNative.TitleComponentState_category = emscriptenModule.cwrap('TitleComponentState_category', "string", ["number"]);
+liveSplitCoreNative.TitleComponentState_shows_finished_runs = emscriptenModule.cwrap('TitleComponentState_shows_finished_runs', "number", ["number"]);
+liveSplitCoreNative.TitleComponentState_finished_runs = emscriptenModule.cwrap('TitleComponentState_finished_runs', "number", ["number"]);
+liveSplitCoreNative.TitleComponentState_shows_attempts = emscriptenModule.cwrap('TitleComponentState_shows_attempts', "number", ["number"]);
 liveSplitCoreNative.TitleComponentState_attempts = emscriptenModule.cwrap('TitleComponentState_attempts', "number", ["number"]);
 liveSplitCoreNative.TotalPlaytimeComponent_new = emscriptenModule.cwrap('TotalPlaytimeComponent_new', "number", []);
 liveSplitCoreNative.TotalPlaytimeComponent_drop = emscriptenModule.cwrap('TotalPlaytimeComponent_drop', null, ["number"]);
@@ -867,6 +902,183 @@ export class DeltaComponentState extends DeltaComponentStateRefMut {
     dispose() {
         if (this.ptr != 0) {
             liveSplitCoreNative.DeltaComponentState_drop(this.ptr);
+            this.ptr = 0;
+        }
+    }
+}
+
+export class DetailedTimerComponentRef {
+    ptr: number;
+    stateAsJson(timer: TimerRef): any {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (timer.ptr == 0) {
+            throw "timer is disposed";
+        }
+        var result = liveSplitCoreNative.DetailedTimerComponent_state_as_json(this.ptr, timer.ptr);
+        return JSON.parse(result);
+    }
+    state(timer: TimerRef): DetailedTimerComponentState {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (timer.ptr == 0) {
+            throw "timer is disposed";
+        }
+        var result = new DetailedTimerComponentState(liveSplitCoreNative.DetailedTimerComponent_state(this.ptr, timer.ptr));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+export class DetailedTimerComponentRefMut extends DetailedTimerComponentRef {
+}
+
+export class DetailedTimerComponent extends DetailedTimerComponentRefMut {
+    with(closure: (obj: DetailedTimerComponent) => void) {
+        try {
+            closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    dispose() {
+        if (this.ptr != 0) {
+            liveSplitCoreNative.DetailedTimerComponent_drop(this.ptr);
+            this.ptr = 0;
+        }
+    }
+    static new(): DetailedTimerComponent {
+        var result = new DetailedTimerComponent(liveSplitCoreNative.DetailedTimerComponent_new());
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    intoGeneric(): Component {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = new Component(liveSplitCoreNative.DetailedTimerComponent_into_generic(this.ptr));
+        this.ptr = 0;
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+}
+
+export class DetailedTimerComponentStateRef {
+    ptr: number;
+    timerTime(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.DetailedTimerComponentState_timer_time(this.ptr);
+        return result;
+    }
+    timerFraction(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.DetailedTimerComponentState_timer_fraction(this.ptr);
+        return result;
+    }
+    timerColor(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.DetailedTimerComponentState_timer_color(this.ptr);
+        return result;
+    }
+    segmentTimerVisible(): boolean {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.DetailedTimerComponentState_segment_timer_visible(this.ptr) != 0;
+        return result;
+    }
+    segmentTimerTime(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.DetailedTimerComponentState_segment_timer_time(this.ptr);
+        return result;
+    }
+    segmentTimerFraction(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.DetailedTimerComponentState_segment_timer_fraction(this.ptr);
+        return result;
+    }
+    comparison1Visible(): boolean {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.DetailedTimerComponentState_comparison1_visible(this.ptr) != 0;
+        return result;
+    }
+    comparison1Name(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.DetailedTimerComponentState_comparison1_name(this.ptr);
+        return result;
+    }
+    comparison1Time(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.DetailedTimerComponentState_comparison1_time(this.ptr);
+        return result;
+    }
+    comparison2Visible(): boolean {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.DetailedTimerComponentState_comparison2_visible(this.ptr) != 0;
+        return result;
+    }
+    comparison2Name(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.DetailedTimerComponentState_comparison2_name(this.ptr);
+        return result;
+    }
+    comparison2Time(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.DetailedTimerComponentState_comparison2_time(this.ptr);
+        return result;
+    }
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+export class DetailedTimerComponentStateRefMut extends DetailedTimerComponentStateRef {
+}
+
+export class DetailedTimerComponentState extends DetailedTimerComponentStateRefMut {
+    with(closure: (obj: DetailedTimerComponentState) => void) {
+        try {
+            closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    dispose() {
+        if (this.ptr != 0) {
+            liveSplitCoreNative.DetailedTimerComponentState_drop(this.ptr);
             this.ptr = 0;
         }
     }
@@ -2127,6 +2339,16 @@ export class SharedTimerRef {
         }
         return result;
     }
+    replaceInner(timer: Timer) {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (timer.ptr == 0) {
+            throw "timer is disposed";
+        }
+        liveSplitCoreNative.SharedTimer_replace_inner(this.ptr, timer.ptr);
+        timer.ptr = 0;
+    }
     readWith(action: (timer: TimerRef) => void) {
         this.read().with(function (lock) {
             action(lock.timer());
@@ -3181,6 +3403,27 @@ export class TitleComponentStateRef {
             throw "this is disposed";
         }
         var result = liveSplitCoreNative.TitleComponentState_category(this.ptr);
+        return result;
+    }
+    showsFinishedRuns(): boolean {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.TitleComponentState_shows_finished_runs(this.ptr) != 0;
+        return result;
+    }
+    finishedRuns(): number {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.TitleComponentState_finished_runs(this.ptr);
+        return result;
+    }
+    showsAttempts(): boolean {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.TitleComponentState_shows_attempts(this.ptr) != 0;
         return result;
     }
     attempts(): number {

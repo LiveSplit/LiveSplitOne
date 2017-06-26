@@ -3,6 +3,7 @@ import * as Core from "../livesplit";
 import { Component as CurrentComparisonComponent } from "./CurrentComparison";
 import { Component as CurrentPaceComponent } from "./CurrentPace";
 import { Component as DeltaComponent } from "./Delta";
+import { Component as DetailedTimerComponent } from "./DetailedTimer";
 import { Component as GraphComponent } from "./Graph";
 import { Component as PossibleTimeSaveComponent } from "./PossibleTimeSave";
 import { Component as PreviousSegmentComponent } from "./PreviousSegment";
@@ -438,6 +439,10 @@ export class LiveSplit extends React.Component<Props, State> {
                     }
                     case "Delta": {
                         component = <DeltaComponent state={componentState.Delta} />;
+                        break;
+                    }
+                    case "DetailedTimer": {
+                        component = <DetailedTimerComponent state={componentState.DetailedTimer} />;
                         break;
                     }
                     case "Graph": {
