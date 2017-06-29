@@ -117,6 +117,18 @@ export interface DetailedTimerComponentComparisonStateJson {
     time: string;
 }
 
+export interface LayoutEditorStateJson {
+    components: string[],
+    buttons: LayoutEditorButtonsJson,
+    selected_component: number,
+}
+
+export interface LayoutEditorButtonsJson {
+    can_remove: boolean,
+    can_move_up: boolean,
+    can_move_down: boolean,
+}
+
 export interface RunEditorStateJson {
     icon_change?: string,
     game: string,
@@ -228,12 +240,22 @@ liveSplitCoreNative.HotkeySystem_drop = emscriptenModule.cwrap('HotkeySystem_dro
 liveSplitCoreNative.Layout_new = emscriptenModule.cwrap('Layout_new', "number", []);
 liveSplitCoreNative.Layout_parse_json = emscriptenModule.cwrap('Layout_parse_json', "number", ["string"]);
 liveSplitCoreNative.Layout_drop = emscriptenModule.cwrap('Layout_drop', null, ["number"]);
+liveSplitCoreNative.Layout_clone = emscriptenModule.cwrap('Layout_clone', "number", ["number"]);
 liveSplitCoreNative.Layout_settings_as_json = emscriptenModule.cwrap('Layout_settings_as_json', "string", ["number"]);
 liveSplitCoreNative.Layout_state_as_json = emscriptenModule.cwrap('Layout_state_as_json', "string", ["number", "number"]);
 liveSplitCoreNative.Layout_push = emscriptenModule.cwrap('Layout_push', null, ["number", "number"]);
 liveSplitCoreNative.Layout_scroll_up = emscriptenModule.cwrap('Layout_scroll_up', null, ["number"]);
 liveSplitCoreNative.Layout_scroll_down = emscriptenModule.cwrap('Layout_scroll_down', null, ["number"]);
 liveSplitCoreNative.Layout_remount = emscriptenModule.cwrap('Layout_remount', null, ["number"]);
+liveSplitCoreNative.LayoutEditor_new = emscriptenModule.cwrap('LayoutEditor_new', "number", ["number"]);
+liveSplitCoreNative.LayoutEditor_close = emscriptenModule.cwrap('LayoutEditor_close', "number", ["number"]);
+liveSplitCoreNative.LayoutEditor_state_as_json = emscriptenModule.cwrap('LayoutEditor_state_as_json', "string", ["number"]);
+liveSplitCoreNative.LayoutEditor_select = emscriptenModule.cwrap('LayoutEditor_select', null, ["number", "number"]);
+liveSplitCoreNative.LayoutEditor_add_component = emscriptenModule.cwrap('LayoutEditor_add_component', null, ["number", "number"]);
+liveSplitCoreNative.LayoutEditor_remove_component = emscriptenModule.cwrap('LayoutEditor_remove_component', null, ["number"]);
+liveSplitCoreNative.LayoutEditor_move_component_up = emscriptenModule.cwrap('LayoutEditor_move_component_up', null, ["number"]);
+liveSplitCoreNative.LayoutEditor_move_component_down = emscriptenModule.cwrap('LayoutEditor_move_component_down', null, ["number"]);
+liveSplitCoreNative.LayoutEditor_move_component = emscriptenModule.cwrap('LayoutEditor_move_component', null, ["number", "number"]);
 liveSplitCoreNative.PossibleTimeSaveComponent_new = emscriptenModule.cwrap('PossibleTimeSaveComponent_new', "number", []);
 liveSplitCoreNative.PossibleTimeSaveComponent_drop = emscriptenModule.cwrap('PossibleTimeSaveComponent_drop', null, ["number"]);
 liveSplitCoreNative.PossibleTimeSaveComponent_into_generic = emscriptenModule.cwrap('PossibleTimeSaveComponent_into_generic', "number", ["number"]);
@@ -1279,6 +1301,16 @@ export class HotkeySystem extends HotkeySystemRefMut {
 
 export class LayoutRef {
     ptr: number;
+    clone(): Layout {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = new Layout(liveSplitCoreNative.Layout_clone(this.ptr));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
     settingsAsJson(): any {
         if (this.ptr == 0) {
             throw "this is disposed";
@@ -1355,6 +1387,100 @@ export class Layout extends LayoutRefMut {
     }
     static parseJson(settings: any): Layout {
         var result = new Layout(liveSplitCoreNative.Layout_parse_json(JSON.stringify(settings)));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+}
+
+export class LayoutEditorRef {
+    ptr: number;
+    stateAsJson(): any {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.LayoutEditor_state_as_json(this.ptr);
+        return JSON.parse(result);
+    }
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+export class LayoutEditorRefMut extends LayoutEditorRef {
+    select(index: number) {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.LayoutEditor_select(this.ptr, index);
+    }
+    addComponent(component: Component) {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (component.ptr == 0) {
+            throw "component is disposed";
+        }
+        liveSplitCoreNative.LayoutEditor_add_component(this.ptr, component.ptr);
+        component.ptr = 0;
+    }
+    removeComponent() {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.LayoutEditor_remove_component(this.ptr);
+    }
+    moveComponentUp() {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.LayoutEditor_move_component_up(this.ptr);
+    }
+    moveComponentDown() {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.LayoutEditor_move_component_down(this.ptr);
+    }
+    moveComponent(dstIndex: number) {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.LayoutEditor_move_component(this.ptr, dstIndex);
+    }
+}
+
+export class LayoutEditor extends LayoutEditorRefMut {
+    with(closure: (obj: LayoutEditor) => void) {
+        try {
+            closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    dispose() {
+        if (this.ptr != 0) {
+            this.ptr = 0;
+        }
+    }
+    static new(layout: Layout): LayoutEditor {
+        if (layout.ptr == 0) {
+            throw "layout is disposed";
+        }
+        var result = new LayoutEditor(liveSplitCoreNative.LayoutEditor_new(layout.ptr));
+        layout.ptr = 0;
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    close(): Layout {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = new Layout(liveSplitCoreNative.LayoutEditor_close(this.ptr));
+        this.ptr = 0;
         if (result.ptr == 0) {
             return null;
         }

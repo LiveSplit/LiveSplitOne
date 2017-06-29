@@ -13,6 +13,7 @@ import { Component as TimerComponent } from "./Timer";
 import { Component as TitleComponent } from "./Title";
 import { Component as TotalPlaytimeComponent } from "./TotalPlaytime";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
+import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import Sidebar from "react-sidebar";
 
 export interface Props { }
@@ -23,7 +24,8 @@ export interface State {
     sidebarOpen: boolean,
     timingMethod?: Core.TimingMethod,
     comparison?: string,
-    editor?: Core.RunEditor,
+    runEditor?: Core.RunEditor,
+    layoutEditor?: Core.LayoutEditor,
 }
 
 export class LiveSplit extends React.Component<Props, State> {
@@ -105,7 +107,7 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     update() {
-        if (!this.state.editor) {
+        if (!this.state.runEditor && !this.state.layoutEditor) {
             let layoutState = this.state.layout.stateAsJson(this.state.timer);
 
             this.setState({
@@ -298,7 +300,7 @@ export class LiveSplit extends React.Component<Props, State> {
             let editor = Core.RunEditor.new(run);
             this.setState({
                 ...this.state,
-                editor: editor,
+                runEditor: editor,
                 sidebarOpen: false,
             });
         } else {
@@ -308,27 +310,58 @@ export class LiveSplit extends React.Component<Props, State> {
 
     closeRunEditor(save: boolean) {
         if (save) {
-            let run = this.state.editor.close();
+            let run = this.state.runEditor.close();
             let timer = Core.Timer.new(run);
             this.state.timer.dispose();
             this.setState({
                 ...this.state,
                 timer: timer,
-                editor: null,
+                runEditor: null,
                 sidebarOpen: false,
             });
         } else {
             this.setState({
                 ...this.state,
-                editor: null,
+                runEditor: null,
                 sidebarOpen: false,
             });
         }
         this.state.layout.remount();
     }
 
+    openLayoutEditor() {
+        let layout = this.state.layout.clone();
+        let editor = Core.LayoutEditor.new(layout);
+        this.setState({
+            ...this.state,
+            layoutEditor: editor,
+            sidebarOpen: false,
+        });
+    }
+
+    closeLayoutEditor(save: boolean) {
+        if (save) {
+            let layout = this.state.layoutEditor.close();
+            this.state.layout.dispose();
+            this.setState({
+                ...this.state,
+                layout: layout,
+                layoutEditor: null,
+                sidebarOpen: false,
+            });
+            layout.remount();
+        } else {
+            this.setState({
+                ...this.state,
+                layoutEditor: null,
+                sidebarOpen: false,
+            });
+            this.state.layout.remount();
+        }
+    }
+
     onKeyPress(e: KeyboardEvent) {
-        if (this.state.editor) {
+        if (this.state.runEditor || this.state.layoutEditor) {
             return;
         }
 
@@ -387,14 +420,25 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     render() {
-        var sidebarContent = this.state.editor ? (
-            <div className="sidebar-buttons">
-                <div className="small">
-                    <button className="toggle-left" onClick={(e) => this.closeRunEditor(true)}><i className="fa fa-check" aria-hidden="true"></i> OK</button>
-                    <button className="toggle-right" onClick={(e) => this.closeRunEditor(false)}><i className="fa fa-times" aria-hidden="true"></i> Cancel</button>
-                </div>
-            </div>
-        ) : (
+        var sidebarContent;
+        if (this.state.runEditor) {
+            sidebarContent =
+                <div className="sidebar-buttons">
+                    <div className="small">
+                        <button className="toggle-left" onClick={(e) => this.closeRunEditor(true)}><i className="fa fa-check" aria-hidden="true"></i> OK</button>
+                        <button className="toggle-right" onClick={(e) => this.closeRunEditor(false)}><i className="fa fa-times" aria-hidden="true"></i> Cancel</button>
+                    </div>
+                </div>;
+        } else if (this.state.layoutEditor) {
+            sidebarContent =
+                <div className="sidebar-buttons">
+                    <div className="small">
+                        <button className="toggle-left" onClick={(e) => this.closeLayoutEditor(true)}><i className="fa fa-check" aria-hidden="true"></i> OK</button>
+                        <button className="toggle-right" onClick={(e) => this.closeLayoutEditor(false)}><i className="fa fa-times" aria-hidden="true"></i> Cancel</button>
+                    </div>
+                </div>;
+        } else {
+            sidebarContent =
                 <div className="sidebar-buttons">
                     <button onClick={(e) => this.openRunEditor()}><i className="fa fa-pencil-square-o" aria-hidden="true"></i> Edit Splits</button>
                     <hr />
@@ -404,6 +448,7 @@ export class LiveSplit extends React.Component<Props, State> {
                     <button onClick={(e) => this.openFromSplitsIO()}><i className="fa fa-cloud-download" aria-hidden="true"></i> From splits i/o</button>
                     <button onClick={(e) => this.uploadToSplitsIO()}><i className="fa fa-cloud-upload" aria-hidden="true"></i> Upload to splits i/o</button>
                     <hr />
+                    <button onClick={(e) => this.openLayoutEditor()}><i className="fa fa-pencil-square-o" aria-hidden="true"></i> Edit Layout</button>
                     <button onClick={(e) => this.saveLayout()}><i className="fa fa-floppy-o" aria-hidden="true"></i> Save Layout</button>
                     <hr />
                     <h2>Compare Against</h2>
@@ -416,13 +461,14 @@ export class LiveSplit extends React.Component<Props, State> {
                         <button onClick={(e) => this.state.timer.setCurrentTimingMethod(Core.TimingMethod.RealTime)} className={(this.state.timingMethod == Core.TimingMethod.RealTime ? "button-pressed" : "") + " toggle-left"}>Real Time</button>
                         <button onClick={(e) => this.state.timer.setCurrentTimingMethod(Core.TimingMethod.GameTime)} className={(this.state.timingMethod == Core.TimingMethod.GameTime ? "button-pressed" : "") + " toggle-right"}>Game Time</button>
                     </div>
-                </div>
-            );
-
+                </div>;
+        }
 
         var content;
-        if (this.state.editor) {
-            content = <RunEditorComponent editor={this.state.editor} />;
+        if (this.state.runEditor) {
+            content = <RunEditorComponent editor={this.state.runEditor} />;
+        } else if (this.state.layoutEditor) {
+            content = <LayoutEditorComponent editor={this.state.layoutEditor} />;
         } else {
             let components: any[] = [];
 
