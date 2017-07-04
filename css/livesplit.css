@@ -78,6 +78,13 @@ button.toggle-right {
     text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
     margin: 10px;
     margin-bottom: 5px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    cursor: default;
 }
 
 .previous-segment,
@@ -606,7 +613,7 @@ input.name {
 
 }
 
-form > div > input {
+input {
     font-size: 15px;
     border: none;
     border-bottom: 1px solid hsl(0, 0%, 25%);
@@ -616,10 +623,15 @@ form > div > input {
     font-family: 'fira', sans-serif;
 }
 
+input.number {
+    text-align: right;
+    font-weight: bold;
+    font-family: 'Roboto', sans-serif;
+}
+
 form > div > input:not(.name) {
     text-align: right;
 }
-
 
 .timing-selection > button {
     font-size: 15px;
@@ -656,7 +668,7 @@ svg {
 
 .layout-editor {
     margin: 20px;
-    width: 300px;
+    width: 445px;
     display: inline-flex;
 }
 
@@ -700,6 +712,10 @@ svg {
     margin-left: 10px;
 }
 
+.layout-editor-component {
+    cursor: pointer;
+}
+
 .react-contextmenu-item--divider {
     margin-bottom: 3px;
     padding: 2px 0;
@@ -709,4 +725,33 @@ svg {
 
 .react-contextmenu-item--selected {
     background: rgba(0, 67, 255, 0.26);
+}
+
+.component-settings {
+    margin-left: 20px;
+    width: 500px;
+}
+
+.component-settings > tbody > tr {
+    height: 30px;
+}
+
+.component-settings > tbody > tr > td:nth-child(1) {
+    width: 250px;
+}
+
+.component-settings > tbody > tr > td:nth-child(2) > input,
+.component-settings > tbody > tr > td:nth-child(2) > span,
+.component-settings > tbody > tr > td:nth-child(2) > select {
+    width: 100%;
+}
+
+select {
+    background: hsla(0, 0%, 9%, 1);
+    font-size: 15px;
+    border: none;
+    border-bottom: 1px solid hsl(0, 0%, 25%);
+    color: white;
+    text-overflow: ellipsis;
+    font-family: 'fira', sans-serif;
 }

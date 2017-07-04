@@ -121,6 +121,7 @@ export interface LayoutEditorStateJson {
     components: string[],
     buttons: LayoutEditorButtonsJson,
     selected_component: number,
+    settings_description: SettingsDescriptionJson,
 }
 
 export interface LayoutEditorButtonsJson {
@@ -128,6 +129,26 @@ export interface LayoutEditorButtonsJson {
     can_move_up: boolean,
     can_move_down: boolean,
 }
+
+export interface SettingsDescriptionJson {
+    fields: SettingsDescriptionFieldJson[],
+}
+
+export interface SettingsDescriptionFieldJson {
+    text: string,
+    value: SettingsDescriptionValueJson,
+}
+
+export type SettingsDescriptionValueJson =
+    { Bool: boolean } |
+    { UInt: number } |
+    { Int: number } |
+    { String: string } |
+    { OptionalString: string } |
+    { Float: number } |
+    { Accuracy: AccuracyJson };
+
+export type AccuracyJson = "Seconds" | "Tenths" | "Hundredths";
 
 export interface RunEditorStateJson {
     icon_change?: string,
@@ -256,6 +277,14 @@ liveSplitCoreNative.LayoutEditor_remove_component = emscriptenModule.cwrap('Layo
 liveSplitCoreNative.LayoutEditor_move_component_up = emscriptenModule.cwrap('LayoutEditor_move_component_up', null, ["number"]);
 liveSplitCoreNative.LayoutEditor_move_component_down = emscriptenModule.cwrap('LayoutEditor_move_component_down', null, ["number"]);
 liveSplitCoreNative.LayoutEditor_move_component = emscriptenModule.cwrap('LayoutEditor_move_component', null, ["number", "number"]);
+liveSplitCoreNative.LayoutEditor_set_component_settings_bool = emscriptenModule.cwrap('LayoutEditor_set_component_settings_bool', null, ["number", "number", "number"]);
+liveSplitCoreNative.LayoutEditor_set_component_settings_uint = emscriptenModule.cwrap('LayoutEditor_set_component_settings_uint', null, ["number", "number", "number"]);
+liveSplitCoreNative.LayoutEditor_set_component_settings_int = emscriptenModule.cwrap('LayoutEditor_set_component_settings_int', null, ["number", "number", "number"]);
+liveSplitCoreNative.LayoutEditor_set_component_settings_string = emscriptenModule.cwrap('LayoutEditor_set_component_settings_string', null, ["number", "number", "string"]);
+liveSplitCoreNative.LayoutEditor_set_component_settings_optional_string = emscriptenModule.cwrap('LayoutEditor_set_component_settings_optional_string', null, ["number", "number", "string"]);
+liveSplitCoreNative.LayoutEditor_set_component_settings_optional_string_to_empty = emscriptenModule.cwrap('LayoutEditor_set_component_settings_optional_string_to_empty', null, ["number", "number"]);
+liveSplitCoreNative.LayoutEditor_set_component_settings_float = emscriptenModule.cwrap('LayoutEditor_set_component_settings_float', null, ["number", "number", "number"]);
+liveSplitCoreNative.LayoutEditor_set_component_settings_accuracy = emscriptenModule.cwrap('LayoutEditor_set_component_settings_accuracy', null, ["number", "number", "string"]);
 liveSplitCoreNative.PossibleTimeSaveComponent_new = emscriptenModule.cwrap('PossibleTimeSaveComponent_new', "number", []);
 liveSplitCoreNative.PossibleTimeSaveComponent_drop = emscriptenModule.cwrap('PossibleTimeSaveComponent_drop', null, ["number"]);
 liveSplitCoreNative.PossibleTimeSaveComponent_into_generic = emscriptenModule.cwrap('PossibleTimeSaveComponent_into_generic', "number", ["number"]);
@@ -1448,6 +1477,54 @@ export class LayoutEditorRefMut extends LayoutEditorRef {
             throw "this is disposed";
         }
         liveSplitCoreNative.LayoutEditor_move_component(this.ptr, dstIndex);
+    }
+    setComponentSettingsBool(index: number, value: boolean) {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.LayoutEditor_set_component_settings_bool(this.ptr, index, value ? 1 : 0);
+    }
+    setComponentSettingsUint(index: number, value: number) {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.LayoutEditor_set_component_settings_uint(this.ptr, index, value);
+    }
+    setComponentSettingsInt(index: number, value: number) {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.LayoutEditor_set_component_settings_int(this.ptr, index, value);
+    }
+    setComponentSettingsString(index: number, value: string) {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.LayoutEditor_set_component_settings_string(this.ptr, index, value);
+    }
+    setComponentSettingsOptionalString(index: number, value: string) {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.LayoutEditor_set_component_settings_optional_string(this.ptr, index, value);
+    }
+    setComponentSettingsOptionalStringToEmpty(index: number) {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.LayoutEditor_set_component_settings_optional_string_to_empty(this.ptr, index);
+    }
+    setComponentSettingsFloat(index: number, value: number) {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.LayoutEditor_set_component_settings_float(this.ptr, index, value);
+    }
+    setComponentSettingsAccuracy(index: number, value: string) {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.LayoutEditor_set_component_settings_accuracy(this.ptr, index, value);
     }
 }
 
