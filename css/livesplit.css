@@ -408,7 +408,7 @@ button.button-pressed, button.button-pressed:hover, button:active, button:active
     background: linear-gradient(hsl(0, 0%, 7%) 0%, hsl(0, 0%, 14%) 100%);
 }
 
-button:focus, div:focus, form > div > input:focus {
+button:focus, div:focus, tr > td > input:focus {
     outline: 0;
 }
 
@@ -544,7 +544,7 @@ button {
 }
 .btn-group button {
     font-size: 15px;
-	width: 138px;
+	width: 140px;
 	height: 30px;
 	margin-right: 5px;
 	display: block;
@@ -558,7 +558,7 @@ button {
 	display: inline-flex
 }
 
-form > div >input {
+tr > td >input {
     width: 100px;
     margin-right: -40px;
 }
@@ -567,13 +567,13 @@ input.name {
     width: 160px;
 }
 
-.table-header>div {
+.table-header>td {
     width: 78px;
     font-weight: bold;
     text-align: center;
 }
 
-.table-header>div:after {
+.table-header>td:after {
     content:' ';
     position: relative;
     display:block;
@@ -606,7 +606,7 @@ input.name {
     input.name {
         width: 100px;
     }
-    form > div >input {
+    tr > td > input {
         width: 100px;
         margin-right: -7px;
     }
@@ -629,7 +629,7 @@ input.number {
     font-family: 'Roboto', sans-serif;
 }
 
-form > div > input:not(.name) {
+tr > td > input:not(.name) {
     text-align: right;
 }
 
@@ -637,7 +637,7 @@ form > div > input:not(.name) {
     font-size: 15px;
     height: 30px;
     position: relative;
-    left: 143px;
+    left: 145px;
     width: 100px;
     border-bottom-right-radius: 0px;
     border-bottom-left-radius: 0px;
@@ -658,7 +658,7 @@ input[Type="text"] {
     padding-left: 16px;
 }
 
-.table-header>div:nth-child(1):after {
+.table-header>td:nth-child(1):after {
      margin-left: -16px;
 }
 

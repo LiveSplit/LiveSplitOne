@@ -132,7 +132,7 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     onSplit() {
-        this.state.timer.split();
+        this.state.timer.splitOrStart();
     }
 
     onReset() {
@@ -140,7 +140,7 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     onPause() {
-        this.state.timer.pause();
+        this.state.timer.togglePauseOrStart();
     }
 
     onUndo() {

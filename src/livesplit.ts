@@ -435,11 +435,16 @@ liveSplitCoreNative.Timer_loading_times = emscriptenModule.cwrap('Timer_loading_
 liveSplitCoreNative.Timer_current_phase = emscriptenModule.cwrap('Timer_current_phase', "number", ["number"]);
 liveSplitCoreNative.Timer_get_run = emscriptenModule.cwrap('Timer_get_run', "number", ["number"]);
 liveSplitCoreNative.Timer_print_debug = emscriptenModule.cwrap('Timer_print_debug', null, ["number"]);
+liveSplitCoreNative.Timer_start = emscriptenModule.cwrap('Timer_start', null, ["number"]);
 liveSplitCoreNative.Timer_split = emscriptenModule.cwrap('Timer_split', null, ["number"]);
+liveSplitCoreNative.Timer_split_or_start = emscriptenModule.cwrap('Timer_split_or_start', null, ["number"]);
 liveSplitCoreNative.Timer_skip_split = emscriptenModule.cwrap('Timer_skip_split', null, ["number"]);
 liveSplitCoreNative.Timer_undo_split = emscriptenModule.cwrap('Timer_undo_split', null, ["number"]);
 liveSplitCoreNative.Timer_reset = emscriptenModule.cwrap('Timer_reset', null, ["number", "number"]);
 liveSplitCoreNative.Timer_pause = emscriptenModule.cwrap('Timer_pause', null, ["number"]);
+liveSplitCoreNative.Timer_resume = emscriptenModule.cwrap('Timer_resume', null, ["number"]);
+liveSplitCoreNative.Timer_toggle_pause = emscriptenModule.cwrap('Timer_toggle_pause', null, ["number"]);
+liveSplitCoreNative.Timer_toggle_pause_or_start = emscriptenModule.cwrap('Timer_toggle_pause_or_start', null, ["number"]);
 liveSplitCoreNative.Timer_undo_all_pauses = emscriptenModule.cwrap('Timer_undo_all_pauses', null, ["number"]);
 liveSplitCoreNative.Timer_set_current_timing_method = emscriptenModule.cwrap('Timer_set_current_timing_method', null, ["number", "number"]);
 liveSplitCoreNative.Timer_switch_to_next_comparison = emscriptenModule.cwrap('Timer_switch_to_next_comparison', null, ["number"]);
@@ -3196,11 +3201,23 @@ export class TimerRef {
 }
 
 export class TimerRefMut extends TimerRef {
+    start() {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.Timer_start(this.ptr);
+    }
     split() {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
         liveSplitCoreNative.Timer_split(this.ptr);
+    }
+    splitOrStart() {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.Timer_split_or_start(this.ptr);
     }
     skipSplit() {
         if (this.ptr == 0) {
@@ -3225,6 +3242,24 @@ export class TimerRefMut extends TimerRef {
             throw "this is disposed";
         }
         liveSplitCoreNative.Timer_pause(this.ptr);
+    }
+    resume() {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.Timer_resume(this.ptr);
+    }
+    togglePause() {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.Timer_toggle_pause(this.ptr);
+    }
+    togglePauseOrStart() {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.Timer_toggle_pause_or_start(this.ptr);
     }
     undoAllPauses() {
         if (this.ptr == 0) {

@@ -266,23 +266,23 @@ export class RunEditor extends React.Component<Props, State> {
                     </div>
                     <table className="table">
                         <thead className="table-header">
-                            <div>Segment Name</div>
-                            <div>Split Time</div>
-                            <div>Segment Time</div>
-                            <div>Best Segment</div>
+                            <td>Segment Name</td>
+                            <td>Split Time</td>
+                            <td>Segment Time</td>
+                            <td>Best Segment</td>
                         </thead>
                         <tbody className="table-body">
                             {
                                 this.state.editor.segments.map((s: any, i: number) =>
-                                    <form key={i.toString()} className={(s.selected == "Selected" || s.selected == "CurrentRow") ? "selected" : ""} onClick={(e) => this.changeSegmentSelection(e, i)}>
-                                        <div><input className="name" type="text" value={s.name} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSegmentNameChange(e)} /></div>
-                                        <div><input className={this.state.rowState.index != i || this.state.rowState.splitTimeIsValid ? "number" : "number invalid"}
-                                            type="text" value={s.split_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSplitTimeChange(e)} onBlur={(e) => this.handleSplitTimeBlur(e)} /></div>
-                                        <div><input className={this.state.rowState.index != i || this.state.rowState.segmentTimeIsValid ? "number" : "number invalid"}
-                                            type="text" value={s.segment_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSegmentTimeChange(e)} onBlur={(e) => this.handleSegmentTimeBlur(e)} /></div>
-                                        <div><input className={this.state.rowState.index != i || this.state.rowState.bestSegmentTimeIsValid ? "number" : "number invalid"}
-                                            type="text" value={s.best_segment_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleBestSegmentTimeChange(e)} onBlur={(e) => this.handleBestSegmentTimeBlur(e)} /></div>
-                                    </form>
+                                    <tr key={i.toString()} className={(s.selected == "Selected" || s.selected == "CurrentRow") ? "selected" : ""} onClick={(e) => this.changeSegmentSelection(e, i)}>
+                                        <td><input className="name" type="text" value={s.name} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSegmentNameChange(e)} /></td>
+                                        <td><input className={this.state.rowState.index != i || this.state.rowState.splitTimeIsValid ? "number" : "number invalid"}
+                                            type="text" value={s.split_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSplitTimeChange(e)} onBlur={(e) => this.handleSplitTimeBlur(e)} /></td>
+                                        <td><input className={this.state.rowState.index != i || this.state.rowState.segmentTimeIsValid ? "number" : "number invalid"}
+                                            type="text" value={s.segment_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSegmentTimeChange(e)} onBlur={(e) => this.handleSegmentTimeBlur(e)} /></td>
+                                        <td><input className={this.state.rowState.index != i || this.state.rowState.bestSegmentTimeIsValid ? "number" : "number invalid"}
+                                            type="text" value={s.best_segment_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleBestSegmentTimeChange(e)} onBlur={(e) => this.handleBestSegmentTimeBlur(e)} /></td>
+                                    </tr>
                                 )
                             }
                         </tbody>
