@@ -210,6 +210,24 @@ export class LayoutEditor extends React.Component<Props, State> {
                         </select>;
                     break;
                 }
+                case "DigitsFormat": {
+                    component =
+                        <select
+                            value={value.DigitsFormat}
+                            onChange={(e) => {
+                                this.props.editor.setComponentSettingsDigitsFormat(valueIndex, e.target.value);
+                                this.update();
+                            }}
+                        >
+                            <option value="SingleDigitSeconds">1</option>
+                            <option value="DoubleDigitSeconds">01</option>
+                            <option value="SingleDigitMinutes">0:01</option>
+                            <option value="DoubleDigitMinutes">00:01</option>
+                            <option value="SingleDigitHours">0:00:01</option>
+                            <option value="DoubleDigitHours">00:00:01</option>
+                        </select>;
+                    break;
+                }
             }
             settingsRows.push(
                 <tr>

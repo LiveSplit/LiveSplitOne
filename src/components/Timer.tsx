@@ -13,7 +13,13 @@ export function renderToSVG(
     height = 60,
 ): JSX.Element {
     let y = (0.88 * height) + "px";
-    let x = (294 - height) + "px";
+    let shiftX;
+    switch (state.fraction.length) {
+        case 0: shiftX = 0; break;
+        case 2: shiftX = height * 0.6; break;
+        case 3: shiftX = height; break;
+    }
+    let x = (294 - shiftX) + "px";
 
     var color, time, fraction;
 
