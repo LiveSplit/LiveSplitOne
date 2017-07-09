@@ -295,6 +295,8 @@ liveSplitCoreNative.LayoutEditor_set_component_settings_optional_string_to_empty
 liveSplitCoreNative.LayoutEditor_set_component_settings_float = emscriptenModule.cwrap('LayoutEditor_set_component_settings_float', null, ["number", "number", "number"]);
 liveSplitCoreNative.LayoutEditor_set_component_settings_accuracy = emscriptenModule.cwrap('LayoutEditor_set_component_settings_accuracy', null, ["number", "number", "string"]);
 liveSplitCoreNative.LayoutEditor_set_component_settings_digits_format = emscriptenModule.cwrap('LayoutEditor_set_component_settings_digits_format', null, ["number", "number", "string"]);
+liveSplitCoreNative.LayoutEditor_set_component_settings_optional_timing_method = emscriptenModule.cwrap('LayoutEditor_set_component_settings_optional_timing_method', null, ["number", "number", "string"]);
+liveSplitCoreNative.LayoutEditor_set_component_settings_optional_timing_method_to_empty = emscriptenModule.cwrap('LayoutEditor_set_component_settings_optional_timing_method_to_empty', null, ["number", "number"]);
 liveSplitCoreNative.PossibleTimeSaveComponent_new = emscriptenModule.cwrap('PossibleTimeSaveComponent_new', "number", []);
 liveSplitCoreNative.PossibleTimeSaveComponent_drop = emscriptenModule.cwrap('PossibleTimeSaveComponent_drop', null, ["number"]);
 liveSplitCoreNative.PossibleTimeSaveComponent_into_generic = emscriptenModule.cwrap('PossibleTimeSaveComponent_into_generic', "number", ["number"]);
@@ -1546,6 +1548,18 @@ export class LayoutEditorRefMut extends LayoutEditorRef {
             throw "this is disposed";
         }
         liveSplitCoreNative.LayoutEditor_set_component_settings_digits_format(this.ptr, index, value);
+    }
+    setComponentSettingsOptionalTimingMethod(index: number, value: string) {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.LayoutEditor_set_component_settings_optional_timing_method(this.ptr, index, value);
+    }
+    setComponentSettingsOptionalTimingMethodToEmpty(index: number) {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.LayoutEditor_set_component_settings_optional_timing_method_to_empty(this.ptr, index);
     }
 }
 

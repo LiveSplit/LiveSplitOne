@@ -264,7 +264,7 @@ export class RunEditor extends React.Component<Props, State> {
                         <button onClick={(e) => this.moveSegmentsUp()}>Move Up</button>
                         <button onClick={(e) => this.moveSegmentsDown()}>Move Down</button>
                     </div>
-                    <table className="table">
+                    <table className="table run-editor-table">
                         <thead className="table-header">
                             <td>Segment Name</td>
                             <td>Split Time</td>

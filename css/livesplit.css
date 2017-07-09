@@ -606,11 +606,10 @@ input.name {
     input.name {
         width: 100px;
     }
-    tr > td > input {
+    table.run-editor-table > tbody > tr > td > input {
         width: 100px;
         margin-right: -7px;
     }
-
 }
 
 input {
@@ -629,7 +628,7 @@ input.number {
     font-family: 'Roboto', sans-serif;
 }
 
-tr > td > input:not(.name) {
+table.run-editor-table > tbody > tr > td > input:not(.name) {
     text-align: right;
 }
 

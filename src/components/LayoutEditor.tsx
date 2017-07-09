@@ -228,6 +228,44 @@ export class LayoutEditor extends React.Component<Props, State> {
                         </select>;
                     break;
                 }
+                case "OptionalTimingMethod": {
+                    let children = [
+                        <input
+                            type="checkbox"
+                            checked={value.OptionalTimingMethod != null}
+                            onChange={(e) => {
+                                if (e.target.checked) {
+                                    this.props.editor.setComponentSettingsOptionalTimingMethod(valueIndex, "RealTime");
+                                } else {
+                                    this.props.editor.setComponentSettingsOptionalTimingMethodToEmpty(valueIndex);
+                                }
+                                this.update();
+                            }}
+                        />
+                    ];
+
+                    if (value.OptionalTimingMethod != null) {
+                        children.push(
+                            <select
+                                value={value.OptionalTimingMethod}
+                                disabled={value.OptionalTimingMethod == null}
+                                onChange={(e) => {
+                                    this.props.editor.setComponentSettingsOptionalTimingMethod(valueIndex, e.target.value);
+                                    this.update();
+                                }}
+                            >
+                                <option value="RealTime">Real Time</option>
+                                <option value="GameTime">Game Time</option>
+                            </select>
+                        );
+                    }
+
+                    component =
+                        <span>
+                            {children}
+                        </span>;
+                    break;
+                }
             }
             settingsRows.push(
                 <tr>
@@ -270,7 +308,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                                 Splits
                             </MenuItem>
                             <MenuItem onClick={(e) => this.addComponent(LiveSplit.SumOfBestComponent)}>
-                                Sum of Best
+                                Sum of Best Segments
                             </MenuItem>
                             <MenuItem onClick={(e) => this.addComponent(LiveSplit.TextComponent)}>
                                 Text
