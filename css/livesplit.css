@@ -170,11 +170,6 @@ div#lower-row > div.title-category {
     font-size: 11px;
 }
 
-.title > div.meta-left {
-    min-width: 0;
-    width: initial;
-}
-
 div.meta-left > span.title-game {
     margin-right: 0px;
 }
@@ -199,7 +194,8 @@ div.meta-left > div#lower-row > div.title-category {
 
 .run-meta {
     flex: 2;
-    width: 100%;
+    min-width: 0;
+    width: initial;
 }
 
 .run-meta > span,
@@ -753,4 +749,9 @@ select {
     color: white;
     text-overflow: ellipsis;
     font-family: 'fira', sans-serif;
+}
+
+.separator {
+    background-color: hsla(0, 0%, 43%, 1);
+    height: 2px;
 }

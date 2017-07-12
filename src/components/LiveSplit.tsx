@@ -12,9 +12,13 @@ import { Component as SumOfBestComponent } from "./SumOfBest";
 import { Component as TimerComponent } from "./Timer";
 import { Component as TitleComponent } from "./Title";
 import { Component as TotalPlaytimeComponent } from "./TotalPlaytime";
+import { Component as SeparatorComponent } from "./Separator";
+import { Component as BlankSpaceComponent } from "./BlankSpace";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import Sidebar from "react-sidebar";
+
+const SplitsIOOAuthURL = "https://splits.io/oauth/authorize?response_type=token&scope=upload_run&redirect_uri=https://cryze.github.io/LiveSplitOne/&client_id=af72c9df37444a836ffd4e1f167ee69614361a446cdee6c58b781709a56a4a08";
 
 export interface Props { }
 export interface State {
@@ -526,6 +530,14 @@ export class LiveSplit extends React.Component<Props, State> {
                     }
                     case "TotalPlaytime": {
                         component = <TotalPlaytimeComponent state={componentState.TotalPlaytime} />;
+                        break;
+                    }
+                    case "Separator": {
+                        component = <SeparatorComponent />;
+                        break;
+                    }
+                    case "BlankSpace": {
+                        component = <BlankSpaceComponent state={componentState.BlankSpace} />;
                         break;
                     }
                     default: return;

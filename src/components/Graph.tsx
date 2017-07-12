@@ -10,8 +10,17 @@ export class Component extends React.Component<Props, undefined> {
 
         let middle = height * this.props.state.middle;
 
-        let rect1 = <rect width="100%" height={middle} style={{ "fill": "rgb(115, 40, 40)" }} />;
-        let rect2 = <rect y={middle} width="100%" height={height - middle} style={{ "fill": "rgb(40, 115, 52)" }} />;
+        let colorTop = "rgb(115, 40, 40)";
+        let colorBottom = "rgb(40, 115, 52)";
+
+        if (this.props.state.is_flipped) {
+            let tmp = colorTop;
+            colorTop = colorBottom;
+            colorBottom = tmp;
+        }
+
+        let rect1 = <rect width="100%" height={middle} style={{ "fill": colorTop }} />;
+        let rect2 = <rect y={middle} width="100%" height={height - middle} style={{ "fill": colorBottom }} />;
         let children = [rect1, rect2];
 
         for (let y of this.props.state.horizontal_grid_lines) {
@@ -39,10 +48,10 @@ export class Component extends React.Component<Props, undefined> {
 
         for (var i = 0; i < length; i++) {
             let point = this.props.state.points[i];
-            points += (width * point[0]) + "," + (height * point[1]) + " ";
+            points += (width * point.x) + "," + (height * point.y) + " ";
         }
 
-        points += (width * this.props.state.points[length - 1][0]) + "," + (middle);
+        points += (width * this.props.state.points[length - 1].x) + "," + (middle);
 
         let fill = <polygon points={points} style={{
             "fill": "rgba(255, 255, 255, 0.4)"
@@ -51,10 +60,10 @@ export class Component extends React.Component<Props, undefined> {
         children.push(fill);
 
         if (this.props.state.is_live_delta_active) {
-            let x1 = width * this.props.state.points[length - 1][0];
-            let y1 = height * this.props.state.points[length - 1][1];
-            let x2 = width * this.props.state.points[length][0];
-            let y2 = height * this.props.state.points[length][1];
+            let x1 = width * this.props.state.points[length - 1].x;
+            let y1 = height * this.props.state.points[length - 1].y;
+            let x2 = width * this.props.state.points[length].x;
+            let y2 = height * this.props.state.points[length].y;
 
             let fill = <polygon points={
                 x1 + "," + middle + " " +
@@ -67,21 +76,31 @@ export class Component extends React.Component<Props, undefined> {
             children.push(fill);
         }
 
+        let childrenPoints = [];
+
         for (var i = 1; i < this.props.state.points.length; i++) {
-            let px = (100 * this.props.state.points[i - 1][0]) + "%";
-            let py = height * this.props.state.points[i - 1][1];
-            let x = (100 * this.props.state.points[i][0]) + "%";
-            let y = height * this.props.state.points[i][1];
+            let px = (100 * this.props.state.points[i - 1].x) + "%";
+            let py = height * this.props.state.points[i - 1].y;
+            let x = (100 * this.props.state.points[i].x) + "%";
+            let y = height * this.props.state.points[i].y;
+
+            let fill = this.props.state.points[i].is_best_segment
+                ? "hsla(50, 100%, 50%, 1)"
+                : "white";
+
             let line = <line x1={px} y1={py} x2={x} y2={y} style={{
-                "stroke": "white",
+                "stroke": fill,
                 "stroke-width": "2",
             }} />;
             children.push(line);
+
             if (i != this.props.state.points.length - 1 || !this.props.state.is_live_delta_active) {
-                let circle = <ellipse cx={x} cy={y} rx="2.5" ry="2.5" style={{ "fill": "white" }} />;
-                children.push(circle);
+                let circle = <ellipse cx={x} cy={y} rx="2.5" ry="2.5" style={{ "fill": fill }} />;
+                childrenPoints.push(circle);
             }
         }
+
+        children.push(...childrenPoints);
 
         return (<svg height={height}>{children}</svg>);
     }

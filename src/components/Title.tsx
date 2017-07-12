@@ -45,10 +45,10 @@ export class Component extends React.Component<Props, undefined> {
         return (
             <div className="title">
                 {icon}
-                <div className={"run-meta" + (icon_url != "" ? " meta-left" : "")}>
-                    <span className="title-game">{this.props.state.game}</span>
+                <div className={"run-meta" + (!this.props.state.is_centered ? " meta-left" : "")}>
+                    <span className="title-game">{this.props.state.line1}</span>
                     <div id="lower-row">
-                        <div className="title-category">{this.props.state.category}</div>
+                        <div className="title-category">{this.props.state.line2}</div>
                         <div className="title-attempts">{attemptsLabel}</div>
                     </div>
                 </div>

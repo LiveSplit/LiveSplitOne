@@ -3,18 +3,20 @@ var emscriptenModule = LiveSplitCore.LiveSplitCore({});
 var liveSplitCoreNative: any = {};
 
 export type ComponentStateJson =
+    { BlankSpace: BlankSpaceComponentStateJson } |
     { CurrentComparison: CurrentComparisonComponentStateJson } |
     { CurrentPace: CurrentPaceComponentStateJson } |
     { Delta: DeltaComponentStateJson } |
     { Graph: GraphComponentStateJson } |
     { PossibleTimeSave: PossibleTimeSaveComponentStateJson } |
     { PreviousSegment: PreviousSegmentComponentStateJson } |
+    { Separator: null } |
     { Splits: SplitsComponentStateJson } |
     { SumOfBest: SumOfBestComponentStateJson } |
     { Text: TextComponentStateJson } |
     { Timer: TimerComponentStateJson } |
     { Title: TitleComponentStateJson } |
-    { TotalPLaytime: TotalPlaytimeComponentStateJson };
+    { TotalPlaytime: TotalPlaytimeComponentStateJson };
 
 export enum TimingMethod {
     RealTime = 0,
@@ -28,6 +30,10 @@ export enum TimerPhase {
     Paused = 3,
 }
 
+export interface BlankSpaceComponentStateJson {
+    height: number;
+}
+
 export interface TimerComponentStateJson {
     time: string;
     fraction: string;
@@ -36,8 +42,9 @@ export interface TimerComponentStateJson {
 
 export interface TitleComponentStateJson {
     icon_change?: string;
-    game: string;
-    category: string;
+    line1: string;
+    line2?: string;
+    is_centered: boolean;
     finished_runs?: number;
     attempts?: number;
 }
@@ -73,11 +80,18 @@ export interface PossibleTimeSaveComponentStateJson {
 }
 
 export interface GraphComponentStateJson {
-    points: number[][];
+    points: GraphComponentStatePointJson[];
     horizontal_grid_lines: number[];
     vertical_grid_lines: number[];
     middle: number;
     is_live_delta_active: boolean;
+    is_flipped: boolean;
+}
+
+export interface GraphComponentStatePointJson {
+    x: number;
+    y: number;
+    is_best_segment: boolean;
 }
 
 export type TextComponentStateJson =
@@ -206,6 +220,13 @@ liveSplitCoreNative.Attempt_time = emscriptenModule.cwrap('Attempt_time', "numbe
 liveSplitCoreNative.Attempt_pause_time = emscriptenModule.cwrap('Attempt_pause_time', "number", ["number"]);
 liveSplitCoreNative.Attempt_started = emscriptenModule.cwrap('Attempt_started', "number", ["number"]);
 liveSplitCoreNative.Attempt_ended = emscriptenModule.cwrap('Attempt_ended', "number", ["number"]);
+liveSplitCoreNative.BlankSpaceComponent_new = emscriptenModule.cwrap('BlankSpaceComponent_new', "number", []);
+liveSplitCoreNative.BlankSpaceComponent_drop = emscriptenModule.cwrap('BlankSpaceComponent_drop', null, ["number"]);
+liveSplitCoreNative.BlankSpaceComponent_into_generic = emscriptenModule.cwrap('BlankSpaceComponent_into_generic', "number", ["number"]);
+liveSplitCoreNative.BlankSpaceComponent_state_as_json = emscriptenModule.cwrap('BlankSpaceComponent_state_as_json', "string", ["number", "number"]);
+liveSplitCoreNative.BlankSpaceComponent_state = emscriptenModule.cwrap('BlankSpaceComponent_state', "number", ["number", "number"]);
+liveSplitCoreNative.BlankSpaceComponentState_drop = emscriptenModule.cwrap('BlankSpaceComponentState_drop', null, ["number"]);
+liveSplitCoreNative.BlankSpaceComponentState_height = emscriptenModule.cwrap('BlankSpaceComponentState_height', "number", ["number"]);
 liveSplitCoreNative.Component_drop = emscriptenModule.cwrap('Component_drop', null, ["number"]);
 liveSplitCoreNative.CurrentComparisonComponent_new = emscriptenModule.cwrap('CurrentComparisonComponent_new', "number", []);
 liveSplitCoreNative.CurrentComparisonComponent_drop = emscriptenModule.cwrap('CurrentComparisonComponent_drop', null, ["number"]);
@@ -259,12 +280,14 @@ liveSplitCoreNative.GraphComponentState_drop = emscriptenModule.cwrap('GraphComp
 liveSplitCoreNative.GraphComponentState_points_len = emscriptenModule.cwrap('GraphComponentState_points_len', "number", ["number"]);
 liveSplitCoreNative.GraphComponentState_point_x = emscriptenModule.cwrap('GraphComponentState_point_x', "number", ["number", "number"]);
 liveSplitCoreNative.GraphComponentState_point_y = emscriptenModule.cwrap('GraphComponentState_point_y', "number", ["number", "number"]);
+liveSplitCoreNative.GraphComponentState_point_is_best_segment = emscriptenModule.cwrap('GraphComponentState_point_is_best_segment', "number", ["number", "number"]);
 liveSplitCoreNative.GraphComponentState_horizontal_grid_lines_len = emscriptenModule.cwrap('GraphComponentState_horizontal_grid_lines_len', "number", ["number"]);
 liveSplitCoreNative.GraphComponentState_horizontal_grid_line = emscriptenModule.cwrap('GraphComponentState_horizontal_grid_line', "number", ["number", "number"]);
 liveSplitCoreNative.GraphComponentState_vertical_grid_lines_len = emscriptenModule.cwrap('GraphComponentState_vertical_grid_lines_len', "number", ["number"]);
 liveSplitCoreNative.GraphComponentState_vertical_grid_line = emscriptenModule.cwrap('GraphComponentState_vertical_grid_line', "number", ["number", "number"]);
 liveSplitCoreNative.GraphComponentState_middle = emscriptenModule.cwrap('GraphComponentState_middle', "number", ["number"]);
 liveSplitCoreNative.GraphComponentState_is_live_delta_active = emscriptenModule.cwrap('GraphComponentState_is_live_delta_active', "number", ["number"]);
+liveSplitCoreNative.GraphComponentState_is_flipped = emscriptenModule.cwrap('GraphComponentState_is_flipped', "number", ["number"]);
 liveSplitCoreNative.HotkeySystem_new = emscriptenModule.cwrap('HotkeySystem_new', "number", ["number"]);
 liveSplitCoreNative.HotkeySystem_drop = emscriptenModule.cwrap('HotkeySystem_drop', null, ["number"]);
 liveSplitCoreNative.Layout_new = emscriptenModule.cwrap('Layout_new', "number", []);
@@ -381,6 +404,9 @@ liveSplitCoreNative.SegmentHistoryElement_index = emscriptenModule.cwrap('Segmen
 liveSplitCoreNative.SegmentHistoryElement_time = emscriptenModule.cwrap('SegmentHistoryElement_time', "number", ["number"]);
 liveSplitCoreNative.SegmentHistoryIter_drop = emscriptenModule.cwrap('SegmentHistoryIter_drop', null, ["number"]);
 liveSplitCoreNative.SegmentHistoryIter_next = emscriptenModule.cwrap('SegmentHistoryIter_next', "number", ["number"]);
+liveSplitCoreNative.SeparatorComponent_new = emscriptenModule.cwrap('SeparatorComponent_new', "number", []);
+liveSplitCoreNative.SeparatorComponent_drop = emscriptenModule.cwrap('SeparatorComponent_drop', null, ["number"]);
+liveSplitCoreNative.SeparatorComponent_into_generic = emscriptenModule.cwrap('SeparatorComponent_into_generic', "number", ["number"]);
 liveSplitCoreNative.SharedTimer_drop = emscriptenModule.cwrap('SharedTimer_drop', null, ["number"]);
 liveSplitCoreNative.SharedTimer_share = emscriptenModule.cwrap('SharedTimer_share', "number", ["number"]);
 liveSplitCoreNative.SharedTimer_read = emscriptenModule.cwrap('SharedTimer_read', "number", ["number"]);
@@ -487,8 +513,9 @@ liveSplitCoreNative.TitleComponent_state_as_json = emscriptenModule.cwrap('Title
 liveSplitCoreNative.TitleComponent_state = emscriptenModule.cwrap('TitleComponent_state', "number", ["number", "number"]);
 liveSplitCoreNative.TitleComponentState_drop = emscriptenModule.cwrap('TitleComponentState_drop', null, ["number"]);
 liveSplitCoreNative.TitleComponentState_icon_change = emscriptenModule.cwrap('TitleComponentState_icon_change', "string", ["number"]);
-liveSplitCoreNative.TitleComponentState_game = emscriptenModule.cwrap('TitleComponentState_game', "string", ["number"]);
-liveSplitCoreNative.TitleComponentState_category = emscriptenModule.cwrap('TitleComponentState_category', "string", ["number"]);
+liveSplitCoreNative.TitleComponentState_line1 = emscriptenModule.cwrap('TitleComponentState_line1', "string", ["number"]);
+liveSplitCoreNative.TitleComponentState_line2 = emscriptenModule.cwrap('TitleComponentState_line2', "string", ["number"]);
+liveSplitCoreNative.TitleComponentState_is_centered = emscriptenModule.cwrap('TitleComponentState_is_centered', "number", ["number"]);
 liveSplitCoreNative.TitleComponentState_shows_finished_runs = emscriptenModule.cwrap('TitleComponentState_shows_finished_runs', "number", ["number"]);
 liveSplitCoreNative.TitleComponentState_finished_runs = emscriptenModule.cwrap('TitleComponentState_finished_runs', "number", ["number"]);
 liveSplitCoreNative.TitleComponentState_shows_attempts = emscriptenModule.cwrap('TitleComponentState_shows_attempts', "number", ["number"]);
@@ -616,6 +643,106 @@ export class Attempt extends AttemptRefMut {
     }
     dispose() {
         if (this.ptr != 0) {
+            this.ptr = 0;
+        }
+    }
+}
+
+export class BlankSpaceComponentRef {
+    ptr: number;
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+export class BlankSpaceComponentRefMut extends BlankSpaceComponentRef {
+    stateAsJson(timer: TimerRef): any {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (timer.ptr == 0) {
+            throw "timer is disposed";
+        }
+        var result = liveSplitCoreNative.BlankSpaceComponent_state_as_json(this.ptr, timer.ptr);
+        return JSON.parse(result);
+    }
+    state(timer: TimerRef): BlankSpaceComponentState {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (timer.ptr == 0) {
+            throw "timer is disposed";
+        }
+        var result = new BlankSpaceComponentState(liveSplitCoreNative.BlankSpaceComponent_state(this.ptr, timer.ptr));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+}
+
+export class BlankSpaceComponent extends BlankSpaceComponentRefMut {
+    with(closure: (obj: BlankSpaceComponent) => void) {
+        try {
+            closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    dispose() {
+        if (this.ptr != 0) {
+            liveSplitCoreNative.BlankSpaceComponent_drop(this.ptr);
+            this.ptr = 0;
+        }
+    }
+    static new(): BlankSpaceComponent {
+        var result = new BlankSpaceComponent(liveSplitCoreNative.BlankSpaceComponent_new());
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    intoGeneric(): Component {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = new Component(liveSplitCoreNative.BlankSpaceComponent_into_generic(this.ptr));
+        this.ptr = 0;
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+}
+
+export class BlankSpaceComponentStateRef {
+    ptr: number;
+    height(): number {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.BlankSpaceComponentState_height(this.ptr);
+        return result;
+    }
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+export class BlankSpaceComponentStateRefMut extends BlankSpaceComponentStateRef {
+}
+
+export class BlankSpaceComponentState extends BlankSpaceComponentStateRefMut {
+    with(closure: (obj: BlankSpaceComponentState) => void) {
+        try {
+            closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    dispose() {
+        if (this.ptr != 0) {
+            liveSplitCoreNative.BlankSpaceComponentState_drop(this.ptr);
             this.ptr = 0;
         }
     }
@@ -1242,6 +1369,13 @@ export class GraphComponentStateRef {
         var result = liveSplitCoreNative.GraphComponentState_point_y(this.ptr, index);
         return result;
     }
+    pointIsBestSegment(index: number): boolean {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.GraphComponentState_point_is_best_segment(this.ptr, index) != 0;
+        return result;
+    }
     horizontalGridLinesLen(): number {
         if (this.ptr == 0) {
             throw "this is disposed";
@@ -1282,6 +1416,13 @@ export class GraphComponentStateRef {
             throw "this is disposed";
         }
         var result = liveSplitCoreNative.GraphComponentState_is_live_delta_active(this.ptr) != 0;
+        return result;
+    }
+    isFlipped(): boolean {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.GraphComponentState_is_flipped(this.ptr) != 0;
         return result;
     }
     constructor(ptr: number) {
@@ -2545,6 +2686,50 @@ export class SegmentHistoryIter extends SegmentHistoryIterRefMut {
     }
 }
 
+export class SeparatorComponentRef {
+    ptr: number;
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+export class SeparatorComponentRefMut extends SeparatorComponentRef {
+}
+
+export class SeparatorComponent extends SeparatorComponentRefMut {
+    with(closure: (obj: SeparatorComponent) => void) {
+        try {
+            closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    dispose() {
+        if (this.ptr != 0) {
+            liveSplitCoreNative.SeparatorComponent_drop(this.ptr);
+            this.ptr = 0;
+        }
+    }
+    static new(): SeparatorComponent {
+        var result = new SeparatorComponent(liveSplitCoreNative.SeparatorComponent_new());
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    intoGeneric(): Component {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = new Component(liveSplitCoreNative.SeparatorComponent_into_generic(this.ptr));
+        this.ptr = 0;
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+}
+
 export class SharedTimerRef {
     ptr: number;
     share(): SharedTimer {
@@ -3659,18 +3844,25 @@ export class TitleComponentStateRef {
         var result = liveSplitCoreNative.TitleComponentState_icon_change(this.ptr);
         return result;
     }
-    game(): string {
+    line1(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.TitleComponentState_game(this.ptr);
+        var result = liveSplitCoreNative.TitleComponentState_line1(this.ptr);
         return result;
     }
-    category(): string {
+    line2(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.TitleComponentState_category(this.ptr);
+        var result = liveSplitCoreNative.TitleComponentState_line2(this.ptr);
+        return result;
+    }
+    isCentered(): boolean {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.TitleComponentState_is_centered(this.ptr) != 0;
         return result;
     }
     showsFinishedRuns(): boolean {

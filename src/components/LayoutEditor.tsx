@@ -322,6 +322,13 @@ export class LayoutEditor extends React.Component<Props, State> {
                             <MenuItem onClick={(e) => this.addComponent(LiveSplit.TotalPlaytimeComponent)}>
                                 Total Playtime
                             </MenuItem>
+                            <MenuItem divider />
+                            <MenuItem onClick={(e) => this.addComponent(LiveSplit.BlankSpaceComponent)}>
+                                Blank Space
+                            </MenuItem>
+                            <MenuItem onClick={(e) => this.addComponent(LiveSplit.SeparatorComponent)}>
+                                Separator
+                            </MenuItem>
                         </ContextMenu>
                         <button onClick={(e) => this.removeComponent()}><i className="fa fa-minus" aria-hidden="true"></i></button>
                         <button onClick={(e) => this.moveComponentUp()}><i className="fa fa-arrow-up" aria-hidden="true"></i></button>
