@@ -755,3 +755,9 @@ select {
     background-color: hsla(0, 0%, 43%, 1);
     height: 2px;
 }
+
+button.disabled, button.button-pressed.disabled, button.disabled:active {
+    background: #222;
+    color: #666;
+    cursor: default;
+}

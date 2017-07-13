@@ -330,9 +330,24 @@ export class LayoutEditor extends React.Component<Props, State> {
                                 Separator
                             </MenuItem>
                         </ContextMenu>
-                        <button onClick={(e) => this.removeComponent()}><i className="fa fa-minus" aria-hidden="true"></i></button>
-                        <button onClick={(e) => this.moveComponentUp()}><i className="fa fa-arrow-up" aria-hidden="true"></i></button>
-                        <button onClick={(e) => this.moveComponentDown()}><i className="fa fa-arrow-down" aria-hidden="true"></i></button>
+                        <button
+                            onClick={(e) => this.removeComponent()}
+                            className={this.state.editor.buttons.can_remove ? "" : "disabled"}
+                        >
+                            <i className="fa fa-minus" aria-hidden="true"></i>
+                        </button>
+                        <button
+                            onClick={(e) => this.moveComponentUp()}
+                            className={this.state.editor.buttons.can_move_up ? "" : "disabled"}
+                        >
+                            <i className="fa fa-arrow-up" aria-hidden="true"></i>
+                        </button>
+                        <button
+                            onClick={(e) => this.moveComponentDown()}
+                            className={this.state.editor.buttons.can_move_down ? "" : "disabled"}
+                        >
+                            <i className="fa fa-arrow-down" aria-hidden="true"></i>
+                        </button>
                     </div>
                     <table className="layout-editor-component-list table">
                         <tbody className="table-body">

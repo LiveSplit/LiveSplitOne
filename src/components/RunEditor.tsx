@@ -258,11 +258,34 @@ export class RunEditor extends React.Component<Props, State> {
                 </div>
                 <div className="editer-group">
                     <div className="btn-group">
-                        <button onClick={(e) => this.insertSegmentAbove()}>Insert Above</button>
-                        <button onClick={(e) => this.insertSegmentBelow()}>Insert Below</button>
-                        <button onClick={(e) => this.removeSegments()}>Remove Segment</button>
-                        <button onClick={(e) => this.moveSegmentsUp()}>Move Up</button>
-                        <button onClick={(e) => this.moveSegmentsDown()}>Move Down</button>
+                        <button
+                            onClick={(e) => this.insertSegmentAbove()}
+                        >
+                            Insert Above
+                        </button>
+                        <button
+                            onClick={(e) => this.insertSegmentBelow()}
+                        >
+                            Insert Below
+                        </button>
+                        <button
+                            onClick={(e) => this.removeSegments()}
+                            className={this.state.editor.buttons.can_remove ? "" : "disabled"}
+                        >
+                            Remove Segment
+                        </button>
+                        <button
+                            onClick={(e) => this.moveSegmentsUp()}
+                            className={this.state.editor.buttons.can_move_up ? "" : "disabled"}
+                        >
+                            Move Up
+                        </button>
+                        <button
+                            onClick={(e) => this.moveSegmentsDown()}
+                            className={this.state.editor.buttons.can_move_down ? "" : "disabled"}
+                        >
+                            Move Down
+                        </button>
                     </div>
                     <table className="table run-editor-table">
                         <thead className="table-header">
