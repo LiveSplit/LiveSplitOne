@@ -73,8 +73,6 @@ button.toggle-right {
 .livesplit {
     font-family: 'fira', sans-serif;
     width: 300px;
-    background: hsl(0, 0%, 7%);
-    color: #eee;
     text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
     margin: 10px;
     margin-bottom: 5px;
@@ -94,7 +92,7 @@ button.toggle-right {
 .current-pace,
 .delta-component,
 .current-comparison {
-    background: linear-gradient(hsl(0, 0%, 11%) 0%, hsl(0, 0%, 7%) 100%);
+    background: linear-gradient(hsla(0, 0%, 100%, 0.06) 0%, hsla(0, 0%, 100%, 0.005) 100%);
     height: 24px;
     line-height: 20px;
 }
@@ -124,7 +122,7 @@ button.toggle-right {
     display: flex;
     height: 45px;
     width: 100%;
-    background: linear-gradient(hsl(0, 0%, 16%) 0%, hsl(0, 0%, 7%) 100%);
+    background: linear-gradient(hsla(0, 0%, 100%, 0.13) 0%, hsla(0, 0%, 100%, 0.00) 100%);
 }
 
 .title > div >  span,
@@ -217,16 +215,10 @@ img.title-icon {
 }
 
 .splits span.split:nth-child(2n+2) {
-    background-color: hsl(0, 0%, 10%);
-}
-
-.splits span.split:nth-child(2n+2) div {
-    border-bottom: 1px solid hsl(0, 0%, 15%);
-    border-top: 1px solid hsl(0, 0%, 15%);
+    background-color: hsla(0, 0%, 100%, 0.04);
 }
 
 div.splits span.split.split-separator div {
-    border-top: 2px solid hsla(0, 0%, 43%, 1);
     line-height: 18px;
 }
 
@@ -244,10 +236,6 @@ div.splits span.split.split-separator div {
     display: table-cell;
     text-align: right;
     padding: 2px 6px;
-}
-
-.splits table tbody .split {
-    background-color: rgb(23, 23, 23);
 }
 
 td#dif {
@@ -291,82 +279,6 @@ table {
 .time {
     font-weight: bold;
     font-family: 'Roboto', sans-serif;
-}
-
-.time-ahead, .color-aheadgainingtime {
-    color: hsla(142, 100%, 40%, 1);
-    stop-color: hsla(142, 100%, 40%, 1);
-}
-
-.color-aheadlosingtime {
-    color: hsla(142, 60%, 60%, 1);
-    stop-color: hsla(142, 60%, 60%, 1);
-}
-
-.color-behindgainingtime {
-    color: hsla(0, 60%, 60%, 1);
-    stop-color: hsla(0, 60%, 60%, 1);
-}
-
-.time-behind, .color-behindlosingtime {
-    color: hsla(0, 100%, 40%, 1);
-    stop-color: hsla(0, 100%, 40%, 1);
-}
-
-.color-bestsegment {
-    color: hsla(50, 100%, 50%, 1);
-    stop-color: hsla(50, 100%, 50%, 1);
-}
-
-.color-default {
-    stop-color: hsla(0, 0%, 60%, 1);
-}
-
-.color-notrunning {
-    color: hsla(0, 0%, 60%, 1);
-    stop-color: hsla(0, 0%, 60%, 1);
-}
-
-.color-paused {
-    color: hsla(0, 0%, 40%, 1);
-    stop-color: hsla(0, 0%, 40%, 1);
-}
-
-.color-personalbest {
-    color: hsla(210, 100%, 65%, 1);
-    stop-color: hsla(210, 100%, 65%, 1);
-}
-
-.color-aheadgainingtime-top {
-    stop-color: hsla(142, 100%, 80%, 1);
-}
-
-.color-aheadlosingtime-top {
-    stop-color: hsla(142, 60%, 80%, 1);
-}
-
-.color-behindgainingtime-top {
-    stop-color: hsla(0, 60%, 80%, 1);
-}
-
-.color-behindlosingtime-top {
-    stop-color: hsla(0, 100%, 80%, 1);
-}
-
-.color-bestsegment-top {
-    stop-color: hsla(50, 100%, 80%, 1);
-}
-
-.color-notrunning-top, .color-default-top {
-    stop-color: hsla(0, 0%, 95%, 1);
-}
-
-.color-paused-top {
-    stop-color: hsla(0, 0%, 80%, 1);
-}
-
-.color-personalbest-top {
-    stop-color: hsla(210, 100%, 80%, 1);
 }
 
 div.timer-time {
@@ -657,7 +569,7 @@ input[Type="text"] {
      margin-left: -16px;
 }
 
-svg {
+svg.timer, svg.graph {
     display: block;
 }
 
@@ -760,4 +672,10 @@ button.disabled, button.button-pressed.disabled, button.disabled:active {
     background: #222;
     color: #666;
     cursor: default;
+}
+
+.chrome-picker {
+    font-family: inherit !important;
+    margin-top: 5px;
+    margin-left: -15px;
 }

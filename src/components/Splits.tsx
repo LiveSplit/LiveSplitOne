@@ -2,7 +2,10 @@ import * as React from "react";
 import * as LiveSplit from "../livesplit";
 import { Component as Split } from "./Split";
 
-export interface Props { state: LiveSplit.SplitsComponentStateJson }
+export interface Props {
+    state: LiveSplit.SplitsComponentStateJson,
+    layoutState: LiveSplit.LayoutStateJson,
+}
 
 export class Component extends React.Component<Props, undefined> {
     iconUrls: string[];
@@ -29,8 +32,10 @@ export class Component extends React.Component<Props, undefined> {
                     this.props.state.splits.map((s: any, i: number) =>
                         <Split
                             split={s}
+                            layoutState={this.props.layoutState}
                             icon={this.getIconUrl(i)}
                             key={i.toString()}
+                            index={i}
                             separatorInFrontOfSplit={this.props.state.show_final_separator && i + 1 == this.props.state.splits.length}
                         />)
                 }

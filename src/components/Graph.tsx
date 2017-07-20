@@ -102,6 +102,6 @@ export class Component extends React.Component<Props, undefined> {
 
         children.push(...childrenPoints);
 
-        return (<svg height={height}>{children}</svg>);
+        return (<svg className="graph" height={height}>{children}</svg>);
     }
 }

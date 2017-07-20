@@ -17,6 +17,7 @@ import { Component as BlankSpaceComponent } from "./BlankSpace";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import Sidebar from "react-sidebar";
+import { colorToCss } from "../util/ColorUtil";
 
 const SplitsIOOAuthURL = "https://splits.io/oauth/authorize?response_type=token&scope=upload_run&redirect_uri=https://cryze.github.io/LiveSplitOne/&client_id=af72c9df37444a836ffd4e1f167ee69614361a446cdee6c58b781709a56a4a08";
 
@@ -24,7 +25,7 @@ export interface Props { }
 export interface State {
     timer: Core.Timer,
     layout: Core.Layout,
-    layoutState: Core.ComponentStateJson[],
+    layoutState: Core.LayoutStateJson,
     sidebarOpen: boolean,
     timingMethod?: Core.TimingMethod,
     comparison?: string,
@@ -74,7 +75,7 @@ export class LiveSplit extends React.Component<Props, State> {
         this.state = {
             timer: Core.Timer.new(run),
             layout: layout,
-            layoutState: [],
+            layoutState: null,
             sidebarOpen: false,
         };
     }
@@ -473,10 +474,11 @@ export class LiveSplit extends React.Component<Props, State> {
             content = <RunEditorComponent editor={this.state.runEditor} />;
         } else if (this.state.layoutEditor) {
             content = <LayoutEditorComponent editor={this.state.layoutEditor} />;
-        } else {
+        } else if (this.state.layoutState) {
             let components: any[] = [];
+            const layoutState = this.state.layoutState;
 
-            this.state.layoutState.forEach((componentState: any) => {
+            layoutState.components.forEach((componentState: any) => {
                 var component;
                 switch (Object.keys(componentState)[0]) {
                     case "CurrentComparison": {
@@ -508,7 +510,11 @@ export class LiveSplit extends React.Component<Props, State> {
                         break;
                     }
                     case "Splits": {
-                        component = <SplitsComponent state={componentState.Splits} />;
+                        component =
+                            <SplitsComponent
+                                state={componentState.Splits}
+                                layoutState={layoutState}
+                            />;
                         break;
                     }
                     case "SumOfBest": {
@@ -533,7 +539,7 @@ export class LiveSplit extends React.Component<Props, State> {
                         break;
                     }
                     case "Separator": {
-                        component = <SeparatorComponent />;
+                        component = <SeparatorComponent layoutState={layoutState} />;
                         break;
                     }
                     case "BlankSpace": {
@@ -546,10 +552,14 @@ export class LiveSplit extends React.Component<Props, State> {
             });
 
             content = <div>
-                <div className="livesplit">
-                    {
-                        components
-                    }
+                <div
+                    className="livesplit"
+                    style={{
+                        background: colorToCss(layoutState.background_color),
+                        color: colorToCss(layoutState.text_color),
+                    }}
+                >
+                    {components}
                 </div>
                 <div className="buttons">
                     <button onClick={(e) => this.onSplit()}><i className="fa fa-play" aria-hidden="true"></i></button>
@@ -563,17 +573,19 @@ export class LiveSplit extends React.Component<Props, State> {
                     </div>
                 </div>
             </div>;
+        } else {
+            content = <div />;
         }
 
         return (
-            <Sidebar sidebar={sidebarContent}
+            <Sidebar
+                sidebar={sidebarContent}
                 open={this.state.sidebarOpen}
                 onSetOpen={((e: boolean) => this.onSetSidebarOpen(e)) as any}
                 sidebarClassName="sidebar"
-                contentClassName="livesplit-container">
-                {
-                    content
-                }
+                contentClassName="livesplit-container"
+            >
+                {content}
             </Sidebar>
         );
     }

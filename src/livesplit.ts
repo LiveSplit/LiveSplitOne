@@ -18,6 +18,16 @@ export type ComponentStateJson =
     { Title: TitleComponentStateJson } |
     { TotalPlaytime: TotalPlaytimeComponentStateJson };
 
+export type Color = number[];
+
+export interface LayoutStateJson {
+    components: ComponentStateJson[];
+    background_color: Color;
+    thin_separators_color: Color;
+    separators_color: Color;
+    text_color: Color;
+}
+
 export enum TimingMethod {
     RealTime = 0,
     GameTime = 1,
@@ -37,7 +47,9 @@ export interface BlankSpaceComponentStateJson {
 export interface TimerComponentStateJson {
     time: string;
     fraction: string;
-    color: Color;
+    semantic_color: SemanticColor;
+    top_color: Color;
+    bottom_color: Color;
 }
 
 export interface TitleComponentStateJson {
@@ -59,14 +71,16 @@ export interface SplitStateJson {
     name: string;
     delta: string;
     time: string;
-    color: Color;
+    semantic_color: SemanticColor;
+    visual_color: Color;
     is_current_split: boolean;
 }
 
 export interface PreviousSegmentComponentStateJson {
     text: string;
     time: string;
-    color: Color;
+    semantic_color: SemanticColor;
+    visual_color: Color;
 }
 
 export interface SumOfBestComponentStateJson {
@@ -111,7 +125,8 @@ export interface CurrentPaceComponentStateJson {
 export interface DeltaComponentStateJson {
     text: string;
     time: string;
-    color: Color;
+    semantic_color: SemanticColor;
+    visual_color: Color;
 }
 
 export interface CurrentComparisonComponentStateJson {
@@ -124,6 +139,8 @@ export interface DetailedTimerComponentStateJson {
     segment_timer: TimerComponentStateJson;
     comparison1: DetailedTimerComponentComparisonStateJson;
     comparison2: DetailedTimerComponentComparisonStateJson;
+    segment_name: string;
+    icon_change: string;
 }
 
 export interface DetailedTimerComponentComparisonStateJson {
@@ -135,7 +152,8 @@ export interface LayoutEditorStateJson {
     components: string[],
     buttons: LayoutEditorButtonsJson,
     selected_component: number,
-    settings_description: SettingsDescriptionJson,
+    component_settings: SettingsDescriptionJson,
+    general_settings: SettingsDescriptionJson,
 }
 
 export interface LayoutEditorButtonsJson {
@@ -161,7 +179,8 @@ export type SettingsDescriptionValueJson =
     { OptionalString: string } |
     { Float: number } |
     { Accuracy: AccuracyJson } |
-    { DigitsFormat: DigitsFormatJson };
+    { DigitsFormat: DigitsFormatJson } |
+    { Color: Color };
 
 export type AccuracyJson = "Seconds" | "Tenths" | "Hundredths";
 
@@ -201,7 +220,7 @@ export interface RunEditorRowJson {
     selected: "NotSelected" | "Selected" | "CurrentRow",
 }
 
-export type Color = "Default" |
+export type SemanticColor = "Default" |
     "AheadGainingTime" |
     "AheadLosingTime" |
     "BehindLosingTime" |
@@ -247,22 +266,21 @@ liveSplitCoreNative.CurrentPaceComponentState_time = emscriptenModule.cwrap('Cur
 liveSplitCoreNative.DeltaComponent_new = emscriptenModule.cwrap('DeltaComponent_new', "number", []);
 liveSplitCoreNative.DeltaComponent_drop = emscriptenModule.cwrap('DeltaComponent_drop', null, ["number"]);
 liveSplitCoreNative.DeltaComponent_into_generic = emscriptenModule.cwrap('DeltaComponent_into_generic', "number", ["number"]);
-liveSplitCoreNative.DeltaComponent_state_as_json = emscriptenModule.cwrap('DeltaComponent_state_as_json', "string", ["number", "number"]);
-liveSplitCoreNative.DeltaComponent_state = emscriptenModule.cwrap('DeltaComponent_state', "number", ["number", "number"]);
+liveSplitCoreNative.DeltaComponent_state_as_json = emscriptenModule.cwrap('DeltaComponent_state_as_json', "string", ["number", "number", "number"]);
+liveSplitCoreNative.DeltaComponent_state = emscriptenModule.cwrap('DeltaComponent_state', "number", ["number", "number", "number"]);
 liveSplitCoreNative.DeltaComponentState_drop = emscriptenModule.cwrap('DeltaComponentState_drop', null, ["number"]);
 liveSplitCoreNative.DeltaComponentState_text = emscriptenModule.cwrap('DeltaComponentState_text', "string", ["number"]);
 liveSplitCoreNative.DeltaComponentState_time = emscriptenModule.cwrap('DeltaComponentState_time', "string", ["number"]);
-liveSplitCoreNative.DeltaComponentState_color = emscriptenModule.cwrap('DeltaComponentState_color', "string", ["number"]);
+liveSplitCoreNative.DeltaComponentState_semantic_color = emscriptenModule.cwrap('DeltaComponentState_semantic_color', "string", ["number"]);
 liveSplitCoreNative.DetailedTimerComponent_new = emscriptenModule.cwrap('DetailedTimerComponent_new', "number", []);
 liveSplitCoreNative.DetailedTimerComponent_drop = emscriptenModule.cwrap('DetailedTimerComponent_drop', null, ["number"]);
 liveSplitCoreNative.DetailedTimerComponent_into_generic = emscriptenModule.cwrap('DetailedTimerComponent_into_generic', "number", ["number"]);
-liveSplitCoreNative.DetailedTimerComponent_state_as_json = emscriptenModule.cwrap('DetailedTimerComponent_state_as_json', "string", ["number", "number"]);
-liveSplitCoreNative.DetailedTimerComponent_state = emscriptenModule.cwrap('DetailedTimerComponent_state', "number", ["number", "number"]);
+liveSplitCoreNative.DetailedTimerComponent_state_as_json = emscriptenModule.cwrap('DetailedTimerComponent_state_as_json', "string", ["number", "number", "number"]);
+liveSplitCoreNative.DetailedTimerComponent_state = emscriptenModule.cwrap('DetailedTimerComponent_state', "number", ["number", "number", "number"]);
 liveSplitCoreNative.DetailedTimerComponentState_drop = emscriptenModule.cwrap('DetailedTimerComponentState_drop', null, ["number"]);
 liveSplitCoreNative.DetailedTimerComponentState_timer_time = emscriptenModule.cwrap('DetailedTimerComponentState_timer_time', "string", ["number"]);
 liveSplitCoreNative.DetailedTimerComponentState_timer_fraction = emscriptenModule.cwrap('DetailedTimerComponentState_timer_fraction', "string", ["number"]);
-liveSplitCoreNative.DetailedTimerComponentState_timer_color = emscriptenModule.cwrap('DetailedTimerComponentState_timer_color', "string", ["number"]);
-liveSplitCoreNative.DetailedTimerComponentState_segment_timer_visible = emscriptenModule.cwrap('DetailedTimerComponentState_segment_timer_visible', "number", ["number"]);
+liveSplitCoreNative.DetailedTimerComponentState_timer_semantic_color = emscriptenModule.cwrap('DetailedTimerComponentState_timer_semantic_color', "string", ["number"]);
 liveSplitCoreNative.DetailedTimerComponentState_segment_timer_time = emscriptenModule.cwrap('DetailedTimerComponentState_segment_timer_time', "string", ["number"]);
 liveSplitCoreNative.DetailedTimerComponentState_segment_timer_fraction = emscriptenModule.cwrap('DetailedTimerComponentState_segment_timer_fraction', "string", ["number"]);
 liveSplitCoreNative.DetailedTimerComponentState_comparison1_visible = emscriptenModule.cwrap('DetailedTimerComponentState_comparison1_visible', "number", ["number"]);
@@ -271,6 +289,10 @@ liveSplitCoreNative.DetailedTimerComponentState_comparison1_time = emscriptenMod
 liveSplitCoreNative.DetailedTimerComponentState_comparison2_visible = emscriptenModule.cwrap('DetailedTimerComponentState_comparison2_visible', "number", ["number"]);
 liveSplitCoreNative.DetailedTimerComponentState_comparison2_name = emscriptenModule.cwrap('DetailedTimerComponentState_comparison2_name', "string", ["number"]);
 liveSplitCoreNative.DetailedTimerComponentState_comparison2_time = emscriptenModule.cwrap('DetailedTimerComponentState_comparison2_time', "string", ["number"]);
+liveSplitCoreNative.DetailedTimerComponentState_icon_change = emscriptenModule.cwrap('DetailedTimerComponentState_icon_change', "string", ["number"]);
+liveSplitCoreNative.DetailedTimerComponentState_name = emscriptenModule.cwrap('DetailedTimerComponentState_name', "string", ["number"]);
+liveSplitCoreNative.GeneralLayoutSettings_default = emscriptenModule.cwrap('GeneralLayoutSettings_default', "number", []);
+liveSplitCoreNative.GeneralLayoutSettings_drop = emscriptenModule.cwrap('GeneralLayoutSettings_drop', null, ["number"]);
 liveSplitCoreNative.GraphComponent_new = emscriptenModule.cwrap('GraphComponent_new', "number", []);
 liveSplitCoreNative.GraphComponent_drop = emscriptenModule.cwrap('GraphComponent_drop', null, ["number"]);
 liveSplitCoreNative.GraphComponent_into_generic = emscriptenModule.cwrap('GraphComponent_into_generic', "number", ["number"]);
@@ -309,17 +331,8 @@ liveSplitCoreNative.LayoutEditor_remove_component = emscriptenModule.cwrap('Layo
 liveSplitCoreNative.LayoutEditor_move_component_up = emscriptenModule.cwrap('LayoutEditor_move_component_up', null, ["number"]);
 liveSplitCoreNative.LayoutEditor_move_component_down = emscriptenModule.cwrap('LayoutEditor_move_component_down', null, ["number"]);
 liveSplitCoreNative.LayoutEditor_move_component = emscriptenModule.cwrap('LayoutEditor_move_component', null, ["number", "number"]);
-liveSplitCoreNative.LayoutEditor_set_component_settings_bool = emscriptenModule.cwrap('LayoutEditor_set_component_settings_bool', null, ["number", "number", "number"]);
-liveSplitCoreNative.LayoutEditor_set_component_settings_uint = emscriptenModule.cwrap('LayoutEditor_set_component_settings_uint', null, ["number", "number", "number"]);
-liveSplitCoreNative.LayoutEditor_set_component_settings_int = emscriptenModule.cwrap('LayoutEditor_set_component_settings_int', null, ["number", "number", "number"]);
-liveSplitCoreNative.LayoutEditor_set_component_settings_string = emscriptenModule.cwrap('LayoutEditor_set_component_settings_string', null, ["number", "number", "string"]);
-liveSplitCoreNative.LayoutEditor_set_component_settings_optional_string = emscriptenModule.cwrap('LayoutEditor_set_component_settings_optional_string', null, ["number", "number", "string"]);
-liveSplitCoreNative.LayoutEditor_set_component_settings_optional_string_to_empty = emscriptenModule.cwrap('LayoutEditor_set_component_settings_optional_string_to_empty', null, ["number", "number"]);
-liveSplitCoreNative.LayoutEditor_set_component_settings_float = emscriptenModule.cwrap('LayoutEditor_set_component_settings_float', null, ["number", "number", "number"]);
-liveSplitCoreNative.LayoutEditor_set_component_settings_accuracy = emscriptenModule.cwrap('LayoutEditor_set_component_settings_accuracy', null, ["number", "number", "string"]);
-liveSplitCoreNative.LayoutEditor_set_component_settings_digits_format = emscriptenModule.cwrap('LayoutEditor_set_component_settings_digits_format', null, ["number", "number", "string"]);
-liveSplitCoreNative.LayoutEditor_set_component_settings_optional_timing_method = emscriptenModule.cwrap('LayoutEditor_set_component_settings_optional_timing_method', null, ["number", "number", "string"]);
-liveSplitCoreNative.LayoutEditor_set_component_settings_optional_timing_method_to_empty = emscriptenModule.cwrap('LayoutEditor_set_component_settings_optional_timing_method_to_empty', null, ["number", "number"]);
+liveSplitCoreNative.LayoutEditor_set_component_settings_value = emscriptenModule.cwrap('LayoutEditor_set_component_settings_value', null, ["number", "number", "number"]);
+liveSplitCoreNative.LayoutEditor_set_general_settings_value = emscriptenModule.cwrap('LayoutEditor_set_general_settings_value', null, ["number", "number", "number"]);
 liveSplitCoreNative.PossibleTimeSaveComponent_new = emscriptenModule.cwrap('PossibleTimeSaveComponent_new', "number", []);
 liveSplitCoreNative.PossibleTimeSaveComponent_drop = emscriptenModule.cwrap('PossibleTimeSaveComponent_drop', null, ["number"]);
 liveSplitCoreNative.PossibleTimeSaveComponent_into_generic = emscriptenModule.cwrap('PossibleTimeSaveComponent_into_generic', "number", ["number"]);
@@ -331,12 +344,12 @@ liveSplitCoreNative.PossibleTimeSaveComponentState_time = emscriptenModule.cwrap
 liveSplitCoreNative.PreviousSegmentComponent_new = emscriptenModule.cwrap('PreviousSegmentComponent_new', "number", []);
 liveSplitCoreNative.PreviousSegmentComponent_drop = emscriptenModule.cwrap('PreviousSegmentComponent_drop', null, ["number"]);
 liveSplitCoreNative.PreviousSegmentComponent_into_generic = emscriptenModule.cwrap('PreviousSegmentComponent_into_generic', "number", ["number"]);
-liveSplitCoreNative.PreviousSegmentComponent_state_as_json = emscriptenModule.cwrap('PreviousSegmentComponent_state_as_json', "string", ["number", "number"]);
-liveSplitCoreNative.PreviousSegmentComponent_state = emscriptenModule.cwrap('PreviousSegmentComponent_state', "number", ["number", "number"]);
+liveSplitCoreNative.PreviousSegmentComponent_state_as_json = emscriptenModule.cwrap('PreviousSegmentComponent_state_as_json', "string", ["number", "number", "number"]);
+liveSplitCoreNative.PreviousSegmentComponent_state = emscriptenModule.cwrap('PreviousSegmentComponent_state', "number", ["number", "number", "number"]);
 liveSplitCoreNative.PreviousSegmentComponentState_drop = emscriptenModule.cwrap('PreviousSegmentComponentState_drop', null, ["number"]);
 liveSplitCoreNative.PreviousSegmentComponentState_text = emscriptenModule.cwrap('PreviousSegmentComponentState_text', "string", ["number"]);
 liveSplitCoreNative.PreviousSegmentComponentState_time = emscriptenModule.cwrap('PreviousSegmentComponentState_time', "string", ["number"]);
-liveSplitCoreNative.PreviousSegmentComponentState_color = emscriptenModule.cwrap('PreviousSegmentComponentState_color', "string", ["number"]);
+liveSplitCoreNative.PreviousSegmentComponentState_semantic_color = emscriptenModule.cwrap('PreviousSegmentComponentState_semantic_color', "string", ["number"]);
 liveSplitCoreNative.Run_new = emscriptenModule.cwrap('Run_new', "number", []);
 liveSplitCoreNative.Run_parse = emscriptenModule.cwrap('Run_parse', "number", ["number", "number"]);
 liveSplitCoreNative.Run_drop = emscriptenModule.cwrap('Run_drop', null, ["number"]);
@@ -407,6 +420,19 @@ liveSplitCoreNative.SegmentHistoryIter_next = emscriptenModule.cwrap('SegmentHis
 liveSplitCoreNative.SeparatorComponent_new = emscriptenModule.cwrap('SeparatorComponent_new', "number", []);
 liveSplitCoreNative.SeparatorComponent_drop = emscriptenModule.cwrap('SeparatorComponent_drop', null, ["number"]);
 liveSplitCoreNative.SeparatorComponent_into_generic = emscriptenModule.cwrap('SeparatorComponent_into_generic', "number", ["number"]);
+liveSplitCoreNative.SettingValue_from_bool = emscriptenModule.cwrap('SettingValue_from_bool', "number", ["number"]);
+liveSplitCoreNative.SettingValue_from_uint = emscriptenModule.cwrap('SettingValue_from_uint', "number", ["number"]);
+liveSplitCoreNative.SettingValue_from_int = emscriptenModule.cwrap('SettingValue_from_int', "number", ["number"]);
+liveSplitCoreNative.SettingValue_from_string = emscriptenModule.cwrap('SettingValue_from_string', "number", ["string"]);
+liveSplitCoreNative.SettingValue_from_optional_string = emscriptenModule.cwrap('SettingValue_from_optional_string', "number", ["string"]);
+liveSplitCoreNative.SettingValue_from_optional_empty_string = emscriptenModule.cwrap('SettingValue_from_optional_empty_string', "number", []);
+liveSplitCoreNative.SettingValue_from_float = emscriptenModule.cwrap('SettingValue_from_float', "number", ["number"]);
+liveSplitCoreNative.SettingValue_from_accuracy = emscriptenModule.cwrap('SettingValue_from_accuracy', "number", ["string"]);
+liveSplitCoreNative.SettingValue_from_digits_format = emscriptenModule.cwrap('SettingValue_from_digits_format', "number", ["string"]);
+liveSplitCoreNative.SettingValue_from_optional_timing_method = emscriptenModule.cwrap('SettingValue_from_optional_timing_method', "number", ["string"]);
+liveSplitCoreNative.SettingValue_from_optional_empty_timing_method = emscriptenModule.cwrap('SettingValue_from_optional_empty_timing_method', "number", []);
+liveSplitCoreNative.SettingValue_from_color = emscriptenModule.cwrap('SettingValue_from_color', "number", ["number", "number", "number", "number"]);
+liveSplitCoreNative.SettingValue_drop = emscriptenModule.cwrap('SettingValue_drop', null, ["number"]);
 liveSplitCoreNative.SharedTimer_drop = emscriptenModule.cwrap('SharedTimer_drop', null, ["number"]);
 liveSplitCoreNative.SharedTimer_share = emscriptenModule.cwrap('SharedTimer_share', "number", ["number"]);
 liveSplitCoreNative.SharedTimer_read = emscriptenModule.cwrap('SharedTimer_read', "number", ["number"]);
@@ -415,8 +441,8 @@ liveSplitCoreNative.SharedTimer_replace_inner = emscriptenModule.cwrap('SharedTi
 liveSplitCoreNative.SplitsComponent_new = emscriptenModule.cwrap('SplitsComponent_new', "number", []);
 liveSplitCoreNative.SplitsComponent_drop = emscriptenModule.cwrap('SplitsComponent_drop', null, ["number"]);
 liveSplitCoreNative.SplitsComponent_into_generic = emscriptenModule.cwrap('SplitsComponent_into_generic', "number", ["number"]);
-liveSplitCoreNative.SplitsComponent_state_as_json = emscriptenModule.cwrap('SplitsComponent_state_as_json', "string", ["number", "number"]);
-liveSplitCoreNative.SplitsComponent_state = emscriptenModule.cwrap('SplitsComponent_state', "number", ["number", "number"]);
+liveSplitCoreNative.SplitsComponent_state_as_json = emscriptenModule.cwrap('SplitsComponent_state_as_json', "string", ["number", "number", "number"]);
+liveSplitCoreNative.SplitsComponent_state = emscriptenModule.cwrap('SplitsComponent_state', "number", ["number", "number", "number"]);
 liveSplitCoreNative.SplitsComponent_scroll_up = emscriptenModule.cwrap('SplitsComponent_scroll_up', null, ["number"]);
 liveSplitCoreNative.SplitsComponent_scroll_down = emscriptenModule.cwrap('SplitsComponent_scroll_down', null, ["number"]);
 liveSplitCoreNative.SplitsComponent_set_visual_split_count = emscriptenModule.cwrap('SplitsComponent_set_visual_split_count', null, ["number", "number"]);
@@ -430,7 +456,7 @@ liveSplitCoreNative.SplitsComponentState_icon_change = emscriptenModule.cwrap('S
 liveSplitCoreNative.SplitsComponentState_name = emscriptenModule.cwrap('SplitsComponentState_name', "string", ["number", "number"]);
 liveSplitCoreNative.SplitsComponentState_delta = emscriptenModule.cwrap('SplitsComponentState_delta', "string", ["number", "number"]);
 liveSplitCoreNative.SplitsComponentState_time = emscriptenModule.cwrap('SplitsComponentState_time', "string", ["number", "number"]);
-liveSplitCoreNative.SplitsComponentState_color = emscriptenModule.cwrap('SplitsComponentState_color', "string", ["number", "number"]);
+liveSplitCoreNative.SplitsComponentState_semantic_color = emscriptenModule.cwrap('SplitsComponentState_semantic_color', "string", ["number", "number"]);
 liveSplitCoreNative.SplitsComponentState_is_current_split = emscriptenModule.cwrap('SplitsComponentState_is_current_split', "number", ["number", "number"]);
 liveSplitCoreNative.SumOfBestComponent_new = emscriptenModule.cwrap('SumOfBestComponent_new', "number", []);
 liveSplitCoreNative.SumOfBestComponent_drop = emscriptenModule.cwrap('SumOfBestComponent_drop', null, ["number"]);
@@ -496,12 +522,12 @@ liveSplitCoreNative.Timer_set_loading_times = emscriptenModule.cwrap('Timer_set_
 liveSplitCoreNative.TimerComponent_new = emscriptenModule.cwrap('TimerComponent_new', "number", []);
 liveSplitCoreNative.TimerComponent_drop = emscriptenModule.cwrap('TimerComponent_drop', null, ["number"]);
 liveSplitCoreNative.TimerComponent_into_generic = emscriptenModule.cwrap('TimerComponent_into_generic', "number", ["number"]);
-liveSplitCoreNative.TimerComponent_state_as_json = emscriptenModule.cwrap('TimerComponent_state_as_json', "string", ["number", "number"]);
-liveSplitCoreNative.TimerComponent_state = emscriptenModule.cwrap('TimerComponent_state', "number", ["number", "number"]);
+liveSplitCoreNative.TimerComponent_state_as_json = emscriptenModule.cwrap('TimerComponent_state_as_json', "string", ["number", "number", "number"]);
+liveSplitCoreNative.TimerComponent_state = emscriptenModule.cwrap('TimerComponent_state', "number", ["number", "number", "number"]);
 liveSplitCoreNative.TimerComponentState_drop = emscriptenModule.cwrap('TimerComponentState_drop', null, ["number"]);
 liveSplitCoreNative.TimerComponentState_time = emscriptenModule.cwrap('TimerComponentState_time', "string", ["number"]);
 liveSplitCoreNative.TimerComponentState_fraction = emscriptenModule.cwrap('TimerComponentState_fraction', "string", ["number"]);
-liveSplitCoreNative.TimerComponentState_color = emscriptenModule.cwrap('TimerComponentState_color', "string", ["number"]);
+liveSplitCoreNative.TimerComponentState_semantic_color = emscriptenModule.cwrap('TimerComponentState_semantic_color', "string", ["number"]);
 liveSplitCoreNative.TimerReadLock_drop = emscriptenModule.cwrap('TimerReadLock_drop', null, ["number"]);
 liveSplitCoreNative.TimerReadLock_timer = emscriptenModule.cwrap('TimerReadLock_timer', "number", ["number"]);
 liveSplitCoreNative.TimerWriteLock_drop = emscriptenModule.cwrap('TimerWriteLock_drop', null, ["number"]);
@@ -996,24 +1022,30 @@ export class DeltaComponentRef {
 }
 
 export class DeltaComponentRefMut extends DeltaComponentRef {
-    stateAsJson(timer: TimerRef): any {
+    stateAsJson(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): any {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = liveSplitCoreNative.DeltaComponent_state_as_json(this.ptr, timer.ptr);
+        if (layoutSettings.ptr == 0) {
+            throw "layoutSettings is disposed";
+        }
+        var result = liveSplitCoreNative.DeltaComponent_state_as_json(this.ptr, timer.ptr, layoutSettings.ptr);
         return JSON.parse(result);
     }
-    state(timer: TimerRef): DeltaComponentState {
+    state(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): DeltaComponentState {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = new DeltaComponentState(liveSplitCoreNative.DeltaComponent_state(this.ptr, timer.ptr));
+        if (layoutSettings.ptr == 0) {
+            throw "layoutSettings is disposed";
+        }
+        var result = new DeltaComponentState(liveSplitCoreNative.DeltaComponent_state(this.ptr, timer.ptr, layoutSettings.ptr));
         if (result.ptr == 0) {
             return null;
         }
@@ -1071,11 +1103,11 @@ export class DeltaComponentStateRef {
         var result = liveSplitCoreNative.DeltaComponentState_time(this.ptr);
         return result;
     }
-    color(): string {
+    semanticColor(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.DeltaComponentState_color(this.ptr);
+        var result = liveSplitCoreNative.DeltaComponentState_semantic_color(this.ptr);
         return result;
     }
     constructor(ptr: number) {
@@ -1104,35 +1136,41 @@ export class DeltaComponentState extends DeltaComponentStateRefMut {
 
 export class DetailedTimerComponentRef {
     ptr: number;
-    stateAsJson(timer: TimerRef): any {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        if (timer.ptr == 0) {
-            throw "timer is disposed";
-        }
-        var result = liveSplitCoreNative.DetailedTimerComponent_state_as_json(this.ptr, timer.ptr);
-        return JSON.parse(result);
-    }
-    state(timer: TimerRef): DetailedTimerComponentState {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        if (timer.ptr == 0) {
-            throw "timer is disposed";
-        }
-        var result = new DetailedTimerComponentState(liveSplitCoreNative.DetailedTimerComponent_state(this.ptr, timer.ptr));
-        if (result.ptr == 0) {
-            return null;
-        }
-        return result;
-    }
     constructor(ptr: number) {
         this.ptr = ptr;
     }
 }
 
 export class DetailedTimerComponentRefMut extends DetailedTimerComponentRef {
+    stateAsJson(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): any {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (timer.ptr == 0) {
+            throw "timer is disposed";
+        }
+        if (layoutSettings.ptr == 0) {
+            throw "layoutSettings is disposed";
+        }
+        var result = liveSplitCoreNative.DetailedTimerComponent_state_as_json(this.ptr, timer.ptr, layoutSettings.ptr);
+        return JSON.parse(result);
+    }
+    state(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): DetailedTimerComponentState {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (timer.ptr == 0) {
+            throw "timer is disposed";
+        }
+        if (layoutSettings.ptr == 0) {
+            throw "layoutSettings is disposed";
+        }
+        var result = new DetailedTimerComponentState(liveSplitCoreNative.DetailedTimerComponent_state(this.ptr, timer.ptr, layoutSettings.ptr));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
 }
 
 export class DetailedTimerComponent extends DetailedTimerComponentRefMut {
@@ -1185,18 +1223,11 @@ export class DetailedTimerComponentStateRef {
         var result = liveSplitCoreNative.DetailedTimerComponentState_timer_fraction(this.ptr);
         return result;
     }
-    timerColor(): string {
+    timerSemanticColor(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.DetailedTimerComponentState_timer_color(this.ptr);
-        return result;
-    }
-    segmentTimerVisible(): boolean {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        var result = liveSplitCoreNative.DetailedTimerComponentState_segment_timer_visible(this.ptr) != 0;
+        var result = liveSplitCoreNative.DetailedTimerComponentState_timer_semantic_color(this.ptr);
         return result;
     }
     segmentTimerTime(): string {
@@ -1255,6 +1286,20 @@ export class DetailedTimerComponentStateRef {
         var result = liveSplitCoreNative.DetailedTimerComponentState_comparison2_time(this.ptr);
         return result;
     }
+    iconChange(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.DetailedTimerComponentState_icon_change(this.ptr);
+        return result;
+    }
+    name(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        var result = liveSplitCoreNative.DetailedTimerComponentState_name(this.ptr);
+        return result;
+    }
     constructor(ptr: number) {
         this.ptr = ptr;
     }
@@ -1276,6 +1321,39 @@ export class DetailedTimerComponentState extends DetailedTimerComponentStateRefM
             liveSplitCoreNative.DetailedTimerComponentState_drop(this.ptr);
             this.ptr = 0;
         }
+    }
+}
+
+export class GeneralLayoutSettingsRef {
+    ptr: number;
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+export class GeneralLayoutSettingsRefMut extends GeneralLayoutSettingsRef {
+}
+
+export class GeneralLayoutSettings extends GeneralLayoutSettingsRefMut {
+    with(closure: (obj: GeneralLayoutSettings) => void) {
+        try {
+            closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    dispose() {
+        if (this.ptr != 0) {
+            liveSplitCoreNative.GeneralLayoutSettings_drop(this.ptr);
+            this.ptr = 0;
+        }
+    }
+    static default(): GeneralLayoutSettings {
+        var result = new GeneralLayoutSettings(liveSplitCoreNative.GeneralLayoutSettings_default());
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
     }
 }
 
@@ -1636,71 +1714,25 @@ export class LayoutEditorRefMut extends LayoutEditorRef {
         }
         liveSplitCoreNative.LayoutEditor_move_component(this.ptr, dstIndex);
     }
-    setComponentSettingsBool(index: number, value: boolean) {
+    setComponentSettingsValue(index: number, value: SettingValue) {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        liveSplitCoreNative.LayoutEditor_set_component_settings_bool(this.ptr, index, value ? 1 : 0);
+        if (value.ptr == 0) {
+            throw "value is disposed";
+        }
+        liveSplitCoreNative.LayoutEditor_set_component_settings_value(this.ptr, index, value.ptr);
+        value.ptr = 0;
     }
-    setComponentSettingsUint(index: number, value: number) {
+    setGeneralSettingsValue(index: number, value: SettingValue) {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        liveSplitCoreNative.LayoutEditor_set_component_settings_uint(this.ptr, index, value);
-    }
-    setComponentSettingsInt(index: number, value: number) {
-        if (this.ptr == 0) {
-            throw "this is disposed";
+        if (value.ptr == 0) {
+            throw "value is disposed";
         }
-        liveSplitCoreNative.LayoutEditor_set_component_settings_int(this.ptr, index, value);
-    }
-    setComponentSettingsString(index: number, value: string) {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        liveSplitCoreNative.LayoutEditor_set_component_settings_string(this.ptr, index, value);
-    }
-    setComponentSettingsOptionalString(index: number, value: string) {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        liveSplitCoreNative.LayoutEditor_set_component_settings_optional_string(this.ptr, index, value);
-    }
-    setComponentSettingsOptionalStringToEmpty(index: number) {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        liveSplitCoreNative.LayoutEditor_set_component_settings_optional_string_to_empty(this.ptr, index);
-    }
-    setComponentSettingsFloat(index: number, value: number) {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        liveSplitCoreNative.LayoutEditor_set_component_settings_float(this.ptr, index, value);
-    }
-    setComponentSettingsAccuracy(index: number, value: string) {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        liveSplitCoreNative.LayoutEditor_set_component_settings_accuracy(this.ptr, index, value);
-    }
-    setComponentSettingsDigitsFormat(index: number, value: string) {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        liveSplitCoreNative.LayoutEditor_set_component_settings_digits_format(this.ptr, index, value);
-    }
-    setComponentSettingsOptionalTimingMethod(index: number, value: string) {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        liveSplitCoreNative.LayoutEditor_set_component_settings_optional_timing_method(this.ptr, index, value);
-    }
-    setComponentSettingsOptionalTimingMethodToEmpty(index: number) {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        liveSplitCoreNative.LayoutEditor_set_component_settings_optional_timing_method_to_empty(this.ptr, index);
+        liveSplitCoreNative.LayoutEditor_set_general_settings_value(this.ptr, index, value.ptr);
+        value.ptr = 0;
     }
 }
 
@@ -1850,24 +1882,30 @@ export class PossibleTimeSaveComponentState extends PossibleTimeSaveComponentSta
 
 export class PreviousSegmentComponentRef {
     ptr: number;
-    stateAsJson(timer: TimerRef): any {
+    stateAsJson(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): any {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = liveSplitCoreNative.PreviousSegmentComponent_state_as_json(this.ptr, timer.ptr);
+        if (layoutSettings.ptr == 0) {
+            throw "layoutSettings is disposed";
+        }
+        var result = liveSplitCoreNative.PreviousSegmentComponent_state_as_json(this.ptr, timer.ptr, layoutSettings.ptr);
         return JSON.parse(result);
     }
-    state(timer: TimerRef): PreviousSegmentComponentState {
+    state(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): PreviousSegmentComponentState {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = new PreviousSegmentComponentState(liveSplitCoreNative.PreviousSegmentComponent_state(this.ptr, timer.ptr));
+        if (layoutSettings.ptr == 0) {
+            throw "layoutSettings is disposed";
+        }
+        var result = new PreviousSegmentComponentState(liveSplitCoreNative.PreviousSegmentComponent_state(this.ptr, timer.ptr, layoutSettings.ptr));
         if (result.ptr == 0) {
             return null;
         }
@@ -1931,11 +1969,11 @@ export class PreviousSegmentComponentStateRef {
         var result = liveSplitCoreNative.PreviousSegmentComponentState_time(this.ptr);
         return result;
     }
-    color(): string {
+    semanticColor(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.PreviousSegmentComponentState_color(this.ptr);
+        var result = liveSplitCoreNative.PreviousSegmentComponentState_semantic_color(this.ptr);
         return result;
     }
     constructor(ptr: number) {
@@ -2730,6 +2768,116 @@ export class SeparatorComponent extends SeparatorComponentRefMut {
     }
 }
 
+export class SettingValueRef {
+    ptr: number;
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+export class SettingValueRefMut extends SettingValueRef {
+}
+
+export class SettingValue extends SettingValueRefMut {
+    with(closure: (obj: SettingValue) => void) {
+        try {
+            closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    dispose() {
+        if (this.ptr != 0) {
+            liveSplitCoreNative.SettingValue_drop(this.ptr);
+            this.ptr = 0;
+        }
+    }
+    static fromBool(value: boolean): SettingValue {
+        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_bool(value ? 1 : 0));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    static fromUint(value: number): SettingValue {
+        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_uint(value));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    static fromInt(value: number): SettingValue {
+        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_int(value));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    static fromString(value: string): SettingValue {
+        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_string(value));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    static fromOptionalString(value: string): SettingValue {
+        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_optional_string(value));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    static fromOptionalEmptyString(): SettingValue {
+        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_optional_empty_string());
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    static fromFloat(value: number): SettingValue {
+        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_float(value));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    static fromAccuracy(value: string): SettingValue {
+        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_accuracy(value));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    static fromDigitsFormat(value: string): SettingValue {
+        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_digits_format(value));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    static fromOptionalTimingMethod(value: string): SettingValue {
+        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_optional_timing_method(value));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    static fromOptionalEmptyTimingMethod(): SettingValue {
+        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_optional_empty_timing_method());
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    static fromColor(r: number, g: number, b: number, a: number): SettingValue {
+        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_color(r, g, b, a));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+}
+
 export class SharedTimerRef {
     ptr: number;
     share(): SharedTimer {
@@ -2814,24 +2962,30 @@ export class SplitsComponentRef {
 }
 
 export class SplitsComponentRefMut extends SplitsComponentRef {
-    stateAsJson(timer: TimerRef): any {
+    stateAsJson(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): any {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = liveSplitCoreNative.SplitsComponent_state_as_json(this.ptr, timer.ptr);
+        if (layoutSettings.ptr == 0) {
+            throw "layoutSettings is disposed";
+        }
+        var result = liveSplitCoreNative.SplitsComponent_state_as_json(this.ptr, timer.ptr, layoutSettings.ptr);
         return JSON.parse(result);
     }
-    state(timer: TimerRef): SplitsComponentState {
+    state(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): SplitsComponentState {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = new SplitsComponentState(liveSplitCoreNative.SplitsComponent_state(this.ptr, timer.ptr));
+        if (layoutSettings.ptr == 0) {
+            throw "layoutSettings is disposed";
+        }
+        var result = new SplitsComponentState(liveSplitCoreNative.SplitsComponent_state(this.ptr, timer.ptr, layoutSettings.ptr));
         if (result.ptr == 0) {
             return null;
         }
@@ -2953,11 +3107,11 @@ export class SplitsComponentStateRef {
         var result = liveSplitCoreNative.SplitsComponentState_time(this.ptr, index);
         return result;
     }
-    color(index: number): string {
+    semanticColor(index: number): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.SplitsComponentState_color(this.ptr, index);
+        var result = liveSplitCoreNative.SplitsComponentState_semantic_color(this.ptr, index);
         return result;
     }
     isCurrentSplit(index: number): boolean {
@@ -3584,24 +3738,30 @@ export class Timer extends TimerRefMut {
 
 export class TimerComponentRef {
     ptr: number;
-    stateAsJson(timer: TimerRef): any {
+    stateAsJson(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): any {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = liveSplitCoreNative.TimerComponent_state_as_json(this.ptr, timer.ptr);
+        if (layoutSettings.ptr == 0) {
+            throw "layoutSettings is disposed";
+        }
+        var result = liveSplitCoreNative.TimerComponent_state_as_json(this.ptr, timer.ptr, layoutSettings.ptr);
         return JSON.parse(result);
     }
-    state(timer: TimerRef): TimerComponentState {
+    state(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): TimerComponentState {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = new TimerComponentState(liveSplitCoreNative.TimerComponent_state(this.ptr, timer.ptr));
+        if (layoutSettings.ptr == 0) {
+            throw "layoutSettings is disposed";
+        }
+        var result = new TimerComponentState(liveSplitCoreNative.TimerComponent_state(this.ptr, timer.ptr, layoutSettings.ptr));
         if (result.ptr == 0) {
             return null;
         }
@@ -3665,11 +3825,11 @@ export class TimerComponentStateRef {
         var result = liveSplitCoreNative.TimerComponentState_fraction(this.ptr);
         return result;
     }
-    color(): string {
+    semanticColor(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.TimerComponentState_color(this.ptr);
+        var result = liveSplitCoreNative.TimerComponentState_semantic_color(this.ptr);
         return result;
     }
     constructor(ptr: number) {

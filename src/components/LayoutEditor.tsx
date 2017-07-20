@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit";
 import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
+import SettingsComponent from "./Settings";
 
 export interface Props { editor: LiveSplit.LayoutEditor };
 export interface State {
@@ -91,190 +92,6 @@ export class LayoutEditor extends React.Component<Props, State> {
             }
         };
 
-        let settingsRows: any[] = [];
-
-        this.state.editor.settings_description.fields.forEach((field, valueIndex) => {
-            var component;
-            let value: any = field.value;
-            switch (Object.keys(value)[0]) {
-                case "Bool": {
-                    component =
-                        <input
-                            type="checkbox"
-                            checked={value.Bool}
-                            onChange={(e) => {
-                                this.props.editor.setComponentSettingsBool(valueIndex, e.target.checked);
-                                this.update();
-                            }}
-                        />;
-                    break;
-                }
-                case "UInt": {
-                    component =
-                        <input
-                            type="number"
-                            className="number"
-                            value={value.UInt}
-                            min="0"
-                            onChange={(e) => {
-                                this.props.editor.setComponentSettingsUint(valueIndex, e.target.valueAsNumber);
-                                this.update();
-                            }}
-                        />;
-                    break;
-                }
-                case "Int": {
-                    component =
-                        <input
-                            type="number"
-                            className="number"
-                            value={value.Int}
-                            onChange={(e) => {
-                                this.props.editor.setComponentSettingsInt(valueIndex, e.target.valueAsNumber);
-                                this.update();
-                            }}
-                        />;
-                    break;
-                }
-                case "String": {
-                    component =
-                        <input
-                            value={value.String}
-                            onChange={(e) => {
-                                this.props.editor.setComponentSettingsString(valueIndex, e.target.value);
-                                this.update();
-                            }}
-                        />;
-                    break;
-                }
-                case "OptionalString": {
-                    let children = [
-                        <input
-                            type="checkbox"
-                            checked={value.OptionalString != null}
-                            onChange={(e) => {
-                                if (e.target.checked) {
-                                    this.props.editor.setComponentSettingsOptionalString(valueIndex, "");
-                                } else {
-                                    this.props.editor.setComponentSettingsOptionalStringToEmpty(valueIndex);
-                                }
-                                this.update();
-                            }}
-                        />
-                    ];
-
-                    if (value.OptionalString != null) {
-                        children.push(
-                            <input
-                                value={value.OptionalString}
-                                disabled={value.OptionalString == null}
-                                onChange={(e) => {
-                                    this.props.editor.setComponentSettingsOptionalString(valueIndex, e.target.value);
-                                    this.update();
-                                }}
-                            />
-                        );
-                    }
-
-                    component =
-                        <span>
-                            {children}
-                        </span>;
-                    break;
-                }
-                case "Float": {
-                    component =
-                        <input
-                            type="number"
-                            value={value.Float}
-                            className="number"
-                            onChange={(e) => {
-                                this.props.editor.setComponentSettingsFloat(valueIndex, e.target.valueAsNumber);
-                                this.update();
-                            }}
-                        />;
-                    break;
-                }
-                case "Accuracy": {
-                    component =
-                        <select
-                            value={value.Accuracy}
-                            onChange={(e) => {
-                                this.props.editor.setComponentSettingsAccuracy(valueIndex, e.target.value);
-                                this.update();
-                            }}
-                        >
-                            <option value="Seconds">Seconds</option>
-                            <option value="Tenths">Tenths</option>
-                            <option value="Hundredths">Hundredths</option>
-                        </select>;
-                    break;
-                }
-                case "DigitsFormat": {
-                    component =
-                        <select
-                            value={value.DigitsFormat}
-                            onChange={(e) => {
-                                this.props.editor.setComponentSettingsDigitsFormat(valueIndex, e.target.value);
-                                this.update();
-                            }}
-                        >
-                            <option value="SingleDigitSeconds">1</option>
-                            <option value="DoubleDigitSeconds">01</option>
-                            <option value="SingleDigitMinutes">0:01</option>
-                            <option value="DoubleDigitMinutes">00:01</option>
-                            <option value="SingleDigitHours">0:00:01</option>
-                            <option value="DoubleDigitHours">00:00:01</option>
-                        </select>;
-                    break;
-                }
-                case "OptionalTimingMethod": {
-                    let children = [
-                        <input
-                            type="checkbox"
-                            checked={value.OptionalTimingMethod != null}
-                            onChange={(e) => {
-                                if (e.target.checked) {
-                                    this.props.editor.setComponentSettingsOptionalTimingMethod(valueIndex, "RealTime");
-                                } else {
-                                    this.props.editor.setComponentSettingsOptionalTimingMethodToEmpty(valueIndex);
-                                }
-                                this.update();
-                            }}
-                        />
-                    ];
-
-                    if (value.OptionalTimingMethod != null) {
-                        children.push(
-                            <select
-                                value={value.OptionalTimingMethod}
-                                disabled={value.OptionalTimingMethod == null}
-                                onChange={(e) => {
-                                    this.props.editor.setComponentSettingsOptionalTimingMethod(valueIndex, e.target.value);
-                                    this.update();
-                                }}
-                            >
-                                <option value="RealTime">Real Time</option>
-                                <option value="GameTime">Game Time</option>
-                            </select>
-                        );
-                    }
-
-                    component =
-                        <span>
-                            {children}
-                        </span>;
-                    break;
-                }
-            }
-            settingsRows.push(
-                <tr>
-                    <td>{field.text}</td>
-                    <td>{component}</td>
-                </tr>
-            );
-        });
-
         return (
             <div>
                 <div className="layout-editor">
@@ -355,11 +172,21 @@ export class LayoutEditor extends React.Component<Props, State> {
                         </tbody>
                     </table>
                 </div>
-                <table className="component-settings table">
-                    <tbody className="table-body">
-                        {settingsRows}
-                    </tbody>
-                </table>
+                <SettingsComponent
+                    state={this.state.editor.component_settings}
+                    setValue={(index, value) => {
+                        this.props.editor.setComponentSettingsValue(index, value);
+                        this.update();
+                    }}
+                />
+                <h3 style={{ "margin-left": "25px", "margin-top": "25px", "margin-bottom": "15px" }}>General Settings</h3>
+                <SettingsComponent
+                    state={this.state.editor.general_settings}
+                    setValue={(index, value) => {
+                        this.props.editor.setGeneralSettingsValue(index, value);
+                        this.update();
+                    }}
+                />
             </div>
         );
     }
