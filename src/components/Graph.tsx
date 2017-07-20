@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit";
+import { colorToCss } from "../util/ColorUtil";
 
 export interface Props { state: LiveSplit.GraphComponentStateJson }
 
@@ -10,14 +11,13 @@ export class Component extends React.Component<Props, undefined> {
 
         let middle = height * this.props.state.middle;
 
-        let colorTop = "rgb(115, 40, 40)";
-        let colorBottom = "rgb(40, 115, 52)";
-
-        if (this.props.state.is_flipped) {
-            let tmp = colorTop;
-            colorTop = colorBottom;
-            colorBottom = tmp;
-        }
+        let colorTop = colorToCss(this.props.state.top_background_color);
+        let colorBottom = colorToCss(this.props.state.bottom_background_color);
+        let colorGridLines = colorToCss(this.props.state.grid_lines_color);
+        let colorGraphLines = colorToCss(this.props.state.graph_lines_color);
+        let colorPartialFill = colorToCss(this.props.state.partial_fill_color);
+        let colorCompleteFill = colorToCss(this.props.state.complete_fill_color);
+        let colorBestSegment = colorToCss(this.props.state.best_segment_color);
 
         let rect1 = <rect width="100%" height={middle} style={{ "fill": colorTop }} />;
         let rect2 = <rect y={middle} width="100%" height={height - middle} style={{ "fill": colorBottom }} />;
@@ -25,7 +25,7 @@ export class Component extends React.Component<Props, undefined> {
 
         for (let y of this.props.state.horizontal_grid_lines) {
             let line = <line x1="0" y1={height * y} x2="100%" y2={height * y} style={{
-                "stroke": "rgba(0, 0, 0, 0.15)",
+                "stroke": colorGridLines,
                 "stroke-width": "2",
             }} />;
             children.push(line);
@@ -33,7 +33,7 @@ export class Component extends React.Component<Props, undefined> {
 
         for (let x of this.props.state.vertical_grid_lines) {
             let line = <line x1={(x * 100) + "%"} y1="0" x2={(x * 100) + "%"} y2={height} style={{
-                "stroke": "rgba(0, 0, 0, 0.15)",
+                "stroke": colorGridLines,
                 "stroke-width": "2",
             }} />;
             children.push(line);
@@ -54,7 +54,7 @@ export class Component extends React.Component<Props, undefined> {
         points += (width * this.props.state.points[length - 1].x) + "," + (middle);
 
         let fill = <polygon points={points} style={{
-            "fill": "rgba(255, 255, 255, 0.4)"
+            "fill": colorCompleteFill
         }} />;
 
         children.push(fill);
@@ -70,7 +70,7 @@ export class Component extends React.Component<Props, undefined> {
                 x1 + "," + y1 + " " +
                 x2 + "," + y2 + " " +
                 x2 + "," + middle} style={{
-                    "fill": "rgba(255, 255, 255, 0.25)"
+                    "fill": colorPartialFill
                 }} />;
 
             children.push(fill);
@@ -85,8 +85,8 @@ export class Component extends React.Component<Props, undefined> {
             let y = height * this.props.state.points[i].y;
 
             let fill = this.props.state.points[i].is_best_segment
-                ? "hsla(50, 100%, 50%, 1)"
-                : "white";
+                ? colorBestSegment
+                : colorGraphLines;
 
             let line = <line x1={px} y1={py} x2={x} y2={y} style={{
                 "stroke": fill,

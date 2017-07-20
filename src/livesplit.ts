@@ -100,6 +100,13 @@ export interface GraphComponentStateJson {
     middle: number;
     is_live_delta_active: boolean;
     is_flipped: boolean;
+    top_background_color: Color;
+    bottom_background_color: Color;
+    grid_lines_color: Color;
+    graph_lines_color: Color;
+    partial_fill_color: Color;
+    complete_fill_color: Color;
+    best_segment_color: Color;
 }
 
 export interface GraphComponentStatePointJson {
@@ -296,8 +303,8 @@ liveSplitCoreNative.GeneralLayoutSettings_drop = emscriptenModule.cwrap('General
 liveSplitCoreNative.GraphComponent_new = emscriptenModule.cwrap('GraphComponent_new', "number", []);
 liveSplitCoreNative.GraphComponent_drop = emscriptenModule.cwrap('GraphComponent_drop', null, ["number"]);
 liveSplitCoreNative.GraphComponent_into_generic = emscriptenModule.cwrap('GraphComponent_into_generic', "number", ["number"]);
-liveSplitCoreNative.GraphComponent_state_as_json = emscriptenModule.cwrap('GraphComponent_state_as_json', "string", ["number", "number"]);
-liveSplitCoreNative.GraphComponent_state = emscriptenModule.cwrap('GraphComponent_state', "number", ["number", "number"]);
+liveSplitCoreNative.GraphComponent_state_as_json = emscriptenModule.cwrap('GraphComponent_state_as_json', "string", ["number", "number", "number"]);
+liveSplitCoreNative.GraphComponent_state = emscriptenModule.cwrap('GraphComponent_state', "number", ["number", "number", "number"]);
 liveSplitCoreNative.GraphComponentState_drop = emscriptenModule.cwrap('GraphComponentState_drop', null, ["number"]);
 liveSplitCoreNative.GraphComponentState_points_len = emscriptenModule.cwrap('GraphComponentState_points_len', "number", ["number"]);
 liveSplitCoreNative.GraphComponentState_point_x = emscriptenModule.cwrap('GraphComponentState_point_x', "number", ["number", "number"]);
@@ -1359,24 +1366,30 @@ export class GeneralLayoutSettings extends GeneralLayoutSettingsRefMut {
 
 export class GraphComponentRef {
     ptr: number;
-    stateAsJson(timer: TimerRef): any {
+    stateAsJson(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): any {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = liveSplitCoreNative.GraphComponent_state_as_json(this.ptr, timer.ptr);
+        if (layoutSettings.ptr == 0) {
+            throw "layoutSettings is disposed";
+        }
+        var result = liveSplitCoreNative.GraphComponent_state_as_json(this.ptr, timer.ptr, layoutSettings.ptr);
         return JSON.parse(result);
     }
-    state(timer: TimerRef): GraphComponentState {
+    state(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): GraphComponentState {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = new GraphComponentState(liveSplitCoreNative.GraphComponent_state(this.ptr, timer.ptr));
+        if (layoutSettings.ptr == 0) {
+            throw "layoutSettings is disposed";
+        }
+        var result = new GraphComponentState(liveSplitCoreNative.GraphComponent_state(this.ptr, timer.ptr, layoutSettings.ptr));
         if (result.ptr == 0) {
             return null;
         }

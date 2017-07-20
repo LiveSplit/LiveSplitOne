@@ -1,29 +1,12 @@
-body, .livesplit, .buttons {
+body, .livesplit, .livesplit-container, .buttons {
     background-color: rgba(0, 0, 0, 0);
     margin: 0px;
     padding: 0px;
-    overflow: hidden;
+    overflow: hidden !important;
 }
 
 .sidebar {
-    visibility: hidden;
-}
-
-.previous-segment, .sum-of-best, .possible-time-save, .livesplit, .title {
-    background: transparent !important;
-}
-
-.splits span.split:nth-child(2n+2) div {
-    border-bottom: 1px solid hsla(0, 0%, 100%, 0.1) !important;
-    border-top: 1px solid hsla(0, 0%, 100%, 0.1) !important;
-}
-
-div.splits span.split.split-separator div {
-    border-top: 2px solid hsla(0, 0%, 100%, 0.4) !important;
-}
-
-.splits span.split:nth-child(2n+2) {
-    background-color: hsla(0, 0%, 100%, 0.1);
+    box-shadow: none !important;
 }
 
 .buttons {
