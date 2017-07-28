@@ -62,7 +62,7 @@ export class RunEditor extends React.Component<Props, State> {
         });
     }
 
-    handleOffsetBlur(event: any) {
+    handleOffsetBlur(_: any) {
         this.setState({
             ...this.state,
             offsetIsValid: true,
@@ -82,7 +82,7 @@ export class RunEditor extends React.Component<Props, State> {
         });
     }
 
-    handleAttemptsBlur(event: any) {
+    handleAttemptsBlur(_: any) {
         this.setState({
             ...this.state,
             attemptCountIsValid: true,
@@ -155,7 +155,7 @@ export class RunEditor extends React.Component<Props, State> {
         });
     }
 
-    handleSplitTimeBlur(event: any) {
+    handleSplitTimeBlur(_: any) {
         this.setState({
             ...this.state,
             rowState: {
@@ -166,7 +166,7 @@ export class RunEditor extends React.Component<Props, State> {
         });
     }
 
-    handleSegmentTimeBlur(event: any) {
+    handleSegmentTimeBlur(_: any) {
         this.setState({
             ...this.state,
             rowState: {
@@ -177,7 +177,7 @@ export class RunEditor extends React.Component<Props, State> {
         });
     }
 
-    handleBestSegmentTimeBlur(event: any) {
+    handleBestSegmentTimeBlur(_: any) {
         this.setState({
             ...this.state,
             rowState: {
@@ -253,35 +253,35 @@ export class RunEditor extends React.Component<Props, State> {
                     </div>
                 </div>
                 <div className="timing-selection">
-                    <button className="toggle-left" onClick={(e) => this.switchTimingMethod(LiveSplit.TimingMethod.RealTime)}>Real Time</button>
-                    <button className="toggle-right" onClick={(e) => this.switchTimingMethod(LiveSplit.TimingMethod.GameTime)}>Game Time</button>
+                    <button className="toggle-left" onClick={(_) => this.switchTimingMethod(LiveSplit.TimingMethod.RealTime)}>Real Time</button>
+                    <button className="toggle-right" onClick={(_) => this.switchTimingMethod(LiveSplit.TimingMethod.GameTime)}>Game Time</button>
                 </div>
                 <div className="editer-group">
                     <div className="btn-group">
                         <button
-                            onClick={(e) => this.insertSegmentAbove()}
+                            onClick={(_) => this.insertSegmentAbove()}
                         >
                             Insert Above
                         </button>
                         <button
-                            onClick={(e) => this.insertSegmentBelow()}
+                            onClick={(_) => this.insertSegmentBelow()}
                         >
                             Insert Below
                         </button>
                         <button
-                            onClick={(e) => this.removeSegments()}
+                            onClick={(_) => this.removeSegments()}
                             className={this.state.editor.buttons.can_remove ? "" : "disabled"}
                         >
                             Remove Segment
                         </button>
                         <button
-                            onClick={(e) => this.moveSegmentsUp()}
+                            onClick={(_) => this.moveSegmentsUp()}
                             className={this.state.editor.buttons.can_move_up ? "" : "disabled"}
                         >
                             Move Up
                         </button>
                         <button
-                            onClick={(e) => this.moveSegmentsDown()}
+                            onClick={(_) => this.moveSegmentsDown()}
                             className={this.state.editor.buttons.can_move_down ? "" : "disabled"}
                         >
                             Move Down
@@ -298,13 +298,13 @@ export class RunEditor extends React.Component<Props, State> {
                             {
                                 this.state.editor.segments.map((s: any, i: number) =>
                                     <tr key={i.toString()} className={(s.selected == "Selected" || s.selected == "CurrentRow") ? "selected" : ""} onClick={(e) => this.changeSegmentSelection(e, i)}>
-                                        <td><input className="name" type="text" value={s.name} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSegmentNameChange(e)} /></td>
+                                        <td><input className="name" type="text" value={s.name} onFocus={(_) => this.focusSegment(i)} onChange={(e) => this.handleSegmentNameChange(e)} /></td>
                                         <td><input className={this.state.rowState.index != i || this.state.rowState.splitTimeIsValid ? "number" : "number invalid"}
-                                            type="text" value={s.split_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSplitTimeChange(e)} onBlur={(e) => this.handleSplitTimeBlur(e)} /></td>
+                                            type="text" value={s.split_time} onFocus={(_) => this.focusSegment(i)} onChange={(e) => this.handleSplitTimeChange(e)} onBlur={(e) => this.handleSplitTimeBlur(e)} /></td>
                                         <td><input className={this.state.rowState.index != i || this.state.rowState.segmentTimeIsValid ? "number" : "number invalid"}
-                                            type="text" value={s.segment_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleSegmentTimeChange(e)} onBlur={(e) => this.handleSegmentTimeBlur(e)} /></td>
+                                            type="text" value={s.segment_time} onFocus={(_) => this.focusSegment(i)} onChange={(e) => this.handleSegmentTimeChange(e)} onBlur={(e) => this.handleSegmentTimeBlur(e)} /></td>
                                         <td><input className={this.state.rowState.index != i || this.state.rowState.bestSegmentTimeIsValid ? "number" : "number invalid"}
-                                            type="text" value={s.best_segment_time} onFocus={(e) => this.focusSegment(i)} onChange={(e) => this.handleBestSegmentTimeChange(e)} onBlur={(e) => this.handleBestSegmentTimeBlur(e)} /></td>
+                                            type="text" value={s.best_segment_time} onFocus={(_) => this.focusSegment(i)} onChange={(e) => this.handleBestSegmentTimeChange(e)} onBlur={(e) => this.handleBestSegmentTimeBlur(e)} /></td>
                                     </tr>
                                 )
                             }

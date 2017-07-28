@@ -6,7 +6,7 @@ export interface Props {
 	layoutState: LiveSplit.LayoutStateJson,
 }
 
-export class Component extends React.Component<Props, undefined> {
+export class Component extends React.Component<Props, {}> {
 	render() {
 		return (
 			<div

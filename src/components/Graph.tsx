@@ -4,7 +4,7 @@ import { colorToCss } from "../util/ColorUtil";
 
 export interface Props { state: LiveSplit.GraphComponentStateJson }
 
-export class Component extends React.Component<Props, undefined> {
+export class Component extends React.Component<Props, {}> {
     render() {
         let width = 300;
         let height = 110;

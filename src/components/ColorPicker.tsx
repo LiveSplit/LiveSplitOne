@@ -41,7 +41,7 @@ export default class ColorPicker extends React.Component<Props, State> {
                         border: '2px solid white',
                         borderCollapse: 'collapse',
                     }}
-                    onClick={(e) => this.handleClick()}
+                    onClick={(_) => this.handleClick()}
                 />
                 {
                     this.state.display ?
@@ -58,7 +58,7 @@ export default class ColorPicker extends React.Component<Props, State> {
                                     bottom: '0px',
                                     left: '0px',
                                 }}
-                                onClick={(e) => this.handleClose()}
+                                onClick={(_) => this.handleClose()}
                             />
                             <ChromePicker
                                 color={toPickerColor(this.props.color)}
@@ -81,5 +81,5 @@ function toPickerColor(color: number[]): RGBColor {
 }
 
 function toLSColor(color: RGBColor): number[] {
-    return [color.r / 255, color.g / 255, color.b / 255, color.a];
+    return [color.r / 255, color.g / 255, color.b / 255, color.a ? color.a : 1.0];
 }

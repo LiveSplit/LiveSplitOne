@@ -16,6 +16,7 @@ export function renderToSVG(
         case 0: shiftX = 0; break;
         case 2: shiftX = height * 0.6; break;
         case 3: shiftX = height; break;
+        default: throw "Unexpected Fraction Length";
     }
     const x = (294 - shiftX) + "px";
     const y = (0.88 * height) + "px";
@@ -58,7 +59,7 @@ export function renderToSVG(
     );
 }
 
-export class Component extends React.Component<Props, undefined> {
+export class Component extends React.Component<Props, {}> {
     render() {
         return renderToSVG(this.props.state);
     }

@@ -7,15 +7,15 @@ export interface Props {
     layoutState: LiveSplit.LayoutStateJson,
 }
 
-export class Component extends React.Component<Props, undefined> {
-    iconUrls: string[];
+export class Component extends React.Component<Props, {}> {
+    iconUrls: (string | null)[];
 
     constructor(props: Props) {
         super(props);
         this.iconUrls = [];
     }
 
-    getIconUrl(index: number): string {
+    getIconUrl(index: number): string | null {
         while (index >= this.iconUrls.length) {
             this.iconUrls.push("");
         }

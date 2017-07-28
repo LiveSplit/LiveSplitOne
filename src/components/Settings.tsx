@@ -1,13 +1,14 @@
 import * as React from "react";
-import * as LiveSplit from "../livesplit";
+import { SettingValue, SettingsDescriptionJson, Color } from "../livesplit";
 import ColorPicker from "./ColorPicker";
+import { expect } from "../util/OptionUtil";
 
 export interface Props {
-    setValue: (index: number, value: LiveSplit.SettingValue) => void,
-    state: LiveSplit.SettingsDescriptionJson,
+    setValue: (index: number, value: SettingValue) => void,
+    state: SettingsDescriptionJson,
 }
 
-export default class SettingsComponent extends React.Component<Props, undefined> {
+export default class SettingsComponent extends React.Component<Props, {}> {
     render() {
         let settingsRows: any[] = [];
 
@@ -23,7 +24,7 @@ export default class SettingsComponent extends React.Component<Props, undefined>
                             onChange={(e) => {
                                 this.props.setValue(
                                     valueIndex,
-                                    LiveSplit.SettingValue.fromBool(e.target.checked),
+                                    SettingValue.fromBool(e.target.checked),
                                 );
                             }}
                         />;
@@ -39,7 +40,7 @@ export default class SettingsComponent extends React.Component<Props, undefined>
                             onChange={(e) => {
                                 this.props.setValue(
                                     valueIndex,
-                                    LiveSplit.SettingValue.fromUint(e.target.valueAsNumber),
+                                    SettingValue.fromUint(e.target.valueAsNumber),
                                 );
                             }}
                         />;
@@ -54,7 +55,7 @@ export default class SettingsComponent extends React.Component<Props, undefined>
                             onChange={(e) => {
                                 this.props.setValue(
                                     valueIndex,
-                                    LiveSplit.SettingValue.fromInt(e.target.valueAsNumber),
+                                    SettingValue.fromInt(e.target.valueAsNumber),
                                 );
                             }}
                         />;
@@ -67,7 +68,7 @@ export default class SettingsComponent extends React.Component<Props, undefined>
                             onChange={(e) => {
                                 this.props.setValue(
                                     valueIndex,
-                                    LiveSplit.SettingValue.fromString(e.target.value),
+                                    SettingValue.fromString(e.target.value),
                                 );
                             }}
                         />;
@@ -82,12 +83,12 @@ export default class SettingsComponent extends React.Component<Props, undefined>
                                 if (e.target.checked) {
                                     this.props.setValue(
                                         valueIndex,
-                                        LiveSplit.SettingValue.fromOptionalString(""),
+                                        SettingValue.fromOptionalString(""),
                                     );
                                 } else {
                                     this.props.setValue(
                                         valueIndex,
-                                        LiveSplit.SettingValue.fromOptionalEmptyString(),
+                                        SettingValue.fromOptionalEmptyString(),
                                     );
                                 }
                             }}
@@ -102,7 +103,7 @@ export default class SettingsComponent extends React.Component<Props, undefined>
                                 onChange={(e) => {
                                     this.props.setValue(
                                         valueIndex,
-                                        LiveSplit.SettingValue.fromOptionalString(e.target.value),
+                                        SettingValue.fromOptionalString(e.target.value),
                                     );
                                 }}
                             />
@@ -124,7 +125,7 @@ export default class SettingsComponent extends React.Component<Props, undefined>
                             onChange={(e) => {
                                 this.props.setValue(
                                     valueIndex,
-                                    LiveSplit.SettingValue.fromFloat(e.target.valueAsNumber),
+                                    SettingValue.fromFloat(e.target.valueAsNumber),
                                 );
                             }}
                         />;
@@ -137,7 +138,10 @@ export default class SettingsComponent extends React.Component<Props, undefined>
                             onChange={(e) => {
                                 this.props.setValue(
                                     valueIndex,
-                                    LiveSplit.SettingValue.fromAccuracy(e.target.value),
+                                    expect(
+                                        SettingValue.fromAccuracy(e.target.value),
+                                        "Unexpected Accuracy",
+                                    ),
                                 );
                             }}
                         >
@@ -154,7 +158,10 @@ export default class SettingsComponent extends React.Component<Props, undefined>
                             onChange={(e) => {
                                 this.props.setValue(
                                     valueIndex,
-                                    LiveSplit.SettingValue.fromDigitsFormat(e.target.value),
+                                    expect(
+                                        SettingValue.fromDigitsFormat(e.target.value),
+                                        "Unexpected Digits Format",
+                                    ),
                                 );
                             }}
                         >
@@ -174,7 +181,7 @@ export default class SettingsComponent extends React.Component<Props, undefined>
                             setColor={(color) => {
                                 this.props.setValue(
                                     valueIndex,
-                                    LiveSplit.SettingValue.fromColor(
+                                    SettingValue.fromColor(
                                         color[0],
                                         color[1],
                                         color[2],
@@ -186,53 +193,58 @@ export default class SettingsComponent extends React.Component<Props, undefined>
                     break;
                 }
                 case "Gradient": {
-                    const type = Object.keys(value.Gradient)[0];
-                    let color1: LiveSplit.Color | null;
-                    let color2: LiveSplit.Color | null;
+                    let type: string;
+                    let color1: Color | null = null;
+                    let color2: Color | null = null;
 
-                    switch (type) {
-                        case "Transparent":
-                            color1 = null;
-                            color2 = null;
-                            break;
-                        case "Plain":
-                            color1 = value.Gradient.Plain;
-                            color2 = null;
-                            break;
-                        case "Vertical":
-                            color1 = value.Gradient.Vertical[0];
-                            color2 = value.Gradient.Vertical[1];
-                            break;
-                        case "Horizontal":
-                            color1 = value.Gradient.Horizontal[0];
-                            color2 = value.Gradient.Horizontal[1];
-                            break;
+                    if (value.Gradient != "Transparent") {
+                        type = Object.keys(value.Gradient)[0];
+                        switch (type) {
+                            case "Plain":
+                                color1 = value.Gradient.Plain;
+                                color2 = null;
+                                break;
+                            case "Vertical":
+                                color1 = value.Gradient.Vertical[0];
+                                color2 = value.Gradient.Vertical[1];
+                                break;
+                            case "Horizontal":
+                                color1 = value.Gradient.Horizontal[0];
+                                color2 = value.Gradient.Horizontal[1];
+                                break;
+                            default:
+                                throw "Unexpected Gradient Type";
+                        }
+                    } else {
+                        type = "Transparent";
                     }
 
                     let colorsToValue = (
                         type: string,
-                        color1: LiveSplit.Color | null,
-                        color2: LiveSplit.Color | null,
+                        color1: Color | null,
+                        color2: Color | null,
                     ) => {
                         color1 = color1 ? color1 : [0.0, 0.0, 0.0, 0.0];
                         color2 = color2 ? color2 : color1;
                         switch (type) {
                             case "Transparent":
-                                return LiveSplit.SettingValue.fromTransparentGradient();
+                                return SettingValue.fromTransparentGradient();
                             case "Plain":
-                                return LiveSplit.SettingValue.fromColor(
+                                return SettingValue.fromColor(
                                     color1[0], color1[1], color1[2], color1[3],
                                 );
                             case "Vertical":
-                                return LiveSplit.SettingValue.fromVerticalGradient(
+                                return SettingValue.fromVerticalGradient(
                                     color1[0], color1[1], color1[2], color1[3],
                                     color2[0], color2[1], color2[2], color2[3],
                                 );
                             case "Horizontal":
-                                return LiveSplit.SettingValue.fromHorizontalGradient(
+                                return SettingValue.fromHorizontalGradient(
                                     color1[0], color1[1], color1[2], color1[3],
                                     color2[0], color2[1], color2[2], color2[3],
                                 );
+                            default:
+                                throw "Unexpected Gradient Type";
                         }
                     };
 
@@ -310,12 +322,15 @@ export default class SettingsComponent extends React.Component<Props, undefined>
                                 if (e.target.checked) {
                                     this.props.setValue(
                                         valueIndex,
-                                        LiveSplit.SettingValue.fromOptionalTimingMethod("RealTime"),
+                                        expect(
+                                            SettingValue.fromOptionalTimingMethod("RealTime"),
+                                            "Unexpected Optional Timing Method",
+                                        ),
                                     );
                                 } else {
                                     this.props.setValue(
                                         valueIndex,
-                                        LiveSplit.SettingValue.fromOptionalEmptyTimingMethod(),
+                                        SettingValue.fromOptionalEmptyTimingMethod(),
                                     );
                                 }
                             }}
@@ -330,7 +345,10 @@ export default class SettingsComponent extends React.Component<Props, undefined>
                                 onChange={(e) => {
                                     this.props.setValue(
                                         valueIndex,
-                                        LiveSplit.SettingValue.fromOptionalTimingMethod(e.target.value),
+                                        expect(
+                                            SettingValue.fromOptionalTimingMethod(e.target.value),
+                                            "Unexpected Optional Timing Method",
+                                        ),
                                     );
                                 }}
                             >

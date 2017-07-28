@@ -11,9 +11,10 @@ export function colorToCss(color: Color): string {
 
 export function gradientToCss(gradient: Gradient): string {
     const gradientAny: any = gradient;
+    if (gradientAny == "Transparent") {
+        return "transparent";
+    }
     switch (Object.keys(gradient)[0]) {
-        case "Transparent":
-            return "transparent";
         case "Plain":
             return colorToCss(gradientAny.Plain);
         case "Vertical":
@@ -28,5 +29,7 @@ export function gradientToCss(gradient: Gradient): string {
                 " 0%, " +
                 colorToCss(gradientAny.Horizontal[1]) +
                 " 100%)";
+        default:
+            throw "Unexpected Gradient Type";
     }
 }
