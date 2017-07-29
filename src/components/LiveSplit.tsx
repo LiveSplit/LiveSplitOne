@@ -17,7 +17,7 @@ import { Component as BlankSpaceComponent } from "./BlankSpace";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import Sidebar from "react-sidebar";
-import { colorToCss } from "../util/ColorUtil";
+import { colorToCss, gradientToCss } from "../util/ColorUtil";
 
 const SplitsIOOAuthURL = "https://splits.io/oauth/authorize?response_type=token&scope=upload_run&redirect_uri=https://cryze.github.io/LiveSplitOne/&client_id=af72c9df37444a836ffd4e1f167ee69614361a446cdee6c58b781709a56a4a08";
 
@@ -309,7 +309,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 sidebarOpen: false,
             });
         } else {
-            alert("Not ok");
+            alert("You can't edit your run while the timer is running.");
         }
     }
 
@@ -555,7 +555,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 <div
                     className="livesplit"
                     style={{
-                        background: colorToCss(layoutState.background_color),
+                        background: gradientToCss(layoutState.background),
                         color: colorToCss(layoutState.text_color),
                     }}
                 >

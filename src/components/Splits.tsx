@@ -32,6 +32,7 @@ export class Component extends React.Component<Props, undefined> {
                     this.props.state.splits.map((s: any, i: number) =>
                         <Split
                             split={s}
+                            splitsState={this.props.state}
                             layoutState={this.props.layoutState}
                             icon={this.getIconUrl(i)}
                             key={i.toString()}

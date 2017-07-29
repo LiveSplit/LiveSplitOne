@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit";
 import { renderToSVG } from "./Timer";
+import { gradientToCss } from "../util/ColorUtil";
 
 export interface Props { state: LiveSplit.DetailedTimerComponentStateJson }
 
@@ -50,7 +51,12 @@ export class Component extends React.Component<Props, undefined> {
         children.push(<div className="detailed-timer-left-side">{leftSide}</div>);
 
         return (
-            <div className="detailed-timer">
+            <div
+                className="detailed-timer"
+                style={{
+                    background: gradientToCss(this.props.state.background),
+                }}
+            >
                 {children}
             </div>
         );

@@ -1,12 +1,18 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit";
+import { gradientToCss } from "../util/ColorUtil";
 
 export interface Props { state: LiveSplit.PossibleTimeSaveComponentStateJson };
 
 export class Component extends React.Component<Props, undefined> {
 	render() {
 		return (
-			<div className="possible-time-save">
+			<div
+				className="possible-time-save"
+				style={{
+					background: gradientToCss(this.props.state.background),
+				}}
+			>
 				<table>
 					<tbody>
 						<tr>

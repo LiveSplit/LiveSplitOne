@@ -1,13 +1,18 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit";
-import { colorToCss } from "../util/ColorUtil";
+import { colorToCss, gradientToCss } from "../util/ColorUtil";
 
 export interface Props { state: LiveSplit.DeltaComponentStateJson }
 
 export class Component extends React.Component<Props, undefined> {
     render() {
         return (
-            <div className="delta-component">
+            <div
+                className="delta-component"
+                style={{
+                    background: gradientToCss(this.props.state.background),
+                }}
+            >
                 <table>
                     <tbody>
                         <tr>

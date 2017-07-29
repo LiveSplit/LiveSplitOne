@@ -1,8 +1,9 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit";
-import { colorToCss } from "../util/ColorUtil";
+import { colorToCss, gradientToCss } from "../util/ColorUtil";
 
 export interface Props {
+    splitsState: LiveSplit.SplitsComponentStateJson,
     split: LiveSplit.SplitStateJson,
     icon: string,
     separatorInFrontOfSplit: boolean,
@@ -19,33 +20,41 @@ export class Component extends React.Component<Props, undefined> {
         let currentSplit = this.props.split.is_current_split ? "current-split" : "";
         let separator = this.props.separatorInFrontOfSplit ? "split-separator" : "";
 
-        let style: any = {};
+        let innerStyle: any = {};
         if (this.props.index % 2 == 1) {
-            style.borderBottom = "1px solid " + colorToCss(this.props.layoutState.thin_separators_color);
-            style.borderTop = style.borderBottom;
+            innerStyle.borderBottom = "1px solid " + colorToCss(this.props.layoutState.thin_separators_color);
+            innerStyle.borderTop = innerStyle.borderBottom;
         }
         if (this.props.separatorInFrontOfSplit) {
-            style.borderTop = "2px solid " + colorToCss(this.props.layoutState.separators_color);
+            innerStyle.borderTop = "2px solid " + colorToCss(this.props.layoutState.separators_color);
+        }
+
+        let outerStyle: any = {};
+        if (this.props.split.is_current_split) {
+            outerStyle.background = gradientToCss(this.props.splitsState.current_split_gradient);
         }
 
         return (
-            <span className={["split", currentSplit, separator].filter(s => s.length > 0).join(" ")}>
+            <span
+                className={["split", currentSplit, separator].filter(s => s.length > 0).join(" ")}
+                style={outerStyle}
+            >
                 <div
                     className={this.props.icon != "" ? "split-icon-container" : "split-icon-container-empty"}
-                    style={style}
+                    style={innerStyle}
                 >
                     <img className={this.props.icon != "" ? "split-icon" : ""} src={this.props.icon} />
                 </div>
                 <div
                     className="split-name"
-                    style={style}
+                    style={innerStyle}
                 >
                     {this.props.split.name}
                 </div>
                 <div
                     className={"split-delta time"}
                     style={{
-                        ...style,
+                        ...innerStyle,
                         color: colorToCss(this.props.split.visual_color),
                     }}
                 >
@@ -53,7 +62,7 @@ export class Component extends React.Component<Props, undefined> {
                 </div>
                 <div
                     className="split-time time"
-                    style={style}
+                    style={innerStyle}
                 >
                     {this.props.split.time}
                 </div>

@@ -1,12 +1,8 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit";
-import { colorToCss } from "../util/ColorUtil";
+import { colorToCss, gradientToCss } from "../util/ColorUtil";
 
 export interface Props { state: LiveSplit.TimerComponentStateJson }
-
-function getColor(color: string): string {
-    return "color-" + color.toLowerCase();
-}
 
 export function renderToSVG(
     state: LiveSplit.TimerComponentStateJson,
@@ -25,7 +21,13 @@ export function renderToSVG(
     const y = (0.88 * height) + "px";
 
     return (
-        <svg className={className} height={height + "px"}>
+        <svg
+            className={className}
+            height={height + "px"}
+            style={{
+                background: gradientToCss(state.background),
+            }}
+        >
             <defs>
                 <linearGradient id={className + "-text-gradient"} x1="0%" x2="0%" y1="0%" y2="100%">
                     <stop

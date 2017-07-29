@@ -33,7 +33,7 @@ export default class ColorPicker extends React.Component<Props, State> {
             <div>
                 <div
                     style={{
-                        height: '14px',
+                        height: '13px',
                         borderRadius: '2px',
                         boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
                         background: colorToCss(this.props.color),

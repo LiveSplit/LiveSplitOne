@@ -185,6 +185,122 @@ export default class SettingsComponent extends React.Component<Props, undefined>
                         />;
                     break;
                 }
+                case "Gradient": {
+                    const type = Object.keys(value.Gradient)[0];
+                    let color1: LiveSplit.Color | null;
+                    let color2: LiveSplit.Color | null;
+
+                    switch (type) {
+                        case "Transparent":
+                            color1 = null;
+                            color2 = null;
+                            break;
+                        case "Plain":
+                            color1 = value.Gradient.Plain;
+                            color2 = null;
+                            break;
+                        case "Vertical":
+                            color1 = value.Gradient.Vertical[0];
+                            color2 = value.Gradient.Vertical[1];
+                            break;
+                        case "Horizontal":
+                            color1 = value.Gradient.Horizontal[0];
+                            color2 = value.Gradient.Horizontal[1];
+                            break;
+                    }
+
+                    let colorsToValue = (
+                        type: string,
+                        color1: LiveSplit.Color | null,
+                        color2: LiveSplit.Color | null,
+                    ) => {
+                        color1 = color1 ? color1 : [0.0, 0.0, 0.0, 0.0];
+                        color2 = color2 ? color2 : color1;
+                        switch (type) {
+                            case "Transparent":
+                                return LiveSplit.SettingValue.fromTransparentGradient();
+                            case "Plain":
+                                return LiveSplit.SettingValue.fromColor(
+                                    color1[0], color1[1], color1[2], color1[3],
+                                );
+                            case "Vertical":
+                                return LiveSplit.SettingValue.fromVerticalGradient(
+                                    color1[0], color1[1], color1[2], color1[3],
+                                    color2[0], color2[1], color2[2], color2[3],
+                                );
+                            case "Horizontal":
+                                return LiveSplit.SettingValue.fromHorizontalGradient(
+                                    color1[0], color1[1], color1[2], color1[3],
+                                    color2[0], color2[1], color2[2], color2[3],
+                                );
+                        }
+                    };
+
+                    const inputWidth = !color1 && !color2 ? "100%" : null;
+                    const colorWidth = color1 && color2 ? "50%" : "100%";
+
+                    let children: any[] = [
+                        <td>
+                            <select
+                                value={type}
+                                onChange={(e) => {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        colorsToValue(e.target.value, color1, color2),
+                                    );
+                                }}
+                                style={{ width: inputWidth }}
+                            >
+                                <option value="Transparent">Transparent</option>
+                                <option value="Plain">Plain</option>
+                                <option value="Vertical">Vertical</option>
+                                <option value="Horizontal">Horizontal</option>
+                            </select>
+                        </td>
+                    ];
+
+                    if (color1) {
+                        children.push(
+                            <td style={{ width: colorWidth }}>
+                                <ColorPicker
+                                    color={color1}
+                                    setColor={(color) => {
+                                        this.props.setValue(
+                                            valueIndex,
+                                            colorsToValue(type, color, color2),
+                                        );
+                                    }}
+                                />
+                            </td>,
+                        );
+                    }
+
+                    if (color2) {
+                        children.push(
+                            <td style={{ width: colorWidth }}>
+                                <ColorPicker
+                                    color={color2}
+                                    setColor={(color) => {
+                                        this.props.setValue(
+                                            valueIndex,
+                                            colorsToValue(type, color1, color),
+                                        );
+                                    }}
+                                />
+                            </td>,
+                        );
+                    }
+
+                    component =
+                        <table style={{ width: "100%" }}>
+                            <tbody>
+                                <tr>
+                                    {children}
+                                </tr>
+                            </tbody>
+                        </table>;
+                    break;
+                }
                 case "OptionalTimingMethod": {
                     let children = [
                         <input

@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit";
+import { gradientToCss } from "../util/ColorUtil";
 
 export interface Props { state: LiveSplit.TitleComponentStateJson }
 
@@ -43,7 +44,12 @@ export class Component extends React.Component<Props, undefined> {
         ) : (<div style={{ display: "none" }} />)
 
         return (
-            <div className="title">
+            <div
+                className="title"
+                style={{
+                    background: gradientToCss(this.props.state.background),
+                }}
+            >
                 {icon}
                 <div className={"run-meta" + (!this.props.state.is_centered ? " meta-left" : "")}>
                     <span className="title-game">{this.props.state.line1}</span>

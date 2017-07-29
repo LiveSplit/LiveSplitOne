@@ -20,9 +20,15 @@ export type ComponentStateJson =
 
 export type Color = number[];
 
+export type Gradient =
+    { Transparent: null } |
+    { Plain: Color } |
+    { Vertical: Color[] } |
+    { Horizontal: Color[] };
+
 export interface LayoutStateJson {
     components: ComponentStateJson[];
-    background_color: Color;
+    background: Gradient;
     thin_separators_color: Color;
     separators_color: Color;
     text_color: Color;
@@ -41,10 +47,12 @@ export enum TimerPhase {
 }
 
 export interface BlankSpaceComponentStateJson {
+    background: Gradient;
     height: number;
 }
 
 export interface TimerComponentStateJson {
+    background: Gradient;
     time: string;
     fraction: string;
     semantic_color: SemanticColor;
@@ -53,6 +61,7 @@ export interface TimerComponentStateJson {
 }
 
 export interface TitleComponentStateJson {
+    background: Gradient;
     icon_change?: string;
     line1: string;
     line2?: string;
@@ -64,6 +73,7 @@ export interface TitleComponentStateJson {
 export interface SplitsComponentStateJson {
     splits: SplitStateJson[];
     show_final_separator: boolean;
+    current_split_gradient: Gradient;
 }
 
 export interface SplitStateJson {
@@ -77,6 +87,7 @@ export interface SplitStateJson {
 }
 
 export interface PreviousSegmentComponentStateJson {
+    background: Gradient;
     text: string;
     time: string;
     semantic_color: SemanticColor;
@@ -84,11 +95,13 @@ export interface PreviousSegmentComponentStateJson {
 }
 
 export interface SumOfBestComponentStateJson {
+    background: Gradient;
     text: string;
     time: string;
 }
 
 export interface PossibleTimeSaveComponentStateJson {
+    background: Gradient;
     text: string;
     time: string;
 }
@@ -120,16 +133,19 @@ export type TextComponentStateJson =
 	{ Split: String[2] };
 
 export interface TotalPlaytimeComponentStateJson {
+    background: Gradient;
     text: string;
     time: string;
 }
 
 export interface CurrentPaceComponentStateJson {
+    background: Gradient;
     text: string;
     time: string;
 }
 
 export interface DeltaComponentStateJson {
+    background: Gradient;
     text: string;
     time: string;
     semantic_color: SemanticColor;
@@ -137,11 +153,13 @@ export interface DeltaComponentStateJson {
 }
 
 export interface CurrentComparisonComponentStateJson {
+    background: Gradient;
     text: string;
     comparison: string;
 }
 
 export interface DetailedTimerComponentStateJson {
+    background: Gradient;
     timer: TimerComponentStateJson;
     segment_timer: TimerComponentStateJson;
     comparison1: DetailedTimerComponentComparisonStateJson;
@@ -187,7 +205,8 @@ export type SettingsDescriptionValueJson =
     { Float: number } |
     { Accuracy: AccuracyJson } |
     { DigitsFormat: DigitsFormatJson } |
-    { Color: Color };
+    { Color: Color } |
+    { Gradient: Gradient };
 
 export type AccuracyJson = "Seconds" | "Tenths" | "Hundredths";
 
@@ -320,6 +339,7 @@ liveSplitCoreNative.GraphComponentState_is_flipped = emscriptenModule.cwrap('Gra
 liveSplitCoreNative.HotkeySystem_new = emscriptenModule.cwrap('HotkeySystem_new', "number", ["number"]);
 liveSplitCoreNative.HotkeySystem_drop = emscriptenModule.cwrap('HotkeySystem_drop', null, ["number"]);
 liveSplitCoreNative.Layout_new = emscriptenModule.cwrap('Layout_new', "number", []);
+liveSplitCoreNative.Layout_default_layout = emscriptenModule.cwrap('Layout_default_layout', "number", []);
 liveSplitCoreNative.Layout_parse_json = emscriptenModule.cwrap('Layout_parse_json', "number", ["string"]);
 liveSplitCoreNative.Layout_drop = emscriptenModule.cwrap('Layout_drop', null, ["number"]);
 liveSplitCoreNative.Layout_clone = emscriptenModule.cwrap('Layout_clone', "number", ["number"]);
@@ -439,6 +459,9 @@ liveSplitCoreNative.SettingValue_from_digits_format = emscriptenModule.cwrap('Se
 liveSplitCoreNative.SettingValue_from_optional_timing_method = emscriptenModule.cwrap('SettingValue_from_optional_timing_method', "number", ["string"]);
 liveSplitCoreNative.SettingValue_from_optional_empty_timing_method = emscriptenModule.cwrap('SettingValue_from_optional_empty_timing_method', "number", []);
 liveSplitCoreNative.SettingValue_from_color = emscriptenModule.cwrap('SettingValue_from_color', "number", ["number", "number", "number", "number"]);
+liveSplitCoreNative.SettingValue_from_transparent_gradient = emscriptenModule.cwrap('SettingValue_from_transparent_gradient', "number", []);
+liveSplitCoreNative.SettingValue_from_vertical_gradient = emscriptenModule.cwrap('SettingValue_from_vertical_gradient', "number", ["number", "number", "number", "number", "number", "number", "number", "number"]);
+liveSplitCoreNative.SettingValue_from_horizontal_gradient = emscriptenModule.cwrap('SettingValue_from_horizontal_gradient', "number", ["number", "number", "number", "number", "number", "number", "number", "number"]);
 liveSplitCoreNative.SettingValue_drop = emscriptenModule.cwrap('SettingValue_drop', null, ["number"]);
 liveSplitCoreNative.SharedTimer_drop = emscriptenModule.cwrap('SharedTimer_drop', null, ["number"]);
 liveSplitCoreNative.SharedTimer_share = emscriptenModule.cwrap('SharedTimer_share', "number", ["number"]);
@@ -1658,6 +1681,13 @@ export class Layout extends LayoutRefMut {
     }
     static new(): Layout {
         var result = new Layout(liveSplitCoreNative.Layout_new());
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    static defaultLayout(): Layout {
+        var result = new Layout(liveSplitCoreNative.Layout_default_layout());
         if (result.ptr == 0) {
             return null;
         }
@@ -2884,6 +2914,27 @@ export class SettingValue extends SettingValueRefMut {
     }
     static fromColor(r: number, g: number, b: number, a: number): SettingValue {
         var result = new SettingValue(liveSplitCoreNative.SettingValue_from_color(r, g, b, a));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    static fromTransparentGradient(): SettingValue {
+        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_transparent_gradient());
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    static fromVerticalGradient(r1: number, g1: number, b1: number, a1: number, r2: number, g2: number, b2: number, a2: number): SettingValue {
+        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_vertical_gradient(r1, g1, b1, a1, r2, g2, b2, a2));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    static fromHorizontalGradient(r1: number, g1: number, b1: number, a1: number, r2: number, g2: number, b2: number, a2: number): SettingValue {
+        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_horizontal_gradient(r1, g1, b1, a1, r2, g2, b2, a2));
         if (result.ptr == 0) {
             return null;
         }
