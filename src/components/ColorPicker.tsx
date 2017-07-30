@@ -43,33 +43,39 @@ export default class ColorPicker extends React.Component<Props, State> {
                     }}
                     onClick={(_) => this.handleClick()}
                 />
-                {
-                    this.state.display ?
-                        <div style={{
-                            position: 'absolute',
-                            zIndex: 2,
-                            textShadow: 'initial',
-                        }}>
-                            <div
-                                style={{
-                                    position: 'fixed',
-                                    top: '0px',
-                                    right: '0px',
-                                    bottom: '0px',
-                                    left: '0px',
-                                }}
-                                onClick={(_) => this.handleClose()}
-                            />
-                            <ChromePicker
-                                color={toPickerColor(this.props.color)}
-                                onChange={(c) => this.props.setColor(toLSColor(c.rgb))}
-                            />
-                        </div> : null
-                }
+                <div style={{
+                    margin: "0 auto",
+                    width: "0",
+                }}>
+                    {
+                        this.state.display ?
+                            <div style={{
+                                position: 'absolute',
+                                zIndex: 2,
+                                textShadow: 'initial',
+                            }}>
+                                <div
+                                    style={{
+                                        position: 'fixed',
+                                        top: '0px',
+                                        right: '0px',
+                                        bottom: '0px',
+                                        left: '0px',
+                                    }}
+                                    onClick={(_) => this.handleClose()}
+                                />
+                                <ChromePicker
+                                    color={toPickerColor(this.props.color)}
+                                    onChange={(c) => this.props.setColor(toLSColor(c.rgb))}
+                                />
+                            </div> : null
+                    }
+                </div>
             </div>
         );
     }
 }
+
 
 function toPickerColor(color: number[]): RGBColor {
     return {
@@ -81,5 +87,5 @@ function toPickerColor(color: number[]): RGBColor {
 }
 
 function toLSColor(color: RGBColor): number[] {
-    return [color.r / 255, color.g / 255, color.b / 255, color.a ? color.a : 1.0];
+    return [color.r / 255, color.g / 255, color.b / 255, color.a != null ? color.a : 1.0];
 }
