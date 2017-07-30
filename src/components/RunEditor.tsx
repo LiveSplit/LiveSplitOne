@@ -252,9 +252,27 @@ export class RunEditor extends React.Component<Props, State> {
                         <label>Attempts</label>
                     </div>
                 </div>
-                <div className="timing-selection">
-                    <button className="toggle-left" onClick={(_) => this.switchTimingMethod(LiveSplit.TimingMethod.RealTime)}>Real Time</button>
-                    <button className="toggle-right" onClick={(_) => this.switchTimingMethod(LiveSplit.TimingMethod.GameTime)}>Game Time</button>
+                <div className="timing-selection tab-bar">
+                    <button
+                        className={"toggle-left" + (
+                            this.state.editor.timing_method == "RealTime"
+                                ? " button-pressed"
+                                : ""
+                        )}
+                        onClick={(_) => this.switchTimingMethod(LiveSplit.TimingMethod.RealTime)}
+                    >
+                        Real Time
+                    </button>
+                    <button
+                        className={"toggle-right" + (
+                            this.state.editor.timing_method == "GameTime"
+                                ? " button-pressed"
+                                : ""
+                        )}
+                        onClick={(_) => this.switchTimingMethod(LiveSplit.TimingMethod.GameTime)}
+                    >
+                        Game Time
+                    </button>
                 </div>
                 <div className="editer-group">
                     <div className="btn-group">

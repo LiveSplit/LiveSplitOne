@@ -6,6 +6,7 @@ import SettingsComponent from "./Settings";
 export interface Props { editor: LiveSplit.LayoutEditor };
 export interface State {
     editor: LiveSplit.LayoutEditorStateJson,
+    showComponentSettings: boolean,
 }
 
 export class LayoutEditor extends React.Component<Props, State> {
@@ -14,6 +15,7 @@ export class LayoutEditor extends React.Component<Props, State> {
 
         this.state = {
             editor: props.editor.stateAsJson(),
+            showComponentSettings: true,
         };
     }
 
@@ -91,6 +93,25 @@ export class LayoutEditor extends React.Component<Props, State> {
                 contextTrigger.handleContextClick(e);
             }
         };
+
+        const settings = this.state.showComponentSettings
+            ? (
+                <SettingsComponent
+                    state={this.state.editor.component_settings}
+                    setValue={(index, value) => {
+                        this.props.editor.setComponentSettingsValue(index, value);
+                        this.update();
+                    }}
+                />
+            ) : (
+                <SettingsComponent
+                    state={this.state.editor.general_settings}
+                    setValue={(index, value) => {
+                        this.props.editor.setGeneralSettingsValue(index, value);
+                        this.update();
+                    }}
+                />
+            );
 
         return (
             <div>
@@ -172,21 +193,39 @@ export class LayoutEditor extends React.Component<Props, State> {
                         </tbody>
                     </table>
                 </div>
-                <SettingsComponent
-                    state={this.state.editor.component_settings}
-                    setValue={(index, value) => {
-                        this.props.editor.setComponentSettingsValue(index, value);
-                        this.update();
-                    }}
-                />
-                <h3 style={{ "margin-left": "25px", "margin-top": "25px", "margin-bottom": "15px" }}>General Settings</h3>
-                <SettingsComponent
-                    state={this.state.editor.general_settings}
-                    setValue={(index, value) => {
-                        this.props.editor.setGeneralSettingsValue(index, value);
-                        this.update();
-                    }}
-                />
+                <div className="tab-bar layout-editor-tabs">
+                    <button
+                        className={"toggle-left" + (
+                            !this.state.showComponentSettings
+                                ? " button-pressed"
+                                : ""
+                        )}
+                        onClick={(_) => {
+                            this.setState({
+                                ...this.state,
+                                showComponentSettings: false,
+                            });
+                        }}
+                    >
+                        Layout
+                    </button>
+                    <button
+                        className={"toggle-right" + (
+                            this.state.showComponentSettings
+                                ? " button-pressed"
+                                : ""
+                        )}
+                        onClick={(_) => {
+                            this.setState({
+                                ...this.state,
+                                showComponentSettings: true,
+                            });
+                        }}
+                    >
+                        Component
+                    </button>
+                </div>
+                {settings}
             </div>
         );
     }

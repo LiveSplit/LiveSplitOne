@@ -533,19 +533,26 @@ table.run-editor-table > tbody > tr > td > input:not(.name) {
 }
 
 .timing-selection > button {
-    font-size: 15px;
-    height: 30px;
     position: relative;
     left: 145px;
     width: 100px;
+}
+
+.tab-bar > button {
+    font-size: 15px;
+    height: 30px;
     border-bottom-right-radius: 0px;
     border-bottom-left-radius: 0px;
     margin-bottom: 0px;
     border-bottom: 0px;
 }
 
+.layout-editor-tabs {
+    margin-left: 20px;
+}
+
 .selected {
-    background: rgba(0, 67, 255, 0.26) !important;
+        background: linear-gradient(rgb(51, 115, 244) 0%, rgb(21, 53, 116) 100%) !important;
 }
 
 input[Type="text"] {

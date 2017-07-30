@@ -495,8 +495,24 @@ export class LiveSplit extends React.Component<Props, State> {
                         <button onClick={(_) => this.onNextComparison()}><i className="fa fa-caret-right" aria-hidden="true"></i></button>
                     </div>
                     <div className="small">
-                        <button onClick={(_) => this.state.timer.setCurrentTimingMethod(Core.TimingMethod.RealTime)} className={(this.state.timingMethod == Core.TimingMethod.RealTime ? "button-pressed" : "") + " toggle-left"}>Real Time</button>
-                        <button onClick={(_) => this.state.timer.setCurrentTimingMethod(Core.TimingMethod.GameTime)} className={(this.state.timingMethod == Core.TimingMethod.GameTime ? "button-pressed" : "") + " toggle-right"}>Game Time</button>
+                        <button
+                            onClick={(_) => {
+                                this.state.timer.setCurrentTimingMethod(Core.TimingMethod.RealTime);
+                                this.update();
+                            }}
+                            className={(this.state.timingMethod == Core.TimingMethod.RealTime ? "button-pressed" : "") + " toggle-left"}
+                        >
+                            Real Time
+                        </button>
+                        <button
+                            onClick={(_) => {
+                                this.state.timer.setCurrentTimingMethod(Core.TimingMethod.GameTime);
+                                this.update();
+                            }}
+                            className={(this.state.timingMethod == Core.TimingMethod.GameTime ? "button-pressed" : "") + " toggle-right"}
+                        >
+                            Game Time
+                        </button>
                     </div>
                 </div>;
         }
