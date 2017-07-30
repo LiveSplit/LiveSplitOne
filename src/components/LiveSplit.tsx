@@ -57,10 +57,12 @@ export class LiveSplit extends React.Component<Props, State> {
         } else {
             let lss = localStorage.getItem("splits");
             if (lss && lss.length > 0) {
-                const newTimer = andThen(Core.Run.parseString(lss), Core.Timer.new);
-                if (newTimer) {
-                    timer.dispose();
-                    timer = newTimer;
+                const failedRun = andThen(
+                    Core.Run.parseString(lss),
+                    r => timer.setRun(r),
+                );
+                if (failedRun) {
+                    failedRun.dispose();
                 }
             }
         }
@@ -189,17 +191,12 @@ export class LiveSplit extends React.Component<Props, State> {
             let reader = new FileReader();
             reader.onload = function (e: any) {
                 let contents = e.target.result;
-                let oldTimer = component.state.timer;
+                let timer = component.state.timer;
                 let run = Core.Run.parseArray(new Int8Array(contents));
                 if (run) {
-                    const newTimer = Core.Timer.new(run);
-                    if (newTimer) {
-                        component.setState({
-                            ...component.state,
-                            timer: newTimer,
-                        });
-                        oldTimer.dispose();
-                    } else {
+                    const failedRun = timer.setRun(run);
+                    if (failedRun) {
+                        failedRun.dispose();
                         alert("Empty Splits are not supported.");
                     }
                 } else {
@@ -222,17 +219,13 @@ export class LiveSplit extends React.Component<Props, State> {
                 xhr.open('GET', "https://splits.io/" + id + "/download/" + response.run.program, true);
                 xhr.responseType = 'arraybuffer';
                 xhr.onload = function () {
-                    const oldTimer = component.state.timer;
-                    const newTimer = andThen(
+                    const timer = component.state.timer;
+                    const failedRun = andThen(
                         Core.Run.parseArray(new Int8Array(xhr.response)),
-                        Core.Timer.new,
+                        r => timer.setRun(r),
                     );
-                    if (newTimer) {
-                        oldTimer.dispose();
-                        component.setState({
-                            ...component.state,
-                            timer: newTimer,
-                        });
+                    if (failedRun) {
+                        failedRun.dispose();
                     }
                 };
                 xhr.send(null);
@@ -339,14 +332,13 @@ export class LiveSplit extends React.Component<Props, State> {
         );
         const run = runEditor.close();
         if (save) {
-            const timer = expect(
-                Core.Timer.new(run),
-                "The Run Editor should always return a valid Run",
-            );
-            this.state.timer.dispose();
+            const failedRun = this.state.timer.setRun(run);
+            if (failedRun) {
+                failedRun.dispose();
+                throw "The Run Editor should always return a valid Run";
+            }
             this.setState({
                 ...this.state,
-                timer: timer,
                 runEditor: null,
                 sidebarOpen: false,
             });

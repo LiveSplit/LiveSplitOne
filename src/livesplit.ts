@@ -129,8 +129,8 @@ export interface GraphComponentStatePointJson {
 }
 
 export type TextComponentStateJson =
-    { Center: String } |
-    { Split: String[] };
+	{ Center: String } |
+	{ Split: String[] };
 
 export interface TotalPlaytimeComponentStateJson {
     background: Gradient,
@@ -532,6 +532,8 @@ liveSplitCoreNative.Timer_loading_times = emscriptenModule.cwrap('Timer_loading_
 liveSplitCoreNative.Timer_current_phase = emscriptenModule.cwrap('Timer_current_phase', "number", ["number"]);
 liveSplitCoreNative.Timer_get_run = emscriptenModule.cwrap('Timer_get_run', "number", ["number"]);
 liveSplitCoreNative.Timer_print_debug = emscriptenModule.cwrap('Timer_print_debug', null, ["number"]);
+liveSplitCoreNative.Timer_replace_run = emscriptenModule.cwrap('Timer_replace_run', "number", ["number", "number", "number"]);
+liveSplitCoreNative.Timer_set_run = emscriptenModule.cwrap('Timer_set_run', "number", ["number", "number"]);
 liveSplitCoreNative.Timer_start = emscriptenModule.cwrap('Timer_start', null, ["number"]);
 liveSplitCoreNative.Timer_split = emscriptenModule.cwrap('Timer_split', null, ["number"]);
 liveSplitCoreNative.Timer_split_or_start = emscriptenModule.cwrap('Timer_split_or_start', null, ["number"]);
@@ -3409,6 +3411,30 @@ export class TimerRef {
 }
 
 export class TimerRefMut extends TimerRef {
+    replaceRun(run: RunRefMut, updateSplits: boolean): boolean {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (run.ptr == 0) {
+            throw "run is disposed";
+        }
+        var result = liveSplitCoreNative.Timer_replace_run(this.ptr, run.ptr, updateSplits ? 1 : 0) != 0;
+        return result;
+    }
+    setRun(run: Run): Run | null {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (run.ptr == 0) {
+            throw "run is disposed";
+        }
+        var result = new Run(liveSplitCoreNative.Timer_set_run(this.ptr, run.ptr));
+        run.ptr = 0;
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
     start() {
         if (this.ptr == 0) {
             throw "this is disposed";

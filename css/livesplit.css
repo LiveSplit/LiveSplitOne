@@ -552,7 +552,7 @@ table.run-editor-table > tbody > tr > td > input:not(.name) {
 }
 
 .selected {
-        background: linear-gradient(rgb(51, 115, 244) 0%, rgb(21, 53, 116) 100%) !important;
+    background: linear-gradient(rgb(51, 115, 244) 0%, rgb(21, 53, 116) 100%) !important;
 }
 
 input[Type="text"] {
