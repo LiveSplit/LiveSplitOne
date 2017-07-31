@@ -4,7 +4,7 @@ import { gradientToCss } from "../util/ColorUtil";
 
 export interface Props { state: LiveSplit.PossibleTimeSaveComponentStateJson };
 
-export class Component extends React.Component<Props, {}> {
+export default class PossibleTimeSave extends React.Component<Props, {}> {
 	render() {
 		return (
 			<div

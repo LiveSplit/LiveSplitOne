@@ -2,13 +2,13 @@ import * as React from "react";
 import * as LiveSplit from "../livesplit";
 import { colorToCss, gradientToCss } from "../util/ColorUtil";
 
-export interface Props { state: LiveSplit.DeltaComponentStateJson }
+export interface Props { state: LiveSplit.PreviousSegmentComponentStateJson }
 
-export class Component extends React.Component<Props, {}> {
+export default class PreviousSegment extends React.Component<Props, {}> {
     render() {
         return (
             <div
-                className="delta-component"
+                className="previous-segment"
                 style={{
                     background: gradientToCss(this.props.state.background),
                 }}
@@ -16,9 +16,9 @@ export class Component extends React.Component<Props, {}> {
                 <table>
                     <tbody>
                         <tr>
-                            <td className="delta-component-text">{this.props.state.text}</td>
+                            <td className="previous-segment-text">{this.props.state.text}</td>
                             <td
-                                className={"delta-component-time time"}
+                                className={"previous-segment-time time"}
                                 style={{
                                     color: colorToCss(this.props.state.visual_color),
                                 }}

@@ -3,7 +3,7 @@ import * as LiveSplit from "../livesplit";
 
 export interface Props { state: LiveSplit.BlankSpaceComponentStateJson };
 
-export class Component extends React.Component<Props, {}> {
+export default class BlankSpace extends React.Component<Props, {}> {
     render() {
         return (
             <div

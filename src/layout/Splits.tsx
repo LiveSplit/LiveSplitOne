@@ -1,13 +1,13 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit";
-import { Component as Split } from "./Split";
+import Split from "./Split";
 
 export interface Props {
     state: LiveSplit.SplitsComponentStateJson,
     layoutState: LiveSplit.LayoutStateJson,
 }
 
-export class Component extends React.Component<Props, {}> {
+export default class Splits extends React.Component<Props, {}> {
     iconUrls: (string | null)[];
 
     constructor(props: Props) {
@@ -38,7 +38,8 @@ export class Component extends React.Component<Props, {}> {
                             key={i.toString()}
                             index={i}
                             separatorInFrontOfSplit={this.props.state.show_final_separator && i + 1 == this.props.state.splits.length}
-                        />)
+                        />
+                    )
                 }
             </div>
         );

@@ -71,7 +71,7 @@ button.toggle-right {
     border-bottom-left-radius: 0px;
 }
 
-.livesplit {
+.layout {
     font-family: 'fira', sans-serif;
     width: 300px;
     text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
@@ -515,7 +515,7 @@ input.name {
 input {
     font-size: 15px;
     border: none;
-    border-bottom: 1px solid hsl(0, 0%, 25%);
+    border-bottom: 1px solid hsla(0, 0%, 100%, 0.25);
     background: transparent;
     color: white;
     text-overflow: ellipsis;

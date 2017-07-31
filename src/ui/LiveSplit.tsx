@@ -1,23 +1,9 @@
 import * as React from "react";
 import * as Core from "../livesplit";
-import { Component as CurrentComparisonComponent } from "./CurrentComparison";
-import { Component as CurrentPaceComponent } from "./CurrentPace";
-import { Component as DeltaComponent } from "./Delta";
-import { Component as DetailedTimerComponent } from "./DetailedTimer";
-import { Component as GraphComponent } from "./Graph";
-import { Component as PossibleTimeSaveComponent } from "./PossibleTimeSave";
-import { Component as PreviousSegmentComponent } from "./PreviousSegment";
-import { Component as SplitsComponent } from "./Splits";
-import { Component as SumOfBestComponent } from "./SumOfBest";
-import { Component as TimerComponent } from "./Timer";
-import { Component as TitleComponent } from "./Title";
-import { Component as TotalPlaytimeComponent } from "./TotalPlaytime";
-import { Component as SeparatorComponent } from "./Separator";
-import { Component as BlankSpaceComponent } from "./BlankSpace";
+import Layout from "../layout/Layout";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import Sidebar from "react-sidebar";
-import { colorToCss, gradientToCss } from "../util/ColorUtil";
 import { expect, andThen } from "../util/OptionUtil";
 
 export interface Props { }
@@ -515,92 +501,8 @@ export class LiveSplit extends React.Component<Props, State> {
         } else if (this.state.layoutEditor) {
             content = <LayoutEditorComponent editor={this.state.layoutEditor} />;
         } else if (this.state.layoutState) {
-            let components: any[] = [];
-            const layoutState = this.state.layoutState;
-
-            layoutState.components.forEach((componentState: any) => {
-                let component;
-                switch (Object.keys(componentState)[0]) {
-                    case "CurrentComparison": {
-                        component = <CurrentComparisonComponent state={componentState.CurrentComparison} />;
-                        break;
-                    }
-                    case "CurrentPace": {
-                        component = <CurrentPaceComponent state={componentState.CurrentPace} />;
-                        break;
-                    }
-                    case "Delta": {
-                        component = <DeltaComponent state={componentState.Delta} />;
-                        break;
-                    }
-                    case "DetailedTimer": {
-                        component = <DetailedTimerComponent state={componentState.DetailedTimer} />;
-                        break;
-                    }
-                    case "Graph": {
-                        component = <GraphComponent state={componentState.Graph} />;
-                        break;
-                    }
-                    case "PossibleTimeSave": {
-                        component = <PossibleTimeSaveComponent state={componentState.PossibleTimeSave} />;
-                        break;
-                    }
-                    case "PreviousSegment": {
-                        component = <PreviousSegmentComponent state={componentState.PreviousSegment} />;
-                        break;
-                    }
-                    case "Splits": {
-                        component =
-                            <SplitsComponent
-                                state={componentState.Splits}
-                                layoutState={layoutState}
-                            />;
-                        break;
-                    }
-                    case "SumOfBest": {
-                        component = <SumOfBestComponent state={componentState.SumOfBest} />;
-                        break;
-                    }
-                    case "Text": {
-                        return;
-                        // component = <TextComponent state={componentState.Text} />;
-                        // break;
-                    }
-                    case "Timer": {
-                        component = <TimerComponent state={componentState.Timer} />;
-                        break;
-                    }
-                    case "Title": {
-                        component = <TitleComponent state={componentState.Title} />;
-                        break;
-                    }
-                    case "TotalPlaytime": {
-                        component = <TotalPlaytimeComponent state={componentState.TotalPlaytime} />;
-                        break;
-                    }
-                    case "Separator": {
-                        component = <SeparatorComponent layoutState={layoutState} />;
-                        break;
-                    }
-                    case "BlankSpace": {
-                        component = <BlankSpaceComponent state={componentState.BlankSpace} />;
-                        break;
-                    }
-                    default: return;
-                }
-                components.push(component);
-            });
-
             content = <div>
-                <div
-                    className="livesplit"
-                    style={{
-                        background: gradientToCss(layoutState.background),
-                        color: colorToCss(layoutState.text_color),
-                    }}
-                >
-                    {components}
-                </div>
+                <Layout state={this.state.layoutState} />
                 <div className="buttons">
                     <button onClick={(_) => this.onSplit()}><i className="fa fa-play" aria-hidden="true"></i></button>
                     <div className="small">

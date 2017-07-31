@@ -5,7 +5,7 @@ import { gradientToCss } from "../util/ColorUtil";
 
 export interface Props { state: LiveSplit.DetailedTimerComponentStateJson }
 
-export class Component extends React.Component<Props, {}> {
+export default class DetailedTimer extends React.Component<Props, {}> {
     render() {
         let children = [];
 

@@ -2,13 +2,13 @@ import * as React from "react";
 import * as LiveSplit from "../livesplit";
 import { gradientToCss } from "../util/ColorUtil";
 
-export interface Props { state: LiveSplit.SumOfBestComponentStateJson };
+export interface Props { state: LiveSplit.TotalPlaytimeComponentStateJson };
 
-export class Component extends React.Component<Props, {}> {
+export default class TotalPlaytime extends React.Component<Props, {}> {
 	render() {
 		return (
 			<div
-				className="sum-of-best"
+				className="total-playtime"
 				style={{
 					background: gradientToCss(this.props.state.background),
 				}}
@@ -16,8 +16,8 @@ export class Component extends React.Component<Props, {}> {
 				<table>
 					<tbody>
 						<tr>
-							<td className="sum-of-best-text">{this.props.state.text}</td>
-							<td className={"sum-of-best-time time"}>{this.props.state.time}</td>
+							<td className="total-playtime-text">{this.props.state.text}</td>
+							<td className={"total-playtime-time time"}>{this.props.state.time}</td>
 						</tr>
 					</tbody>
 				</table>

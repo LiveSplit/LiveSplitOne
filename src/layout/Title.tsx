@@ -4,7 +4,7 @@ import { gradientToCss } from "../util/ColorUtil";
 
 export interface Props { state: LiveSplit.TitleComponentStateJson }
 
-export class Component extends React.Component<Props, {}> {
+export default class Title extends React.Component<Props, {}> {
     iconUrl: string;
 
     constructor(props: Props) {

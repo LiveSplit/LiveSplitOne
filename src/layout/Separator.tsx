@@ -6,7 +6,7 @@ export interface Props {
 	layoutState: LiveSplit.LayoutStateJson,
 }
 
-export class Component extends React.Component<Props, {}> {
+export default class Separator extends React.Component<Props, {}> {
 	render() {
 		return (
 			<div

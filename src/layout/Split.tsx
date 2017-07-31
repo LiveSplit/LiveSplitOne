@@ -11,7 +11,7 @@ export interface Props {
     index: number,
 }
 
-export class Component extends React.Component<Props, {}> {
+export default class Split extends React.Component<Props, {}> {
     constructor(props: Props) {
         super(props);
     }

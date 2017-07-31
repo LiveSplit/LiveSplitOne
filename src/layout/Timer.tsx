@@ -59,7 +59,7 @@ export function renderToSVG(
     );
 }
 
-export class Component extends React.Component<Props, {}> {
+export default class Timer extends React.Component<Props, {}> {
     render() {
         return renderToSVG(this.props.state);
     }
