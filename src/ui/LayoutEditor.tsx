@@ -1,9 +1,13 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit";
+import DragAutoRefreshLayout from "../layout/DragAutoRefreshLayout";
 import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
 import SettingsComponent from "./Settings";
 
-export interface Props { editor: LiveSplit.LayoutEditor };
+export interface Props {
+    editor: LiveSplit.LayoutEditor,
+    timer: LiveSplit.TimerRef,
+};
 export interface State {
     editor: LiveSplit.LayoutEditorStateJson,
     showComponentSettings: boolean,
@@ -114,118 +118,136 @@ export class LayoutEditor extends React.Component<Props, State> {
             );
 
         return (
-            <div>
-                <div className="layout-editor">
-                    <div className="btn-group">
-                        <ContextMenuTrigger id="add-button-context-menu" ref={c => contextTrigger = c}>
-                            <button onClick={toggleMenu}><i className="fa fa-plus" aria-hidden="true"></i></button>
-                        </ContextMenuTrigger>
-                        <ContextMenu id="add-button-context-menu">
-                            <MenuItem onClick={(_) => this.addComponent(LiveSplit.CurrentComparisonComponent)}>
-                                Current Comparison
-                            </MenuItem>
-                            <MenuItem onClick={(_) => this.addComponent(LiveSplit.CurrentPaceComponent)}>
-                                Current Pace
-                            </MenuItem>
-                            <MenuItem onClick={(_) => this.addComponent(LiveSplit.DeltaComponent)}>
-                                Delta
-                            </MenuItem>
-                            <MenuItem onClick={(_) => this.addComponent(LiveSplit.DetailedTimerComponent)}>
-                                Detailed Timer
-                            </MenuItem>
-                            <MenuItem onClick={(_) => this.addComponent(LiveSplit.GraphComponent)}>
-                                Graph
-                            </MenuItem>
-                            <MenuItem onClick={(_) => this.addComponent(LiveSplit.PossibleTimeSaveComponent)}>
-                                Possible Time Save
-                            </MenuItem>
-                            <MenuItem onClick={(_) => this.addComponent(LiveSplit.PreviousSegmentComponent)}>
-                                Previous Segment
-                            </MenuItem>
-                            <MenuItem onClick={(_) => this.addComponent(LiveSplit.SplitsComponent)}>
-                                Splits
-                            </MenuItem>
-                            <MenuItem onClick={(_) => this.addComponent(LiveSplit.SumOfBestComponent)}>
-                                Sum of Best Segments
-                            </MenuItem>
-                            <MenuItem onClick={(_) => this.addComponent(LiveSplit.TextComponent)}>
-                                Text
-                            </MenuItem>
-                            <MenuItem onClick={(_) => this.addComponent(LiveSplit.TimerComponent)}>
-                                Timer
-                            </MenuItem>
-                            <MenuItem onClick={(_) => this.addComponent(LiveSplit.TitleComponent)}>
-                                Title
-                            </MenuItem>
-                            <MenuItem onClick={(_) => this.addComponent(LiveSplit.TotalPlaytimeComponent)}>
-                                Total Playtime
-                            </MenuItem>
-                            <MenuItem divider />
-                            <MenuItem onClick={(_) => this.addComponent(LiveSplit.BlankSpaceComponent)}>
-                                Blank Space
-                            </MenuItem>
-                            <MenuItem onClick={(_) => this.addComponent(LiveSplit.SeparatorComponent)}>
-                                Separator
-                            </MenuItem>
-                        </ContextMenu>
+            <div className="layout-editor-outer">
+                <div style={{ display: "initial" }}>
+                    <div className="layout-editor-inner">
+                        <div className="btn-group">
+                            <ContextMenuTrigger id="add-button-context-menu" ref={c => contextTrigger = c}>
+                                <button onClick={toggleMenu}><i className="fa fa-plus" aria-hidden="true"></i></button>
+                            </ContextMenuTrigger>
+                            <ContextMenu id="add-button-context-menu">
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.CurrentComparisonComponent)}>
+                                    Current Comparison
+                                </MenuItem>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.CurrentPaceComponent)}>
+                                    Current Pace
+                                </MenuItem>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.DeltaComponent)}>
+                                    Delta
+                                </MenuItem>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.DetailedTimerComponent)}>
+                                    Detailed Timer
+                                </MenuItem>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.GraphComponent)}>
+                                    Graph
+                                </MenuItem>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.PossibleTimeSaveComponent)}>
+                                    Possible Time Save
+                                </MenuItem>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.PreviousSegmentComponent)}>
+                                    Previous Segment
+                                </MenuItem>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.SplitsComponent)}>
+                                    Splits
+                                </MenuItem>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.SumOfBestComponent)}>
+                                    Sum of Best Segments
+                                </MenuItem>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.TextComponent)}>
+                                    Text
+                                </MenuItem>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.TimerComponent)}>
+                                    Timer
+                                </MenuItem>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.TitleComponent)}>
+                                    Title
+                                </MenuItem>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.TotalPlaytimeComponent)}>
+                                    Total Playtime
+                                </MenuItem>
+                                <MenuItem divider />
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.BlankSpaceComponent)}>
+                                    Blank Space
+                                </MenuItem>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.SeparatorComponent)}>
+                                    Separator
+                                </MenuItem>
+                            </ContextMenu>
+                            <button
+                                onClick={(_) => this.removeComponent()}
+                                className={this.state.editor.buttons.can_remove ? "" : "disabled"}
+                            >
+                                <i className="fa fa-minus" aria-hidden="true"></i>
+                            </button>
+                            <button
+                                onClick={(_) => this.moveComponentUp()}
+                                className={this.state.editor.buttons.can_move_up ? "" : "disabled"}
+                            >
+                                <i className="fa fa-arrow-up" aria-hidden="true"></i>
+                            </button>
+                            <button
+                                onClick={(_) => this.moveComponentDown()}
+                                className={this.state.editor.buttons.can_move_down ? "" : "disabled"}
+                            >
+                                <i className="fa fa-arrow-down" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                        <table className="layout-editor-component-list table">
+                            <tbody className="table-body">
+                                {components}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="tab-bar layout-editor-tabs">
                         <button
-                            onClick={(_) => this.removeComponent()}
-                            className={this.state.editor.buttons.can_remove ? "" : "disabled"}
+                            className={"toggle-left" + (
+                                !this.state.showComponentSettings
+                                    ? " button-pressed"
+                                    : ""
+                            )}
+                            onClick={(_) => {
+                                this.setState({
+                                    ...this.state,
+                                    showComponentSettings: false,
+                                });
+                            }}
                         >
-                            <i className="fa fa-minus" aria-hidden="true"></i>
+                            Layout
                         </button>
                         <button
-                            onClick={(_) => this.moveComponentUp()}
-                            className={this.state.editor.buttons.can_move_up ? "" : "disabled"}
+                            className={"toggle-right" + (
+                                this.state.showComponentSettings
+                                    ? " button-pressed"
+                                    : ""
+                            )}
+                            onClick={(_) => {
+                                this.setState({
+                                    ...this.state,
+                                    showComponentSettings: true,
+                                });
+                            }}
                         >
-                            <i className="fa fa-arrow-up" aria-hidden="true"></i>
-                        </button>
-                        <button
-                            onClick={(_) => this.moveComponentDown()}
-                            className={this.state.editor.buttons.can_move_down ? "" : "disabled"}
-                        >
-                            <i className="fa fa-arrow-down" aria-hidden="true"></i>
+                            Component
                         </button>
                     </div>
-                    <table className="layout-editor-component-list table">
-                        <tbody className="table-body">
-                            {components}
-                        </tbody>
-                    </table>
+                    {settings}
                 </div>
-                <div className="tab-bar layout-editor-tabs">
-                    <button
-                        className={"toggle-left" + (
-                            !this.state.showComponentSettings
-                                ? " button-pressed"
-                                : ""
-                        )}
-                        onClick={(_) => {
-                            this.setState({
-                                ...this.state,
-                                showComponentSettings: false,
-                            });
+                <div style={{
+                    margin: "20px",
+                    marginLeft: "15px",
+                }}>
+                    <DragAutoRefreshLayout
+                        getState={() => this.props.editor.layoutStateAsJson(this.props.timer)}
+                        onClick={i => this.selectComponent(i)}
+                        onDrag={i => {
+                            this.props.editor.select(i);
+                            this.update();
                         }}
-                    >
-                        Layout
-                    </button>
-                    <button
-                        className={"toggle-right" + (
-                            this.state.showComponentSettings
-                                ? " button-pressed"
-                                : ""
-                        )}
-                        onClick={(_) => {
-                            this.setState({
-                                ...this.state,
-                                showComponentSettings: true,
-                            });
-                        }}
-                    >
-                        Component
-                    </button>
+                        onDragEnd={_ => this.update()}
+                        onDrop={i => this.props.editor.moveComponent(i)}
+                        isSelected={i => this.state.editor.selected_component == i}
+                    />
                 </div>
-                {settings}
             </div>
         );
     }

@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as Core from "../livesplit";
-import Layout from "../layout/Layout";
+import AutoRefreshLayout from "../layout/AutoRefreshLayout";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import Sidebar from "react-sidebar";
@@ -10,7 +10,6 @@ export interface Props { }
 export interface State {
     timer: Core.Timer,
     layout: Core.Layout,
-    layoutState: Core.LayoutStateJson | null,
     sidebarOpen: boolean,
     timingMethod: Core.TimingMethod | null,
     comparison: string | null,
@@ -67,7 +66,6 @@ export class LiveSplit extends React.Component<Props, State> {
         this.state = {
             timer: timer,
             layout: layout,
-            layoutState: null,
             sidebarOpen: false,
             timingMethod: null,
             comparison: null,
@@ -109,11 +107,8 @@ export class LiveSplit extends React.Component<Props, State> {
 
     update() {
         if (!this.state.runEditor && !this.state.layoutEditor) {
-            let layoutState = this.state.layout.stateAsJson(this.state.timer);
-
             this.setState({
                 ...this.state,
-                layoutState: layoutState,
                 timingMethod: this.state.timer.currentTimingMethod(),
                 comparison: this.state.timer.currentComparison(),
             });
@@ -499,10 +494,20 @@ export class LiveSplit extends React.Component<Props, State> {
         if (this.state.runEditor) {
             content = <RunEditorComponent editor={this.state.runEditor} />;
         } else if (this.state.layoutEditor) {
-            content = <LayoutEditorComponent editor={this.state.layoutEditor} />;
-        } else if (this.state.layoutState) {
-            content = <div>
-                <Layout state={this.state.layoutState} />
+            content = <LayoutEditorComponent
+                editor={this.state.layoutEditor}
+                timer={this.state.timer}
+            />;
+        } else {
+            content = <div
+                style={{
+                    margin: "10px",
+                    marginBottom: "5px",
+                }}
+            >
+                <AutoRefreshLayout
+                    getState={() => this.state.layout.stateAsJson(this.state.timer)}
+                />
                 <div className="buttons">
                     <button onClick={(_) => this.onSplit()}><i className="fa fa-play" aria-hidden="true"></i></button>
                     <div className="small">
@@ -515,8 +520,6 @@ export class LiveSplit extends React.Component<Props, State> {
                     </div>
                 </div>
             </div>;
-        } else {
-            content = <div />;
         }
 
         return (

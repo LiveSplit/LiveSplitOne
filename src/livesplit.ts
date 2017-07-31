@@ -355,6 +355,7 @@ liveSplitCoreNative.Layout_remount = emscriptenModule.cwrap('Layout_remount', nu
 liveSplitCoreNative.LayoutEditor_new = emscriptenModule.cwrap('LayoutEditor_new', "number", ["number"]);
 liveSplitCoreNative.LayoutEditor_close = emscriptenModule.cwrap('LayoutEditor_close', "number", ["number"]);
 liveSplitCoreNative.LayoutEditor_state_as_json = emscriptenModule.cwrap('LayoutEditor_state_as_json', "string", ["number"]);
+liveSplitCoreNative.LayoutEditor_layout_state_as_json = emscriptenModule.cwrap('LayoutEditor_layout_state_as_json', "string", ["number", "number"]);
 liveSplitCoreNative.LayoutEditor_select = emscriptenModule.cwrap('LayoutEditor_select', null, ["number", "number"]);
 liveSplitCoreNative.LayoutEditor_add_component = emscriptenModule.cwrap('LayoutEditor_add_component', null, ["number", "number"]);
 liveSplitCoreNative.LayoutEditor_remove_component = emscriptenModule.cwrap('LayoutEditor_remove_component', null, ["number"]);
@@ -1653,6 +1654,16 @@ export class LayoutEditorRef {
 }
 
 export class LayoutEditorRefMut extends LayoutEditorRef {
+    layoutStateAsJson(timer: TimerRef): any {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (timer.ptr == 0) {
+            throw "timer is disposed";
+        }
+        var result = liveSplitCoreNative.LayoutEditor_layout_state_as_json(this.ptr, timer.ptr);
+        return JSON.parse(result);
+    }
     select(index: number) {
         if (this.ptr == 0) {
             throw "this is disposed";
