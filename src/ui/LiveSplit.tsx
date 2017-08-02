@@ -4,7 +4,7 @@ import AutoRefreshLayout from "../layout/AutoRefreshLayout";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import Sidebar from "react-sidebar";
-import { expect, andThen } from "../util/OptionUtil";
+import { expect, assertNull, andThen, maybeDispose, maybeDisposeAndThen } from "../util/OptionUtil";
 
 export interface Props { }
 export interface State {
@@ -36,19 +36,24 @@ export class LiveSplit extends React.Component<Props, State> {
         );
 
         if (window.location.hash.indexOf("#/splits-io/") == 0) {
+            let run = Core.Run.new();
             run.setGameName("Loading...");
             run.setCategoryName("Loading...");
+            run.pushSegment(Core.Segment.new("Time"));
+            assertNull(
+                timer.setRun(run),
+                "The Default Loading Run should be a valid Run",
+            );
             this.loadFromSplitsIO(window.location.hash.substr("#/splits-io/".length));
         } else {
             let lss = localStorage.getItem("splits");
             if (lss && lss.length > 0) {
-                const failedRun = andThen(
-                    Core.Run.parseString(lss),
-                    r => timer.setRun(r),
+                maybeDispose(
+                    andThen(
+                        Core.Run.parseString(lss),
+                        r => timer.setRun(r),
+                    ),
                 );
-                if (failedRun) {
-                    failedRun.dispose();
-                }
             }
         }
 
@@ -175,11 +180,10 @@ export class LiveSplit extends React.Component<Props, State> {
                 let timer = component.state.timer;
                 let run = Core.Run.parseArray(new Int8Array(contents));
                 if (run) {
-                    const failedRun = timer.setRun(run);
-                    if (failedRun) {
-                        failedRun.dispose();
-                        alert("Empty Splits are not supported.");
-                    }
+                    maybeDisposeAndThen(
+                        timer.setRun(run),
+                        () => alert("Empty Splits are not supported."),
+                    );
                 } else {
                     alert("Couldn't parse the splits.");
                 }
@@ -201,13 +205,12 @@ export class LiveSplit extends React.Component<Props, State> {
                 xhr.responseType = 'arraybuffer';
                 xhr.onload = function () {
                     const timer = component.state.timer;
-                    const failedRun = andThen(
-                        Core.Run.parseArray(new Int8Array(xhr.response)),
-                        r => timer.setRun(r),
+                    maybeDispose(
+                        andThen(
+                            Core.Run.parseArray(new Int8Array(xhr.response)),
+                            r => timer.setRun(r),
+                        ),
                     );
-                    if (failedRun) {
-                        failedRun.dispose();
-                    }
                 };
                 xhr.send(null);
             }
@@ -313,11 +316,10 @@ export class LiveSplit extends React.Component<Props, State> {
         );
         const run = runEditor.close();
         if (save) {
-            const failedRun = this.state.timer.setRun(run);
-            if (failedRun) {
-                failedRun.dispose();
-                throw "The Run Editor should always return a valid Run";
-            }
+            assertNull(
+                this.state.timer.setRun(run),
+                "The Run Editor should always return a valid Run",
+            );
             this.setState({
                 ...this.state,
                 runEditor: null,
