@@ -10,7 +10,7 @@ export interface Props {
 
 export default class SettingsComponent extends React.Component<Props, {}> {
     render() {
-        let settingsRows: any[] = [];
+        let settingsRows: JSX.Element[] = [];
 
         this.props.state.fields.forEach((field, valueIndex) => {
             var component;
@@ -251,7 +251,7 @@ export default class SettingsComponent extends React.Component<Props, {}> {
                     const inputWidth = !color1 && !color2 ? "100%" : null;
                     const colorWidth = color1 && color2 ? "50%" : "100%";
 
-                    let children: any[] = [
+                    let children: JSX.Element[] = [
                         <td>
                             <select
                                 value={type}

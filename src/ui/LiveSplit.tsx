@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as Core from "../livesplit";
+import { Timer, Layout, Segment, Run, TimerPhase, TimingMethod, RunEditor, LayoutEditor } from "../livesplit";
 import AutoRefreshLayout from "../layout/AutoRefreshLayout";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
@@ -8,13 +8,13 @@ import { expect, assertNull, andThen, maybeDispose, maybeDisposeAndThen } from "
 
 export interface Props { }
 export interface State {
-    timer: Core.Timer,
-    layout: Core.Layout,
+    timer: Timer,
+    layout: Layout,
     sidebarOpen: boolean,
-    timingMethod: Core.TimingMethod | null,
+    timingMethod: TimingMethod | null,
     comparison: string | null,
-    runEditor: Core.RunEditor | null,
-    layoutEditor: Core.LayoutEditor | null,
+    runEditor: RunEditor | null,
+    layoutEditor: LayoutEditor | null,
 }
 
 export class LiveSplit extends React.Component<Props, State> {
@@ -26,20 +26,20 @@ export class LiveSplit extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
 
-        let run = Core.Run.new();
+        let run = Run.new();
         run.setGameName("Game");
         run.setCategoryName("Category");
-        run.pushSegment(Core.Segment.new("Time"));
+        run.pushSegment(Segment.new("Time"));
         let timer = expect(
-            Core.Timer.new(run),
+            Timer.new(run),
             "The Default Run should be a valid Run",
         );
 
         if (window.location.hash.indexOf("#/splits-io/") == 0) {
-            let run = Core.Run.new();
+            let run = Run.new();
             run.setGameName("Loading...");
             run.setCategoryName("Loading...");
-            run.pushSegment(Core.Segment.new("Time"));
+            run.pushSegment(Segment.new("Time"));
             assertNull(
                 timer.setRun(run),
                 "The Default Loading Run should be a valid Run",
@@ -50,22 +50,22 @@ export class LiveSplit extends React.Component<Props, State> {
             if (lss && lss.length > 0) {
                 maybeDispose(
                     andThen(
-                        Core.Run.parseString(lss),
+                        Run.parseString(lss),
                         r => timer.setRun(r),
                     ),
                 );
             }
         }
 
-        let layout: Core.Layout | null = null;
+        let layout: Layout | null = null;
         try {
             const data = localStorage.getItem("layout");
             if (data) {
-                layout = Core.Layout.parseJson(JSON.parse(data));
+                layout = Layout.parseJson(JSON.parse(data));
             }
         } catch (e) { }
         if (!layout) {
-            layout = Core.Layout.defaultLayout();
+            layout = Layout.defaultLayout();
         }
 
         this.state = {
@@ -178,7 +178,7 @@ export class LiveSplit extends React.Component<Props, State> {
             reader.onload = function (e: any) {
                 let contents = e.target.result;
                 let timer = component.state.timer;
-                let run = Core.Run.parseArray(new Int8Array(contents));
+                let run = Run.parseArray(new Int8Array(contents));
                 if (run) {
                     maybeDisposeAndThen(
                         timer.setRun(run),
@@ -207,7 +207,7 @@ export class LiveSplit extends React.Component<Props, State> {
                     const timer = component.state.timer;
                     maybeDispose(
                         andThen(
-                            Core.Run.parseArray(new Int8Array(xhr.response)),
+                            Run.parseArray(new Int8Array(xhr.response)),
                             r => timer.setRun(r),
                         ),
                     );
@@ -296,9 +296,9 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     openRunEditor() {
-        if (this.state.timer.currentPhase() == Core.TimerPhase.NotRunning) {
+        if (this.state.timer.currentPhase() == TimerPhase.NotRunning) {
             let run = this.state.timer.getRun().clone();
-            let editor = Core.RunEditor.new(run);
+            let editor = RunEditor.new(run);
             this.setState({
                 ...this.state,
                 runEditor: editor,
@@ -338,7 +338,7 @@ export class LiveSplit extends React.Component<Props, State> {
 
     openLayoutEditor() {
         let layout = this.state.layout.clone();
-        let editor = Core.LayoutEditor.new(layout);
+        let editor = LayoutEditor.new(layout);
         this.setState({
             ...this.state,
             layoutEditor: editor,
@@ -472,19 +472,19 @@ export class LiveSplit extends React.Component<Props, State> {
                     <div className="small">
                         <button
                             onClick={(_) => {
-                                this.state.timer.setCurrentTimingMethod(Core.TimingMethod.RealTime);
+                                this.state.timer.setCurrentTimingMethod(TimingMethod.RealTime);
                                 this.update();
                             }}
-                            className={(this.state.timingMethod == Core.TimingMethod.RealTime ? "button-pressed" : "") + " toggle-left"}
+                            className={(this.state.timingMethod == TimingMethod.RealTime ? "button-pressed" : "") + " toggle-left"}
                         >
                             Real Time
                         </button>
                         <button
                             onClick={(_) => {
-                                this.state.timer.setCurrentTimingMethod(Core.TimingMethod.GameTime);
+                                this.state.timer.setCurrentTimingMethod(TimingMethod.GameTime);
                                 this.update();
                             }}
-                            className={(this.state.timingMethod == Core.TimingMethod.GameTime ? "button-pressed" : "") + " toggle-right"}
+                            className={(this.state.timingMethod == TimingMethod.GameTime ? "button-pressed" : "") + " toggle-right"}
                         >
                             Game Time
                         </button>

@@ -14,7 +14,7 @@ doCompile() {
     cp livesplit-core/capi/bindings/emscripten/livesplit_core.ts src/livesplit.ts
 
     npm install
-    webpack
+    webpack -p
 }
 
 if [ "$TRAVIS_PULL_REQUEST" != "false" -o "$TRAVIS_BRANCH" != "$SOURCE_BRANCH" ]; then

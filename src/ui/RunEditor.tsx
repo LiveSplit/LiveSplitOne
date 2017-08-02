@@ -314,7 +314,7 @@ export class RunEditor extends React.Component<Props, State> {
                         </thead>
                         <tbody className="table-body">
                             {
-                                this.state.editor.segments.map((s: any, i: number) =>
+                                this.state.editor.segments.map((s: LiveSplit.RunEditorRowJson, i: number) =>
                                     <tr key={i.toString()} className={(s.selected == "Selected" || s.selected == "CurrentRow") ? "selected" : ""} onClick={(e) => this.changeSegmentSelection(e, i)}>
                                         <td><input className="name" type="text" value={s.name} onFocus={(_) => this.focusSegment(i)} onChange={(e) => this.handleSegmentNameChange(e)} /></td>
                                         <td><input className={this.state.rowState.index != i || this.state.rowState.splitTimeIsValid ? "number" : "number invalid"}
