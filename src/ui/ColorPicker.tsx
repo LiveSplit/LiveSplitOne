@@ -51,7 +51,7 @@ export default class ColorPicker extends React.Component<Props, State> {
                         this.state.display ?
                             <div style={{
                                 position: 'absolute',
-                                zIndex: 2,
+                                zIndex: 3,
                                 textShadow: 'initial',
                             }}>
                                 <div
