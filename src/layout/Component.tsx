@@ -11,6 +11,7 @@ import PreviousSegment from "./PreviousSegment";
 import Separator from "./Separator";
 import Splits from "./Splits";
 import SumOfBest from "./SumOfBest";
+import Text from "./Text";
 import Timer from "./Timer";
 import Title from "./Title";
 import TotalPlaytime from "./TotalPlaytime";
@@ -57,8 +58,7 @@ export default class Component extends React.Component<Props> {
                 return <SumOfBest state={componentState.SumOfBest} />;
             }
             case "Text": {
-                return null;
-                // return <Text state={componentState.Text} />;
+                return <Text state={componentState.Text} />;
             }
             case "Timer": {
                 return <Timer state={componentState.Timer} />;

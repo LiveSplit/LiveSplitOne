@@ -1,6 +1,6 @@
 // tslint:disable
 var LiveSplitCore = require('./livesplit_core');
-var emscriptenModule = LiveSplitCore.LiveSplitCore({});
+var emscriptenModule = LiveSplitCore({});
 var liveSplitCoreNative: any = {};
 
 export type ComponentStateJson =
