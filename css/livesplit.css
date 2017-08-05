@@ -90,7 +90,8 @@ button.toggle-right {
 .total-playtime,
 .current-pace,
 .delta-component,
-.current-comparison {
+.current-comparison,
+.text-component {
     height: 24px;
     line-height: 20px;
     padding: 0px 6px;
@@ -677,4 +678,21 @@ button.disabled, button.button-pressed.disabled, button.disabled:active {
     font-family: inherit !important;
     margin-top: 5px;
     margin-left: -50%;
+}
+
+.text-component {
+    overflow: hidden;
+}
+
+.text-component>table {
+    width: 100%;
+}
+.center-text {
+    text-align: -webkit-center;
+    text-align: center;
+}
+.text-component-text {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
 }
