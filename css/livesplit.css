@@ -346,13 +346,13 @@ button {
 .group {
     position: relative;
     margin-top: 20px;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 .group > input {
     font-size: 18px;
     padding: 10px 10px 10px 5px;
     display: block;
-    width: 285px;
+    width: 270px;
     border: none;
     border-bottom: 1px solid #aaa;
     background: transparent;
@@ -389,7 +389,7 @@ button {
     color: hsla(0, 100%, 50%, 1);
 }
 
-.group > .bar { position: relative; display: block; width: 300px; }
+.group > .bar { position: relative; display: block; width: 285px; }
 .group > .bar:before, .group > .bar:after 	{
     content: '';
     height: 2px;
@@ -524,6 +524,14 @@ input.number {
     text-align: right;
     font-weight: bold;
     font-family: 'Roboto', sans-serif;
+}
+
+.run-editor-info {
+    display: inline-flex;
+}
+
+table.run-editor-info-table > tbody > tr > td {
+    padding: 0px 10px 0px 10px;
 }
 
 table.run-editor-table > tbody > tr > td > input:not(.name) {

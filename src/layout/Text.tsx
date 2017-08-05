@@ -21,9 +21,7 @@ export default class Text extends React.Component<Props> {
                 </tr>
             );
         return (
-            <div
-                className="text-component"
-            >
+            <div className="text-component">
                 <table>
                     <tbody>
                         {text}

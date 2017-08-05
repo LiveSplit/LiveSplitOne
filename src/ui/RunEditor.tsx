@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit";
+import { openFileAsArrayBuffer } from "../util/FileUtil";
 import { TextBox } from "./TextBox";
 
 export interface Props { editor: LiveSplit.RunEditor };
@@ -18,6 +19,8 @@ interface RowState {
 }
 
 export class RunEditor extends React.Component<Props, State> {
+    private gameIcon: string;
+
     constructor(props: Props) {
         super(props);
 
@@ -32,42 +35,87 @@ export class RunEditor extends React.Component<Props, State> {
                 splitTimeIsValid: true,
             },
         };
+
+        this.gameIcon = "";
     }
 
     public render() {
+        const gameIcon = this.getGameIcon();
+        const gameIconSize = 118;
+
         return (
             <div className="run-editor">
-                <TextBox
-                    className="run-editor-game"
-                    value={this.state.editor.game}
-                    onChange={(e) => this.handleGameChange(e)}
-                    label="Game"
-                />
-                <TextBox
-                    className="run-editor-category"
-                    value={this.state.editor.category}
-                    onChange={(e) => this.handleCategoryChange(e)}
-                    label="Category"
-                />
-                <div className="bottom">
-                    <TextBox
-                        className="run-editor-offset"
-                        value={this.state.editor.offset}
-                        onChange={(e) => this.handleOffsetChange(e)}
-                        onBlur={(e) => this.handleOffsetBlur(e)}
-                        small
-                        invalid={!this.state.offsetIsValid}
-                        label="Offset"
-                    />
-                    <TextBox
-                        className="run-editor-attempts"
-                        value={this.state.editor.attempts}
-                        onChange={(e) => this.handleAttemptsChange(e)}
-                        onBlur={(e) => this.handleAttemptsBlur(e)}
-                        small
-                        invalid={!this.state.attemptCountIsValid}
-                        label="Attempts"
-                    />
+                <div className="run-editor-info">
+                    <div
+                        style={{
+                            backgroundColor: "rgba(255, 255, 255, 0.05)",
+                            border: "1px solid hsl(0, 0%, 25%)",
+                            cursor: "pointer",
+                            height: gameIconSize,
+                            marginTop: 5,
+                            padding: 10,
+                            width: gameIconSize,
+                        }}
+                        onClick={(_) => this.changeGameIcon()}
+                    >
+                        {
+                            gameIcon !== "" &&
+                            <img
+                                src={gameIcon}
+                                style={{
+                                    "height": gameIconSize,
+                                    "object-fit": "contain",
+                                    "width": gameIconSize,
+                                }}
+                            />
+                        }
+                    </div>
+                    <table className="run-editor-info-table">
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <TextBox
+                                        className="run-editor-game"
+                                        value={this.state.editor.game}
+                                        onChange={(e) => this.handleGameChange(e)}
+                                        label="Game"
+                                    />
+                                </td>
+                                <td>
+                                    <TextBox
+                                        className="run-editor-category"
+                                        value={this.state.editor.category}
+                                        onChange={(e) => this.handleCategoryChange(e)}
+                                        label="Category"
+                                    />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <TextBox
+                                        className="run-editor-offset"
+                                        value={this.state.editor.offset}
+                                        onChange={(e) => this.handleOffsetChange(e)}
+                                        onBlur={(e) => this.handleOffsetBlur(e)}
+                                        small
+                                        invalid={!this.state.offsetIsValid}
+                                        label="Offset"
+                                    />
+                                </td>
+                                <td>
+                                    <TextBox
+                                        className="run-editor-attempts"
+                                        value={this.state.editor.attempts}
+                                        onChange={(e) => this.handleAttemptsChange(e)}
+                                        onBlur={(e) => this.handleAttemptsBlur(e)}
+                                        small
+                                        invalid={!this.state.attemptCountIsValid}
+                                        label="Attempts"
+                                    />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
                 <div className="timing-selection tab-bar">
                     <button
@@ -199,8 +247,22 @@ export class RunEditor extends React.Component<Props, State> {
                         </tbody>
                     </table>
                 </div>
-            </div>
+            </div >
         )
+    }
+
+    private changeGameIcon() {
+        openFileAsArrayBuffer((file) => {
+            this.props.editor.setGameIconFromArray(new Int8Array(file));
+            this.update();
+        });
+    }
+
+    private getGameIcon(): string {
+        if (this.state.editor.icon_change !== null) {
+            this.gameIcon = this.state.editor.icon_change;
+        }
+        return this.gameIcon;
     }
 
     private update() {

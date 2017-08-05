@@ -1,7 +1,7 @@
 // tslint:disable
-var LiveSplitCore = require('./livesplit_core');
-var emscriptenModule = LiveSplitCore({});
-var liveSplitCoreNative: any = {};
+const LiveSplitCore = require('./livesplit_core');
+const emscriptenModule = LiveSplitCore({});
+const liveSplitCoreNative: any = {};
 
 export type ComponentStateJson =
     { BlankSpace: BlankSpaceComponentStateJson } |
@@ -130,8 +130,8 @@ export interface GraphComponentStatePointJson {
 }
 
 export type TextComponentStateJson =
-    { Center: String } |
-    { Split: String[] };
+	{ Center: string } |
+	{ Split: string[] };
 
 export interface TotalPlaytimeComponentStateJson {
     background: Gradient,
@@ -598,21 +598,21 @@ export class AtomicDateTimeRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.AtomicDateTime_is_synchronized(this.ptr) != 0;
+        const result = liveSplitCoreNative.AtomicDateTime_is_synchronized(this.ptr) != 0;
         return result;
     }
     toRfc2822(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.AtomicDateTime_to_rfc2822(this.ptr);
+        const result = liveSplitCoreNative.AtomicDateTime_to_rfc2822(this.ptr);
         return result;
     }
     toRfc3339(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.AtomicDateTime_to_rfc3339(this.ptr);
+        const result = liveSplitCoreNative.AtomicDateTime_to_rfc3339(this.ptr);
         return result;
     }
     constructor(ptr: number) {
@@ -645,21 +645,21 @@ export class AttemptRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.Attempt_index(this.ptr);
+        const result = liveSplitCoreNative.Attempt_index(this.ptr);
         return result;
     }
     time(): TimeRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new TimeRef(liveSplitCoreNative.Attempt_time(this.ptr));
+        const result = new TimeRef(liveSplitCoreNative.Attempt_time(this.ptr));
         return result;
     }
     pauseTime(): TimeSpanRef | null {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new TimeSpanRef(liveSplitCoreNative.Attempt_pause_time(this.ptr));
+        const result = new TimeSpanRef(liveSplitCoreNative.Attempt_pause_time(this.ptr));
         if (result.ptr == 0) {
             return null;
         }
@@ -669,7 +669,7 @@ export class AttemptRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new AtomicDateTime(liveSplitCoreNative.Attempt_started(this.ptr));
+        const result = new AtomicDateTime(liveSplitCoreNative.Attempt_started(this.ptr));
         if (result.ptr == 0) {
             return null;
         }
@@ -679,7 +679,7 @@ export class AttemptRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new AtomicDateTime(liveSplitCoreNative.Attempt_ended(this.ptr));
+        const result = new AtomicDateTime(liveSplitCoreNative.Attempt_ended(this.ptr));
         if (result.ptr == 0) {
             return null;
         }
@@ -723,7 +723,7 @@ export class BlankSpaceComponentRefMut extends BlankSpaceComponentRef {
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = liveSplitCoreNative.BlankSpaceComponent_state_as_json(this.ptr, timer.ptr);
+        const result = liveSplitCoreNative.BlankSpaceComponent_state_as_json(this.ptr, timer.ptr);
         return JSON.parse(result);
     }
     state(timer: TimerRef): BlankSpaceComponentState {
@@ -733,7 +733,7 @@ export class BlankSpaceComponentRefMut extends BlankSpaceComponentRef {
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = new BlankSpaceComponentState(liveSplitCoreNative.BlankSpaceComponent_state(this.ptr, timer.ptr));
+        const result = new BlankSpaceComponentState(liveSplitCoreNative.BlankSpaceComponent_state(this.ptr, timer.ptr));
         return result;
     }
 }
@@ -753,14 +753,14 @@ export class BlankSpaceComponent extends BlankSpaceComponentRefMut {
         }
     }
     static new(): BlankSpaceComponent {
-        var result = new BlankSpaceComponent(liveSplitCoreNative.BlankSpaceComponent_new());
+        const result = new BlankSpaceComponent(liveSplitCoreNative.BlankSpaceComponent_new());
         return result;
     }
     intoGeneric(): Component {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new Component(liveSplitCoreNative.BlankSpaceComponent_into_generic(this.ptr));
+        const result = new Component(liveSplitCoreNative.BlankSpaceComponent_into_generic(this.ptr));
         this.ptr = 0;
         return result;
     }
@@ -772,7 +772,7 @@ export class BlankSpaceComponentStateRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.BlankSpaceComponentState_height(this.ptr);
+        const result = liveSplitCoreNative.BlankSpaceComponentState_height(this.ptr);
         return result;
     }
     constructor(ptr: number) {
@@ -840,7 +840,7 @@ export class CurrentComparisonComponentRefMut extends CurrentComparisonComponent
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = liveSplitCoreNative.CurrentComparisonComponent_state_as_json(this.ptr, timer.ptr);
+        const result = liveSplitCoreNative.CurrentComparisonComponent_state_as_json(this.ptr, timer.ptr);
         return JSON.parse(result);
     }
     state(timer: TimerRef): CurrentComparisonComponentState {
@@ -850,7 +850,7 @@ export class CurrentComparisonComponentRefMut extends CurrentComparisonComponent
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = new CurrentComparisonComponentState(liveSplitCoreNative.CurrentComparisonComponent_state(this.ptr, timer.ptr));
+        const result = new CurrentComparisonComponentState(liveSplitCoreNative.CurrentComparisonComponent_state(this.ptr, timer.ptr));
         return result;
     }
 }
@@ -870,14 +870,14 @@ export class CurrentComparisonComponent extends CurrentComparisonComponentRefMut
         }
     }
     static new(): CurrentComparisonComponent {
-        var result = new CurrentComparisonComponent(liveSplitCoreNative.CurrentComparisonComponent_new());
+        const result = new CurrentComparisonComponent(liveSplitCoreNative.CurrentComparisonComponent_new());
         return result;
     }
     intoGeneric(): Component {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new Component(liveSplitCoreNative.CurrentComparisonComponent_into_generic(this.ptr));
+        const result = new Component(liveSplitCoreNative.CurrentComparisonComponent_into_generic(this.ptr));
         this.ptr = 0;
         return result;
     }
@@ -889,14 +889,14 @@ export class CurrentComparisonComponentStateRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.CurrentComparisonComponentState_text(this.ptr);
+        const result = liveSplitCoreNative.CurrentComparisonComponentState_text(this.ptr);
         return result;
     }
     comparison(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.CurrentComparisonComponentState_comparison(this.ptr);
+        const result = liveSplitCoreNative.CurrentComparisonComponentState_comparison(this.ptr);
         return result;
     }
     constructor(ptr: number) {
@@ -938,7 +938,7 @@ export class CurrentPaceComponentRefMut extends CurrentPaceComponentRef {
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = liveSplitCoreNative.CurrentPaceComponent_state_as_json(this.ptr, timer.ptr);
+        const result = liveSplitCoreNative.CurrentPaceComponent_state_as_json(this.ptr, timer.ptr);
         return JSON.parse(result);
     }
     state(timer: TimerRef): CurrentPaceComponentState {
@@ -948,7 +948,7 @@ export class CurrentPaceComponentRefMut extends CurrentPaceComponentRef {
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = new CurrentPaceComponentState(liveSplitCoreNative.CurrentPaceComponent_state(this.ptr, timer.ptr));
+        const result = new CurrentPaceComponentState(liveSplitCoreNative.CurrentPaceComponent_state(this.ptr, timer.ptr));
         return result;
     }
 }
@@ -968,14 +968,14 @@ export class CurrentPaceComponent extends CurrentPaceComponentRefMut {
         }
     }
     static new(): CurrentPaceComponent {
-        var result = new CurrentPaceComponent(liveSplitCoreNative.CurrentPaceComponent_new());
+        const result = new CurrentPaceComponent(liveSplitCoreNative.CurrentPaceComponent_new());
         return result;
     }
     intoGeneric(): Component {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new Component(liveSplitCoreNative.CurrentPaceComponent_into_generic(this.ptr));
+        const result = new Component(liveSplitCoreNative.CurrentPaceComponent_into_generic(this.ptr));
         this.ptr = 0;
         return result;
     }
@@ -987,14 +987,14 @@ export class CurrentPaceComponentStateRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.CurrentPaceComponentState_text(this.ptr);
+        const result = liveSplitCoreNative.CurrentPaceComponentState_text(this.ptr);
         return result;
     }
     time(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.CurrentPaceComponentState_time(this.ptr);
+        const result = liveSplitCoreNative.CurrentPaceComponentState_time(this.ptr);
         return result;
     }
     constructor(ptr: number) {
@@ -1039,7 +1039,7 @@ export class DeltaComponentRefMut extends DeltaComponentRef {
         if (layoutSettings.ptr == 0) {
             throw "layoutSettings is disposed";
         }
-        var result = liveSplitCoreNative.DeltaComponent_state_as_json(this.ptr, timer.ptr, layoutSettings.ptr);
+        const result = liveSplitCoreNative.DeltaComponent_state_as_json(this.ptr, timer.ptr, layoutSettings.ptr);
         return JSON.parse(result);
     }
     state(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): DeltaComponentState {
@@ -1052,7 +1052,7 @@ export class DeltaComponentRefMut extends DeltaComponentRef {
         if (layoutSettings.ptr == 0) {
             throw "layoutSettings is disposed";
         }
-        var result = new DeltaComponentState(liveSplitCoreNative.DeltaComponent_state(this.ptr, timer.ptr, layoutSettings.ptr));
+        const result = new DeltaComponentState(liveSplitCoreNative.DeltaComponent_state(this.ptr, timer.ptr, layoutSettings.ptr));
         return result;
     }
 }
@@ -1072,14 +1072,14 @@ export class DeltaComponent extends DeltaComponentRefMut {
         }
     }
     static new(): DeltaComponent {
-        var result = new DeltaComponent(liveSplitCoreNative.DeltaComponent_new());
+        const result = new DeltaComponent(liveSplitCoreNative.DeltaComponent_new());
         return result;
     }
     intoGeneric(): Component {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new Component(liveSplitCoreNative.DeltaComponent_into_generic(this.ptr));
+        const result = new Component(liveSplitCoreNative.DeltaComponent_into_generic(this.ptr));
         this.ptr = 0;
         return result;
     }
@@ -1091,21 +1091,21 @@ export class DeltaComponentStateRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.DeltaComponentState_text(this.ptr);
+        const result = liveSplitCoreNative.DeltaComponentState_text(this.ptr);
         return result;
     }
     time(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.DeltaComponentState_time(this.ptr);
+        const result = liveSplitCoreNative.DeltaComponentState_time(this.ptr);
         return result;
     }
     semanticColor(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.DeltaComponentState_semantic_color(this.ptr);
+        const result = liveSplitCoreNative.DeltaComponentState_semantic_color(this.ptr);
         return result;
     }
     constructor(ptr: number) {
@@ -1150,7 +1150,7 @@ export class DetailedTimerComponentRefMut extends DetailedTimerComponentRef {
         if (layoutSettings.ptr == 0) {
             throw "layoutSettings is disposed";
         }
-        var result = liveSplitCoreNative.DetailedTimerComponent_state_as_json(this.ptr, timer.ptr, layoutSettings.ptr);
+        const result = liveSplitCoreNative.DetailedTimerComponent_state_as_json(this.ptr, timer.ptr, layoutSettings.ptr);
         return JSON.parse(result);
     }
     state(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): DetailedTimerComponentState {
@@ -1163,7 +1163,7 @@ export class DetailedTimerComponentRefMut extends DetailedTimerComponentRef {
         if (layoutSettings.ptr == 0) {
             throw "layoutSettings is disposed";
         }
-        var result = new DetailedTimerComponentState(liveSplitCoreNative.DetailedTimerComponent_state(this.ptr, timer.ptr, layoutSettings.ptr));
+        const result = new DetailedTimerComponentState(liveSplitCoreNative.DetailedTimerComponent_state(this.ptr, timer.ptr, layoutSettings.ptr));
         return result;
     }
 }
@@ -1183,14 +1183,14 @@ export class DetailedTimerComponent extends DetailedTimerComponentRefMut {
         }
     }
     static new(): DetailedTimerComponent {
-        var result = new DetailedTimerComponent(liveSplitCoreNative.DetailedTimerComponent_new());
+        const result = new DetailedTimerComponent(liveSplitCoreNative.DetailedTimerComponent_new());
         return result;
     }
     intoGeneric(): Component {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new Component(liveSplitCoreNative.DetailedTimerComponent_into_generic(this.ptr));
+        const result = new Component(liveSplitCoreNative.DetailedTimerComponent_into_generic(this.ptr));
         this.ptr = 0;
         return result;
     }
@@ -1202,91 +1202,91 @@ export class DetailedTimerComponentStateRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.DetailedTimerComponentState_timer_time(this.ptr);
+        const result = liveSplitCoreNative.DetailedTimerComponentState_timer_time(this.ptr);
         return result;
     }
     timerFraction(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.DetailedTimerComponentState_timer_fraction(this.ptr);
+        const result = liveSplitCoreNative.DetailedTimerComponentState_timer_fraction(this.ptr);
         return result;
     }
     timerSemanticColor(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.DetailedTimerComponentState_timer_semantic_color(this.ptr);
+        const result = liveSplitCoreNative.DetailedTimerComponentState_timer_semantic_color(this.ptr);
         return result;
     }
     segmentTimerTime(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.DetailedTimerComponentState_segment_timer_time(this.ptr);
+        const result = liveSplitCoreNative.DetailedTimerComponentState_segment_timer_time(this.ptr);
         return result;
     }
     segmentTimerFraction(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.DetailedTimerComponentState_segment_timer_fraction(this.ptr);
+        const result = liveSplitCoreNative.DetailedTimerComponentState_segment_timer_fraction(this.ptr);
         return result;
     }
     comparison1Visible(): boolean {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.DetailedTimerComponentState_comparison1_visible(this.ptr) != 0;
+        const result = liveSplitCoreNative.DetailedTimerComponentState_comparison1_visible(this.ptr) != 0;
         return result;
     }
     comparison1Name(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.DetailedTimerComponentState_comparison1_name(this.ptr);
+        const result = liveSplitCoreNative.DetailedTimerComponentState_comparison1_name(this.ptr);
         return result;
     }
     comparison1Time(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.DetailedTimerComponentState_comparison1_time(this.ptr);
+        const result = liveSplitCoreNative.DetailedTimerComponentState_comparison1_time(this.ptr);
         return result;
     }
     comparison2Visible(): boolean {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.DetailedTimerComponentState_comparison2_visible(this.ptr) != 0;
+        const result = liveSplitCoreNative.DetailedTimerComponentState_comparison2_visible(this.ptr) != 0;
         return result;
     }
     comparison2Name(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.DetailedTimerComponentState_comparison2_name(this.ptr);
+        const result = liveSplitCoreNative.DetailedTimerComponentState_comparison2_name(this.ptr);
         return result;
     }
     comparison2Time(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.DetailedTimerComponentState_comparison2_time(this.ptr);
+        const result = liveSplitCoreNative.DetailedTimerComponentState_comparison2_time(this.ptr);
         return result;
     }
     iconChange(): string | null {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.DetailedTimerComponentState_icon_change(this.ptr);
+        const result = liveSplitCoreNative.DetailedTimerComponentState_icon_change(this.ptr);
         return result;
     }
     name(): string | null {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.DetailedTimerComponentState_name(this.ptr);
+        const result = liveSplitCoreNative.DetailedTimerComponentState_name(this.ptr);
         return result;
     }
     constructor(ptr: number) {
@@ -1338,7 +1338,7 @@ export class GeneralLayoutSettings extends GeneralLayoutSettingsRefMut {
         }
     }
     static default(): GeneralLayoutSettings {
-        var result = new GeneralLayoutSettings(liveSplitCoreNative.GeneralLayoutSettings_default());
+        const result = new GeneralLayoutSettings(liveSplitCoreNative.GeneralLayoutSettings_default());
         return result;
     }
 }
@@ -1355,7 +1355,7 @@ export class GraphComponentRef {
         if (layoutSettings.ptr == 0) {
             throw "layoutSettings is disposed";
         }
-        var result = liveSplitCoreNative.GraphComponent_state_as_json(this.ptr, timer.ptr, layoutSettings.ptr);
+        const result = liveSplitCoreNative.GraphComponent_state_as_json(this.ptr, timer.ptr, layoutSettings.ptr);
         return JSON.parse(result);
     }
     state(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): GraphComponentState {
@@ -1368,7 +1368,7 @@ export class GraphComponentRef {
         if (layoutSettings.ptr == 0) {
             throw "layoutSettings is disposed";
         }
-        var result = new GraphComponentState(liveSplitCoreNative.GraphComponent_state(this.ptr, timer.ptr, layoutSettings.ptr));
+        const result = new GraphComponentState(liveSplitCoreNative.GraphComponent_state(this.ptr, timer.ptr, layoutSettings.ptr));
         return result;
     }
     constructor(ptr: number) {
@@ -1394,14 +1394,14 @@ export class GraphComponent extends GraphComponentRefMut {
         }
     }
     static new(): GraphComponent {
-        var result = new GraphComponent(liveSplitCoreNative.GraphComponent_new());
+        const result = new GraphComponent(liveSplitCoreNative.GraphComponent_new());
         return result;
     }
     intoGeneric(): Component {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new Component(liveSplitCoreNative.GraphComponent_into_generic(this.ptr));
+        const result = new Component(liveSplitCoreNative.GraphComponent_into_generic(this.ptr));
         this.ptr = 0;
         return result;
     }
@@ -1413,77 +1413,77 @@ export class GraphComponentStateRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.GraphComponentState_points_len(this.ptr);
+        const result = liveSplitCoreNative.GraphComponentState_points_len(this.ptr);
         return result;
     }
     pointX(index: number): number {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.GraphComponentState_point_x(this.ptr, index);
+        const result = liveSplitCoreNative.GraphComponentState_point_x(this.ptr, index);
         return result;
     }
     pointY(index: number): number {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.GraphComponentState_point_y(this.ptr, index);
+        const result = liveSplitCoreNative.GraphComponentState_point_y(this.ptr, index);
         return result;
     }
     pointIsBestSegment(index: number): boolean {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.GraphComponentState_point_is_best_segment(this.ptr, index) != 0;
+        const result = liveSplitCoreNative.GraphComponentState_point_is_best_segment(this.ptr, index) != 0;
         return result;
     }
     horizontalGridLinesLen(): number {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.GraphComponentState_horizontal_grid_lines_len(this.ptr);
+        const result = liveSplitCoreNative.GraphComponentState_horizontal_grid_lines_len(this.ptr);
         return result;
     }
     horizontalGridLine(index: number): number {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.GraphComponentState_horizontal_grid_line(this.ptr, index);
+        const result = liveSplitCoreNative.GraphComponentState_horizontal_grid_line(this.ptr, index);
         return result;
     }
     verticalGridLinesLen(): number {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.GraphComponentState_vertical_grid_lines_len(this.ptr);
+        const result = liveSplitCoreNative.GraphComponentState_vertical_grid_lines_len(this.ptr);
         return result;
     }
     verticalGridLine(index: number): number {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.GraphComponentState_vertical_grid_line(this.ptr, index);
+        const result = liveSplitCoreNative.GraphComponentState_vertical_grid_line(this.ptr, index);
         return result;
     }
     middle(): number {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.GraphComponentState_middle(this.ptr);
+        const result = liveSplitCoreNative.GraphComponentState_middle(this.ptr);
         return result;
     }
     isLiveDeltaActive(): boolean {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.GraphComponentState_is_live_delta_active(this.ptr) != 0;
+        const result = liveSplitCoreNative.GraphComponentState_is_live_delta_active(this.ptr) != 0;
         return result;
     }
     isFlipped(): boolean {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.GraphComponentState_is_flipped(this.ptr) != 0;
+        const result = liveSplitCoreNative.GraphComponentState_is_flipped(this.ptr) != 0;
         return result;
     }
     constructor(ptr: number) {
@@ -1538,7 +1538,7 @@ export class HotkeySystem extends HotkeySystemRefMut {
         if (sharedTimer.ptr == 0) {
             throw "sharedTimer is disposed";
         }
-        var result = new HotkeySystem(liveSplitCoreNative.HotkeySystem_new(sharedTimer.ptr));
+        const result = new HotkeySystem(liveSplitCoreNative.HotkeySystem_new(sharedTimer.ptr));
         sharedTimer.ptr = 0;
         if (result.ptr == 0) {
             return null;
@@ -1553,14 +1553,14 @@ export class LayoutRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new Layout(liveSplitCoreNative.Layout_clone(this.ptr));
+        const result = new Layout(liveSplitCoreNative.Layout_clone(this.ptr));
         return result;
     }
     settingsAsJson(): any {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.Layout_settings_as_json(this.ptr);
+        const result = liveSplitCoreNative.Layout_settings_as_json(this.ptr);
         return JSON.parse(result);
     }
     constructor(ptr: number) {
@@ -1576,7 +1576,7 @@ export class LayoutRefMut extends LayoutRef {
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = liveSplitCoreNative.Layout_state_as_json(this.ptr, timer.ptr);
+        const result = liveSplitCoreNative.Layout_state_as_json(this.ptr, timer.ptr);
         return JSON.parse(result);
     }
     push(component: Component) {
@@ -1624,15 +1624,15 @@ export class Layout extends LayoutRefMut {
         }
     }
     static new(): Layout {
-        var result = new Layout(liveSplitCoreNative.Layout_new());
+        const result = new Layout(liveSplitCoreNative.Layout_new());
         return result;
     }
     static defaultLayout(): Layout {
-        var result = new Layout(liveSplitCoreNative.Layout_default_layout());
+        const result = new Layout(liveSplitCoreNative.Layout_default_layout());
         return result;
     }
     static parseJson(settings: any): Layout | null {
-        var result = new Layout(liveSplitCoreNative.Layout_parse_json(JSON.stringify(settings)));
+        const result = new Layout(liveSplitCoreNative.Layout_parse_json(JSON.stringify(settings)));
         if (result.ptr == 0) {
             return null;
         }
@@ -1646,7 +1646,7 @@ export class LayoutEditorRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.LayoutEditor_state_as_json(this.ptr);
+        const result = liveSplitCoreNative.LayoutEditor_state_as_json(this.ptr);
         return JSON.parse(result);
     }
     constructor(ptr: number) {
@@ -1662,7 +1662,7 @@ export class LayoutEditorRefMut extends LayoutEditorRef {
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = liveSplitCoreNative.LayoutEditor_layout_state_as_json(this.ptr, timer.ptr);
+        const result = liveSplitCoreNative.LayoutEditor_layout_state_as_json(this.ptr, timer.ptr);
         return JSON.parse(result);
     }
     select(index: number) {
@@ -1744,7 +1744,7 @@ export class LayoutEditor extends LayoutEditorRefMut {
         if (layout.ptr == 0) {
             throw "layout is disposed";
         }
-        var result = new LayoutEditor(liveSplitCoreNative.LayoutEditor_new(layout.ptr));
+        const result = new LayoutEditor(liveSplitCoreNative.LayoutEditor_new(layout.ptr));
         layout.ptr = 0;
         if (result.ptr == 0) {
             return null;
@@ -1755,7 +1755,7 @@ export class LayoutEditor extends LayoutEditorRefMut {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new Layout(liveSplitCoreNative.LayoutEditor_close(this.ptr));
+        const result = new Layout(liveSplitCoreNative.LayoutEditor_close(this.ptr));
         this.ptr = 0;
         return result;
     }
@@ -1770,7 +1770,7 @@ export class PossibleTimeSaveComponentRef {
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = liveSplitCoreNative.PossibleTimeSaveComponent_state_as_json(this.ptr, timer.ptr);
+        const result = liveSplitCoreNative.PossibleTimeSaveComponent_state_as_json(this.ptr, timer.ptr);
         return JSON.parse(result);
     }
     state(timer: TimerRef): PossibleTimeSaveComponentState {
@@ -1780,7 +1780,7 @@ export class PossibleTimeSaveComponentRef {
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = new PossibleTimeSaveComponentState(liveSplitCoreNative.PossibleTimeSaveComponent_state(this.ptr, timer.ptr));
+        const result = new PossibleTimeSaveComponentState(liveSplitCoreNative.PossibleTimeSaveComponent_state(this.ptr, timer.ptr));
         return result;
     }
     constructor(ptr: number) {
@@ -1806,14 +1806,14 @@ export class PossibleTimeSaveComponent extends PossibleTimeSaveComponentRefMut {
         }
     }
     static new(): PossibleTimeSaveComponent {
-        var result = new PossibleTimeSaveComponent(liveSplitCoreNative.PossibleTimeSaveComponent_new());
+        const result = new PossibleTimeSaveComponent(liveSplitCoreNative.PossibleTimeSaveComponent_new());
         return result;
     }
     intoGeneric(): Component {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new Component(liveSplitCoreNative.PossibleTimeSaveComponent_into_generic(this.ptr));
+        const result = new Component(liveSplitCoreNative.PossibleTimeSaveComponent_into_generic(this.ptr));
         this.ptr = 0;
         return result;
     }
@@ -1825,14 +1825,14 @@ export class PossibleTimeSaveComponentStateRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.PossibleTimeSaveComponentState_text(this.ptr);
+        const result = liveSplitCoreNative.PossibleTimeSaveComponentState_text(this.ptr);
         return result;
     }
     time(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.PossibleTimeSaveComponentState_time(this.ptr);
+        const result = liveSplitCoreNative.PossibleTimeSaveComponentState_time(this.ptr);
         return result;
     }
     constructor(ptr: number) {
@@ -1871,7 +1871,7 @@ export class PreviousSegmentComponentRef {
         if (layoutSettings.ptr == 0) {
             throw "layoutSettings is disposed";
         }
-        var result = liveSplitCoreNative.PreviousSegmentComponent_state_as_json(this.ptr, timer.ptr, layoutSettings.ptr);
+        const result = liveSplitCoreNative.PreviousSegmentComponent_state_as_json(this.ptr, timer.ptr, layoutSettings.ptr);
         return JSON.parse(result);
     }
     state(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): PreviousSegmentComponentState {
@@ -1884,7 +1884,7 @@ export class PreviousSegmentComponentRef {
         if (layoutSettings.ptr == 0) {
             throw "layoutSettings is disposed";
         }
-        var result = new PreviousSegmentComponentState(liveSplitCoreNative.PreviousSegmentComponent_state(this.ptr, timer.ptr, layoutSettings.ptr));
+        const result = new PreviousSegmentComponentState(liveSplitCoreNative.PreviousSegmentComponent_state(this.ptr, timer.ptr, layoutSettings.ptr));
         return result;
     }
     constructor(ptr: number) {
@@ -1910,14 +1910,14 @@ export class PreviousSegmentComponent extends PreviousSegmentComponentRefMut {
         }
     }
     static new(): PreviousSegmentComponent {
-        var result = new PreviousSegmentComponent(liveSplitCoreNative.PreviousSegmentComponent_new());
+        const result = new PreviousSegmentComponent(liveSplitCoreNative.PreviousSegmentComponent_new());
         return result;
     }
     intoGeneric(): Component {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new Component(liveSplitCoreNative.PreviousSegmentComponent_into_generic(this.ptr));
+        const result = new Component(liveSplitCoreNative.PreviousSegmentComponent_into_generic(this.ptr));
         this.ptr = 0;
         return result;
     }
@@ -1929,21 +1929,21 @@ export class PreviousSegmentComponentStateRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.PreviousSegmentComponentState_text(this.ptr);
+        const result = liveSplitCoreNative.PreviousSegmentComponentState_text(this.ptr);
         return result;
     }
     time(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.PreviousSegmentComponentState_time(this.ptr);
+        const result = liveSplitCoreNative.PreviousSegmentComponentState_time(this.ptr);
         return result;
     }
     semanticColor(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.PreviousSegmentComponentState_semantic_color(this.ptr);
+        const result = liveSplitCoreNative.PreviousSegmentComponentState_semantic_color(this.ptr);
         return result;
     }
     constructor(ptr: number) {
@@ -1976,105 +1976,105 @@ export class RunRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new Run(liveSplitCoreNative.Run_clone(this.ptr));
+        const result = new Run(liveSplitCoreNative.Run_clone(this.ptr));
         return result;
     }
     gameName(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.Run_game_name(this.ptr);
+        const result = liveSplitCoreNative.Run_game_name(this.ptr);
         return result;
     }
     gameIcon(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.Run_game_icon(this.ptr);
+        const result = liveSplitCoreNative.Run_game_icon(this.ptr);
         return result;
     }
     categoryName(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.Run_category_name(this.ptr);
+        const result = liveSplitCoreNative.Run_category_name(this.ptr);
         return result;
     }
     extendedFileName(useExtendedCategoryName: boolean): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.Run_extended_file_name(this.ptr, useExtendedCategoryName ? 1 : 0);
+        const result = liveSplitCoreNative.Run_extended_file_name(this.ptr, useExtendedCategoryName ? 1 : 0);
         return result;
     }
     extendedName(useExtendedCategoryName: boolean): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.Run_extended_name(this.ptr, useExtendedCategoryName ? 1 : 0);
+        const result = liveSplitCoreNative.Run_extended_name(this.ptr, useExtendedCategoryName ? 1 : 0);
         return result;
     }
     extendedCategoryName(showRegion: boolean, showPlatform: boolean, showVariables: boolean): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.Run_extended_category_name(this.ptr, showRegion ? 1 : 0, showPlatform ? 1 : 0, showVariables ? 1 : 0);
+        const result = liveSplitCoreNative.Run_extended_category_name(this.ptr, showRegion ? 1 : 0, showPlatform ? 1 : 0, showVariables ? 1 : 0);
         return result;
     }
     attemptCount(): number {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.Run_attempt_count(this.ptr);
+        const result = liveSplitCoreNative.Run_attempt_count(this.ptr);
         return result;
     }
     metadata(): RunMetadataRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new RunMetadataRef(liveSplitCoreNative.Run_metadata(this.ptr));
+        const result = new RunMetadataRef(liveSplitCoreNative.Run_metadata(this.ptr));
         return result;
     }
     offset(): TimeSpanRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new TimeSpanRef(liveSplitCoreNative.Run_offset(this.ptr));
+        const result = new TimeSpanRef(liveSplitCoreNative.Run_offset(this.ptr));
         return result;
     }
     len(): number {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.Run_len(this.ptr);
+        const result = liveSplitCoreNative.Run_len(this.ptr);
         return result;
     }
     segment(index: number): SegmentRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new SegmentRef(liveSplitCoreNative.Run_segment(this.ptr, index));
+        const result = new SegmentRef(liveSplitCoreNative.Run_segment(this.ptr, index));
         return result;
     }
     attemptHistoryLen(): number {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.Run_attempt_history_len(this.ptr);
+        const result = liveSplitCoreNative.Run_attempt_history_len(this.ptr);
         return result;
     }
     attemptHistoryIndex(index: number): AttemptRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new AttemptRef(liveSplitCoreNative.Run_attempt_history_index(this.ptr, index));
+        const result = new AttemptRef(liveSplitCoreNative.Run_attempt_history_index(this.ptr, index));
         return result;
     }
     saveAsLss(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.Run_save_as_lss(this.ptr);
+        const result = liveSplitCoreNative.Run_save_as_lss(this.ptr);
         return result;
     }
     constructor(ptr: number) {
@@ -2122,38 +2122,44 @@ export class Run extends RunRefMut {
         }
     }
     static new(): Run {
-        var result = new Run(liveSplitCoreNative.Run_new());
+        const result = new Run(liveSplitCoreNative.Run_new());
         return result;
     }
     static parse(data: number, length: number): Run | null {
-        var result = new Run(liveSplitCoreNative.Run_parse(data, length));
+        const result = new Run(liveSplitCoreNative.Run_parse(data, length));
         if (result.ptr == 0) {
             return null;
         }
         return result;
     }
     static parseArray(data: Int8Array): Run | null {
-        let buf = emscriptenModule._malloc(data.length);
-        emscriptenModule.writeArrayToMemory(data, buf);
-        let ptr = liveSplitCoreNative.Run_parse(buf, data.length);
-        emscriptenModule._free(buf);
+        const buf = emscriptenModule._malloc(data.length);
+        try {
+            emscriptenModule.writeArrayToMemory(data, buf);
+            const ptr = liveSplitCoreNative.Run_parse(buf, data.length);
 
-        if (ptr == 0) {
-            return null;
+            if (ptr == 0) {
+                return null;
+            }
+            return new Run(ptr);
+        } finally {
+            emscriptenModule._free(buf);
         }
-        return new Run(ptr);
     }
     static parseString(text: string): Run | null {
-        let len = (text.length << 2) + 1;
-        let buf = emscriptenModule._malloc(len);
-        let actualLen = emscriptenModule.stringToUTF8(text, buf, len);
-        let ptr = liveSplitCoreNative.Run_parse(buf, actualLen);
-        emscriptenModule._free(buf);
+        const len = (text.length << 2) + 1;
+        const buf = emscriptenModule._malloc(len);
+        try {
+            const actualLen = emscriptenModule.stringToUTF8(text, buf, len);
+            const ptr = liveSplitCoreNative.Run_parse(buf, actualLen);
 
-        if (ptr == 0) {
-            return null;
+            if (ptr == 0) {
+                return null;
+            }
+            return new Run(ptr);
+        } finally {
+            emscriptenModule._free(buf);
         }
-        return new Run(ptr);
     }
 }
 
@@ -2169,7 +2175,7 @@ export class RunEditorRefMut extends RunEditorRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.RunEditor_state_as_json(this.ptr);
+        const result = liveSplitCoreNative.RunEditor_state_as_json(this.ptr);
         return JSON.parse(result);
     }
     selectTimingMethod(method: number) {
@@ -2212,14 +2218,14 @@ export class RunEditorRefMut extends RunEditorRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.RunEditor_parse_and_set_offset(this.ptr, offset) != 0;
+        const result = liveSplitCoreNative.RunEditor_parse_and_set_offset(this.ptr, offset) != 0;
         return result;
     }
     parseAndSetAttemptCount(attempts: string): boolean {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.RunEditor_parse_and_set_attempt_count(this.ptr, attempts) != 0;
+        const result = liveSplitCoreNative.RunEditor_parse_and_set_attempt_count(this.ptr, attempts) != 0;
         return result;
     }
     setGameIcon(data: number, length: number) {
@@ -2274,29 +2280,38 @@ export class RunEditorRefMut extends RunEditorRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.RunEditor_selected_parse_and_set_split_time(this.ptr, time) != 0;
+        const result = liveSplitCoreNative.RunEditor_selected_parse_and_set_split_time(this.ptr, time) != 0;
         return result;
     }
     selectedParseAndSetSegmentTime(time: string): boolean {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.RunEditor_selected_parse_and_set_segment_time(this.ptr, time) != 0;
+        const result = liveSplitCoreNative.RunEditor_selected_parse_and_set_segment_time(this.ptr, time) != 0;
         return result;
     }
     selectedParseAndSetBestSegmentTime(time: string): boolean {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.RunEditor_selected_parse_and_set_best_segment_time(this.ptr, time) != 0;
+        const result = liveSplitCoreNative.RunEditor_selected_parse_and_set_best_segment_time(this.ptr, time) != 0;
         return result;
     }
     selectedParseAndSetComparisonTime(comparison: string, time: string): boolean {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.RunEditor_selected_parse_and_set_comparison_time(this.ptr, comparison, time) != 0;
+        const result = liveSplitCoreNative.RunEditor_selected_parse_and_set_comparison_time(this.ptr, comparison, time) != 0;
         return result;
+    }
+    setGameIconFromArray(data: Int8Array) {
+        const buf = emscriptenModule._malloc(data.length);
+        try {
+            emscriptenModule.writeArrayToMemory(data, buf);
+            this.setGameIcon(buf, data.length);
+        } finally {
+            emscriptenModule._free(buf);
+        }
     }
 }
 
@@ -2317,7 +2332,7 @@ export class RunEditor extends RunEditorRefMut {
         if (run.ptr == 0) {
             throw "run is disposed";
         }
-        var result = new RunEditor(liveSplitCoreNative.RunEditor_new(run.ptr));
+        const result = new RunEditor(liveSplitCoreNative.RunEditor_new(run.ptr));
         run.ptr = 0;
         if (result.ptr == 0) {
             return null;
@@ -2328,7 +2343,7 @@ export class RunEditor extends RunEditorRefMut {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new Run(liveSplitCoreNative.RunEditor_close(this.ptr));
+        const result = new Run(liveSplitCoreNative.RunEditor_close(this.ptr));
         this.ptr = 0;
         return result;
     }
@@ -2340,35 +2355,35 @@ export class RunMetadataRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.RunMetadata_run_id(this.ptr);
+        const result = liveSplitCoreNative.RunMetadata_run_id(this.ptr);
         return result;
     }
     platformName(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.RunMetadata_platform_name(this.ptr);
+        const result = liveSplitCoreNative.RunMetadata_platform_name(this.ptr);
         return result;
     }
     usesEmulator(): boolean {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.RunMetadata_uses_emulator(this.ptr) != 0;
+        const result = liveSplitCoreNative.RunMetadata_uses_emulator(this.ptr) != 0;
         return result;
     }
     regionName(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.RunMetadata_region_name(this.ptr);
+        const result = liveSplitCoreNative.RunMetadata_region_name(this.ptr);
         return result;
     }
     variables(): RunMetadataVariablesIter {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new RunMetadataVariablesIter(liveSplitCoreNative.RunMetadata_variables(this.ptr));
+        const result = new RunMetadataVariablesIter(liveSplitCoreNative.RunMetadata_variables(this.ptr));
         return result;
     }
     constructor(ptr: number) {
@@ -2400,14 +2415,14 @@ export class RunMetadataVariableRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.RunMetadataVariable_name(this.ptr);
+        const result = liveSplitCoreNative.RunMetadataVariable_name(this.ptr);
         return result;
     }
     value(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.RunMetadataVariable_value(this.ptr);
+        const result = liveSplitCoreNative.RunMetadataVariable_value(this.ptr);
         return result;
     }
     constructor(ptr: number) {
@@ -2446,7 +2461,7 @@ export class RunMetadataVariablesIterRefMut extends RunMetadataVariablesIterRef 
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new RunMetadataVariableRef(liveSplitCoreNative.RunMetadataVariablesIter_next(this.ptr));
+        const result = new RunMetadataVariableRef(liveSplitCoreNative.RunMetadataVariablesIter_next(this.ptr));
         if (result.ptr == 0) {
             return null;
         }
@@ -2476,42 +2491,42 @@ export class SegmentRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.Segment_name(this.ptr);
+        const result = liveSplitCoreNative.Segment_name(this.ptr);
         return result;
     }
     icon(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.Segment_icon(this.ptr);
+        const result = liveSplitCoreNative.Segment_icon(this.ptr);
         return result;
     }
     comparison(comparison: string): TimeRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new TimeRef(liveSplitCoreNative.Segment_comparison(this.ptr, comparison));
+        const result = new TimeRef(liveSplitCoreNative.Segment_comparison(this.ptr, comparison));
         return result;
     }
     personalBestSplitTime(): TimeRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new TimeRef(liveSplitCoreNative.Segment_personal_best_split_time(this.ptr));
+        const result = new TimeRef(liveSplitCoreNative.Segment_personal_best_split_time(this.ptr));
         return result;
     }
     bestSegmentTime(): TimeRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new TimeRef(liveSplitCoreNative.Segment_best_segment_time(this.ptr));
+        const result = new TimeRef(liveSplitCoreNative.Segment_best_segment_time(this.ptr));
         return result;
     }
     segmentHistory(): SegmentHistoryRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new SegmentHistoryRef(liveSplitCoreNative.Segment_segment_history(this.ptr));
+        const result = new SegmentHistoryRef(liveSplitCoreNative.Segment_segment_history(this.ptr));
         return result;
     }
     constructor(ptr: number) {
@@ -2537,7 +2552,7 @@ export class Segment extends SegmentRefMut {
         }
     }
     static new(name: string): Segment {
-        var result = new Segment(liveSplitCoreNative.Segment_new(name));
+        const result = new Segment(liveSplitCoreNative.Segment_new(name));
         return result;
     }
 }
@@ -2548,7 +2563,7 @@ export class SegmentHistoryRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new SegmentHistoryIter(liveSplitCoreNative.SegmentHistory_iter(this.ptr));
+        const result = new SegmentHistoryIter(liveSplitCoreNative.SegmentHistory_iter(this.ptr));
         return result;
     }
     constructor(ptr: number) {
@@ -2580,14 +2595,14 @@ export class SegmentHistoryElementRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.SegmentHistoryElement_index(this.ptr);
+        const result = liveSplitCoreNative.SegmentHistoryElement_index(this.ptr);
         return result;
     }
     time(): TimeRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new TimeRef(liveSplitCoreNative.SegmentHistoryElement_time(this.ptr));
+        const result = new TimeRef(liveSplitCoreNative.SegmentHistoryElement_time(this.ptr));
         return result;
     }
     constructor(ptr: number) {
@@ -2625,7 +2640,7 @@ export class SegmentHistoryIterRefMut extends SegmentHistoryIterRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new SegmentHistoryElementRef(liveSplitCoreNative.SegmentHistoryIter_next(this.ptr));
+        const result = new SegmentHistoryElementRef(liveSplitCoreNative.SegmentHistoryIter_next(this.ptr));
         if (result.ptr == 0) {
             return null;
         }
@@ -2674,14 +2689,14 @@ export class SeparatorComponent extends SeparatorComponentRefMut {
         }
     }
     static new(): SeparatorComponent {
-        var result = new SeparatorComponent(liveSplitCoreNative.SeparatorComponent_new());
+        const result = new SeparatorComponent(liveSplitCoreNative.SeparatorComponent_new());
         return result;
     }
     intoGeneric(): Component {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new Component(liveSplitCoreNative.SeparatorComponent_into_generic(this.ptr));
+        const result = new Component(liveSplitCoreNative.SeparatorComponent_into_generic(this.ptr));
         this.ptr = 0;
         return result;
     }
@@ -2712,72 +2727,72 @@ export class SettingValue extends SettingValueRefMut {
         }
     }
     static fromBool(value: boolean): SettingValue {
-        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_bool(value ? 1 : 0));
+        const result = new SettingValue(liveSplitCoreNative.SettingValue_from_bool(value ? 1 : 0));
         return result;
     }
     static fromUint(value: number): SettingValue {
-        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_uint(value));
+        const result = new SettingValue(liveSplitCoreNative.SettingValue_from_uint(value));
         return result;
     }
     static fromInt(value: number): SettingValue {
-        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_int(value));
+        const result = new SettingValue(liveSplitCoreNative.SettingValue_from_int(value));
         return result;
     }
     static fromString(value: string): SettingValue {
-        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_string(value));
+        const result = new SettingValue(liveSplitCoreNative.SettingValue_from_string(value));
         return result;
     }
     static fromOptionalString(value: string): SettingValue {
-        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_optional_string(value));
+        const result = new SettingValue(liveSplitCoreNative.SettingValue_from_optional_string(value));
         return result;
     }
     static fromOptionalEmptyString(): SettingValue {
-        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_optional_empty_string());
+        const result = new SettingValue(liveSplitCoreNative.SettingValue_from_optional_empty_string());
         return result;
     }
     static fromFloat(value: number): SettingValue {
-        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_float(value));
+        const result = new SettingValue(liveSplitCoreNative.SettingValue_from_float(value));
         return result;
     }
     static fromAccuracy(value: string): SettingValue | null {
-        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_accuracy(value));
+        const result = new SettingValue(liveSplitCoreNative.SettingValue_from_accuracy(value));
         if (result.ptr == 0) {
             return null;
         }
         return result;
     }
     static fromDigitsFormat(value: string): SettingValue | null {
-        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_digits_format(value));
+        const result = new SettingValue(liveSplitCoreNative.SettingValue_from_digits_format(value));
         if (result.ptr == 0) {
             return null;
         }
         return result;
     }
     static fromOptionalTimingMethod(value: string): SettingValue | null {
-        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_optional_timing_method(value));
+        const result = new SettingValue(liveSplitCoreNative.SettingValue_from_optional_timing_method(value));
         if (result.ptr == 0) {
             return null;
         }
         return result;
     }
     static fromOptionalEmptyTimingMethod(): SettingValue {
-        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_optional_empty_timing_method());
+        const result = new SettingValue(liveSplitCoreNative.SettingValue_from_optional_empty_timing_method());
         return result;
     }
     static fromColor(r: number, g: number, b: number, a: number): SettingValue {
-        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_color(r, g, b, a));
+        const result = new SettingValue(liveSplitCoreNative.SettingValue_from_color(r, g, b, a));
         return result;
     }
     static fromTransparentGradient(): SettingValue {
-        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_transparent_gradient());
+        const result = new SettingValue(liveSplitCoreNative.SettingValue_from_transparent_gradient());
         return result;
     }
     static fromVerticalGradient(r1: number, g1: number, b1: number, a1: number, r2: number, g2: number, b2: number, a2: number): SettingValue {
-        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_vertical_gradient(r1, g1, b1, a1, r2, g2, b2, a2));
+        const result = new SettingValue(liveSplitCoreNative.SettingValue_from_vertical_gradient(r1, g1, b1, a1, r2, g2, b2, a2));
         return result;
     }
     static fromHorizontalGradient(r1: number, g1: number, b1: number, a1: number, r2: number, g2: number, b2: number, a2: number): SettingValue {
-        var result = new SettingValue(liveSplitCoreNative.SettingValue_from_horizontal_gradient(r1, g1, b1, a1, r2, g2, b2, a2));
+        const result = new SettingValue(liveSplitCoreNative.SettingValue_from_horizontal_gradient(r1, g1, b1, a1, r2, g2, b2, a2));
         return result;
     }
 }
@@ -2788,21 +2803,21 @@ export class SharedTimerRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new SharedTimer(liveSplitCoreNative.SharedTimer_share(this.ptr));
+        const result = new SharedTimer(liveSplitCoreNative.SharedTimer_share(this.ptr));
         return result;
     }
     read(): TimerReadLock {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new TimerReadLock(liveSplitCoreNative.SharedTimer_read(this.ptr));
+        const result = new TimerReadLock(liveSplitCoreNative.SharedTimer_read(this.ptr));
         return result;
     }
     write(): TimerWriteLock {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new TimerWriteLock(liveSplitCoreNative.SharedTimer_write(this.ptr));
+        const result = new TimerWriteLock(liveSplitCoreNative.SharedTimer_write(this.ptr));
         return result;
     }
     replaceInner(timer: Timer) {
@@ -2867,7 +2882,7 @@ export class SplitsComponentRefMut extends SplitsComponentRef {
         if (layoutSettings.ptr == 0) {
             throw "layoutSettings is disposed";
         }
-        var result = liveSplitCoreNative.SplitsComponent_state_as_json(this.ptr, timer.ptr, layoutSettings.ptr);
+        const result = liveSplitCoreNative.SplitsComponent_state_as_json(this.ptr, timer.ptr, layoutSettings.ptr);
         return JSON.parse(result);
     }
     state(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): SplitsComponentState {
@@ -2880,7 +2895,7 @@ export class SplitsComponentRefMut extends SplitsComponentRef {
         if (layoutSettings.ptr == 0) {
             throw "layoutSettings is disposed";
         }
-        var result = new SplitsComponentState(liveSplitCoreNative.SplitsComponent_state(this.ptr, timer.ptr, layoutSettings.ptr));
+        const result = new SplitsComponentState(liveSplitCoreNative.SplitsComponent_state(this.ptr, timer.ptr, layoutSettings.ptr));
         return result;
     }
     scrollUp() {
@@ -2936,14 +2951,14 @@ export class SplitsComponent extends SplitsComponentRefMut {
         }
     }
     static new(): SplitsComponent {
-        var result = new SplitsComponent(liveSplitCoreNative.SplitsComponent_new());
+        const result = new SplitsComponent(liveSplitCoreNative.SplitsComponent_new());
         return result;
     }
     intoGeneric(): Component {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new Component(liveSplitCoreNative.SplitsComponent_into_generic(this.ptr));
+        const result = new Component(liveSplitCoreNative.SplitsComponent_into_generic(this.ptr));
         this.ptr = 0;
         return result;
     }
@@ -2955,56 +2970,56 @@ export class SplitsComponentStateRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.SplitsComponentState_final_separator_shown(this.ptr) != 0;
+        const result = liveSplitCoreNative.SplitsComponentState_final_separator_shown(this.ptr) != 0;
         return result;
     }
     len(): number {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.SplitsComponentState_len(this.ptr);
+        const result = liveSplitCoreNative.SplitsComponentState_len(this.ptr);
         return result;
     }
     iconChange(index: number): string | null {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.SplitsComponentState_icon_change(this.ptr, index);
+        const result = liveSplitCoreNative.SplitsComponentState_icon_change(this.ptr, index);
         return result;
     }
     name(index: number): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.SplitsComponentState_name(this.ptr, index);
+        const result = liveSplitCoreNative.SplitsComponentState_name(this.ptr, index);
         return result;
     }
     delta(index: number): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.SplitsComponentState_delta(this.ptr, index);
+        const result = liveSplitCoreNative.SplitsComponentState_delta(this.ptr, index);
         return result;
     }
     time(index: number): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.SplitsComponentState_time(this.ptr, index);
+        const result = liveSplitCoreNative.SplitsComponentState_time(this.ptr, index);
         return result;
     }
     semanticColor(index: number): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.SplitsComponentState_semantic_color(this.ptr, index);
+        const result = liveSplitCoreNative.SplitsComponentState_semantic_color(this.ptr, index);
         return result;
     }
     isCurrentSplit(index: number): boolean {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.SplitsComponentState_is_current_split(this.ptr, index) != 0;
+        const result = liveSplitCoreNative.SplitsComponentState_is_current_split(this.ptr, index) != 0;
         return result;
     }
     constructor(ptr: number) {
@@ -3040,7 +3055,7 @@ export class SumOfBestComponentRef {
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = liveSplitCoreNative.SumOfBestComponent_state_as_json(this.ptr, timer.ptr);
+        const result = liveSplitCoreNative.SumOfBestComponent_state_as_json(this.ptr, timer.ptr);
         return JSON.parse(result);
     }
     state(timer: TimerRef): SumOfBestComponentState {
@@ -3050,7 +3065,7 @@ export class SumOfBestComponentRef {
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = new SumOfBestComponentState(liveSplitCoreNative.SumOfBestComponent_state(this.ptr, timer.ptr));
+        const result = new SumOfBestComponentState(liveSplitCoreNative.SumOfBestComponent_state(this.ptr, timer.ptr));
         return result;
     }
     constructor(ptr: number) {
@@ -3076,14 +3091,14 @@ export class SumOfBestComponent extends SumOfBestComponentRefMut {
         }
     }
     static new(): SumOfBestComponent {
-        var result = new SumOfBestComponent(liveSplitCoreNative.SumOfBestComponent_new());
+        const result = new SumOfBestComponent(liveSplitCoreNative.SumOfBestComponent_new());
         return result;
     }
     intoGeneric(): Component {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new Component(liveSplitCoreNative.SumOfBestComponent_into_generic(this.ptr));
+        const result = new Component(liveSplitCoreNative.SumOfBestComponent_into_generic(this.ptr));
         this.ptr = 0;
         return result;
     }
@@ -3095,14 +3110,14 @@ export class SumOfBestComponentStateRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.SumOfBestComponentState_text(this.ptr);
+        const result = liveSplitCoreNative.SumOfBestComponentState_text(this.ptr);
         return result;
     }
     time(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.SumOfBestComponentState_time(this.ptr);
+        const result = liveSplitCoreNative.SumOfBestComponentState_time(this.ptr);
         return result;
     }
     constructor(ptr: number) {
@@ -3135,14 +3150,14 @@ export class TextComponentRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.TextComponent_state_as_json(this.ptr);
+        const result = liveSplitCoreNative.TextComponent_state_as_json(this.ptr);
         return JSON.parse(result);
     }
     state(): TextComponentState {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new TextComponentState(liveSplitCoreNative.TextComponent_state(this.ptr));
+        const result = new TextComponentState(liveSplitCoreNative.TextComponent_state(this.ptr));
         return result;
     }
     constructor(ptr: number) {
@@ -3186,14 +3201,14 @@ export class TextComponent extends TextComponentRefMut {
         }
     }
     static new(): TextComponent {
-        var result = new TextComponent(liveSplitCoreNative.TextComponent_new());
+        const result = new TextComponent(liveSplitCoreNative.TextComponent_new());
         return result;
     }
     intoGeneric(): Component {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new Component(liveSplitCoreNative.TextComponent_into_generic(this.ptr));
+        const result = new Component(liveSplitCoreNative.TextComponent_into_generic(this.ptr));
         this.ptr = 0;
         return result;
     }
@@ -3205,28 +3220,28 @@ export class TextComponentStateRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.TextComponentState_left(this.ptr);
+        const result = liveSplitCoreNative.TextComponentState_left(this.ptr);
         return result;
     }
     right(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.TextComponentState_right(this.ptr);
+        const result = liveSplitCoreNative.TextComponentState_right(this.ptr);
         return result;
     }
     center(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.TextComponentState_center(this.ptr);
+        const result = liveSplitCoreNative.TextComponentState_center(this.ptr);
         return result;
     }
     isSplit(): boolean {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.TextComponentState_is_split(this.ptr) != 0;
+        const result = liveSplitCoreNative.TextComponentState_is_split(this.ptr) != 0;
         return result;
     }
     constructor(ptr: number) {
@@ -3259,14 +3274,14 @@ export class TimeRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new Time(liveSplitCoreNative.Time_clone(this.ptr));
+        const result = new Time(liveSplitCoreNative.Time_clone(this.ptr));
         return result;
     }
     realTime(): TimeSpanRef | null {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new TimeSpanRef(liveSplitCoreNative.Time_real_time(this.ptr));
+        const result = new TimeSpanRef(liveSplitCoreNative.Time_real_time(this.ptr));
         if (result.ptr == 0) {
             return null;
         }
@@ -3276,7 +3291,7 @@ export class TimeRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new TimeSpanRef(liveSplitCoreNative.Time_game_time(this.ptr));
+        const result = new TimeSpanRef(liveSplitCoreNative.Time_game_time(this.ptr));
         if (result.ptr == 0) {
             return null;
         }
@@ -3286,7 +3301,7 @@ export class TimeRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new TimeSpanRef(liveSplitCoreNative.Time_index(this.ptr, timingMethod));
+        const result = new TimeSpanRef(liveSplitCoreNative.Time_index(this.ptr, timingMethod));
         if (result.ptr == 0) {
             return null;
         }
@@ -3322,14 +3337,14 @@ export class TimeSpanRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new TimeSpan(liveSplitCoreNative.TimeSpan_clone(this.ptr));
+        const result = new TimeSpan(liveSplitCoreNative.TimeSpan_clone(this.ptr));
         return result;
     }
     totalSeconds(): number {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.TimeSpan_total_seconds(this.ptr);
+        const result = liveSplitCoreNative.TimeSpan_total_seconds(this.ptr);
         return result;
     }
     constructor(ptr: number) {
@@ -3355,7 +3370,7 @@ export class TimeSpan extends TimeSpanRefMut {
         }
     }
     static fromSeconds(seconds: number): TimeSpan {
-        var result = new TimeSpan(liveSplitCoreNative.TimeSpan_from_seconds(seconds));
+        const result = new TimeSpan(liveSplitCoreNative.TimeSpan_from_seconds(seconds));
         return result;
     }
 }
@@ -3366,49 +3381,49 @@ export class TimerRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.Timer_current_timing_method(this.ptr);
+        const result = liveSplitCoreNative.Timer_current_timing_method(this.ptr);
         return result;
     }
     currentComparison(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.Timer_current_comparison(this.ptr);
+        const result = liveSplitCoreNative.Timer_current_comparison(this.ptr);
         return result;
     }
     isGameTimeInitialized(): boolean {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.Timer_is_game_time_initialized(this.ptr) != 0;
+        const result = liveSplitCoreNative.Timer_is_game_time_initialized(this.ptr) != 0;
         return result;
     }
     isGameTimePaused(): boolean {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.Timer_is_game_time_paused(this.ptr) != 0;
+        const result = liveSplitCoreNative.Timer_is_game_time_paused(this.ptr) != 0;
         return result;
     }
     loadingTimes(): TimeSpanRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new TimeSpanRef(liveSplitCoreNative.Timer_loading_times(this.ptr));
+        const result = new TimeSpanRef(liveSplitCoreNative.Timer_loading_times(this.ptr));
         return result;
     }
     currentPhase(): number {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.Timer_current_phase(this.ptr);
+        const result = liveSplitCoreNative.Timer_current_phase(this.ptr);
         return result;
     }
     getRun(): RunRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new RunRef(liveSplitCoreNative.Timer_get_run(this.ptr));
+        const result = new RunRef(liveSplitCoreNative.Timer_get_run(this.ptr));
         return result;
     }
     printDebug() {
@@ -3430,7 +3445,7 @@ export class TimerRefMut extends TimerRef {
         if (run.ptr == 0) {
             throw "run is disposed";
         }
-        var result = liveSplitCoreNative.Timer_replace_run(this.ptr, run.ptr, updateSplits ? 1 : 0) != 0;
+        const result = liveSplitCoreNative.Timer_replace_run(this.ptr, run.ptr, updateSplits ? 1 : 0) != 0;
         return result;
     }
     setRun(run: Run): Run | null {
@@ -3440,7 +3455,7 @@ export class TimerRefMut extends TimerRef {
         if (run.ptr == 0) {
             throw "run is disposed";
         }
-        var result = new Run(liveSplitCoreNative.Timer_set_run(this.ptr, run.ptr));
+        const result = new Run(liveSplitCoreNative.Timer_set_run(this.ptr, run.ptr));
         run.ptr = 0;
         if (result.ptr == 0) {
             return null;
@@ -3593,7 +3608,7 @@ export class Timer extends TimerRefMut {
         if (run.ptr == 0) {
             throw "run is disposed";
         }
-        var result = new Timer(liveSplitCoreNative.Timer_new(run.ptr));
+        const result = new Timer(liveSplitCoreNative.Timer_new(run.ptr));
         run.ptr = 0;
         if (result.ptr == 0) {
             return null;
@@ -3604,7 +3619,7 @@ export class Timer extends TimerRefMut {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new SharedTimer(liveSplitCoreNative.Timer_into_shared(this.ptr));
+        const result = new SharedTimer(liveSplitCoreNative.Timer_into_shared(this.ptr));
         this.ptr = 0;
         return result;
     }
@@ -3622,7 +3637,7 @@ export class TimerComponentRef {
         if (layoutSettings.ptr == 0) {
             throw "layoutSettings is disposed";
         }
-        var result = liveSplitCoreNative.TimerComponent_state_as_json(this.ptr, timer.ptr, layoutSettings.ptr);
+        const result = liveSplitCoreNative.TimerComponent_state_as_json(this.ptr, timer.ptr, layoutSettings.ptr);
         return JSON.parse(result);
     }
     state(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): TimerComponentState {
@@ -3635,7 +3650,7 @@ export class TimerComponentRef {
         if (layoutSettings.ptr == 0) {
             throw "layoutSettings is disposed";
         }
-        var result = new TimerComponentState(liveSplitCoreNative.TimerComponent_state(this.ptr, timer.ptr, layoutSettings.ptr));
+        const result = new TimerComponentState(liveSplitCoreNative.TimerComponent_state(this.ptr, timer.ptr, layoutSettings.ptr));
         return result;
     }
     constructor(ptr: number) {
@@ -3661,14 +3676,14 @@ export class TimerComponent extends TimerComponentRefMut {
         }
     }
     static new(): TimerComponent {
-        var result = new TimerComponent(liveSplitCoreNative.TimerComponent_new());
+        const result = new TimerComponent(liveSplitCoreNative.TimerComponent_new());
         return result;
     }
     intoGeneric(): Component {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new Component(liveSplitCoreNative.TimerComponent_into_generic(this.ptr));
+        const result = new Component(liveSplitCoreNative.TimerComponent_into_generic(this.ptr));
         this.ptr = 0;
         return result;
     }
@@ -3680,21 +3695,21 @@ export class TimerComponentStateRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.TimerComponentState_time(this.ptr);
+        const result = liveSplitCoreNative.TimerComponentState_time(this.ptr);
         return result;
     }
     fraction(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.TimerComponentState_fraction(this.ptr);
+        const result = liveSplitCoreNative.TimerComponentState_fraction(this.ptr);
         return result;
     }
     semanticColor(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.TimerComponentState_semantic_color(this.ptr);
+        const result = liveSplitCoreNative.TimerComponentState_semantic_color(this.ptr);
         return result;
     }
     constructor(ptr: number) {
@@ -3727,7 +3742,7 @@ export class TimerReadLockRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new TimerRef(liveSplitCoreNative.TimerReadLock_timer(this.ptr));
+        const result = new TimerRef(liveSplitCoreNative.TimerReadLock_timer(this.ptr));
         return result;
     }
     constructor(ptr: number) {
@@ -3766,7 +3781,7 @@ export class TimerWriteLockRefMut extends TimerWriteLockRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new TimerRefMut(liveSplitCoreNative.TimerWriteLock_timer(this.ptr));
+        const result = new TimerRefMut(liveSplitCoreNative.TimerWriteLock_timer(this.ptr));
         return result;
     }
 }
@@ -3802,7 +3817,7 @@ export class TitleComponentRefMut extends TitleComponentRef {
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = liveSplitCoreNative.TitleComponent_state_as_json(this.ptr, timer.ptr);
+        const result = liveSplitCoreNative.TitleComponent_state_as_json(this.ptr, timer.ptr);
         return JSON.parse(result);
     }
     state(timer: TimerRef): TitleComponentState {
@@ -3812,7 +3827,7 @@ export class TitleComponentRefMut extends TitleComponentRef {
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = new TitleComponentState(liveSplitCoreNative.TitleComponent_state(this.ptr, timer.ptr));
+        const result = new TitleComponentState(liveSplitCoreNative.TitleComponent_state(this.ptr, timer.ptr));
         return result;
     }
 }
@@ -3832,14 +3847,14 @@ export class TitleComponent extends TitleComponentRefMut {
         }
     }
     static new(): TitleComponent {
-        var result = new TitleComponent(liveSplitCoreNative.TitleComponent_new());
+        const result = new TitleComponent(liveSplitCoreNative.TitleComponent_new());
         return result;
     }
     intoGeneric(): Component {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new Component(liveSplitCoreNative.TitleComponent_into_generic(this.ptr));
+        const result = new Component(liveSplitCoreNative.TitleComponent_into_generic(this.ptr));
         this.ptr = 0;
         return result;
     }
@@ -3851,56 +3866,56 @@ export class TitleComponentStateRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.TitleComponentState_icon_change(this.ptr);
+        const result = liveSplitCoreNative.TitleComponentState_icon_change(this.ptr);
         return result;
     }
     line1(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.TitleComponentState_line1(this.ptr);
+        const result = liveSplitCoreNative.TitleComponentState_line1(this.ptr);
         return result;
     }
     line2(): string | null {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.TitleComponentState_line2(this.ptr);
+        const result = liveSplitCoreNative.TitleComponentState_line2(this.ptr);
         return result;
     }
     isCentered(): boolean {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.TitleComponentState_is_centered(this.ptr) != 0;
+        const result = liveSplitCoreNative.TitleComponentState_is_centered(this.ptr) != 0;
         return result;
     }
     showsFinishedRuns(): boolean {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.TitleComponentState_shows_finished_runs(this.ptr) != 0;
+        const result = liveSplitCoreNative.TitleComponentState_shows_finished_runs(this.ptr) != 0;
         return result;
     }
     finishedRuns(): number {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.TitleComponentState_finished_runs(this.ptr);
+        const result = liveSplitCoreNative.TitleComponentState_finished_runs(this.ptr);
         return result;
     }
     showsAttempts(): boolean {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.TitleComponentState_shows_attempts(this.ptr) != 0;
+        const result = liveSplitCoreNative.TitleComponentState_shows_attempts(this.ptr) != 0;
         return result;
     }
     attempts(): number {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.TitleComponentState_attempts(this.ptr);
+        const result = liveSplitCoreNative.TitleComponentState_attempts(this.ptr);
         return result;
     }
     constructor(ptr: number) {
@@ -3942,7 +3957,7 @@ export class TotalPlaytimeComponentRefMut extends TotalPlaytimeComponentRef {
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = liveSplitCoreNative.TotalPlaytimeComponent_state_as_json(this.ptr, timer.ptr);
+        const result = liveSplitCoreNative.TotalPlaytimeComponent_state_as_json(this.ptr, timer.ptr);
         return JSON.parse(result);
     }
     state(timer: TimerRef): TotalPlaytimeComponentState {
@@ -3952,7 +3967,7 @@ export class TotalPlaytimeComponentRefMut extends TotalPlaytimeComponentRef {
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        var result = new TotalPlaytimeComponentState(liveSplitCoreNative.TotalPlaytimeComponent_state(this.ptr, timer.ptr));
+        const result = new TotalPlaytimeComponentState(liveSplitCoreNative.TotalPlaytimeComponent_state(this.ptr, timer.ptr));
         return result;
     }
 }
@@ -3972,14 +3987,14 @@ export class TotalPlaytimeComponent extends TotalPlaytimeComponentRefMut {
         }
     }
     static new(): TotalPlaytimeComponent {
-        var result = new TotalPlaytimeComponent(liveSplitCoreNative.TotalPlaytimeComponent_new());
+        const result = new TotalPlaytimeComponent(liveSplitCoreNative.TotalPlaytimeComponent_new());
         return result;
     }
     intoGeneric(): Component {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = new Component(liveSplitCoreNative.TotalPlaytimeComponent_into_generic(this.ptr));
+        const result = new Component(liveSplitCoreNative.TotalPlaytimeComponent_into_generic(this.ptr));
         this.ptr = 0;
         return result;
     }
@@ -3991,14 +4006,14 @@ export class TotalPlaytimeComponentStateRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.TotalPlaytimeComponentState_text(this.ptr);
+        const result = liveSplitCoreNative.TotalPlaytimeComponentState_text(this.ptr);
         return result;
     }
     time(): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        var result = liveSplitCoreNative.TotalPlaytimeComponentState_time(this.ptr);
+        const result = liveSplitCoreNative.TotalPlaytimeComponentState_time(this.ptr);
         return result;
     }
     constructor(ptr: number) {

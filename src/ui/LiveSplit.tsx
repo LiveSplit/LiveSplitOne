@@ -2,6 +2,7 @@ import * as React from "react";
 import Sidebar from "react-sidebar";
 import AutoRefreshLayout from "../layout/AutoRefreshLayout";
 import { Layout, LayoutEditor, Run, RunEditor, Segment, Timer, TimerPhase, TimingMethod } from "../livesplit";
+import { openFileAsArrayBuffer } from "../util/FileUtil";
 import { andThen, assertNull, expect, maybeDispose, maybeDisposeAndThen } from "../util/OptionUtil";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
@@ -325,32 +326,18 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     private importSplits() {
-        const component = this;
-
-        const input = document.createElement("input");
-        input.setAttribute("type", "file");
-        input.onchange = (e: any) => {
-            const file = e.target.files[0];
-            if (!file) {
-                return;
+        openFileAsArrayBuffer((file) => {
+            const timer = this.state.timer;
+            const run = Run.parseArray(new Int8Array(file));
+            if (run) {
+                maybeDisposeAndThen(
+                    timer.setRun(run),
+                    () => alert("Empty Splits are not supported."),
+                );
+            } else {
+                alert("Couldn't parse the splits.");
             }
-            const reader = new FileReader();
-            reader.onload = (e2: any) => {
-                const contents = e2.target.result;
-                const timer = component.state.timer;
-                const run = Run.parseArray(new Int8Array(contents));
-                if (run) {
-                    maybeDisposeAndThen(
-                        timer.setRun(run),
-                        () => alert("Empty Splits are not supported."),
-                    );
-                } else {
-                    alert("Couldn't parse the splits.");
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        };
-        input.click();
+        });
     }
 
     private loadFromSplitsIO(id: string) {
