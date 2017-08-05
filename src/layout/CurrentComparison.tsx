@@ -4,7 +4,7 @@ import { gradientToCss } from "../util/ColorUtil";
 
 export interface Props { state: LiveSplit.CurrentComparisonComponentStateJson };
 
-export default class CurrentComparison extends React.Component<Props, {}> {
+export default class CurrentComparison extends React.Component<Props> {
 	render() {
 		return (
 			<div

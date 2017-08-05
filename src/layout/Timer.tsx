@@ -18,19 +18,19 @@ export function renderToSVG(
         case 3: shiftX = height; break;
         default: throw "Unexpected Fraction Length";
     }
-    const x = (294 - shiftX) + "px";
-    const y = (0.88 * height) + "px";
+    const x = `${294 - shiftX}px`;
+    const y = `${0.88 * height}px`;
 
     return (
         <svg
             className={className}
-            height={height + "px"}
+            height={`${height}px`}
             style={{
                 background: gradientToCss(state.background),
             }}
         >
             <defs>
-                <linearGradient id={className + "-text-gradient"} x1="0%" x2="0%" y1="0%" y2="100%">
+                <linearGradient id={`${className}-text-gradient`} x1="0%" x2="0%" y1="0%" y2="100%">
                     <stop
                         offset="0%"
                         style={{
@@ -46,20 +46,20 @@ export function renderToSVG(
                 </linearGradient>
             </defs>
             <text className="timer-time" style={{
-                "fill": "url(#" + className + "-text-gradient)",
-                "font-size": height + "px",
+                "fill": `url(#${className}-text-gradient)`,
+                "font-size": `${height}px`,
                 "font-family": "timer, sans-serif",
             }} x={x} y={y} textAnchor="end">{time}</text>
             <text className="timer-time" style={{
-                "fill": "url(#" + className + "-text-gradient)",
-                "font-size": (0.7 * height) + "px",
+                "fill": `url(#${className}-text-gradient)`,
+                "font-size": `${0.7 * height}px`,
                 "font-family": "timer, sans-serif",
             }} x="294px" y={y} textAnchor="end">{fraction}</text>
         </svg>
     );
 }
 
-export default class Timer extends React.Component<Props, {}> {
+export default class Timer extends React.Component<Props> {
     render() {
         return renderToSVG(this.props.state);
     }

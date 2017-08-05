@@ -4,7 +4,7 @@ import { gradientToCss } from "../util/ColorUtil";
 
 export interface Props { state: LiveSplit.TotalPlaytimeComponentStateJson };
 
-export default class TotalPlaytime extends React.Component<Props, {}> {
+export default class TotalPlaytime extends React.Component<Props> {
 	render() {
 		return (
 			<div

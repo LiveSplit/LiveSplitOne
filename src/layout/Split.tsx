@@ -11,25 +11,25 @@ export interface Props {
     index: number,
 }
 
-export default class Split extends React.Component<Props, {}> {
+export default class Split extends React.Component<Props> {
     constructor(props: Props) {
         super(props);
     }
 
     render() {
-        let currentSplit = this.props.split.is_current_split ? "current-split" : "";
-        let separator = this.props.separatorInFrontOfSplit ? "split-separator" : "";
+        const currentSplit = this.props.split.is_current_split ? "current-split" : "";
+        const separator = this.props.separatorInFrontOfSplit ? "split-separator" : "";
 
-        let innerStyle: any = {};
+        const innerStyle: any = {};
         if (this.props.index % 2 == 1) {
-            innerStyle.borderBottom = "1px solid " + colorToCss(this.props.layoutState.thin_separators_color);
+            innerStyle.borderBottom = `1px solid ${colorToCss(this.props.layoutState.thin_separators_color)}`;
             innerStyle.borderTop = innerStyle.borderBottom;
         }
         if (this.props.separatorInFrontOfSplit) {
-            innerStyle.borderTop = "2px solid " + colorToCss(this.props.layoutState.separators_color);
+            innerStyle.borderTop = `2px solid ${colorToCss(this.props.layoutState.separators_color)}`;
         }
 
-        let outerStyle: any = {};
+        const outerStyle: any = {};
         if (this.props.split.is_current_split) {
             outerStyle.background = gradientToCss(this.props.splitsState.current_split_gradient);
         }
@@ -43,7 +43,7 @@ export default class Split extends React.Component<Props, {}> {
                     className={this.props.icon != "" ? "split-icon-container" : "split-icon-container-empty"}
                     style={innerStyle}
                 >
-                    <img className={this.props.icon != "" ? "split-icon" : ""} src={this.props.icon != null ? this.props.icon : ""} />
+                    <img className={this.props.icon != "" ? "split-icon" : ""} src={this.props.icon || ""} />
                 </div>
                 <div
                     className="split-name"

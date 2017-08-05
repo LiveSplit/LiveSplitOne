@@ -20,7 +20,7 @@ export interface Props {
     layoutState: LayoutStateJson,
 }
 
-export default class Component extends React.Component<Props, {}> {
+export default class Component extends React.Component<Props> {
     render() {
         const componentState: any = this.props.state;
         const layoutState = this.props.layoutState;

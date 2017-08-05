@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit";
+import { TextBox } from "./TextBox";
 
 export interface Props { editor: LiveSplit.RunEditor };
 export interface State {
@@ -51,7 +52,7 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     handleOffsetChange(event: any) {
-        let valid = this.props.editor.parseAndSetOffset(event.target.value);
+        const valid = this.props.editor.parseAndSetOffset(event.target.value);
         this.setState({
             ...this.state,
             offsetIsValid: valid,
@@ -71,7 +72,7 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     handleAttemptsChange(event: any) {
-        let valid = this.props.editor.parseAndSetAttemptCount(event.target.value);
+        const valid = this.props.editor.parseAndSetAttemptCount(event.target.value);
         this.setState({
             ...this.state,
             attemptCountIsValid: valid,
@@ -108,8 +109,8 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     handleSplitTimeChange(event: any) {
-        let valid = this.props.editor.selectedParseAndSetSplitTime(event.target.value);
-        let editor = {
+        const valid = this.props.editor.selectedParseAndSetSplitTime(event.target.value);
+        const editor = {
             ...this.state.editor,
         };
         editor.segments[this.state.rowState.index].split_time = event.target.value;
@@ -124,8 +125,8 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     handleSegmentTimeChange(event: any) {
-        let valid = this.props.editor.selectedParseAndSetSegmentTime(event.target.value);
-        let editor = {
+        const valid = this.props.editor.selectedParseAndSetSegmentTime(event.target.value);
+        const editor = {
             ...this.state.editor,
         };
         editor.segments[this.state.rowState.index].segment_time = event.target.value;
@@ -140,8 +141,8 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     handleBestSegmentTimeChange(event: any) {
-        let valid = this.props.editor.selectedParseAndSetBestSegmentTime(event.target.value);
-        let editor = {
+        const valid = this.props.editor.selectedParseAndSetBestSegmentTime(event.target.value);
+        const editor = {
             ...this.state.editor,
         };
         editor.segments[this.state.rowState.index].best_segment_time = event.target.value;
@@ -230,27 +231,37 @@ export class RunEditor extends React.Component<Props, State> {
     render() {
         return (
             <div className="run-editor">
-                <div className="group">
-                    <input type="text" required className="run-editor-game" value={this.state.editor.game} onChange={(e) => this.handleGameChange(e)} />
-                    <span className="bar"></span>
-                    <label>Game</label>
-                </div>
-                <div className="group">
-                    <input type="text" required className="run-editor-category" value={this.state.editor.category} onChange={(e) => this.handleCategoryChange(e)} />
-                    <span className="bar"></span>
-                    <label>Category</label>
-                </div>
+                <TextBox
+                    className="run-editor-game"
+                    value={this.state.editor.game}
+                    onChange={e => this.handleGameChange(e)}
+                    label="Game"
+                />
+                <TextBox
+                    className="run-editor-category"
+                    value={this.state.editor.category}
+                    onChange={e => this.handleCategoryChange(e)}
+                    label="Category"
+                />
                 <div className="bottom">
-                    <div className={this.state.offsetIsValid ? "group small" : "group invalid small"}>
-                        <input type="text" required className="run-editor-offset" value={this.state.editor.offset} onChange={(e) => this.handleOffsetChange(e)} onBlur={(e) => this.handleOffsetBlur(e)} />
-                        <span className="bar"></span>
-                        <label>Offset</label>
-                    </div>
-                    <div className={this.state.attemptCountIsValid ? "group small" : "group invalid small"}>
-                        <input type="text" required className="run-editor-attempts" value={this.state.editor.attempts} onChange={(e) => this.handleAttemptsChange(e)} onBlur={(e) => this.handleAttemptsBlur(e)} />
-                        <span className="bar"></span>
-                        <label>Attempts</label>
-                    </div>
+                    <TextBox
+                        className="run-editor-offset"
+                        value={this.state.editor.offset}
+                        onChange={e => this.handleOffsetChange(e)}
+                        onBlur={e => this.handleOffsetBlur(e)}
+                        small
+                        invalid={!this.state.offsetIsValid}
+                        label="Offset"
+                    />
+                    <TextBox
+                        className="run-editor-attempts"
+                        value={this.state.editor.attempts}
+                        onChange={e => this.handleAttemptsChange(e)}
+                        onBlur={e => this.handleAttemptsBlur(e)}
+                        small
+                        invalid={!this.state.attemptCountIsValid}
+                        label="Attempts"
+                    />
                 </div>
                 <div className="timing-selection tab-bar">
                     <button
@@ -259,7 +270,7 @@ export class RunEditor extends React.Component<Props, State> {
                                 ? " button-pressed"
                                 : ""
                         )}
-                        onClick={(_) => this.switchTimingMethod(LiveSplit.TimingMethod.RealTime)}
+                        onClick={_ => this.switchTimingMethod(LiveSplit.TimingMethod.RealTime)}
                     >
                         Real Time
                     </button>
@@ -269,7 +280,7 @@ export class RunEditor extends React.Component<Props, State> {
                                 ? " button-pressed"
                                 : ""
                         )}
-                        onClick={(_) => this.switchTimingMethod(LiveSplit.TimingMethod.GameTime)}
+                        onClick={_ => this.switchTimingMethod(LiveSplit.TimingMethod.GameTime)}
                     >
                         Game Time
                     </button>
@@ -277,29 +288,29 @@ export class RunEditor extends React.Component<Props, State> {
                 <div className="editer-group">
                     <div className="btn-group">
                         <button
-                            onClick={(_) => this.insertSegmentAbove()}
+                            onClick={_ => this.insertSegmentAbove()}
                         >
                             Insert Above
                         </button>
                         <button
-                            onClick={(_) => this.insertSegmentBelow()}
+                            onClick={_ => this.insertSegmentBelow()}
                         >
                             Insert Below
                         </button>
                         <button
-                            onClick={(_) => this.removeSegments()}
+                            onClick={_ => this.removeSegments()}
                             className={this.state.editor.buttons.can_remove ? "" : "disabled"}
                         >
                             Remove Segment
                         </button>
                         <button
-                            onClick={(_) => this.moveSegmentsUp()}
+                            onClick={_ => this.moveSegmentsUp()}
                             className={this.state.editor.buttons.can_move_up ? "" : "disabled"}
                         >
                             Move Up
                         </button>
                         <button
-                            onClick={(_) => this.moveSegmentsDown()}
+                            onClick={_ => this.moveSegmentsDown()}
                             className={this.state.editor.buttons.can_move_down ? "" : "disabled"}
                         >
                             Move Down
@@ -315,14 +326,14 @@ export class RunEditor extends React.Component<Props, State> {
                         <tbody className="table-body">
                             {
                                 this.state.editor.segments.map((s: LiveSplit.RunEditorRowJson, i: number) =>
-                                    <tr key={i.toString()} className={(s.selected == "Selected" || s.selected == "CurrentRow") ? "selected" : ""} onClick={(e) => this.changeSegmentSelection(e, i)}>
-                                        <td><input className="name" type="text" value={s.name} onFocus={(_) => this.focusSegment(i)} onChange={(e) => this.handleSegmentNameChange(e)} /></td>
+                                    <tr key={i.toString()} className={(s.selected == "Selected" || s.selected == "CurrentRow") ? "selected" : ""} onClick={e => this.changeSegmentSelection(e, i)}>
+                                        <td><input className="name" type="text" value={s.name} onFocus={_ => this.focusSegment(i)} onChange={e => this.handleSegmentNameChange(e)} /></td>
                                         <td><input className={this.state.rowState.index != i || this.state.rowState.splitTimeIsValid ? "number" : "number invalid"}
-                                            type="text" value={s.split_time} onFocus={(_) => this.focusSegment(i)} onChange={(e) => this.handleSplitTimeChange(e)} onBlur={(e) => this.handleSplitTimeBlur(e)} /></td>
+                                            type="text" value={s.split_time} onFocus={_ => this.focusSegment(i)} onChange={e => this.handleSplitTimeChange(e)} onBlur={e => this.handleSplitTimeBlur(e)} /></td>
                                         <td><input className={this.state.rowState.index != i || this.state.rowState.segmentTimeIsValid ? "number" : "number invalid"}
-                                            type="text" value={s.segment_time} onFocus={(_) => this.focusSegment(i)} onChange={(e) => this.handleSegmentTimeChange(e)} onBlur={(e) => this.handleSegmentTimeBlur(e)} /></td>
+                                            type="text" value={s.segment_time} onFocus={_ => this.focusSegment(i)} onChange={e => this.handleSegmentTimeChange(e)} onBlur={e => this.handleSegmentTimeBlur(e)} /></td>
                                         <td><input className={this.state.rowState.index != i || this.state.rowState.bestSegmentTimeIsValid ? "number" : "number invalid"}
-                                            type="text" value={s.best_segment_time} onFocus={(_) => this.focusSegment(i)} onChange={(e) => this.handleBestSegmentTimeChange(e)} onBlur={(e) => this.handleBestSegmentTimeBlur(e)} /></td>
+                                            type="text" value={s.best_segment_time} onFocus={_ => this.focusSegment(i)} onChange={e => this.handleBestSegmentTimeChange(e)} onBlur={e => this.handleBestSegmentTimeBlur(e)} /></td>
                                     </tr>
                                 )
                             }

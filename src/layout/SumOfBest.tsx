@@ -4,7 +4,7 @@ import { gradientToCss } from "../util/ColorUtil";
 
 export interface Props { state: LiveSplit.SumOfBestComponentStateJson };
 
-export default class SumOfBest extends React.Component<Props, {}> {
+export default class SumOfBest extends React.Component<Props> {
 	render() {
 		return (
 			<div

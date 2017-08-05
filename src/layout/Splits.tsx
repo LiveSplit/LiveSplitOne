@@ -7,7 +7,7 @@ export interface Props {
     layoutState: LiveSplit.LayoutStateJson,
 }
 
-export default class Splits extends React.Component<Props, {}> {
+export default class Splits extends React.Component<Props> {
     iconUrls: (string | null)[];
 
     constructor(props: Props) {
@@ -37,7 +37,10 @@ export default class Splits extends React.Component<Props, {}> {
                             icon={this.getIconUrl(i)}
                             key={i.toString()}
                             index={i}
-                            separatorInFrontOfSplit={this.props.state.show_final_separator && i + 1 == this.props.state.splits.length}
+                            separatorInFrontOfSplit={
+                                this.props.state.show_final_separator &&
+                                i + 1 == this.props.state.splits.length
+                            }
                         />
                     )
                 }

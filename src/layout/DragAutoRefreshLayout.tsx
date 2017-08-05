@@ -71,7 +71,7 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
                                 });
                                 this.props.onDrag(i);
                             }}
-                            onDragOver={(e) => {
+                            onDragOver={e => {
                                 if (e.preventDefault) {
                                     e.preventDefault();
                                 }
@@ -91,7 +91,7 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
                                     hoverIndex: null,
                                 });
                             }}
-                            onDrop={(e) => {
+                            onDrop={e => {
                                 if (e.stopPropagation) {
                                     e.stopPropagation();
                                 }
@@ -134,11 +134,9 @@ function getBorderDiv(index: number, state: State, props: Props): JSX.Element | 
     } else if (index == state.hoverIndex) {
         if (index < state.startIndex) {
             style.borderTop = "2px solid rgb(50, 114, 241)";
-        } else if (index > state.startIndex) {
+        } else {
             style.borderBottom = "2px solid rgb(50, 114, 241)";
             style.height = "calc(100% - 2px)";
-        } else {
-            return null;
         }
     } else {
         return null;

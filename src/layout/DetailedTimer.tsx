@@ -5,9 +5,9 @@ import { gradientToCss } from "../util/ColorUtil";
 
 export interface Props { state: LiveSplit.DetailedTimerComponentStateJson }
 
-export default class DetailedTimer extends React.Component<Props, {}> {
+export default class DetailedTimer extends React.Component<Props> {
     render() {
-        let children = [];
+        const children = [];
 
         children.push(renderToSVG(
             this.props.state.timer,
@@ -21,7 +21,7 @@ export default class DetailedTimer extends React.Component<Props, {}> {
             25,
         ));
 
-        let leftSide = [];
+        const leftSide = [];
 
         function formatComparison(comparison: LiveSplit.DetailedTimerComponentComparisonStateJson) {
             return (
@@ -36,7 +36,7 @@ export default class DetailedTimer extends React.Component<Props, {}> {
             );
         }
 
-        let table = [];
+        const table = [];
 
         if (this.props.state.comparison1 != null) {
             table.push(formatComparison(this.props.state.comparison1));

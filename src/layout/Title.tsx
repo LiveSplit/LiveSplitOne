@@ -4,16 +4,16 @@ import { gradientToCss } from "../util/ColorUtil";
 
 export interface Props { state: LiveSplit.TitleComponentStateJson }
 
-export default class Title extends React.Component<Props, {}> {
-    iconUrl: string;
+export default class Title extends React.Component<Props> {
+    iconUrl: string | null;
 
     constructor(props: Props) {
         super(props);
 
-        this.iconUrl = "";
+        this.iconUrl = null;
     }
 
-    getIconUrl(): string {
+    getIconUrl(): string | null {
         if (this.props.state.icon_change != null) {
             this.iconUrl = this.props.state.icon_change;
         }
@@ -21,10 +21,10 @@ export default class Title extends React.Component<Props, {}> {
     }
 
     render() {
-        let icon_url = this.getIconUrl();
+        const iconUrl = this.getIconUrl();
 
-        let finishedRunsExist = this.props.state.finished_runs != null;
-        let attemptsExist = this.props.state.attempts != null;
+        const finishedRunsExist = this.props.state.finished_runs != null;
+        const attemptsExist = this.props.state.attempts != null;
         let attemptsLabel = "";
 
         if (finishedRunsExist) {
@@ -37,11 +37,11 @@ export default class Title extends React.Component<Props, {}> {
             attemptsLabel += this.props.state.attempts;
         }
 
-        let icon = icon_url != "" ? (
+        const icon = iconUrl != null ? (
             <div className="game-icon-container">
-                <img className="title-icon" src={icon_url}></img>
+                <img className="title-icon" src={iconUrl}></img>
             </div>
-        ) : (<div style={{ display: "none" }} />)
+        ) : (<div style={{ display: "none" }} />);
 
         return (
             <div
