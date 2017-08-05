@@ -1,12 +1,11 @@
 import * as React from "react";
-import { Timer, Layout, Segment, Run, TimerPhase, TimingMethod, RunEditor, LayoutEditor } from "../livesplit";
-import AutoRefreshLayout from "../layout/AutoRefreshLayout";
-import { RunEditor as RunEditorComponent } from "./RunEditor";
-import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import Sidebar from "react-sidebar";
-import { expect, assertNull, andThen, maybeDispose, maybeDisposeAndThen } from "../util/OptionUtil";
+import AutoRefreshLayout from "../layout/AutoRefreshLayout";
+import { Layout, LayoutEditor, Run, RunEditor, Segment, Timer, TimerPhase, TimingMethod } from "../livesplit";
+import { andThen, assertNull, expect, maybeDispose, maybeDisposeAndThen } from "../util/OptionUtil";
+import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
+import { RunEditor as RunEditorComponent } from "./RunEditor";
 
-export interface Props { }
 export interface State {
     timer: Timer,
     layout: Layout,
@@ -17,13 +16,13 @@ export interface State {
     layoutEditor: LayoutEditor | null,
 }
 
-export class LiveSplit extends React.Component<Props, State> {
-    intervalID: any;
-    keyEvent: EventListenerObject;
-    scrollEvent: EventListenerObject;
-    rightClickEvent: EventListenerObject;
+export class LiveSplit extends React.Component<{}, State> {
+    private intervalID: any;
+    private keyEvent: EventListenerObject;
+    private scrollEvent: EventListenerObject;
+    private rightClickEvent: EventListenerObject;
 
-    constructor(props: Props) {
+    constructor(props: {}) {
         super(props);
 
         const run = Run.new();
@@ -35,13 +34,13 @@ export class LiveSplit extends React.Component<Props, State> {
             "The Default Run should be a valid Run",
         );
 
-        if (window.location.hash.indexOf("#/splits-io/") == 0) {
-            const run = Run.new();
-            run.setGameName("Loading...");
-            run.setCategoryName("Loading...");
-            run.pushSegment(Segment.new("Time"));
+        if (window.location.hash.indexOf("#/splits-io/") === 0) {
+            const loadingRun = Run.new();
+            loadingRun.setGameName("Loading...");
+            loadingRun.setCategoryName("Loading...");
+            loadingRun.pushSegment(Segment.new("Time"));
             assertNull(
-                timer.setRun(run),
+                timer.setRun(loadingRun),
                 "The Default Loading Run should be a valid Run",
             );
             this.loadFromSplitsIO(window.location.hash.substr("#/splits-io/".length));
@@ -51,7 +50,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 maybeDispose(
                     andThen(
                         Run.parseString(lss),
-                        r => timer.setRun(r),
+                        (r) => timer.setRun(r),
                     ),
                 );
             }
@@ -63,111 +62,272 @@ export class LiveSplit extends React.Component<Props, State> {
             if (data) {
                 layout = Layout.parseJson(JSON.parse(data));
             }
-        } catch (e) { }
+        } catch (_) { /* Looks like local storage has no valid data */ }
         if (!layout) {
             layout = Layout.defaultLayout();
         }
 
         this.state = {
-            timer: timer,
-            layout: layout,
-            sidebarOpen: false,
-            timingMethod: null,
             comparison: null,
-            runEditor: null,
+            layout,
             layoutEditor: null,
+            runEditor: null,
+            sidebarOpen: false,
+            timer,
+            timingMethod: null,
         };
     }
 
-    componentWillMount() {
+    public componentWillMount() {
         this.scrollEvent = { handleEvent: (e: MouseWheelEvent) => this.onScroll(e) };
-        window.addEventListener('wheel', this.scrollEvent);
+        window.addEventListener("wheel", this.scrollEvent);
         this.keyEvent = { handleEvent: (e: KeyboardEvent) => this.onKeyPress(e) };
-        window.addEventListener('keypress', this.keyEvent);
+        window.addEventListener("keypress", this.keyEvent);
         this.rightClickEvent = { handleEvent: (e: any) => this.onRightClick(e) };
-        window.addEventListener('contextmenu', this.rightClickEvent, false);
+        window.addEventListener("contextmenu", this.rightClickEvent, false);
         this.intervalID = setInterval(
             () => this.update(),
-            1000 / 30
+            1000 / 30,
         );
     }
 
-    componentWillUnmount() {
+    public componentWillUnmount() {
         clearInterval(this.intervalID);
-        window.removeEventListener('wheel', this.scrollEvent);
-        window.removeEventListener('keypress', this.keyEvent);
-        window.removeEventListener('contextmenu', this.rightClickEvent);
+        window.removeEventListener("wheel", this.scrollEvent);
+        window.removeEventListener("keypress", this.keyEvent);
+        window.removeEventListener("contextmenu", this.rightClickEvent);
         this.state.timer.dispose();
         this.state.layout.dispose();
     }
 
-    onScroll(e: WheelEvent) {
+    public render() {
+        let sidebarContent;
+        if (this.state.runEditor) {
+            sidebarContent =
+                <div className="sidebar-buttons">
+                    <div className="small">
+                        <button
+                            className="toggle-left"
+                            onClick={(_) => this.closeRunEditor(true)}
+                        >
+                            <i className="fa fa-check" aria-hidden="true" /> OK
+                        </button>
+                        <button
+                            className="toggle-right"
+                            onClick={(_) => this.closeRunEditor(false)}
+                        >
+                            <i className="fa fa-times" aria-hidden="true" /> Cancel
+                        </button>
+                    </div>
+                </div>;
+        } else if (this.state.layoutEditor) {
+            sidebarContent =
+                <div className="sidebar-buttons">
+                    <div className="small">
+                        <button
+                            className="toggle-left"
+                            onClick={(_) => this.closeLayoutEditor(true)}
+                        >
+                            <i className="fa fa-check" aria-hidden="true" /> OK
+                        </button>
+                        <button
+                            className="toggle-right"
+                            onClick={(_) => this.closeLayoutEditor(false)}
+                        >
+                            <i className="fa fa-times" aria-hidden="true" /> Cancel
+                        </button>
+                    </div>
+                </div>;
+        } else {
+            sidebarContent =
+                <div className="sidebar-buttons">
+                    <button onClick={(_) => this.openRunEditor()}>
+                        <i className="fa fa-pencil-square-o" aria-hidden="true" /> Edit Splits
+                    </button>
+                    <hr />
+                    <button onClick={(_) => this.saveSplits()}>
+                        <i className="fa fa-floppy-o" aria-hidden="true" /> Save
+                    </button>
+                    <button onClick={(_) => this.importSplits()}>
+                        <i className="fa fa-download" aria-hidden="true" /> Import
+                    </button>
+                    <button onClick={(_) => this.exportSplits()}>
+                        <i className="fa fa-upload" aria-hidden="true" /> Export
+                    </button>
+                    <button onClick={(_) => this.openFromSplitsIO()}>
+                        <i className="fa fa-cloud-download" aria-hidden="true" /> From splits i/o
+                    </button>
+                    <button onClick={(_) => this.uploadToSplitsIO()}>
+                        <i className="fa fa-cloud-upload" aria-hidden="true" /> Upload to splits i/o
+                    </button>
+                    <hr />
+                    <button onClick={(_) => this.openLayoutEditor()}>
+                        <i className="fa fa-pencil-square-o" aria-hidden="true" /> Edit Layout
+                    </button>
+                    <button onClick={(_) => this.saveLayout()}>
+                        <i className="fa fa-floppy-o" aria-hidden="true" /> Save Layout
+                    </button>
+                    <hr />
+                    <h2>Compare Against</h2>
+                    <div className="choose-comparison">
+                        <button onClick={(_) => this.onPreviousComparison()}>
+                            <i className="fa fa-caret-left" aria-hidden="true" />
+                        </button>
+                        <span>{this.state.comparison}</span>
+                        <button onClick={(_) => this.onNextComparison()}>
+                            <i className="fa fa-caret-right" aria-hidden="true" />
+                        </button>
+                    </div>
+                    <div className="small">
+                        <button
+                            onClick={(_) => {
+                                this.state.timer.setCurrentTimingMethod(TimingMethod.RealTime);
+                                this.update();
+                            }}
+                            className={
+                                (this.state.timingMethod === TimingMethod.RealTime ? "button-pressed" : "") +
+                                " toggle-left"
+                            }
+                        >
+                            Real Time
+                        </button>
+                        <button
+                            onClick={(_) => {
+                                this.state.timer.setCurrentTimingMethod(TimingMethod.GameTime);
+                                this.update();
+                            }}
+                            className={
+                                (this.state.timingMethod === TimingMethod.GameTime ? "button-pressed" : "") +
+                                " toggle-right"
+                            }
+                        >
+                            Game Time
+                        </button>
+                    </div>
+                </div>;
+        }
+
+        let content;
+        if (this.state.runEditor) {
+            content = <RunEditorComponent editor={this.state.runEditor} />;
+        } else if (this.state.layoutEditor) {
+            content = <LayoutEditorComponent
+                editor={this.state.layoutEditor}
+                timer={this.state.timer}
+            />;
+        } else {
+            content = <div
+                style={{
+                    margin: "10px",
+                    marginBottom: "5px",
+                }}
+            >
+                <AutoRefreshLayout
+                    getState={() => this.state.layout.stateAsJson(this.state.timer)}
+                />
+                <div className="buttons">
+                    <button onClick={(_) => this.onSplit()}>
+                        <i className="fa fa-play" aria-hidden="true" />
+                    </button>
+                    <div className="small">
+                        <button onClick={(_) => this.onUndo()}>
+                            <i className="fa fa-arrow-up" aria-hidden="true" /></button>
+                        <button onClick={(_) => this.onPause()}>
+                            <i className="fa fa-pause" aria-hidden="true" />
+                        </button>
+                    </div>
+                    <div className="small">
+                        <button onClick={(_) => this.onSkip()}>
+                            <i className="fa fa-arrow-down" aria-hidden="true" />
+                        </button>
+                        <button onClick={(_) => this.onReset()}>
+                            <i className="fa fa-times" aria-hidden="true" />
+                        </button>
+                    </div>
+                </div>
+            </div>;
+        }
+
+        return (
+            <Sidebar
+                sidebar={sidebarContent}
+                open={this.state.sidebarOpen}
+                onSetOpen={((e: boolean) => this.onSetSidebarOpen(e)) as any}
+                sidebarClassName="sidebar"
+                contentClassName="livesplit-container"
+            >
+                {content}
+            </Sidebar>
+        );
+    }
+
+    private onScroll(e: WheelEvent) {
         const delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.deltaY)));
-        if (delta == 1) {
+        if (delta === 1) {
             this.state.layout.scrollUp();
-        } else if (delta == -1) {
+        } else if (delta === -1) {
             this.state.layout.scrollDown();
         }
     }
 
-    update() {
+    private update() {
         if (!this.state.runEditor && !this.state.layoutEditor) {
             this.setState({
                 ...this.state,
-                timingMethod: this.state.timer.currentTimingMethod(),
                 comparison: this.state.timer.currentComparison(),
+                timingMethod: this.state.timer.currentTimingMethod(),
             });
         }
     }
 
-    onSetSidebarOpen(open: boolean) {
+    private onSetSidebarOpen(open: boolean) {
         this.setState({
             ...this.state,
             sidebarOpen: open,
         });
     }
 
-    onRightClick(e: any) {
+    private onRightClick(e: any) {
         this.onSetSidebarOpen(true);
         e.preventDefault();
     }
 
-    onSplit() {
+    private onSplit() {
         this.state.timer.splitOrStart();
     }
 
-    onReset() {
+    private onReset() {
         this.state.timer.reset(true);
     }
 
-    onPause() {
+    private onPause() {
         this.state.timer.togglePauseOrStart();
     }
 
-    onUndo() {
+    private onUndo() {
         this.state.timer.undoSplit();
     }
 
-    onSkip() {
+    private onSkip() {
         this.state.timer.skipSplit();
     }
 
-    onPreviousComparison() {
+    private onPreviousComparison() {
         this.state.timer.switchToPreviousComparison();
     }
 
-    onNextComparison() {
+    private onNextComparison() {
         this.state.timer.switchToNextComparison();
     }
 
-    onPrintDebug() {
+    private onPrintDebug() {
         this.state.timer.printDebug();
     }
 
-    importSplits() {
+    private importSplits() {
         const component = this;
 
-        const input = document.createElement('input');
+        const input = document.createElement("input");
         input.setAttribute("type", "file");
         input.onchange = (e: any) => {
             const file = e.target.files[0];
@@ -175,8 +335,8 @@ export class LiveSplit extends React.Component<Props, State> {
                 return;
             }
             const reader = new FileReader();
-            reader.onload = function (e: any) {
-                const contents = e.target.result;
+            reader.onload = (e2: any) => {
+                const contents = e2.target.result;
                 const timer = component.state.timer;
                 const run = Run.parseArray(new Int8Array(contents));
                 if (run) {
@@ -193,22 +353,22 @@ export class LiveSplit extends React.Component<Props, State> {
         input.click();
     }
 
-    loadFromSplitsIO(id: string) {
+    private loadFromSplitsIO(id: string) {
         const component = this;
         const apiXhr = new XMLHttpRequest();
-        apiXhr.open('GET', "https://splits.io/api/v4/runs/" + id, true);
-        apiXhr.onload = function () {
+        apiXhr.open("GET", "https://splits.io/api/v4/runs/" + id, true);
+        apiXhr.onload = () => {
             const response = JSON.parse(apiXhr.responseText);
             if (response && response.run && response.run.program) {
                 const xhr = new XMLHttpRequest();
-                xhr.open('GET', "https://splits.io/" + id + "/download/" + response.run.program, true);
-                xhr.responseType = 'arraybuffer';
-                xhr.onload = function () {
+                xhr.open("GET", "https://splits.io/" + id + "/download/" + response.run.program, true);
+                xhr.responseType = "arraybuffer";
+                xhr.onload = () => {
                     const timer = component.state.timer;
                     maybeDispose(
                         andThen(
                             Run.parseArray(new Int8Array(xhr.response)),
-                            r => timer.setRun(r),
+                            (r) => timer.setRun(r),
                         ),
                     );
                 };
@@ -218,22 +378,22 @@ export class LiveSplit extends React.Component<Props, State> {
         apiXhr.send(null);
     }
 
-    openFromSplitsIO() {
+    private openFromSplitsIO() {
         let id = prompt("Specify the splits i/o URL or ID");
         if (!id) {
             return;
         }
-        if (id.indexOf("https://splits.io/") == 0) {
+        if (id.indexOf("https://splits.io/") === 0) {
             id = id.substr("https://splits.io/".length);
         }
         this.loadFromSplitsIO(id);
     }
 
-    uploadToSplitsIO() {
+    private uploadToSplitsIO() {
         const lss = this.state.timer.getRun().saveAsLss();
         let xhr = new XMLHttpRequest();
-        xhr.open('POST', "https://splits.io/api/v4/runs", true);
-        xhr.onload = function () {
+        xhr.open("POST", "https://splits.io/api/v4/runs", true);
+        xhr.onload = () => {
             const response = JSON.parse(xhr.responseText);
             const claim_uri = response.uris.claim_uri;
             const request = response.presigned_request;
@@ -252,28 +412,28 @@ export class LiveSplit extends React.Component<Props, State> {
             formData.append("x-amz-signature", fields["x-amz-signature"]);
             formData.append("file", lss);
 
-            xhr.onload = function () {
+            xhr.onload = () => {
                 window.open(claim_uri);
             };
-            xhr.onerror = function () {
+            xhr.onerror = () => {
                 alert("Failed to upload the splits.");
             };
 
             xhr.send(formData);
         };
-        xhr.onerror = function () {
+        xhr.onerror = () => {
             alert("Failed to upload the splits.");
         };
         xhr.send(null);
     }
 
-    exportSplits() {
+    private exportSplits() {
         function download(filename: any, text: any) {
-            const element = document.createElement('a');
-            element.setAttribute('href', 'data:application/octet-stream;charset=utf-8,' + encodeURIComponent(text));
-            element.setAttribute('download', filename);
+            const element = document.createElement("a");
+            element.setAttribute("href", "data:application/octet-stream;charset=utf-8," + encodeURIComponent(text));
+            element.setAttribute("download", filename);
 
-            element.style.display = 'none';
+            element.style.display = "none";
             document.body.appendChild(element);
 
             element.click();
@@ -285,18 +445,18 @@ export class LiveSplit extends React.Component<Props, State> {
         download(this.state.timer.getRun().extendedFileName(true) + ".lss", lss);
     }
 
-    saveSplits() {
+    private saveSplits() {
         const lss = this.state.timer.getRun().saveAsLss();
         localStorage.setItem("splits", lss);
     }
 
-    saveLayout() {
+    private saveLayout() {
         const layout = this.state.layout.settingsAsJson();
         localStorage.setItem("layout", JSON.stringify(layout));
     }
 
-    openRunEditor() {
-        if (this.state.timer.currentPhase() == TimerPhase.NotRunning) {
+    private openRunEditor() {
+        if (this.state.timer.currentPhase() === TimerPhase.NotRunning) {
             const run = this.state.timer.getRun().clone();
             const editor = RunEditor.new(run);
             this.setState({
@@ -309,7 +469,7 @@ export class LiveSplit extends React.Component<Props, State> {
         }
     }
 
-    closeRunEditor(save: boolean) {
+    private closeRunEditor(save: boolean) {
         const runEditor = expect(
             this.state.runEditor,
             "No Run Editor to close",
@@ -336,7 +496,7 @@ export class LiveSplit extends React.Component<Props, State> {
         this.state.layout.remount();
     }
 
-    openLayoutEditor() {
+    private openLayoutEditor() {
         const layout = this.state.layout.clone();
         const editor = LayoutEditor.new(layout);
         this.setState({
@@ -346,7 +506,7 @@ export class LiveSplit extends React.Component<Props, State> {
         });
     }
 
-    closeLayoutEditor(save: boolean) {
+    private closeLayoutEditor(save: boolean) {
         const layoutEditor = expect(
             this.state.layoutEditor,
             "No Layout Editor to close",
@@ -356,7 +516,7 @@ export class LiveSplit extends React.Component<Props, State> {
             this.state.layout.dispose();
             this.setState({
                 ...this.state,
-                layout: layout,
+                layout,
                 layoutEditor: null,
                 sidebarOpen: false,
             });
@@ -372,7 +532,7 @@ export class LiveSplit extends React.Component<Props, State> {
         }
     }
 
-    onKeyPress(e: KeyboardEvent) {
+    private onKeyPress(e: KeyboardEvent) {
         if (this.state.runEditor || this.state.layoutEditor) {
             return;
         }
@@ -429,111 +589,5 @@ export class LiveSplit extends React.Component<Props, State> {
                 break;
             }
         }
-    }
-
-    render() {
-        let sidebarContent;
-        if (this.state.runEditor) {
-            sidebarContent =
-                <div className="sidebar-buttons">
-                    <div className="small">
-                        <button className="toggle-left" onClick={_ => this.closeRunEditor(true)}><i className="fa fa-check" aria-hidden="true"></i> OK</button>
-                        <button className="toggle-right" onClick={_ => this.closeRunEditor(false)}><i className="fa fa-times" aria-hidden="true"></i> Cancel</button>
-                    </div>
-                </div>;
-        } else if (this.state.layoutEditor) {
-            sidebarContent =
-                <div className="sidebar-buttons">
-                    <div className="small">
-                        <button className="toggle-left" onClick={_ => this.closeLayoutEditor(true)}><i className="fa fa-check" aria-hidden="true"></i> OK</button>
-                        <button className="toggle-right" onClick={_ => this.closeLayoutEditor(false)}><i className="fa fa-times" aria-hidden="true"></i> Cancel</button>
-                    </div>
-                </div>;
-        } else {
-            sidebarContent =
-                <div className="sidebar-buttons">
-                    <button onClick={_ => this.openRunEditor()}><i className="fa fa-pencil-square-o" aria-hidden="true"></i> Edit Splits</button>
-                    <hr />
-                    <button onClick={_ => this.saveSplits()}><i className="fa fa-floppy-o" aria-hidden="true"></i> Save</button>
-                    <button onClick={_ => this.importSplits()}><i className="fa fa-download" aria-hidden="true"></i> Import</button>
-                    <button onClick={_ => this.exportSplits()}><i className="fa fa-upload" aria-hidden="true"></i> Export</button>
-                    <button onClick={_ => this.openFromSplitsIO()}><i className="fa fa-cloud-download" aria-hidden="true"></i> From splits i/o</button>
-                    <button onClick={_ => this.uploadToSplitsIO()}><i className="fa fa-cloud-upload" aria-hidden="true"></i> Upload to splits i/o</button>
-                    <hr />
-                    <button onClick={_ => this.openLayoutEditor()}><i className="fa fa-pencil-square-o" aria-hidden="true"></i> Edit Layout</button>
-                    <button onClick={_ => this.saveLayout()}><i className="fa fa-floppy-o" aria-hidden="true"></i> Save Layout</button>
-                    <hr />
-                    <h2>Compare Against</h2>
-                    <div className="choose-comparison">
-                        <button onClick={_ => this.onPreviousComparison()}><i className="fa fa-caret-left" aria-hidden="true"></i></button>
-                        <span>{this.state.comparison}</span>
-                        <button onClick={_ => this.onNextComparison()}><i className="fa fa-caret-right" aria-hidden="true"></i></button>
-                    </div>
-                    <div className="small">
-                        <button
-                            onClick={_ => {
-                                this.state.timer.setCurrentTimingMethod(TimingMethod.RealTime);
-                                this.update();
-                            }}
-                            className={(this.state.timingMethod == TimingMethod.RealTime ? "button-pressed" : "") + " toggle-left"}
-                        >
-                            Real Time
-                        </button>
-                        <button
-                            onClick={_ => {
-                                this.state.timer.setCurrentTimingMethod(TimingMethod.GameTime);
-                                this.update();
-                            }}
-                            className={(this.state.timingMethod == TimingMethod.GameTime ? "button-pressed" : "") + " toggle-right"}
-                        >
-                            Game Time
-                        </button>
-                    </div>
-                </div>;
-        }
-
-        let content;
-        if (this.state.runEditor) {
-            content = <RunEditorComponent editor={this.state.runEditor} />;
-        } else if (this.state.layoutEditor) {
-            content = <LayoutEditorComponent
-                editor={this.state.layoutEditor}
-                timer={this.state.timer}
-            />;
-        } else {
-            content = <div
-                style={{
-                    margin: "10px",
-                    marginBottom: "5px",
-                }}
-            >
-                <AutoRefreshLayout
-                    getState={() => this.state.layout.stateAsJson(this.state.timer)}
-                />
-                <div className="buttons">
-                    <button onClick={_ => this.onSplit()}><i className="fa fa-play" aria-hidden="true"></i></button>
-                    <div className="small">
-                        <button onClick={_ => this.onUndo()}><i className="fa fa-arrow-up" aria-hidden="true"></i></button>
-                        <button onClick={_ => this.onPause()}><i className="fa fa-pause" aria-hidden="true"></i></button>
-                    </div>
-                    <div className="small">
-                        <button onClick={_ => this.onSkip()}><i className="fa fa-arrow-down" aria-hidden="true"></i></button>
-                        <button onClick={_ => this.onReset()}><i className="fa fa-times" aria-hidden="true"></i></button>
-                    </div>
-                </div>
-            </div>;
-        }
-
-        return (
-            <Sidebar
-                sidebar={sidebarContent}
-                open={this.state.sidebarOpen}
-                onSetOpen={((e: boolean) => this.onSetSidebarOpen(e)) as any}
-                sidebarClassName="sidebar"
-                contentClassName="livesplit-container"
-            >
-                {content}
-            </Sidebar>
-        );
     }
 }

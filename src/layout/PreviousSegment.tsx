@@ -5,7 +5,7 @@ import { colorToCss, gradientToCss } from "../util/ColorUtil";
 export interface Props { state: LiveSplit.PreviousSegmentComponentStateJson }
 
 export default class PreviousSegment extends React.Component<Props> {
-    render() {
+    public render() {
         return (
             <div
                 className="previous-segment"

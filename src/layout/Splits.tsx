@@ -8,24 +8,14 @@ export interface Props {
 }
 
 export default class Splits extends React.Component<Props> {
-    iconUrls: (string | null)[];
+    private iconUrls: Array<string | null>;
 
     constructor(props: Props) {
         super(props);
         this.iconUrls = [];
     }
 
-    getIconUrl(index: number): string | null {
-        while (index >= this.iconUrls.length) {
-            this.iconUrls.push("");
-        }
-        if (this.props.state.splits[index].icon_change != null) {
-            this.iconUrls[index] = this.props.state.splits[index].icon_change;
-        }
-        return this.iconUrls[index];
-    }
-
-    render() {
+    public render() {
         return (
             <div className="splits">
                 {
@@ -39,12 +29,22 @@ export default class Splits extends React.Component<Props> {
                             index={i}
                             separatorInFrontOfSplit={
                                 this.props.state.show_final_separator &&
-                                i + 1 == this.props.state.splits.length
+                                i + 1 === this.props.state.splits.length
                             }
-                        />
+                        />,
                     )
                 }
             </div>
         );
+    }
+
+    private getIconUrl(index: number): string | null {
+        while (index >= this.iconUrls.length) {
+            this.iconUrls.push("");
+        }
+        if (this.props.state.splits[index].icon_change != null) {
+            this.iconUrls[index] = this.props.state.splits[index].icon_change;
+        }
+        return this.iconUrls[index];
     }
 }

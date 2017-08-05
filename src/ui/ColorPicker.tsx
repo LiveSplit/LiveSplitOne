@@ -1,6 +1,6 @@
-import * as React from 'react';
-import { ChromePicker, RGBColor } from 'react-color';
-import { colorToCss } from '../util/ColorUtil';
+import * as React from "react";
+import { ChromePicker, RGBColor } from "react-color";
+import { colorToCss } from "../util/ColorUtil";
 
 export interface Props {
     color: number[],
@@ -20,28 +20,20 @@ export default class ColorPicker extends React.Component<Props, State> {
         };
     }
 
-    handleClick() {
-        this.setState({ display: !this.state.display });
-    }
-
-    handleClose() {
-        this.setState({ display: false });
-    }
-
-    render() {
+    public render() {
         return (
             <div>
                 <div
                     style={{
-                        height: '13px',
-                        borderRadius: '2px',
-                        boxShadow: '0 0 0 1px rgba(0,0,0,.1)',
                         background: colorToCss(this.props.color),
-                        cursor: 'pointer',
-                        border: '2px solid white',
-                        borderCollapse: 'collapse',
+                        border: "2px solid white",
+                        borderCollapse: "collapse",
+                        borderRadius: "2px",
+                        boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
+                        cursor: "pointer",
+                        height: "13px",
                     }}
-                    onClick={_ => this.handleClick()}
+                    onClick={(_) => this.handleClick()}
                 />
                 <div style={{
                     margin: "0 auto",
@@ -50,23 +42,23 @@ export default class ColorPicker extends React.Component<Props, State> {
                     {
                         this.state.display &&
                         <div style={{
-                            position: 'absolute',
+                            position: "absolute",
+                            textShadow: "initial",
                             zIndex: 3,
-                            textShadow: 'initial',
                         }}>
                             <div
                                 style={{
-                                    position: 'fixed',
-                                    top: '0px',
-                                    right: '0px',
-                                    bottom: '0px',
-                                    left: '0px',
+                                    bottom: "0px",
+                                    left: "0px",
+                                    position: "fixed",
+                                    right: "0px",
+                                    top: "0px",
                                 }}
-                                onClick={_ => this.handleClose()}
+                                onClick={(_) => this.handleClose()}
                             />
                             <ChromePicker
                                 color={toPickerColor(this.props.color)}
-                                onChange={c => this.props.setColor(toLSColor(c.rgb))}
+                                onChange={(c) => this.props.setColor(toLSColor(c.rgb))}
                             />
                         </div>
                     }
@@ -74,15 +66,22 @@ export default class ColorPicker extends React.Component<Props, State> {
             </div>
         );
     }
-}
 
+    private handleClick() {
+        this.setState({ display: !this.state.display });
+    }
+
+    private handleClose() {
+        this.setState({ display: false });
+    }
+}
 
 function toPickerColor(color: number[]): RGBColor {
     return {
-        r: 255 * color[0],
-        g: 255 * color[1],
-        b: 255 * color[2],
         a: color[3],
+        b: 255 * color[2],
+        g: 255 * color[1],
+        r: 255 * color[0],
     };
 }
 

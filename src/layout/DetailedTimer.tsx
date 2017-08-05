@@ -1,12 +1,12 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit";
-import { renderToSVG } from "./Timer";
 import { gradientToCss } from "../util/ColorUtil";
+import { renderToSVG } from "./Timer";
 
 export interface Props { state: LiveSplit.DetailedTimerComponentStateJson }
 
 export default class DetailedTimer extends React.Component<Props> {
-    render() {
+    public render() {
         const children = [];
 
         children.push(renderToSVG(
@@ -28,7 +28,7 @@ export default class DetailedTimer extends React.Component<Props> {
                 <tr>
                     <td>{comparison.name + ":"}</td>
                     <td className="time" style={{
-                        "padding-left": "6px"
+                        "padding-left": "6px",
                     }}>
                         {comparison.time}
                     </td>

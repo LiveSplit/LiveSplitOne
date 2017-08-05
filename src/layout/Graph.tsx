@@ -5,7 +5,7 @@ import { colorToCss } from "../util/ColorUtil";
 export interface Props { state: LiveSplit.GraphComponentStateJson }
 
 export default class Graph extends React.Component<Props> {
-    render() {
+    public render() {
         const width = 300;
         const height = 110;
 
@@ -19,8 +19,8 @@ export default class Graph extends React.Component<Props> {
         const colorCompleteFill = colorToCss(this.props.state.complete_fill_color);
         const colorBestSegment = colorToCss(this.props.state.best_segment_color);
 
-        const rect1 = <rect width="100%" height={middle} style={{ "fill": colorTop }} />;
-        const rect2 = <rect y={middle} width="100%" height={height - middle} style={{ "fill": colorBottom }} />;
+        const rect1 = <rect width="100%" height={middle} style={{ fill: colorTop }} />;
+        const rect2 = <rect y={middle} width="100%" height={height - middle} style={{ fill: colorBottom }} />;
         const children = [rect1, rect2];
 
         for (const y of this.props.state.horizontal_grid_lines) {
@@ -46,15 +46,14 @@ export default class Graph extends React.Component<Props> {
             length -= 1;
         }
 
-        for (var i = 0; i < length; i++) {
-            const point = this.props.state.points[i];
+        for (const point of this.props.state.points) {
             points += `${width * point.x},${height * point.y} `;
         }
 
         points += `${width * this.props.state.points[length - 1].x},${middle}`;
 
         const fill = <polygon points={points} style={{
-            "fill": colorCompleteFill
+            fill: colorCompleteFill,
         }} />;
 
         children.push(fill);
@@ -68,7 +67,7 @@ export default class Graph extends React.Component<Props> {
             const fill = <polygon
                 points={`${x1},${middle} ${x1},${y1} ${x2},${y2} ${x2},${middle}`}
                 style={{
-                    "fill": colorPartialFill
+                    fill: colorPartialFill,
                 }} />;
 
             children.push(fill);
@@ -76,7 +75,7 @@ export default class Graph extends React.Component<Props> {
 
         const childrenPoints = [];
 
-        for (var i = 1; i < this.props.state.points.length; i++) {
+        for (let i = 1; i < this.props.state.points.length; i++) {
             const px = `${100 * this.props.state.points[i - 1].x}%`;
             const py = height * this.props.state.points[i - 1].y;
             const x = `${100 * this.props.state.points[i].x}%`;
@@ -92,8 +91,8 @@ export default class Graph extends React.Component<Props> {
             }} />;
             children.push(line);
 
-            if (i != this.props.state.points.length - 1 || !this.props.state.is_live_delta_active) {
-                const circle = <ellipse cx={x} cy={y} rx="2.5" ry="2.5" style={{ "fill": fill }} />;
+            if (i !== this.props.state.points.length - 1 || !this.props.state.is_live_delta_active) {
+                const circle = <ellipse cx={x} cy={y} rx="2.5" ry="2.5" style={{ fill }} />;
                 childrenPoints.push(circle);
             }
         }

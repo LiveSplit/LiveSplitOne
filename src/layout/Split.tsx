@@ -16,12 +16,12 @@ export default class Split extends React.Component<Props> {
         super(props);
     }
 
-    render() {
+    public render() {
         const currentSplit = this.props.split.is_current_split ? "current-split" : "";
         const separator = this.props.separatorInFrontOfSplit ? "split-separator" : "";
 
         const innerStyle: any = {};
-        if (this.props.index % 2 == 1) {
+        if (this.props.index % 2 === 1) {
             innerStyle.borderBottom = `1px solid ${colorToCss(this.props.layoutState.thin_separators_color)}`;
             innerStyle.borderTop = innerStyle.borderBottom;
         }
@@ -36,14 +36,14 @@ export default class Split extends React.Component<Props> {
 
         return (
             <span
-                className={["split", currentSplit, separator].filter(s => s.length > 0).join(" ")}
+                className={["split", currentSplit, separator].filter((s) => s.length > 0).join(" ")}
                 style={outerStyle}
             >
                 <div
-                    className={this.props.icon != "" ? "split-icon-container" : "split-icon-container-empty"}
+                    className={this.props.icon !== "" ? "split-icon-container" : "split-icon-container-empty"}
                     style={innerStyle}
                 >
-                    <img className={this.props.icon != "" ? "split-icon" : ""} src={this.props.icon || ""} />
+                    <img className={this.props.icon !== "" ? "split-icon" : ""} src={this.props.icon || ""} />
                 </div>
                 <div
                     className="split-name"

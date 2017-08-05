@@ -11,7 +11,7 @@ export function colorToCss(color: Color): string {
 
 export function gradientToCss(gradient: Gradient): string {
     const gradientAny: any = gradient;
-    if (gradientAny == "Transparent") {
+    if (gradientAny === "Transparent") {
         return "transparent";
     }
     switch (Object.keys(gradient)[0]) {
@@ -28,6 +28,6 @@ export function gradientToCss(gradient: Gradient): string {
             return `linear-gradient(to right, ${start} 0%, ${end} 100%)`;
         }
         default:
-            throw "Unexpected Gradient Type";
+            throw new Error("Unexpected Gradient Type");
     }
 }

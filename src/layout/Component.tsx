@@ -1,5 +1,6 @@
 import * as React from "react";
 import { ComponentStateJson, LayoutStateJson } from "../livesplit";
+import BlankSpace from "./BlankSpace";
 import CurrentComparison from "./CurrentComparison";
 import CurrentPace from "./CurrentPace";
 import Delta from "./Delta";
@@ -7,13 +8,12 @@ import DetailedTimer from "./DetailedTimer";
 import Graph from "./Graph";
 import PossibleTimeSave from "./PossibleTimeSave";
 import PreviousSegment from "./PreviousSegment";
+import Separator from "./Separator";
 import Splits from "./Splits";
 import SumOfBest from "./SumOfBest";
 import Timer from "./Timer";
 import Title from "./Title";
 import TotalPlaytime from "./TotalPlaytime";
-import Separator from "./Separator";
-import BlankSpace from "./BlankSpace";
 
 export interface Props {
     state: ComponentStateJson,
@@ -21,7 +21,7 @@ export interface Props {
 }
 
 export default class Component extends React.Component<Props> {
-    render() {
+    public render() {
         const componentState: any = this.props.state;
         const layoutState = this.props.layoutState;
 

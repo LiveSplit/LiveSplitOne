@@ -19,34 +19,34 @@ export interface State {
 }
 
 export default class AutoRefreshLayout extends React.Component<Props, State> {
-    intervalID: any;
+    private intervalID: any;
 
     constructor(props: Props) {
         super(props);
 
         this.state = {
+            hoverIndex: null,
             layoutState: this.props.getState(),
             startIndex: null,
-            hoverIndex: null,
         };
     }
 
-    componentWillMount() {
+    public componentWillMount() {
         this.intervalID = setInterval(
             () => {
                 this.setState({
                     layoutState: this.props.getState(),
                 });
             },
-            1000 / 30
+            1000 / 30,
         );
     }
 
-    componentWillUnmount() {
+    public componentWillUnmount() {
         clearInterval(this.intervalID);
     }
 
-    render() {
+    public render() {
         const layoutState = this.state.layoutState;
 
         return (
@@ -61,37 +61,37 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
                     layoutState.components.map((c, i) =>
                         <div
                             key={i}
-                            onClick={_ => this.props.onClick(i)}
-                            draggable={true}
-                            onDragStart={_ => {
+                            onClick={(_) => this.props.onClick(i)}
+                            draggable
+                            onDragStart={(_) => {
                                 this.setState({
                                     ...this.state,
-                                    startIndex: i,
                                     hoverIndex: i,
+                                    startIndex: i,
                                 });
                                 this.props.onDrag(i);
                             }}
-                            onDragOver={e => {
+                            onDragOver={(e) => {
                                 if (e.preventDefault) {
                                     e.preventDefault();
                                 }
-                                e.dataTransfer.dropEffect = 'move';
+                                e.dataTransfer.dropEffect = "move";
                             }}
-                            onDragEnter={_ => {
+                            onDragEnter={(_) => {
                                 this.setState({
                                     ...this.state,
                                     hoverIndex: i,
                                 });
                             }}
-                            onDragEnd={_ => {
+                            onDragEnd={(_) => {
                                 this.props.onDragEnd(i);
                                 this.setState({
                                     ...this.state,
-                                    startIndex: null,
                                     hoverIndex: null,
+                                    startIndex: null,
                                 });
                             }}
-                            onDrop={e => {
+                            onDrop={(e) => {
                                 if (e.stopPropagation) {
                                     e.stopPropagation();
                                 }
@@ -99,15 +99,15 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
                                 return false;
                             }}
                             style={{
-                                position: "relative",
                                 cursor: "pointer",
+                                position: "relative",
                             }}
                         >
                             {
                                 getBorderDiv(i, this.state, this.props)
                             }
                             <Component state={c} layoutState={layoutState} />
-                        </div>
+                        </div>,
                     )
                 }
             </div>
@@ -117,13 +117,13 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
 
 function getBorderDiv(index: number, state: State, props: Props): JSX.Element | null {
     const style: any = {
-        position: "absolute",
-        zIndex: 2,
-        width: "100%",
         height: "100%",
+        position: "absolute",
+        width: "100%",
+        zIndex: 2,
     };
 
-    if (state.startIndex == null || state.startIndex == state.hoverIndex) {
+    if (state.startIndex == null || state.startIndex === state.hoverIndex) {
         if (props.isSelected(index)) {
             style.border = "2px solid rgb(50, 114, 241)";
             style.width = "calc(100% - 4px)";
@@ -131,7 +131,7 @@ function getBorderDiv(index: number, state: State, props: Props): JSX.Element | 
         } else {
             return null;
         }
-    } else if (index == state.hoverIndex) {
+    } else if (index === state.hoverIndex) {
         if (index < state.startIndex) {
             style.borderTop = "2px solid rgb(50, 114, 241)";
         } else {

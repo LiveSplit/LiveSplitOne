@@ -11,7 +11,7 @@ export interface Props {
 }
 
 export class TextBox extends React.Component<Props> {
-    render() {
+    public render() {
         let className = "group";
         if (this.props.invalid) {
             className += " invalid";

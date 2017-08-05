@@ -1,3 +1,4 @@
+// tslint:disable
 var LiveSplitCore = require('./livesplit_core');
 var emscriptenModule = LiveSplitCore.LiveSplitCore({});
 var liveSplitCoreNative: any = {};
@@ -129,8 +130,8 @@ export interface GraphComponentStatePointJson {
 }
 
 export type TextComponentStateJson =
-	{ Center: String } |
-	{ Split: String[] };
+    { Center: String } |
+    { Split: String[] };
 
 export interface TotalPlaytimeComponentStateJson {
     background: Gradient,

@@ -1,7 +1,7 @@
 import * as React from "react";
-import * as LiveSplit from "../livesplit";
-import DragAutoRefreshLayout from "../layout/DragAutoRefreshLayout";
 import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
+import DragAutoRefreshLayout from "../layout/DragAutoRefreshLayout";
+import * as LiveSplit from "../livesplit";
 import SettingsComponent from "./Settings";
 
 export interface Props {
@@ -23,60 +23,28 @@ export class LayoutEditor extends React.Component<Props, State> {
         };
     }
 
-    update() {
-        this.setState({
-            ...this.state,
-            editor: this.props.editor.stateAsJson(),
-        });
-    }
-
-    selectComponent(i: number) {
-        this.props.editor.select(i);
-        this.update();
-    }
-
-    addComponent(componentClass: any) {
-        this.props.editor.addComponent(componentClass.new().intoGeneric());
-        this.update();
-    }
-
-    removeComponent() {
-        this.props.editor.removeComponent();
-        this.update();
-    }
-
-    moveComponentUp() {
-        this.props.editor.moveComponentUp();
-        this.update();
-    }
-
-    moveComponentDown() {
-        this.props.editor.moveComponentDown();
-        this.update();
-    }
-
-    render() {
+    public render() {
         const components = this.state.editor.components.map((c, i) => {
             let className = "layout-editor-component";
-            if (i == this.state.editor.selected_component) {
+            if (i === this.state.editor.selected_component) {
                 className += " selected";
             }
             return (
                 <tr key={i}
-                    onClick={_ => this.selectComponent(i)}
-                    draggable={true}
-                    onDragStart={_ => {
+                    onClick={(_) => this.selectComponent(i)}
+                    draggable
+                    onDragStart={(_) => {
                         this.props.editor.select(i);
                         this.update();
                     }}
-                    onDragOver={e => {
+                    onDragOver={(e) => {
                         if (e.preventDefault) {
                             e.preventDefault();
                         }
-                        e.dataTransfer.dropEffect = 'move';
+                        e.dataTransfer.dropEffect = "move";
                     }}
-                    onDragEnd={_ => this.update()}
-                    onDrop={e => {
+                    onDragEnd={(_) => this.update()}
+                    onDrop={(e) => {
                         if (e.stopPropagation) {
                             e.stopPropagation();
                         }
@@ -122,71 +90,71 @@ export class LayoutEditor extends React.Component<Props, State> {
                 <div style={{ display: "initial" }}>
                     <div className="layout-editor-inner">
                         <div className="btn-group">
-                            <ContextMenuTrigger id="add-button-context-menu" ref={c => contextTrigger = c}>
+                            <ContextMenuTrigger id="add-button-context-menu" ref={(c) => contextTrigger = c}>
                                 <button onClick={toggleMenu}><i className="fa fa-plus" aria-hidden="true"></i></button>
                             </ContextMenuTrigger>
                             <ContextMenu id="add-button-context-menu">
-                                <MenuItem onClick={_ => this.addComponent(LiveSplit.CurrentComparisonComponent)}>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.CurrentComparisonComponent)}>
                                     Current Comparison
                                 </MenuItem>
-                                <MenuItem onClick={_ => this.addComponent(LiveSplit.CurrentPaceComponent)}>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.CurrentPaceComponent)}>
                                     Current Pace
                                 </MenuItem>
-                                <MenuItem onClick={_ => this.addComponent(LiveSplit.DeltaComponent)}>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.DeltaComponent)}>
                                     Delta
                                 </MenuItem>
-                                <MenuItem onClick={_ => this.addComponent(LiveSplit.DetailedTimerComponent)}>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.DetailedTimerComponent)}>
                                     Detailed Timer
                                 </MenuItem>
-                                <MenuItem onClick={_ => this.addComponent(LiveSplit.GraphComponent)}>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.GraphComponent)}>
                                     Graph
                                 </MenuItem>
-                                <MenuItem onClick={_ => this.addComponent(LiveSplit.PossibleTimeSaveComponent)}>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.PossibleTimeSaveComponent)}>
                                     Possible Time Save
                                 </MenuItem>
-                                <MenuItem onClick={_ => this.addComponent(LiveSplit.PreviousSegmentComponent)}>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.PreviousSegmentComponent)}>
                                     Previous Segment
                                 </MenuItem>
-                                <MenuItem onClick={_ => this.addComponent(LiveSplit.SplitsComponent)}>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.SplitsComponent)}>
                                     Splits
                                 </MenuItem>
-                                <MenuItem onClick={_ => this.addComponent(LiveSplit.SumOfBestComponent)}>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.SumOfBestComponent)}>
                                     Sum of Best Segments
                                 </MenuItem>
-                                <MenuItem onClick={_ => this.addComponent(LiveSplit.TextComponent)}>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.TextComponent)}>
                                     Text
                                 </MenuItem>
-                                <MenuItem onClick={_ => this.addComponent(LiveSplit.TimerComponent)}>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.TimerComponent)}>
                                     Timer
                                 </MenuItem>
-                                <MenuItem onClick={_ => this.addComponent(LiveSplit.TitleComponent)}>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.TitleComponent)}>
                                     Title
                                 </MenuItem>
-                                <MenuItem onClick={_ => this.addComponent(LiveSplit.TotalPlaytimeComponent)}>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.TotalPlaytimeComponent)}>
                                     Total Playtime
                                 </MenuItem>
                                 <MenuItem divider />
-                                <MenuItem onClick={_ => this.addComponent(LiveSplit.BlankSpaceComponent)}>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.BlankSpaceComponent)}>
                                     Blank Space
                                 </MenuItem>
-                                <MenuItem onClick={_ => this.addComponent(LiveSplit.SeparatorComponent)}>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.SeparatorComponent)}>
                                     Separator
                                 </MenuItem>
                             </ContextMenu>
                             <button
-                                onClick={_ => this.removeComponent()}
+                                onClick={(_) => this.removeComponent()}
                                 className={this.state.editor.buttons.can_remove ? "" : "disabled"}
                             >
                                 <i className="fa fa-minus" aria-hidden="true"></i>
                             </button>
                             <button
-                                onClick={_ => this.moveComponentUp()}
+                                onClick={(_) => this.moveComponentUp()}
                                 className={this.state.editor.buttons.can_move_up ? "" : "disabled"}
                             >
                                 <i className="fa fa-arrow-up" aria-hidden="true"></i>
                             </button>
                             <button
-                                onClick={_ => this.moveComponentDown()}
+                                onClick={(_) => this.moveComponentDown()}
                                 className={this.state.editor.buttons.can_move_down ? "" : "disabled"}
                             >
                                 <i className="fa fa-arrow-down" aria-hidden="true"></i>
@@ -205,7 +173,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                                     ? " button-pressed"
                                     : ""
                             )}
-                            onClick={_ => {
+                            onClick={(_) => {
                                 this.setState({
                                     ...this.state,
                                     showComponentSettings: false,
@@ -220,7 +188,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                                     ? " button-pressed"
                                     : ""
                             )}
-                            onClick={_ => {
+                            onClick={(_) => {
                                 this.setState({
                                     ...this.state,
                                     showComponentSettings: true,
@@ -238,17 +206,49 @@ export class LayoutEditor extends React.Component<Props, State> {
                 }}>
                     <DragAutoRefreshLayout
                         getState={() => this.props.editor.layoutStateAsJson(this.props.timer)}
-                        onClick={i => this.selectComponent(i)}
-                        onDrag={i => {
+                        onClick={(i) => this.selectComponent(i)}
+                        onDrag={(i) => {
                             this.props.editor.select(i);
                             this.update();
                         }}
-                        onDragEnd={_ => this.update()}
-                        onDrop={i => this.props.editor.moveComponent(i)}
-                        isSelected={i => this.state.editor.selected_component == i}
+                        onDragEnd={(_) => this.update()}
+                        onDrop={(i) => this.props.editor.moveComponent(i)}
+                        isSelected={(i) => this.state.editor.selected_component === i}
                     />
                 </div>
             </div>
         );
+    }
+
+    private update() {
+        this.setState({
+            ...this.state,
+            editor: this.props.editor.stateAsJson(),
+        });
+    }
+
+    private selectComponent(i: number) {
+        this.props.editor.select(i);
+        this.update();
+    }
+
+    private addComponent(componentClass: any) {
+        this.props.editor.addComponent(componentClass.new().intoGeneric());
+        this.update();
+    }
+
+    private removeComponent() {
+        this.props.editor.removeComponent();
+        this.update();
+    }
+
+    private moveComponentUp() {
+        this.props.editor.moveComponentUp();
+        this.update();
+    }
+
+    private moveComponentDown() {
+        this.props.editor.moveComponentDown();
+        this.update();
     }
 }

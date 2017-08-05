@@ -1,0 +1,20 @@
+{
+    "defaultSeverity": "warning",
+    "extends": [
+        "tslint:recommended"
+    ],
+    "jsRules": {},
+    "rules": {
+        "semicolon": [
+            false
+        ],
+        "interface-name": [
+            false
+        ],
+        "max-classes-per-file": [
+            false
+        ],
+        "no-shadowed-variable": false
+    },
+    "rulesDirectory": []
+}

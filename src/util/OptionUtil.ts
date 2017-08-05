@@ -2,7 +2,7 @@ export function expect<T>(obj: T | null, message: string): T {
     if (obj != null) {
         return obj;
     }
-    throw message;
+    throw new Error(message);
 }
 
 interface Disposable {
@@ -18,7 +18,7 @@ export function assertNull(obj: MaybeDisposable | null, message: string) {
         if (obj.dispose) {
             obj.dispose();
         }
-        throw message;
+        throw new Error(message);
     }
 }
 

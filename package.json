@@ -6,7 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "webpack": "webpack -w",
-    "run": "python -m SimpleHTTPServer 8080"
+    "run": "python -m SimpleHTTPServer 8080",
+    "lint": "node_modules/.bin/tslint"
   },
   "author": "",
   "license": "ISC",
@@ -25,6 +26,7 @@
   "devDependencies": {
     "awesome-typescript-loader": "^3.0.0-beta.17",
     "source-map-loader": "^0.1.5",
+    "tslint": "^5.5.0",
     "typescript": "^2.1.4",
     "webpack": "~2.2.1"
   }

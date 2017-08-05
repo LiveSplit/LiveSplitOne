@@ -8,7 +8,7 @@ export interface Props {
 }
 
 export default class Layout extends React.Component<Props> {
-    render() {
+    public render() {
         const layoutState = this.props.state;
 
         return (
@@ -20,8 +20,8 @@ export default class Layout extends React.Component<Props> {
                 }}
             >
                 {
-                    this.props.state.components.map(c =>
-                        <Component state={c} layoutState={layoutState} />
+                    this.props.state.components.map((c) =>
+                        <Component state={c} layoutState={layoutState} />,
                     )
                 }
             </div>

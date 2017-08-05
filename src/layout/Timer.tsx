@@ -16,7 +16,7 @@ export function renderToSVG(
         case 0: shiftX = 0; break;
         case 2: shiftX = height * 0.6; break;
         case 3: shiftX = height; break;
-        default: throw "Unexpected Fraction Length";
+        default: throw new Error("Unexpected Fraction Length");
     }
     const x = `${294 - shiftX}px`;
     const y = `${0.88 * height}px`;
@@ -46,21 +46,21 @@ export function renderToSVG(
                 </linearGradient>
             </defs>
             <text className="timer-time" style={{
-                "fill": `url(#${className}-text-gradient)`,
-                "font-size": `${height}px`,
-                "font-family": "timer, sans-serif",
+                fill: `url(#${className}-text-gradient)`,
+                fontFamily: "timer, sans-serif",
+                fontSize: `${height}px`,
             }} x={x} y={y} textAnchor="end">{time}</text>
             <text className="timer-time" style={{
-                "fill": `url(#${className}-text-gradient)`,
-                "font-size": `${0.7 * height}px`,
-                "font-family": "timer, sans-serif",
+                fill: `url(#${className}-text-gradient)`,
+                fontFamily: "timer, sans-serif",
+                fontSize: `${0.7 * height}px`,
             }} x="294px" y={y} textAnchor="end">{fraction}</text>
         </svg>
     );
 }
 
 export default class Timer extends React.Component<Props> {
-    render() {
+    public render() {
         return renderToSVG(this.props.state);
     }
 }

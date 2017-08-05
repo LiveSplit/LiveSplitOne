@@ -11,7 +11,7 @@ export interface State {
 }
 
 export default class AutoRefreshLayout extends React.Component<Props, State> {
-    intervalID: any;
+    private intervalID: any;
 
     constructor(props: Props) {
         super(props);
@@ -21,22 +21,22 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
         };
     }
 
-    componentWillMount() {
+    public componentWillMount() {
         this.intervalID = setInterval(
             () => {
                 this.setState({
                     layoutState: this.props.getState(),
                 });
             },
-            1000 / 30
+            1000 / 30,
         );
     }
 
-    componentWillUnmount() {
+    public componentWillUnmount() {
         clearInterval(this.intervalID);
     }
 
-    render() {
+    public render() {
         return (
             <Layout state={this.state.layoutState} />
         );

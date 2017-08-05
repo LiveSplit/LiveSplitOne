@@ -1,7 +1,7 @@
 import * as React from "react";
-import { SettingValue, SettingsDescriptionJson, Color } from "../livesplit";
-import ColorPicker from "./ColorPicker";
+import { Color, SettingsDescriptionJson, SettingValue } from "../livesplit";
 import { expect } from "../util/OptionUtil";
+import ColorPicker from "./ColorPicker";
 
 export interface Props {
     setValue: (index: number, value: SettingValue) => void,
@@ -9,11 +9,11 @@ export interface Props {
 }
 
 export default class SettingsComponent extends React.Component<Props> {
-    render() {
+    public render() {
         const settingsRows: JSX.Element[] = [];
 
         this.props.state.fields.forEach((field, valueIndex) => {
-            var component;
+            let component;
             const value: any = field.value;
             switch (Object.keys(value)[0]) {
                 case "Bool": {
@@ -21,7 +21,7 @@ export default class SettingsComponent extends React.Component<Props> {
                         <input
                             type="checkbox"
                             checked={value.Bool}
-                            onChange={e => {
+                            onChange={(e) => {
                                 this.props.setValue(
                                     valueIndex,
                                     SettingValue.fromBool(e.target.checked),
@@ -37,7 +37,7 @@ export default class SettingsComponent extends React.Component<Props> {
                             className="number"
                             value={value.UInt}
                             min="0"
-                            onChange={e => {
+                            onChange={(e) => {
                                 this.props.setValue(
                                     valueIndex,
                                     SettingValue.fromUint(e.target.valueAsNumber),
@@ -52,7 +52,7 @@ export default class SettingsComponent extends React.Component<Props> {
                             type="number"
                             className="number"
                             value={value.Int}
-                            onChange={e => {
+                            onChange={(e) => {
                                 this.props.setValue(
                                     valueIndex,
                                     SettingValue.fromInt(e.target.valueAsNumber),
@@ -65,7 +65,7 @@ export default class SettingsComponent extends React.Component<Props> {
                     component =
                         <input
                             value={value.String}
-                            onChange={e => {
+                            onChange={(e) => {
                                 this.props.setValue(
                                     valueIndex,
                                     SettingValue.fromString(e.target.value),
@@ -79,7 +79,7 @@ export default class SettingsComponent extends React.Component<Props> {
                         <input
                             type="checkbox"
                             checked={value.OptionalString != null}
-                            onChange={e => {
+                            onChange={(e) => {
                                 if (e.target.checked) {
                                     this.props.setValue(
                                         valueIndex,
@@ -92,7 +92,7 @@ export default class SettingsComponent extends React.Component<Props> {
                                     );
                                 }
                             }}
-                        />
+                        />,
                     ];
 
                     if (value.OptionalString != null) {
@@ -100,13 +100,13 @@ export default class SettingsComponent extends React.Component<Props> {
                             <input
                                 value={value.OptionalString}
                                 disabled={value.OptionalString == null}
-                                onChange={e => {
+                                onChange={(e) => {
                                     this.props.setValue(
                                         valueIndex,
                                         SettingValue.fromOptionalString(e.target.value),
                                     );
                                 }}
-                            />
+                            />,
                         );
                     }
 
@@ -122,7 +122,7 @@ export default class SettingsComponent extends React.Component<Props> {
                             type="number"
                             value={value.Float}
                             className="number"
-                            onChange={e => {
+                            onChange={(e) => {
                                 this.props.setValue(
                                     valueIndex,
                                     SettingValue.fromFloat(e.target.valueAsNumber),
@@ -135,7 +135,7 @@ export default class SettingsComponent extends React.Component<Props> {
                     component =
                         <select
                             value={value.Accuracy}
-                            onChange={e => {
+                            onChange={(e) => {
                                 this.props.setValue(
                                     valueIndex,
                                     expect(
@@ -155,7 +155,7 @@ export default class SettingsComponent extends React.Component<Props> {
                     component =
                         <select
                             value={value.DigitsFormat}
-                            onChange={e => {
+                            onChange={(e) => {
                                 this.props.setValue(
                                     valueIndex,
                                     expect(
@@ -178,7 +178,7 @@ export default class SettingsComponent extends React.Component<Props> {
                     component =
                         <ColorPicker
                             color={value.Color}
-                            setColor={color => {
+                            setColor={(color) => {
                                 this.props.setValue(
                                     valueIndex,
                                     SettingValue.fromColor(
@@ -197,7 +197,7 @@ export default class SettingsComponent extends React.Component<Props> {
                     let color1: Color | null = null;
                     let color2: Color | null = null;
 
-                    if (value.Gradient != "Transparent") {
+                    if (value.Gradient !== "Transparent") {
                         type = Object.keys(value.Gradient)[0];
                         switch (type) {
                             case "Plain":
@@ -213,7 +213,7 @@ export default class SettingsComponent extends React.Component<Props> {
                                 color2 = value.Gradient.Horizontal[1];
                                 break;
                             default:
-                                throw "Unexpected Gradient Type";
+                                throw new Error("Unexpected Gradient Type");
                         }
                     } else {
                         type = "Transparent";
@@ -244,7 +244,7 @@ export default class SettingsComponent extends React.Component<Props> {
                                     color2[0], color2[1], color2[2], color2[3],
                                 );
                             default:
-                                throw "Unexpected Gradient Type";
+                                throw new Error("Unexpected Gradient Type");
                         }
                     };
 
@@ -255,7 +255,7 @@ export default class SettingsComponent extends React.Component<Props> {
                         <td>
                             <select
                                 value={type}
-                                onChange={e => {
+                                onChange={(e) => {
                                     this.props.setValue(
                                         valueIndex,
                                         colorsToValue(e.target.value, color1, color2),
@@ -268,7 +268,7 @@ export default class SettingsComponent extends React.Component<Props> {
                                 <option value="Vertical">Vertical</option>
                                 <option value="Horizontal">Horizontal</option>
                             </select>
-                        </td>
+                        </td>,
                     ];
 
                     if (color1) {
@@ -276,7 +276,7 @@ export default class SettingsComponent extends React.Component<Props> {
                             <td style={{ width: colorWidth }}>
                                 <ColorPicker
                                     color={color1}
-                                    setColor={color => {
+                                    setColor={(color) => {
                                         this.props.setValue(
                                             valueIndex,
                                             colorsToValue(type, color, color2),
@@ -292,7 +292,7 @@ export default class SettingsComponent extends React.Component<Props> {
                             <td style={{ width: colorWidth }}>
                                 <ColorPicker
                                     color={color2}
-                                    setColor={color => {
+                                    setColor={(color) => {
                                         this.props.setValue(
                                             valueIndex,
                                             colorsToValue(type, color1, color),
@@ -318,7 +318,7 @@ export default class SettingsComponent extends React.Component<Props> {
                         <input
                             type="checkbox"
                             checked={value.OptionalTimingMethod != null}
-                            onChange={e => {
+                            onChange={(e) => {
                                 if (e.target.checked) {
                                     this.props.setValue(
                                         valueIndex,
@@ -334,7 +334,7 @@ export default class SettingsComponent extends React.Component<Props> {
                                     );
                                 }
                             }}
-                        />
+                        />,
                     ];
 
                     if (value.OptionalTimingMethod != null) {
@@ -342,7 +342,7 @@ export default class SettingsComponent extends React.Component<Props> {
                             <select
                                 value={value.OptionalTimingMethod}
                                 disabled={value.OptionalTimingMethod == null}
-                                onChange={e => {
+                                onChange={(e) => {
                                     this.props.setValue(
                                         valueIndex,
                                         expect(
@@ -354,7 +354,7 @@ export default class SettingsComponent extends React.Component<Props> {
                             >
                                 <option value="RealTime">Real Time</option>
                                 <option value="GameTime">Game Time</option>
-                            </select>
+                            </select>,
                         );
                     }
 
@@ -369,7 +369,7 @@ export default class SettingsComponent extends React.Component<Props> {
                 <tr>
                     <td>{field.text}</td>
                     <td>{component}</td>
-                </tr>
+                </tr>,
             );
         });
 

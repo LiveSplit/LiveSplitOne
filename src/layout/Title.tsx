@@ -5,7 +5,7 @@ import { gradientToCss } from "../util/ColorUtil";
 export interface Props { state: LiveSplit.TitleComponentStateJson }
 
 export default class Title extends React.Component<Props> {
-    iconUrl: string | null;
+    private iconUrl: string | null;
 
     constructor(props: Props) {
         super(props);
@@ -13,14 +13,7 @@ export default class Title extends React.Component<Props> {
         this.iconUrl = null;
     }
 
-    getIconUrl(): string | null {
-        if (this.props.state.icon_change != null) {
-            this.iconUrl = this.props.state.icon_change;
-        }
-        return this.iconUrl;
-    }
-
-    render() {
+    public render() {
         const iconUrl = this.getIconUrl();
 
         const finishedRunsExist = this.props.state.finished_runs != null;
@@ -60,5 +53,12 @@ export default class Title extends React.Component<Props> {
                 </div>
             </div>
         );
+    }
+
+    private getIconUrl(): string | null {
+        if (this.props.state.icon_change != null) {
+            this.iconUrl = this.props.state.icon_change;
+        }
+        return this.iconUrl;
     }
 }

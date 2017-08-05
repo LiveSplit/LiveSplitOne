@@ -5,7 +5,7 @@ import { colorToCss, gradientToCss } from "../util/ColorUtil";
 export interface Props { state: LiveSplit.DeltaComponentStateJson }
 
 export default class Delta extends React.Component<Props> {
-    render() {
+    public render() {
         return (
             <div
                 className="delta-component"
