@@ -20,6 +20,7 @@ interface RowState {
 
 export class RunEditor extends React.Component<Props, State> {
     private gameIcon: string;
+    private segmentIconUrls: string[];
 
     constructor(props: Props) {
         super(props);
@@ -37,11 +38,13 @@ export class RunEditor extends React.Component<Props, State> {
         };
 
         this.gameIcon = "";
+        this.segmentIconUrls = [];
     }
 
     public render() {
         const gameIcon = this.getGameIcon();
         const gameIconSize = 118;
+        const segmentIconSize = 19;
 
         return (
             <div className="run-editor">
@@ -172,6 +175,11 @@ export class RunEditor extends React.Component<Props, State> {
                     </div>
                     <table className="table run-editor-table">
                         <thead className="table-header">
+                            <td style={{
+                                paddingLeft: 4,
+                                paddingRight: 0,
+                                width: "inherit",
+                            }}>Icon</td>
                             <td>Segment Name</td>
                             <td>Split Time</td>
                             <td>Segment Time</td>
@@ -179,76 +187,125 @@ export class RunEditor extends React.Component<Props, State> {
                         </thead>
                         <tbody className="table-body">
                             {
-                                this.state.editor.segments.map((s: LiveSplit.RunEditorRowJson, i: number) =>
-                                    <tr
-                                        key={i.toString()}
-                                        className={
-                                            (s.selected === "Selected" || s.selected === "CurrentRow") ? "selected" : ""
-                                        }
-                                        onClick={(e) => this.changeSegmentSelection(e, i)}
-                                    >
-                                        <td>
-                                            <input
-                                                className="name"
-                                                type="text"
-                                                value={s.name}
-                                                onFocus={(_) => this.focusSegment(i)}
-                                                onChange={(e) => this.handleSegmentNameChange(e)}
-                                            />
-                                        </td>
-                                        <td>
-                                            <input
-                                                className={
-                                                    this.state.rowState.index !== i ||
-                                                        this.state.rowState.splitTimeIsValid ?
-                                                        "number" :
-                                                        "number invalid"
+                                this.state.editor.segments.map((s, segmentIndex) => {
+                                    const segmentIcon = this.getSegmentIconUrl(segmentIndex);
+                                    return (
+                                        <tr
+                                            key={segmentIndex.toString()}
+                                            className={
+                                                (s.selected === "Selected" || s.selected === "CurrentRow") ?
+                                                    "selected" :
+                                                    ""
+                                            }
+                                            onClick={(e) => this.changeSegmentSelection(e, segmentIndex)}
+                                        >
+                                            <td
+                                                style={{
+                                                    cursor: "pointer",
+                                                    height: segmentIconSize,
+                                                    paddingBottom: 0,
+                                                    paddingLeft: 16,
+                                                    paddingRight: 0,
+                                                    paddingTop: 2,
+                                                    width: segmentIconSize,
+                                                }}
+                                                onClick={(_) => this.changeSegmentIcon(segmentIndex)}
+                                            >
+                                                {
+                                                    segmentIcon !== "" &&
+                                                    <img
+                                                        src={segmentIcon}
+                                                        style={{
+                                                            "height": segmentIconSize,
+                                                            "object-fit": "contain",
+                                                            "width": segmentIconSize,
+                                                        }}
+                                                    />
                                                 }
-                                                type="text"
-                                                value={s.split_time}
-                                                onFocus={(_) => this.focusSegment(i)}
-                                                onChange={(e) => this.handleSplitTimeChange(e)}
-                                                onBlur={(e) => this.handleSplitTimeBlur(e)}
-                                            />
-                                        </td>
-                                        <td>
-                                            <input
-                                                className={
-                                                    this.state.rowState.index !== i ||
-                                                        this.state.rowState.segmentTimeIsValid ?
-                                                        "number" :
-                                                        "number invalid"
-                                                }
-                                                type="text"
-                                                value={s.segment_time}
-                                                onFocus={(_) => this.focusSegment(i)}
-                                                onChange={(e) => this.handleSegmentTimeChange(e)}
-                                                onBlur={(e) => this.handleSegmentTimeBlur(e)}
-                                            />
-                                        </td>
-                                        <td>
-                                            <input
-                                                className={
-                                                    this.state.rowState.index !== i ||
-                                                        this.state.rowState.bestSegmentTimeIsValid ?
-                                                        "number" :
-                                                        "number invalid"
-                                                }
-                                                type="text"
-                                                value={s.best_segment_time}
-                                                onFocus={(_) => this.focusSegment(i)}
-                                                onChange={(e) => this.handleBestSegmentTimeChange(e)}
-                                                onBlur={(e) => this.handleBestSegmentTimeBlur(e)}
-                                            />
-                                        </td>
-                                    </tr>,
-                                )
+                                            </td>
+                                            <td>
+                                                <input
+                                                    className="name"
+                                                    type="text"
+                                                    value={s.name}
+                                                    onFocus={(_) => this.focusSegment(segmentIndex)}
+                                                    onChange={(e) => this.handleSegmentNameChange(e)}
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    className={
+                                                        this.state.rowState.index !== segmentIndex ||
+                                                            this.state.rowState.splitTimeIsValid ?
+                                                            "number" :
+                                                            "number invalid"
+                                                    }
+                                                    type="text"
+                                                    value={s.split_time}
+                                                    onFocus={(_) => this.focusSegment(segmentIndex)}
+                                                    onChange={(e) => this.handleSplitTimeChange(e)}
+                                                    onBlur={(e) => this.handleSplitTimeBlur(e)}
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    className={
+                                                        this.state.rowState.index !== segmentIndex ||
+                                                            this.state.rowState.segmentTimeIsValid ?
+                                                            "number" :
+                                                            "number invalid"
+                                                    }
+                                                    type="text"
+                                                    value={s.segment_time}
+                                                    onFocus={(_) => this.focusSegment(segmentIndex)}
+                                                    onChange={(e) => this.handleSegmentTimeChange(e)}
+                                                    onBlur={(e) => this.handleSegmentTimeBlur(e)}
+                                                />
+                                            </td>
+                                            <td>
+                                                <input
+                                                    className={
+                                                        this.state.rowState.index !== segmentIndex ||
+                                                            this.state.rowState.bestSegmentTimeIsValid ?
+                                                            "number" :
+                                                            "number invalid"
+                                                    }
+                                                    type="text"
+                                                    value={s.best_segment_time}
+                                                    onFocus={(_) => this.focusSegment(segmentIndex)}
+                                                    onChange={(e) => this.handleBestSegmentTimeChange(e)}
+                                                    onBlur={(e) => this.handleBestSegmentTimeBlur(e)}
+                                                />
+                                            </td>
+                                        </tr>
+                                    );
+                                })
                             }
                         </tbody>
                     </table>
                 </div>
             </div >
         )
+    }
+
+    private changeSegmentIcon(index: number) {
+        this.props.editor.selectOnly(index);
+        openFileAsArrayBuffer((file) => {
+            this.props.editor.selectedSetIconFromArray(new Int8Array(file));
+            this.update();
+        });
+        this.update();
+    }
+
+    private getSegmentIconUrl(index: number): string {
+        while (index >= this.segmentIconUrls.length) {
+            this.segmentIconUrls.push("");
+        }
+        const iconChange = this.state.editor.segments[index].icon_change;
+        if (iconChange != null) {
+            this.segmentIconUrls[index] = iconChange;
+        }
+        return this.segmentIconUrls[index];
     }
 
     private changeGameIcon() {

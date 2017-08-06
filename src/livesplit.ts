@@ -2313,6 +2313,15 @@ export class RunEditorRefMut extends RunEditorRef {
             emscriptenModule._free(buf);
         }
     }
+    selectedSetIconFromArray(data: Int8Array) {
+        const buf = emscriptenModule._malloc(data.length);
+        try {
+            emscriptenModule.writeArrayToMemory(data, buf);
+            this.selectedSetIcon(buf, data.length);
+        } finally {
+            emscriptenModule._free(buf);
+        }
+    }
 }
 
 export class RunEditor extends RunEditorRefMut {

@@ -5,7 +5,7 @@ import { colorToCss, gradientToCss } from "../util/ColorUtil";
 export interface Props {
     splitsState: LiveSplit.SplitsComponentStateJson,
     split: LiveSplit.SplitStateJson,
-    icon: string | null,
+    icon: string,
     separatorInFrontOfSplit: boolean,
     layoutState: LiveSplit.LayoutStateJson,
     index: number,
@@ -43,7 +43,10 @@ export default class Split extends React.Component<Props> {
                     className={this.props.icon !== "" ? "split-icon-container" : "split-icon-container-empty"}
                     style={innerStyle}
                 >
-                    <img className={this.props.icon !== "" ? "split-icon" : ""} src={this.props.icon || ""} />
+                    {
+                        this.props.icon !== "" &&
+                        <img className="split-icon" src={this.props.icon} />
+                    }
                 </div>
                 <div
                     className="split-name"

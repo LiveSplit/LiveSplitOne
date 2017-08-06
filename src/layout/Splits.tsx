@@ -8,7 +8,7 @@ export interface Props {
 }
 
 export default class Splits extends React.Component<Props> {
-    private iconUrls: Array<string | null>;
+    private iconUrls: string[];
 
     constructor(props: Props) {
         super(props);
@@ -38,12 +38,13 @@ export default class Splits extends React.Component<Props> {
         );
     }
 
-    private getIconUrl(index: number): string | null {
+    private getIconUrl(index: number): string {
         while (index >= this.iconUrls.length) {
             this.iconUrls.push("");
         }
-        if (this.props.state.splits[index].icon_change != null) {
-            this.iconUrls[index] = this.props.state.splits[index].icon_change;
+        const iconChange = this.props.state.splits[index].icon_change;
+        if (iconChange != null) {
+            this.iconUrls[index] = iconChange;
         }
         return this.iconUrls[index];
     }

@@ -352,7 +352,7 @@ button {
     font-size: 18px;
     padding: 10px 10px 10px 5px;
     display: block;
-    width: 270px;
+    width: 285px;
     border: none;
     border-bottom: 1px solid #aaa;
     background: transparent;
@@ -389,7 +389,7 @@ button {
     color: hsla(0, 100%, 50%, 1);
 }
 
-.group > .bar { position: relative; display: block; width: 285px; }
+.group > .bar { position: relative; display: block; width: 300px; }
 .group > .bar:before, .group > .bar:after 	{
     content: '';
     height: 2px;
@@ -439,6 +439,10 @@ button {
 .table-body>*>* {
 	padding: 3px 12px;
 	display: table-cell;
+}
+.table>.table-header>*:nth-child(2),
+.table-body>*>*:nth-child(2) {
+	padding: 3px 12px 3px 5px;
 }
 .btn-group button {
     font-size: 15px;
@@ -565,13 +569,10 @@ input[Type="text"] {
     font-family:inherit;
 }
 
-.table>.table-header>*:nth-child(1),
-.table-body>*>*:nth-child(1) {
-    padding-left: 16px;
-}
-
 .table-header>td:nth-child(1):after {
-     margin-left: -16px;
+    margin: 0;
+    margin-left: -4px;
+    margin-right: 7px;
 }
 
 svg.timer, svg.graph {
