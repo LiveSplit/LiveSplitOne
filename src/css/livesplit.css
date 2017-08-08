@@ -603,6 +603,7 @@ svg.timer, svg.graph {
     opacity: 0;
     pointer-events: none;
     transition: opacity 250ms ease !important;
+    z-index: 3;
 }
 
 .react-contextmenu.react-contextmenu--visible {
@@ -641,7 +642,7 @@ svg.timer, svg.graph {
 }
 
 .react-contextmenu-item--selected {
-    background: rgba(0, 67, 255, 0.26);
+    background: linear-gradient(rgb(51, 115, 244) 0%, rgb(21, 53, 116) 100%);
 }
 
 .component-settings {

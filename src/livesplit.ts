@@ -373,6 +373,8 @@ liveSplitCoreNative.PossibleTimeSaveComponent_state = emscriptenModule.cwrap('Po
 liveSplitCoreNative.PossibleTimeSaveComponentState_drop = emscriptenModule.cwrap('PossibleTimeSaveComponentState_drop', null, ["number"]);
 liveSplitCoreNative.PossibleTimeSaveComponentState_text = emscriptenModule.cwrap('PossibleTimeSaveComponentState_text', "string", ["number"]);
 liveSplitCoreNative.PossibleTimeSaveComponentState_time = emscriptenModule.cwrap('PossibleTimeSaveComponentState_time', "string", ["number"]);
+liveSplitCoreNative.PotentialCleanUp_drop = emscriptenModule.cwrap('PotentialCleanUp_drop', null, ["number"]);
+liveSplitCoreNative.PotentialCleanUp_message = emscriptenModule.cwrap('PotentialCleanUp_message', "string", ["number"]);
 liveSplitCoreNative.PreviousSegmentComponent_new = emscriptenModule.cwrap('PreviousSegmentComponent_new', "number", []);
 liveSplitCoreNative.PreviousSegmentComponent_drop = emscriptenModule.cwrap('PreviousSegmentComponent_drop', null, ["number"]);
 liveSplitCoreNative.PreviousSegmentComponent_into_generic = emscriptenModule.cwrap('PreviousSegmentComponent_into_generic', "number", ["number"]);
@@ -434,6 +436,7 @@ liveSplitCoreNative.RunEditor_remove_comparison = emscriptenModule.cwrap('RunEdi
 liveSplitCoreNative.RunEditor_rename_comparison = emscriptenModule.cwrap('RunEditor_rename_comparison', "number", ["number", "string", "string"]);
 liveSplitCoreNative.RunEditor_clear_history = emscriptenModule.cwrap('RunEditor_clear_history', null, ["number"]);
 liveSplitCoreNative.RunEditor_clear_times = emscriptenModule.cwrap('RunEditor_clear_times', null, ["number"]);
+liveSplitCoreNative.RunEditor_clean_sum_of_best = emscriptenModule.cwrap('RunEditor_clean_sum_of_best', "number", ["number"]);
 liveSplitCoreNative.RunMetadata_run_id = emscriptenModule.cwrap('RunMetadata_run_id', "string", ["number"]);
 liveSplitCoreNative.RunMetadata_platform_name = emscriptenModule.cwrap('RunMetadata_platform_name', "string", ["number"]);
 liveSplitCoreNative.RunMetadata_uses_emulator = emscriptenModule.cwrap('RunMetadata_uses_emulator', "number", ["number"]);
@@ -501,6 +504,9 @@ liveSplitCoreNative.SplitsComponentState_delta = emscriptenModule.cwrap('SplitsC
 liveSplitCoreNative.SplitsComponentState_time = emscriptenModule.cwrap('SplitsComponentState_time', "string", ["number", "number"]);
 liveSplitCoreNative.SplitsComponentState_semantic_color = emscriptenModule.cwrap('SplitsComponentState_semantic_color', "string", ["number", "number"]);
 liveSplitCoreNative.SplitsComponentState_is_current_split = emscriptenModule.cwrap('SplitsComponentState_is_current_split', "number", ["number", "number"]);
+liveSplitCoreNative.SumOfBestCleaner_drop = emscriptenModule.cwrap('SumOfBestCleaner_drop', null, ["number"]);
+liveSplitCoreNative.SumOfBestCleaner_next_potential_clean_up = emscriptenModule.cwrap('SumOfBestCleaner_next_potential_clean_up', "number", ["number"]);
+liveSplitCoreNative.SumOfBestCleaner_apply = emscriptenModule.cwrap('SumOfBestCleaner_apply', null, ["number", "number"]);
 liveSplitCoreNative.SumOfBestComponent_new = emscriptenModule.cwrap('SumOfBestComponent_new', "number", []);
 liveSplitCoreNative.SumOfBestComponent_drop = emscriptenModule.cwrap('SumOfBestComponent_drop', null, ["number"]);
 liveSplitCoreNative.SumOfBestComponent_into_generic = emscriptenModule.cwrap('SumOfBestComponent_into_generic', "number", ["number"]);
@@ -1867,6 +1873,39 @@ export class PossibleTimeSaveComponentState extends PossibleTimeSaveComponentSta
     }
 }
 
+export class PotentialCleanUpRef {
+    ptr: number;
+    message(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = liveSplitCoreNative.PotentialCleanUp_message(this.ptr);
+        return result;
+    }
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+export class PotentialCleanUpRefMut extends PotentialCleanUpRef {
+}
+
+export class PotentialCleanUp extends PotentialCleanUpRefMut {
+    with(closure: (obj: PotentialCleanUp) => void) {
+        try {
+            closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    dispose() {
+        if (this.ptr != 0) {
+            liveSplitCoreNative.PotentialCleanUp_drop(this.ptr);
+            this.ptr = 0;
+        }
+    }
+}
+
 export class PreviousSegmentComponentRef {
     ptr: number;
     stateAsJson(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): any {
@@ -2365,6 +2404,13 @@ export class RunEditorRefMut extends RunEditorRef {
             throw "this is disposed";
         }
         liveSplitCoreNative.RunEditor_clear_times(this.ptr);
+    }
+    cleanSumOfBest(): SumOfBestCleaner {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = new SumOfBestCleaner(liveSplitCoreNative.RunEditor_clean_sum_of_best(this.ptr));
+        return result;
     }
     setGameIconFromArray(data: Int8Array) {
         const buf = emscriptenModule._malloc(data.length);
@@ -3112,6 +3158,52 @@ export class SplitsComponentState extends SplitsComponentStateRefMut {
     dispose() {
         if (this.ptr != 0) {
             liveSplitCoreNative.SplitsComponentState_drop(this.ptr);
+            this.ptr = 0;
+        }
+    }
+}
+
+export class SumOfBestCleanerRef {
+    ptr: number;
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+export class SumOfBestCleanerRefMut extends SumOfBestCleanerRef {
+    nextPotentialCleanUp(): PotentialCleanUp | null {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = new PotentialCleanUp(liveSplitCoreNative.SumOfBestCleaner_next_potential_clean_up(this.ptr));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    apply(cleanUp: PotentialCleanUp) {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (cleanUp.ptr == 0) {
+            throw "cleanUp is disposed";
+        }
+        liveSplitCoreNative.SumOfBestCleaner_apply(this.ptr, cleanUp.ptr);
+        cleanUp.ptr = 0;
+    }
+}
+
+export class SumOfBestCleaner extends SumOfBestCleanerRefMut {
+    with(closure: (obj: SumOfBestCleaner) => void) {
+        try {
+            closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    dispose() {
+        if (this.ptr != 0) {
+            liveSplitCoreNative.SumOfBestCleaner_drop(this.ptr);
             this.ptr = 0;
         }
     }

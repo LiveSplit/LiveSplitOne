@@ -1,4 +1,5 @@
 import * as React from "react";
+import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
 import * as LiveSplit from "../livesplit";
 import { openFileAsArrayBuffer } from "../util/FileUtil";
 import { TextBox } from "./TextBox";
@@ -15,6 +16,7 @@ interface RowState {
     splitTimeIsValid: boolean,
     segmentTimeIsValid: boolean,
     bestSegmentTimeIsValid: boolean,
+    comparisonIsValid: boolean[],
     index: number,
 }
 
@@ -31,6 +33,7 @@ export class RunEditor extends React.Component<Props, State> {
             offsetIsValid: true,
             rowState: {
                 bestSegmentTimeIsValid: true,
+                comparisonIsValid: [],
                 index: 0,
                 segmentTimeIsValid: true,
                 splitTimeIsValid: true,
@@ -46,6 +49,13 @@ export class RunEditor extends React.Component<Props, State> {
         const gameIconSize = 118;
         const segmentIconSize = 19;
 
+        let gameIconContextTrigger: any = null;
+        const gameIconToggleMenu = (e: any) => {
+            if (gameIconContextTrigger) {
+                gameIconContextTrigger.handleContextClick(e);
+            }
+        };
+
         return (
             <div className="run-editor">
                 <div className="run-editor-info">
@@ -59,20 +69,39 @@ export class RunEditor extends React.Component<Props, State> {
                             padding: 10,
                             width: gameIconSize,
                         }}
-                        onClick={(_) => this.changeGameIcon()}
+                        onClick={(e) => {
+                            if (gameIcon !== "") {
+                                gameIconToggleMenu(e);
+                            } else {
+                                this.changeGameIcon();
+                            }
+                        }}
                     >
-                        {
-                            gameIcon !== "" &&
-                            <img
-                                src={gameIcon}
-                                style={{
-                                    "height": gameIconSize,
-                                    "object-fit": "contain",
-                                    "width": gameIconSize,
-                                }}
-                            />
-                        }
+                        <ContextMenuTrigger
+                            id="game-icon-context-menu"
+                            ref={(c) => gameIconContextTrigger = c}
+                        >
+                            {
+                                gameIcon !== "" &&
+                                <img
+                                    src={gameIcon}
+                                    style={{
+                                        "height": gameIconSize,
+                                        "object-fit": "contain",
+                                        "width": gameIconSize,
+                                    }}
+                                />
+                            }
+                        </ContextMenuTrigger>
                     </div>
+                    <ContextMenu id="game-icon-context-menu">
+                        <MenuItem onClick={(_) => this.changeGameIcon()}>
+                            Set Icon
+                        </MenuItem>
+                        <MenuItem onClick={(_) => this.removeGameIcon()}>
+                            Remove Icon
+                        </MenuItem>
+                    </ContextMenu>
                     <table className="run-editor-info-table">
                         <tbody>
                             <tr>
@@ -99,7 +128,7 @@ export class RunEditor extends React.Component<Props, State> {
                                         className="run-editor-offset"
                                         value={this.state.editor.offset}
                                         onChange={(e) => this.handleOffsetChange(e)}
-                                        onBlur={(e) => this.handleOffsetBlur(e)}
+                                        onBlur={(_) => this.handleOffsetBlur()}
                                         small
                                         invalid={!this.state.offsetIsValid}
                                         label="Offset"
@@ -110,7 +139,7 @@ export class RunEditor extends React.Component<Props, State> {
                                         className="run-editor-attempts"
                                         value={this.state.editor.attempts}
                                         onChange={(e) => this.handleAttemptsChange(e)}
-                                        onBlur={(e) => this.handleAttemptsBlur(e)}
+                                        onBlur={(_) => this.handleAttemptsBlur()}
                                         small
                                         invalid={!this.state.attemptCountIsValid}
                                         label="Attempts"
@@ -144,14 +173,10 @@ export class RunEditor extends React.Component<Props, State> {
                 </div>
                 <div className="editer-group">
                     <div className="btn-group">
-                        <button
-                            onClick={(_) => this.insertSegmentAbove()}
-                        >
+                        <button onClick={(_) => this.insertSegmentAbove()}>
                             Insert Above
                         </button>
-                        <button
-                            onClick={(_) => this.insertSegmentBelow()}
-                        >
+                        <button onClick={(_) => this.insertSegmentBelow()}>
                             Insert Below
                         </button>
                         <button
@@ -172,6 +197,15 @@ export class RunEditor extends React.Component<Props, State> {
                         >
                             Move Down
                         </button>
+                        <button onClick={(_) => this.addComparison()}>
+                            Add Comparison
+                        </button>
+                        <button onClick={(_) => this.importComparison()}>
+                            Import Comparison
+                        </button>
+                        <button>
+                            Other…
+                        </button>
                     </div>
                     <table className="table run-editor-table">
                         <thead className="table-header">
@@ -184,11 +218,56 @@ export class RunEditor extends React.Component<Props, State> {
                             <td>Split Time</td>
                             <td>Segment Time</td>
                             <td>Best Segment</td>
+                            {
+                                this.state.editor.comparison_names.map((comparison, comparisonIndex) => {
+                                    let contextTrigger: any = null;
+                                    const toggleMenu = (e: any) => {
+                                        if (contextTrigger) {
+                                            contextTrigger.handleContextClick(e);
+                                        }
+                                    };
+                                    const id = `comparison-${comparisonIndex}-context-menu`;
+                                    return (
+                                        <td
+                                            style={{
+                                                cursor: "pointer",
+                                            }}
+                                            onClick={(e) => toggleMenu(e)}
+                                        >
+                                            <ContextMenuTrigger
+                                                id={id}
+                                                ref={(c) => contextTrigger = c}
+                                            >
+                                                {comparison}
+                                            </ContextMenuTrigger>
+                                            <ContextMenu id={id}>
+                                                <MenuItem onClick={(_) =>
+                                                    this.renameComparison(comparison)
+                                                }>
+                                                    Rename
+                                                </MenuItem>
+                                                <MenuItem onClick={(_) =>
+                                                    this.removeComparison(comparison)
+                                                }>
+                                                    Remove
+                                                </MenuItem>
+                                            </ContextMenu>
+                                        </td>
+                                    );
+                                })
+                            }
                         </thead>
                         <tbody className="table-body">
                             {
                                 this.state.editor.segments.map((s, segmentIndex) => {
                                     const segmentIcon = this.getSegmentIconUrl(segmentIndex);
+                                    const segmentIconContextMenuId = `segment-icon-${segmentIndex}-context-menu`;
+                                    let segmentIconContextTrigger: any = null;
+                                    const segmentIconToggleMenu = (e: any) => {
+                                        if (segmentIconContextTrigger) {
+                                            segmentIconContextTrigger.handleContextClick(e);
+                                        }
+                                    };
                                     return (
                                         <tr
                                             key={segmentIndex.toString()}
@@ -209,19 +288,38 @@ export class RunEditor extends React.Component<Props, State> {
                                                     paddingTop: 2,
                                                     width: segmentIconSize,
                                                 }}
-                                                onClick={(_) => this.changeSegmentIcon(segmentIndex)}
+                                                onClick={(e) => {
+                                                    if (segmentIcon !== "") {
+                                                        segmentIconToggleMenu(e);
+                                                    } else {
+                                                        this.changeSegmentIcon(segmentIndex);
+                                                    }
+                                                }}
                                             >
-                                                {
-                                                    segmentIcon !== "" &&
-                                                    <img
-                                                        src={segmentIcon}
-                                                        style={{
-                                                            "height": segmentIconSize,
-                                                            "object-fit": "contain",
-                                                            "width": segmentIconSize,
-                                                        }}
-                                                    />
-                                                }
+                                                <ContextMenuTrigger
+                                                    id={segmentIconContextMenuId}
+                                                    ref={(c) => segmentIconContextTrigger = c}
+                                                >
+                                                    {
+                                                        segmentIcon !== "" &&
+                                                        <img
+                                                            src={segmentIcon}
+                                                            style={{
+                                                                "height": segmentIconSize,
+                                                                "object-fit": "contain",
+                                                                "width": segmentIconSize,
+                                                            }}
+                                                        />
+                                                    }
+                                                </ContextMenuTrigger>
+                                                <ContextMenu id={segmentIconContextMenuId}>
+                                                    <MenuItem onClick={(_) => this.changeSegmentIcon(segmentIndex)}>
+                                                        Set Icon
+                                                    </MenuItem>
+                                                    <MenuItem onClick={(_) => this.removeSegmentIcon(segmentIndex)}>
+                                                        Remove Icon
+                                                    </MenuItem>
+                                                </ContextMenu>
                                             </td>
                                             <td>
                                                 <input
@@ -244,7 +342,7 @@ export class RunEditor extends React.Component<Props, State> {
                                                     value={s.split_time}
                                                     onFocus={(_) => this.focusSegment(segmentIndex)}
                                                     onChange={(e) => this.handleSplitTimeChange(e)}
-                                                    onBlur={(e) => this.handleSplitTimeBlur(e)}
+                                                    onBlur={(_) => this.handleSplitTimeBlur()}
                                                 />
                                             </td>
                                             <td>
@@ -259,7 +357,7 @@ export class RunEditor extends React.Component<Props, State> {
                                                     value={s.segment_time}
                                                     onFocus={(_) => this.focusSegment(segmentIndex)}
                                                     onChange={(e) => this.handleSegmentTimeChange(e)}
-                                                    onBlur={(e) => this.handleSegmentTimeBlur(e)}
+                                                    onBlur={(_) => this.handleSegmentTimeBlur()}
                                                 />
                                             </td>
                                             <td>
@@ -274,9 +372,37 @@ export class RunEditor extends React.Component<Props, State> {
                                                     value={s.best_segment_time}
                                                     onFocus={(_) => this.focusSegment(segmentIndex)}
                                                     onChange={(e) => this.handleBestSegmentTimeChange(e)}
-                                                    onBlur={(e) => this.handleBestSegmentTimeBlur(e)}
+                                                    onBlur={(_) => this.handleBestSegmentTimeBlur()}
                                                 />
                                             </td>
+                                            {
+                                                this
+                                                    .state
+                                                    .editor
+                                                    .segments[segmentIndex]
+                                                    .comparison_times
+                                                    .map((comparisonTime, comparisonIndex) => (
+                                                        <td>
+                                                            <input
+                                                                className={
+                                                                    this.state.rowState.index !== segmentIndex ||
+                                                                        this.isComparisonValid(comparisonIndex) ?
+                                                                        "number" :
+                                                                        "number invalid"
+                                                                }
+                                                                type="text"
+                                                                value={comparisonTime}
+                                                                onFocus={(_) => this.focusSegment(segmentIndex)}
+                                                                onChange={(e) =>
+                                                                    this.handleComparisonTimeChange(e, comparisonIndex)
+                                                                }
+                                                                onBlur={(_) =>
+                                                                    this.handleComparisonTimeBlur(comparisonIndex)
+                                                                }
+                                                            />
+                                                        </td>
+                                                    ))
+                                            }
                                         </tr>
                                     );
                                 })
@@ -288,12 +414,76 @@ export class RunEditor extends React.Component<Props, State> {
         )
     }
 
+    private importComparison() {
+        openFileAsArrayBuffer((data, file) => {
+            const run = LiveSplit.Run.parseArray(new Int8Array(data));
+            if (!run) {
+                alert("Couldn't parse the splits.");
+                return;
+            }
+            run.with((run) => {
+                const comparisonName = prompt("Comparison Name:", file.name.replace(/\.[^/.]+$/, ""));
+                if (!comparisonName) {
+                    return;
+                }
+                const valid = this.props.editor.importComparison(run, comparisonName);
+                if (!valid) {
+                    alert("The comparison could not be added. It may be a duplicate or a reserved name.");
+                } else {
+                    this.update();
+                }
+            });
+        });
+    }
+
+    private addComparison() {
+        const comparisonName = prompt("Comparison Name:");
+        if (comparisonName) {
+            const valid = this.props.editor.addComparison(comparisonName);
+            if (valid) {
+                this.update();
+            } else {
+                alert("The comparison could not be added. It may be a duplicate or a reserved name.");
+            }
+        }
+    }
+
+    private renameComparison(comparison: string) {
+        const newName = prompt("Comparison Name:", comparison);
+        if (newName) {
+            const valid = this.props.editor.renameComparison(comparison, newName);
+            if (valid) {
+                this.update();
+            } else {
+                alert("The comparison could not be renamed. It may be a duplicate or a reserved name.");
+            }
+        }
+    }
+
+    private removeComparison(comparison: string) {
+        this.props.editor.removeComparison(comparison);
+        this.update();
+    }
+
+    private isComparisonValid(index: number): boolean {
+        while (index >= this.state.rowState.comparisonIsValid.length) {
+            this.state.rowState.comparisonIsValid.push(true);
+        }
+        return this.state.rowState.comparisonIsValid[index];
+    }
+
     private changeSegmentIcon(index: number) {
         this.props.editor.selectOnly(index);
         openFileAsArrayBuffer((file) => {
             this.props.editor.selectedSetIconFromArray(new Int8Array(file));
             this.update();
         });
+        this.update();
+    }
+
+    private removeSegmentIcon(index: number) {
+        this.props.editor.selectOnly(index);
+        this.props.editor.selectedRemoveIcon();
         this.update();
     }
 
@@ -313,6 +503,11 @@ export class RunEditor extends React.Component<Props, State> {
             this.props.editor.setGameIconFromArray(new Int8Array(file));
             this.update();
         });
+    }
+
+    private removeGameIcon() {
+        this.props.editor.removeGameIcon();
+        this.update();
     }
 
     private getGameIcon(): string {
@@ -351,7 +546,7 @@ export class RunEditor extends React.Component<Props, State> {
         });
     }
 
-    private handleOffsetBlur(_: any) {
+    private handleOffsetBlur() {
         this.setState({
             ...this.state,
             editor: this.props.editor.stateAsJson(),
@@ -371,7 +566,7 @@ export class RunEditor extends React.Component<Props, State> {
         });
     }
 
-    private handleAttemptsBlur(_: any) {
+    private handleAttemptsBlur() {
         this.setState({
             ...this.state,
             attemptCountIsValid: true,
@@ -444,7 +639,26 @@ export class RunEditor extends React.Component<Props, State> {
         });
     }
 
-    private handleSplitTimeBlur(_: any) {
+    private handleComparisonTimeChange(event: any, comparisonIndex: number) {
+        const comparisonName = this.state.editor.comparison_names[comparisonIndex];
+        const valid = this.props.editor.selectedParseAndSetComparisonTime(comparisonName, event.target.value);
+        const editor = {
+            ...this.state.editor,
+        };
+        editor.segments[this.state.rowState.index].comparison_times[comparisonIndex] = event.target.value;
+        const comparisonIsValid = { ...this.state.rowState.comparisonIsValid };
+        comparisonIsValid[comparisonIndex] = valid;
+        this.setState({
+            ...this.state,
+            editor,
+            rowState: {
+                ...this.state.rowState,
+                comparisonIsValid,
+            },
+        });
+    }
+
+    private handleSplitTimeBlur() {
         this.setState({
             ...this.state,
             editor: this.props.editor.stateAsJson(),
@@ -455,7 +669,7 @@ export class RunEditor extends React.Component<Props, State> {
         });
     }
 
-    private handleSegmentTimeBlur(_: any) {
+    private handleSegmentTimeBlur() {
         this.setState({
             ...this.state,
             editor: this.props.editor.stateAsJson(),
@@ -466,13 +680,27 @@ export class RunEditor extends React.Component<Props, State> {
         });
     }
 
-    private handleBestSegmentTimeBlur(_: any) {
+    private handleBestSegmentTimeBlur() {
         this.setState({
             ...this.state,
             editor: this.props.editor.stateAsJson(),
             rowState: {
                 ...this.state.rowState,
                 bestSegmentTimeIsValid: true,
+            },
+        });
+    }
+
+    private handleComparisonTimeBlur(comparisonIndex: number) {
+        const comparisonIsValid = { ...this.state.rowState.comparisonIsValid };
+        comparisonIsValid[comparisonIndex] = true;
+
+        this.setState({
+            ...this.state,
+            editor: this.props.editor.stateAsJson(),
+            rowState: {
+                ...this.state.rowState,
+                comparisonIsValid,
             },
         });
     }
