@@ -56,6 +56,13 @@ export class RunEditor extends React.Component<Props, State> {
             }
         };
 
+        let otherButtonContextTrigger: any = null;
+        const otherButtonToggleMenu = (e: any) => {
+            if (otherButtonContextTrigger) {
+                otherButtonContextTrigger.handleContextClick(e);
+            }
+        };
+
         return (
             <div className="run-editor">
                 <div className="run-editor-info">
@@ -203,8 +210,21 @@ export class RunEditor extends React.Component<Props, State> {
                         <button onClick={(_) => this.importComparison()}>
                             Import Comparison
                         </button>
-                        <button>
-                            Other…
+                        <button onClick={(e) => otherButtonToggleMenu(e)}>
+                            <ContextMenuTrigger
+                                id="other-button-context-menu"
+                                ref={(c) => otherButtonContextTrigger = c}
+                            >
+                                Other…
+                            </ContextMenuTrigger>
+                            <ContextMenu id="other-button-context-menu">
+                                <MenuItem onClick={(_) => this.clearHistory()}>
+                                    Clear History
+                                </MenuItem>
+                                <MenuItem onClick={(_) => this.clearTimes()}>
+                                    Clear Times
+                                </MenuItem>
+                            </ContextMenu>
                         </button>
                     </div>
                     <table className="table run-editor-table">
@@ -266,6 +286,8 @@ export class RunEditor extends React.Component<Props, State> {
                                     const segmentIconToggleMenu = (e: any) => {
                                         if (segmentIconContextTrigger) {
                                             segmentIconContextTrigger.handleContextClick(e);
+                                            this.props.editor.selectOnly(segmentIndex);
+                                            this.update();
                                         }
                                     };
                                     return (
@@ -412,6 +434,16 @@ export class RunEditor extends React.Component<Props, State> {
                 </div>
             </div >
         )
+    }
+
+    private clearHistory() {
+        this.props.editor.clearHistory();
+        this.update();
+    }
+
+    private clearTimes() {
+        this.props.editor.clearTimes();
+        this.update();
     }
 
     private importComparison() {
