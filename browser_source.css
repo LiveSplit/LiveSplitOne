@@ -1,8 +1,10 @@
-body, .livesplit, .livesplit-container, .buttons {
+body, .livesplit-container, .buttons {
     background-color: rgba(0, 0, 0, 0);
-    margin: 0px;
-    padding: 0px;
     overflow: hidden !important;
+}
+
+.livesplit-container > div {
+    margin: 0px !important;
 }
 
 .sidebar {
