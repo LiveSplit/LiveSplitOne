@@ -3,6 +3,8 @@ import * as ReactDOM from "react-dom";
 
 import { LiveSplit } from "./ui/LiveSplit";
 
+import "./css/livesplit.css";
+
 ReactDOM.render(
     <div>
         <LiveSplit />

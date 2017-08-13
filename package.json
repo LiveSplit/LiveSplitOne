@@ -25,9 +25,13 @@
   },
   "devDependencies": {
     "awesome-typescript-loader": "^3.0.0-beta.17",
+    "css-loader": "^0.28.4",
+    "file-loader": "^0.11.2",
     "source-map-loader": "^0.1.5",
+    "style-loader": "^0.18.2",
     "tslint": "^5.5.0",
     "typescript": "^2.1.4",
+    "url-loader": "^0.5.9",
     "webpack": "~2.2.1"
   }
 }

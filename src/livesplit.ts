@@ -415,17 +415,25 @@ liveSplitCoreNative.RunEditor_set_category_name = emscriptenModule.cwrap('RunEdi
 liveSplitCoreNative.RunEditor_parse_and_set_offset = emscriptenModule.cwrap('RunEditor_parse_and_set_offset', "number", ["number", "string"]);
 liveSplitCoreNative.RunEditor_parse_and_set_attempt_count = emscriptenModule.cwrap('RunEditor_parse_and_set_attempt_count', "number", ["number", "string"]);
 liveSplitCoreNative.RunEditor_set_game_icon = emscriptenModule.cwrap('RunEditor_set_game_icon', null, ["number", "number", "number"]);
+liveSplitCoreNative.RunEditor_remove_game_icon = emscriptenModule.cwrap('RunEditor_remove_game_icon', null, ["number"]);
 liveSplitCoreNative.RunEditor_insert_segment_above = emscriptenModule.cwrap('RunEditor_insert_segment_above', null, ["number"]);
 liveSplitCoreNative.RunEditor_insert_segment_below = emscriptenModule.cwrap('RunEditor_insert_segment_below', null, ["number"]);
 liveSplitCoreNative.RunEditor_remove_segments = emscriptenModule.cwrap('RunEditor_remove_segments', null, ["number"]);
 liveSplitCoreNative.RunEditor_move_segments_up = emscriptenModule.cwrap('RunEditor_move_segments_up', null, ["number"]);
 liveSplitCoreNative.RunEditor_move_segments_down = emscriptenModule.cwrap('RunEditor_move_segments_down', null, ["number"]);
 liveSplitCoreNative.RunEditor_selected_set_icon = emscriptenModule.cwrap('RunEditor_selected_set_icon', null, ["number", "number", "number"]);
+liveSplitCoreNative.RunEditor_selected_remove_icon = emscriptenModule.cwrap('RunEditor_selected_remove_icon', null, ["number"]);
 liveSplitCoreNative.RunEditor_selected_set_name = emscriptenModule.cwrap('RunEditor_selected_set_name', null, ["number", "string"]);
 liveSplitCoreNative.RunEditor_selected_parse_and_set_split_time = emscriptenModule.cwrap('RunEditor_selected_parse_and_set_split_time', "number", ["number", "string"]);
 liveSplitCoreNative.RunEditor_selected_parse_and_set_segment_time = emscriptenModule.cwrap('RunEditor_selected_parse_and_set_segment_time', "number", ["number", "string"]);
 liveSplitCoreNative.RunEditor_selected_parse_and_set_best_segment_time = emscriptenModule.cwrap('RunEditor_selected_parse_and_set_best_segment_time', "number", ["number", "string"]);
 liveSplitCoreNative.RunEditor_selected_parse_and_set_comparison_time = emscriptenModule.cwrap('RunEditor_selected_parse_and_set_comparison_time', "number", ["number", "string", "string"]);
+liveSplitCoreNative.RunEditor_add_comparison = emscriptenModule.cwrap('RunEditor_add_comparison', "number", ["number", "string"]);
+liveSplitCoreNative.RunEditor_import_comparison = emscriptenModule.cwrap('RunEditor_import_comparison', "number", ["number", "number", "string"]);
+liveSplitCoreNative.RunEditor_remove_comparison = emscriptenModule.cwrap('RunEditor_remove_comparison', null, ["number", "string"]);
+liveSplitCoreNative.RunEditor_rename_comparison = emscriptenModule.cwrap('RunEditor_rename_comparison', "number", ["number", "string", "string"]);
+liveSplitCoreNative.RunEditor_clear_history = emscriptenModule.cwrap('RunEditor_clear_history', null, ["number"]);
+liveSplitCoreNative.RunEditor_clear_times = emscriptenModule.cwrap('RunEditor_clear_times', null, ["number"]);
 liveSplitCoreNative.RunMetadata_run_id = emscriptenModule.cwrap('RunMetadata_run_id', "string", ["number"]);
 liveSplitCoreNative.RunMetadata_platform_name = emscriptenModule.cwrap('RunMetadata_platform_name', "string", ["number"]);
 liveSplitCoreNative.RunMetadata_uses_emulator = emscriptenModule.cwrap('RunMetadata_uses_emulator', "number", ["number"]);
@@ -2234,6 +2242,12 @@ export class RunEditorRefMut extends RunEditorRef {
         }
         liveSplitCoreNative.RunEditor_set_game_icon(this.ptr, data, length);
     }
+    removeGameIcon() {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.RunEditor_remove_game_icon(this.ptr);
+    }
     insertSegmentAbove() {
         if (this.ptr == 0) {
             throw "this is disposed";
@@ -2270,6 +2284,12 @@ export class RunEditorRefMut extends RunEditorRef {
         }
         liveSplitCoreNative.RunEditor_selected_set_icon(this.ptr, data, length);
     }
+    selectedRemoveIcon() {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.RunEditor_selected_remove_icon(this.ptr);
+    }
     selectedSetName(name: string) {
         if (this.ptr == 0) {
             throw "this is disposed";
@@ -2303,6 +2323,48 @@ export class RunEditorRefMut extends RunEditorRef {
         }
         const result = liveSplitCoreNative.RunEditor_selected_parse_and_set_comparison_time(this.ptr, comparison, time) != 0;
         return result;
+    }
+    addComparison(comparison: string): boolean {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = liveSplitCoreNative.RunEditor_add_comparison(this.ptr, comparison) != 0;
+        return result;
+    }
+    importComparison(run: RunRef, comparison: string): boolean {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (run.ptr == 0) {
+            throw "run is disposed";
+        }
+        const result = liveSplitCoreNative.RunEditor_import_comparison(this.ptr, run.ptr, comparison) != 0;
+        return result;
+    }
+    removeComparison(comparison: string) {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.RunEditor_remove_comparison(this.ptr, comparison);
+    }
+    renameComparison(oldName: string, newName: string): boolean {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = liveSplitCoreNative.RunEditor_rename_comparison(this.ptr, oldName, newName) != 0;
+        return result;
+    }
+    clearHistory() {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.RunEditor_clear_history(this.ptr);
+    }
+    clearTimes() {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.RunEditor_clear_times(this.ptr);
     }
     setGameIconFromArray(data: Int8Array) {
         const buf = emscriptenModule._malloc(data.length);
