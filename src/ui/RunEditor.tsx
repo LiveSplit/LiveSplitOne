@@ -224,6 +224,9 @@ export class RunEditor extends React.Component<Props, State> {
                                 <MenuItem onClick={(_) => this.clearTimes()}>
                                     Clear Times
                                 </MenuItem>
+                                <MenuItem onClick={(_) => this.cleanSumOfBest()}>
+                                    Clean Sum of Best
+                                </MenuItem>
                             </ContextMenu>
                         </button>
                     </div>
@@ -434,6 +437,24 @@ export class RunEditor extends React.Component<Props, State> {
                 </div>
             </div >
         )
+    }
+
+    private cleanSumOfBest() {
+        this.props.editor.cleanSumOfBest().with((cleaner) => {
+            while (true) {
+                const potentialCleanUp = cleaner.nextPotentialCleanUp();
+                if (!potentialCleanUp) {
+                    break;
+                }
+                potentialCleanUp.with((potentialCleanUp) => {
+                    const message = potentialCleanUp.message();
+                    if (confirm(message)) {
+                        cleaner.apply(potentialCleanUp);
+                    }
+                });
+            }
+        });
+        this.update();
     }
 
     private clearHistory() {
