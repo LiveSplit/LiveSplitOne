@@ -5,9 +5,11 @@
   "main": "dist/bundle.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "webpack": "webpack -w",
     "run": "python -m SimpleHTTPServer 8080",
-    "lint": "node_modules/.bin/tslint"
+    "lint": "node_modules/.bin/tslint",
+    "watch": "webpack --progress --watch",
+    "start": "webpack-dev-server --open",
+    "build": "webpack"
   },
   "author": "",
   "license": "ISC",
@@ -32,6 +34,7 @@
     "tslint": "^5.5.0",
     "typescript": "^2.1.4",
     "url-loader": "^0.5.9",
-    "webpack": "~2.2.1"
+    "webpack": "~2.2.1",
+    "webpack-dev-server": "^2.7.1"
   }
 }
