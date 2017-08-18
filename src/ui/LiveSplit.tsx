@@ -2,23 +2,21 @@ import * as React from "react";
 import Sidebar from "react-sidebar";
 import AutoRefreshLayout from "../layout/AutoRefreshLayout";
 import { Layout, LayoutEditor, Run, RunEditor, Segment, Timer, TimerPhase, TimingMethod } from "../livesplit";
-import { openFileAsArrayBuffer } from "../util/FileUtil";
+import { exportFile, openFileAsArrayBuffer } from "../util/FileUtil";
 import { andThen, assertNull, expect, maybeDispose, maybeDisposeAndThen } from "../util/OptionUtil";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
+import SideBarContent from "./SideBarContent";
 
 export interface State {
     timer: Timer,
     layout: Layout,
     sidebarOpen: boolean,
-    timingMethod: TimingMethod | null,
-    comparison: string | null,
     runEditor: RunEditor | null,
     layoutEditor: LayoutEditor | null,
 }
 
 export class LiveSplit extends React.Component<{}, State> {
-    private intervalID: any;
     private keyEvent: EventListenerObject;
     private scrollEvent: EventListenerObject;
     private rightClickEvent: EventListenerObject;
@@ -69,13 +67,11 @@ export class LiveSplit extends React.Component<{}, State> {
         }
 
         this.state = {
-            comparison: null,
             layout,
             layoutEditor: null,
             runEditor: null,
             sidebarOpen: false,
             timer,
-            timingMethod: null,
         };
     }
 
@@ -86,14 +82,9 @@ export class LiveSplit extends React.Component<{}, State> {
         window.addEventListener("keypress", this.keyEvent);
         this.rightClickEvent = { handleEvent: (e: any) => this.onRightClick(e) };
         window.addEventListener("contextmenu", this.rightClickEvent, false);
-        this.intervalID = setInterval(
-            () => this.update(),
-            1000 / 30,
-        );
     }
 
     public componentWillUnmount() {
-        clearInterval(this.intervalID);
         window.removeEventListener("wheel", this.scrollEvent);
         window.removeEventListener("keypress", this.keyEvent);
         window.removeEventListener("contextmenu", this.rightClickEvent);
@@ -102,111 +93,23 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     public render() {
-        let sidebarContent;
+        let page: "run-editor" | "layout-editor" | "main";
         if (this.state.runEditor) {
-            sidebarContent =
-                <div className="sidebar-buttons">
-                    <div className="small">
-                        <button
-                            className="toggle-left"
-                            onClick={(_) => this.closeRunEditor(true)}
-                        >
-                            <i className="fa fa-check" aria-hidden="true" /> OK
-                        </button>
-                        <button
-                            className="toggle-right"
-                            onClick={(_) => this.closeRunEditor(false)}
-                        >
-                            <i className="fa fa-times" aria-hidden="true" /> Cancel
-                        </button>
-                    </div>
-                </div>;
+            page = "run-editor";
         } else if (this.state.layoutEditor) {
-            sidebarContent =
-                <div className="sidebar-buttons">
-                    <div className="small">
-                        <button
-                            className="toggle-left"
-                            onClick={(_) => this.closeLayoutEditor(true)}
-                        >
-                            <i className="fa fa-check" aria-hidden="true" /> OK
-                        </button>
-                        <button
-                            className="toggle-right"
-                            onClick={(_) => this.closeLayoutEditor(false)}
-                        >
-                            <i className="fa fa-times" aria-hidden="true" /> Cancel
-                        </button>
-                    </div>
-                </div>;
+            page = "layout-editor";
         } else {
-            sidebarContent =
-                <div className="sidebar-buttons">
-                    <button onClick={(_) => this.openRunEditor()}>
-                        <i className="fa fa-pencil-square-o" aria-hidden="true" /> Edit Splits
-                    </button>
-                    <hr />
-                    <button onClick={(_) => this.saveSplits()}>
-                        <i className="fa fa-floppy-o" aria-hidden="true" /> Save
-                    </button>
-                    <button onClick={(_) => this.importSplits()}>
-                        <i className="fa fa-download" aria-hidden="true" /> Import
-                    </button>
-                    <button onClick={(_) => this.exportSplits()}>
-                        <i className="fa fa-upload" aria-hidden="true" /> Export
-                    </button>
-                    <button onClick={(_) => this.openFromSplitsIO()}>
-                        <i className="fa fa-cloud-download" aria-hidden="true" /> From splits i/o
-                    </button>
-                    <button onClick={(_) => this.uploadToSplitsIO()}>
-                        <i className="fa fa-cloud-upload" aria-hidden="true" /> Upload to splits i/o
-                    </button>
-                    <hr />
-                    <button onClick={(_) => this.openLayoutEditor()}>
-                        <i className="fa fa-pencil-square-o" aria-hidden="true" /> Edit Layout
-                    </button>
-                    <button onClick={(_) => this.saveLayout()}>
-                        <i className="fa fa-floppy-o" aria-hidden="true" /> Save Layout
-                    </button>
-                    <hr />
-                    <h2>Compare Against</h2>
-                    <div className="choose-comparison">
-                        <button onClick={(_) => this.onPreviousComparison()}>
-                            <i className="fa fa-caret-left" aria-hidden="true" />
-                        </button>
-                        <span>{this.state.comparison}</span>
-                        <button onClick={(_) => this.onNextComparison()}>
-                            <i className="fa fa-caret-right" aria-hidden="true" />
-                        </button>
-                    </div>
-                    <div className="small">
-                        <button
-                            onClick={(_) => {
-                                this.state.timer.setCurrentTimingMethod(TimingMethod.RealTime);
-                                this.update();
-                            }}
-                            className={
-                                (this.state.timingMethod === TimingMethod.RealTime ? "button-pressed" : "") +
-                                " toggle-left"
-                            }
-                        >
-                            Real Time
-                        </button>
-                        <button
-                            onClick={(_) => {
-                                this.state.timer.setCurrentTimingMethod(TimingMethod.GameTime);
-                                this.update();
-                            }}
-                            className={
-                                (this.state.timingMethod === TimingMethod.GameTime ? "button-pressed" : "") +
-                                " toggle-right"
-                            }
-                        >
-                            Game Time
-                        </button>
-                    </div>
-                </div>;
+            page = "main";
         }
+
+        const sidebarContent =
+            <SideBarContent
+                page={page}
+                callbacks={this}
+                accessTimer={(closure) => {
+                    closure(this.state.timer);
+                }}
+            />;
 
         let content;
         if (this.state.runEditor) {
@@ -262,70 +165,7 @@ export class LiveSplit extends React.Component<{}, State> {
         );
     }
 
-    private onScroll(e: WheelEvent) {
-        const delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.deltaY)));
-        if (delta === 1) {
-            this.state.layout.scrollUp();
-        } else if (delta === -1) {
-            this.state.layout.scrollDown();
-        }
-    }
-
-    private update() {
-        if (!this.state.runEditor && !this.state.layoutEditor) {
-            this.setState({
-                ...this.state,
-                comparison: this.state.timer.currentComparison(),
-                timingMethod: this.state.timer.currentTimingMethod(),
-            });
-        }
-    }
-
-    private onSetSidebarOpen(open: boolean) {
-        this.setState({
-            ...this.state,
-            sidebarOpen: open,
-        });
-    }
-
-    private onRightClick(e: any) {
-        this.onSetSidebarOpen(true);
-        e.preventDefault();
-    }
-
-    private onSplit() {
-        this.state.timer.splitOrStart();
-    }
-
-    private onReset() {
-        this.state.timer.reset(true);
-    }
-
-    private onPause() {
-        this.state.timer.togglePauseOrStart();
-    }
-
-    private onUndo() {
-        this.state.timer.undoSplit();
-    }
-
-    private onSkip() {
-        this.state.timer.skipSplit();
-    }
-
-    private onPreviousComparison() {
-        this.state.timer.switchToPreviousComparison();
-    }
-
-    private onNextComparison() {
-        this.state.timer.switchToNextComparison();
-    }
-
-    private onPrintDebug() {
-        this.state.timer.printDebug();
-    }
-
-    private importSplits() {
+    public importSplits() {
         openFileAsArrayBuffer((file) => {
             const timer = this.state.timer;
             const run = Run.parseArray(new Int8Array(file));
@@ -340,33 +180,20 @@ export class LiveSplit extends React.Component<{}, State> {
         });
     }
 
-    private loadFromSplitsIO(id: string) {
-        const component = this;
-        const apiXhr = new XMLHttpRequest();
-        apiXhr.open("GET", "https://splits.io/api/v4/runs/" + id, true);
-        apiXhr.onload = () => {
-            const response = JSON.parse(apiXhr.responseText);
-            if (response && response.run && response.run.program) {
-                const xhr = new XMLHttpRequest();
-                xhr.open("GET", "https://splits.io/" + id + "/download/" + response.run.program, true);
-                xhr.responseType = "arraybuffer";
-                xhr.onload = () => {
-                    const timer = component.state.timer;
-                    maybeDispose(
-                        andThen(
-                            Run.parseArray(new Int8Array(xhr.response)),
-                            (r) => timer.setRun(r),
-                        ),
-                    );
-                };
-                xhr.send(null);
-            }
-        };
-        apiXhr.send(null);
+    public setCurrentTimingMethod(timingMethod: TimingMethod) {
+        this.state.timer.setCurrentTimingMethod(timingMethod);
     }
 
-    private openFromSplitsIO() {
-        let id = prompt("Specify the splits i/o URL or ID");
+    public switchToPreviousComparison() {
+        this.state.timer.switchToPreviousComparison();
+    }
+
+    public switchToNextComparison() {
+        this.state.timer.switchToNextComparison();
+    }
+
+    public openFromSplitsIO() {
+        let id = prompt("Specify the splits i/o URL or ID:");
         if (!id) {
             return;
         }
@@ -376,7 +203,7 @@ export class LiveSplit extends React.Component<{}, State> {
         this.loadFromSplitsIO(id);
     }
 
-    private uploadToSplitsIO() {
+    public uploadToSplitsIO() {
         const lss = this.state.timer.getRun().saveAsLss();
         let xhr = new XMLHttpRequest();
         xhr.open("POST", "https://splits.io/api/v4/runs", true);
@@ -414,35 +241,22 @@ export class LiveSplit extends React.Component<{}, State> {
         xhr.send(null);
     }
 
-    private exportSplits() {
-        function download(filename: any, text: any) {
-            const element = document.createElement("a");
-            element.setAttribute("href", "data:application/octet-stream;charset=utf-8," + encodeURIComponent(text));
-            element.setAttribute("download", filename);
-
-            element.style.display = "none";
-            document.body.appendChild(element);
-
-            element.click();
-
-            document.body.removeChild(element);
-        }
-
+    public exportSplits() {
         const lss = this.state.timer.getRun().saveAsLss();
-        download(this.state.timer.getRun().extendedFileName(true) + ".lss", lss);
+        exportFile(this.state.timer.getRun().extendedFileName(true) + ".lss", lss);
     }
 
-    private saveSplits() {
+    public saveSplits() {
         const lss = this.state.timer.getRun().saveAsLss();
         localStorage.setItem("splits", lss);
     }
 
-    private saveLayout() {
+    public saveLayout() {
         const layout = this.state.layout.settingsAsJson();
         localStorage.setItem("layout", JSON.stringify(layout));
     }
 
-    private openRunEditor() {
+    public openRunEditor() {
         if (this.state.timer.currentPhase() === TimerPhase.NotRunning) {
             const run = this.state.timer.getRun().clone();
             const editor = RunEditor.new(run);
@@ -456,7 +270,7 @@ export class LiveSplit extends React.Component<{}, State> {
         }
     }
 
-    private closeRunEditor(save: boolean) {
+    public closeRunEditor(save: boolean) {
         const runEditor = expect(
             this.state.runEditor,
             "No Run Editor to close",
@@ -483,7 +297,7 @@ export class LiveSplit extends React.Component<{}, State> {
         this.state.layout.remount();
     }
 
-    private openLayoutEditor() {
+    public openLayoutEditor() {
         const layout = this.state.layout.clone();
         const editor = LayoutEditor.new(layout);
         this.setState({
@@ -493,7 +307,7 @@ export class LiveSplit extends React.Component<{}, State> {
         });
     }
 
-    private closeLayoutEditor(save: boolean) {
+    public closeLayoutEditor(save: boolean) {
         const layoutEditor = expect(
             this.state.layoutEditor,
             "No Layout Editor to close",
@@ -517,6 +331,76 @@ export class LiveSplit extends React.Component<{}, State> {
             });
             this.state.layout.remount();
         }
+    }
+
+    private loadFromSplitsIO(id: string) {
+        const component = this;
+        const apiXhr = new XMLHttpRequest();
+        apiXhr.open("GET", "https://splits.io/api/v4/runs/" + id, true);
+        apiXhr.onload = () => {
+            const response = JSON.parse(apiXhr.responseText);
+            if (response && response.run && response.run.program) {
+                const xhr = new XMLHttpRequest();
+                xhr.open("GET", "https://splits.io/" + id + "/download/" + response.run.program, true);
+                xhr.responseType = "arraybuffer";
+                xhr.onload = () => {
+                    const timer = component.state.timer;
+                    maybeDispose(
+                        andThen(
+                            Run.parseArray(new Int8Array(xhr.response)),
+                            (r) => timer.setRun(r),
+                        ),
+                    );
+                };
+                xhr.send(null);
+            }
+        };
+        apiXhr.send(null);
+    }
+
+    private onScroll(e: WheelEvent) {
+        const delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.deltaY)));
+        if (delta === 1) {
+            this.state.layout.scrollUp();
+        } else if (delta === -1) {
+            this.state.layout.scrollDown();
+        }
+    }
+
+    private onSetSidebarOpen(open: boolean) {
+        this.setState({
+            ...this.state,
+            sidebarOpen: open,
+        });
+    }
+
+    private onRightClick(e: any) {
+        this.onSetSidebarOpen(true);
+        e.preventDefault();
+    }
+
+    private onSplit() {
+        this.state.timer.splitOrStart();
+    }
+
+    private onReset() {
+        this.state.timer.reset(true);
+    }
+
+    private onPause() {
+        this.state.timer.togglePauseOrStart();
+    }
+
+    private onUndo() {
+        this.state.timer.undoSplit();
+    }
+
+    private onSkip() {
+        this.state.timer.skipSplit();
+    }
+
+    private onPrintDebug() {
+        this.state.timer.printDebug();
     }
 
     private onKeyPress(e: KeyboardEvent) {
@@ -547,7 +431,7 @@ export class LiveSplit extends React.Component<{}, State> {
             }
             case 52: {
                 // NumPad 4
-                this.onPreviousComparison();
+                this.switchToPreviousComparison();
                 break;
             }
             case 53: {
@@ -557,7 +441,7 @@ export class LiveSplit extends React.Component<{}, State> {
             }
             case 54: {
                 // NumPad 6
-                this.onNextComparison();
+                this.switchToNextComparison();
                 break;
             }
             case 55: {
