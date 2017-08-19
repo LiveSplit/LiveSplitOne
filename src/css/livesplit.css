@@ -446,7 +446,7 @@ button {
 }
 .btn-group button {
     font-size: 15px;
-	width: 140px;
+	width: 160px;
 	height: 30px;
 	margin-right: 5px;
 	display: block;
@@ -530,8 +530,18 @@ input.number {
     font-family: 'Roboto', sans-serif;
 }
 
+.run-editor-table {
+    margin-left: 5px;
+}
+
 .run-editor-info {
     display: inline-flex;
+    margin-bottom: 10px;
+}
+
+.run-editor-info-table {
+    padding-top: 10px;
+    margin-left: 15px;
 }
 
 table.run-editor-info-table > tbody > tr > td {
@@ -544,7 +554,7 @@ table.run-editor-table > tbody > tr > td > input:not(.name) {
 
 .timing-selection > button {
     position: relative;
-    left: 145px;
+    left: 170px;
     width: 100px;
 }
 

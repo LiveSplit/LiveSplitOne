@@ -46,7 +46,7 @@ export class RunEditor extends React.Component<Props, State> {
 
     public render() {
         const gameIcon = this.getGameIcon();
-        const gameIconSize = 118;
+        const gameIconSize = 138;
         const segmentIconSize = 19;
 
         let gameIconContextTrigger: any = null;
