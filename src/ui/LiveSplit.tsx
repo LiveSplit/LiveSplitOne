@@ -6,7 +6,7 @@ import { exportFile, openFileAsArrayBuffer } from "../util/FileUtil";
 import { andThen, assertNull, expect, maybeDispose, maybeDisposeAndThen } from "../util/OptionUtil";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
-import SideBarContent from "./SideBarContent";
+import { Route, SideBarContent } from "./SideBarContent";
 
 export interface State {
     timer: Timer,
@@ -93,64 +93,66 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     public render() {
-        let page: "run-editor" | "layout-editor" | "main";
-        if (this.state.runEditor) {
-            page = "run-editor";
-        } else if (this.state.layoutEditor) {
-            page = "layout-editor";
-        } else {
-            page = "main";
-        }
+        const { route, content } = ((): { route: Route, content: JSX.Element } => {
+            if (this.state.runEditor) {
+                return {
+                    route: "run-editor",
+                    content: <RunEditorComponent editor={this.state.runEditor} />,
+                };
+            } else if (this.state.layoutEditor) {
+                return {
+                    route: "layout-editor",
+                    content: <LayoutEditorComponent
+                        editor={this.state.layoutEditor}
+                        timer={this.state.timer}
+                    />,
+                };
+            } else {
+                return {
+                    route: "main",
+                    content: <div
+                        style={{
+                            margin: "10px",
+                            marginBottom: "5px",
+                        }}
+                    >
+                        <AutoRefreshLayout
+                            getState={() => this.state.layout.stateAsJson(this.state.timer)}
+                        />
+                        <div className="buttons">
+                            <button onClick={(_) => this.onSplit()}>
+                                <i className="fa fa-play" aria-hidden="true" />
+                            </button>
+                            <div className="small">
+                                <button onClick={(_) => this.onUndo()}>
+                                    <i className="fa fa-arrow-up" aria-hidden="true" /></button>
+                                <button onClick={(_) => this.onPause()}>
+                                    <i className="fa fa-pause" aria-hidden="true" />
+                                </button>
+                            </div>
+                            <div className="small">
+                                <button onClick={(_) => this.onSkip()}>
+                                    <i className="fa fa-arrow-down" aria-hidden="true" />
+                                </button>
+                                <button onClick={(_) => this.onReset()}>
+                                    <i className="fa fa-times" aria-hidden="true" />
+                                </button>
+                            </div>
+                        </div>
+                    </div>,
+                };
+            }
+        })();
 
-        const sidebarContent =
+        const sidebarContent = (
             <SideBarContent
-                page={page}
+                route={route}
                 callbacks={this}
                 accessTimer={(closure) => {
                     closure(this.state.timer);
                 }}
-            />;
-
-        let content;
-        if (this.state.runEditor) {
-            content = <RunEditorComponent editor={this.state.runEditor} />;
-        } else if (this.state.layoutEditor) {
-            content = <LayoutEditorComponent
-                editor={this.state.layoutEditor}
-                timer={this.state.timer}
-            />;
-        } else {
-            content = <div
-                style={{
-                    margin: "10px",
-                    marginBottom: "5px",
-                }}
-            >
-                <AutoRefreshLayout
-                    getState={() => this.state.layout.stateAsJson(this.state.timer)}
-                />
-                <div className="buttons">
-                    <button onClick={(_) => this.onSplit()}>
-                        <i className="fa fa-play" aria-hidden="true" />
-                    </button>
-                    <div className="small">
-                        <button onClick={(_) => this.onUndo()}>
-                            <i className="fa fa-arrow-up" aria-hidden="true" /></button>
-                        <button onClick={(_) => this.onPause()}>
-                            <i className="fa fa-pause" aria-hidden="true" />
-                        </button>
-                    </div>
-                    <div className="small">
-                        <button onClick={(_) => this.onSkip()}>
-                            <i className="fa fa-arrow-down" aria-hidden="true" />
-                        </button>
-                        <button onClick={(_) => this.onReset()}>
-                            <i className="fa fa-times" aria-hidden="true" />
-                        </button>
-                    </div>
-                </div>
-            </div>;
-        }
+            />
+        );
 
         return (
             <Sidebar

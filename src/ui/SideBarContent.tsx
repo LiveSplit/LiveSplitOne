@@ -1,6 +1,8 @@
 import * as React from "react";
 import { TimerRefMut, TimingMethod } from "../livesplit";
 
+export type Route = "main" | "run-editor" | "layout-editor";
+
 export interface SidebarCallbacks {
     closeRunEditor(save: boolean): void,
     closeLayoutEditor(save: boolean): void,
@@ -18,7 +20,7 @@ export interface SidebarCallbacks {
 }
 
 export interface Props {
-    page: "main" | "run-editor" | "layout-editor",
+    route: Route,
     callbacks: SidebarCallbacks,
     accessTimer(closure: (timer: TimerRefMut) => void): void,
 }
@@ -28,7 +30,7 @@ export interface State {
     timingMethod: TimingMethod | null,
 }
 
-export default class SideBarContent extends React.Component<Props, State> {
+export class SideBarContent extends React.Component<Props, State> {
     private intervalID: any;
 
     constructor(props: Props) {
@@ -52,7 +54,7 @@ export default class SideBarContent extends React.Component<Props, State> {
     }
 
     public render() {
-        switch (this.props.page) {
+        switch (this.props.route) {
             case "run-editor": {
                 return (
                     <div className="sidebar-buttons">
@@ -166,7 +168,7 @@ export default class SideBarContent extends React.Component<Props, State> {
     }
 
     private update() {
-        if (this.props.page === "main") {
+        if (this.props.route === "main") {
             this.props.accessTimer((timer) => {
                 this.setState({
                     ...this.state,
