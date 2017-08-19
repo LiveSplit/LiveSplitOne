@@ -638,9 +638,9 @@ export class AtomicDateTimeRefMut extends AtomicDateTimeRef {
 }
 
 export class AtomicDateTime extends AtomicDateTimeRefMut {
-    with(closure: (obj: AtomicDateTime) => void) {
+    with<T>(closure: (obj: AtomicDateTime) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -708,9 +708,9 @@ export class AttemptRefMut extends AttemptRef {
 }
 
 export class Attempt extends AttemptRefMut {
-    with(closure: (obj: Attempt) => void) {
+    with<T>(closure: (obj: Attempt) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -753,9 +753,9 @@ export class BlankSpaceComponentRefMut extends BlankSpaceComponentRef {
 }
 
 export class BlankSpaceComponent extends BlankSpaceComponentRefMut {
-    with(closure: (obj: BlankSpaceComponent) => void) {
+    with<T>(closure: (obj: BlankSpaceComponent) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -798,9 +798,9 @@ export class BlankSpaceComponentStateRefMut extends BlankSpaceComponentStateRef 
 }
 
 export class BlankSpaceComponentState extends BlankSpaceComponentStateRefMut {
-    with(closure: (obj: BlankSpaceComponentState) => void) {
+    with<T>(closure: (obj: BlankSpaceComponentState) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -824,9 +824,9 @@ export class ComponentRefMut extends ComponentRef {
 }
 
 export class Component extends ComponentRefMut {
-    with(closure: (obj: Component) => void) {
+    with<T>(closure: (obj: Component) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -870,9 +870,9 @@ export class CurrentComparisonComponentRefMut extends CurrentComparisonComponent
 }
 
 export class CurrentComparisonComponent extends CurrentComparisonComponentRefMut {
-    with(closure: (obj: CurrentComparisonComponent) => void) {
+    with<T>(closure: (obj: CurrentComparisonComponent) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -922,9 +922,9 @@ export class CurrentComparisonComponentStateRefMut extends CurrentComparisonComp
 }
 
 export class CurrentComparisonComponentState extends CurrentComparisonComponentStateRefMut {
-    with(closure: (obj: CurrentComparisonComponentState) => void) {
+    with<T>(closure: (obj: CurrentComparisonComponentState) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -968,9 +968,9 @@ export class CurrentPaceComponentRefMut extends CurrentPaceComponentRef {
 }
 
 export class CurrentPaceComponent extends CurrentPaceComponentRefMut {
-    with(closure: (obj: CurrentPaceComponent) => void) {
+    with<T>(closure: (obj: CurrentPaceComponent) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -1020,9 +1020,9 @@ export class CurrentPaceComponentStateRefMut extends CurrentPaceComponentStateRe
 }
 
 export class CurrentPaceComponentState extends CurrentPaceComponentStateRefMut {
-    with(closure: (obj: CurrentPaceComponentState) => void) {
+    with<T>(closure: (obj: CurrentPaceComponentState) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -1072,9 +1072,9 @@ export class DeltaComponentRefMut extends DeltaComponentRef {
 }
 
 export class DeltaComponent extends DeltaComponentRefMut {
-    with(closure: (obj: DeltaComponent) => void) {
+    with<T>(closure: (obj: DeltaComponent) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -1131,9 +1131,9 @@ export class DeltaComponentStateRefMut extends DeltaComponentStateRef {
 }
 
 export class DeltaComponentState extends DeltaComponentStateRefMut {
-    with(closure: (obj: DeltaComponentState) => void) {
+    with<T>(closure: (obj: DeltaComponentState) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -1183,9 +1183,9 @@ export class DetailedTimerComponentRefMut extends DetailedTimerComponentRef {
 }
 
 export class DetailedTimerComponent extends DetailedTimerComponentRefMut {
-    with(closure: (obj: DetailedTimerComponent) => void) {
+    with<T>(closure: (obj: DetailedTimerComponent) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -1312,9 +1312,9 @@ export class DetailedTimerComponentStateRefMut extends DetailedTimerComponentSta
 }
 
 export class DetailedTimerComponentState extends DetailedTimerComponentStateRefMut {
-    with(closure: (obj: DetailedTimerComponentState) => void) {
+    with<T>(closure: (obj: DetailedTimerComponentState) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -1338,9 +1338,9 @@ export class GeneralLayoutSettingsRefMut extends GeneralLayoutSettingsRef {
 }
 
 export class GeneralLayoutSettings extends GeneralLayoutSettingsRefMut {
-    with(closure: (obj: GeneralLayoutSettings) => void) {
+    with<T>(closure: (obj: GeneralLayoutSettings) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -1394,9 +1394,9 @@ export class GraphComponentRefMut extends GraphComponentRef {
 }
 
 export class GraphComponent extends GraphComponentRefMut {
-    with(closure: (obj: GraphComponent) => void) {
+    with<T>(closure: (obj: GraphComponent) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -1509,9 +1509,9 @@ export class GraphComponentStateRefMut extends GraphComponentStateRef {
 }
 
 export class GraphComponentState extends GraphComponentStateRefMut {
-    with(closure: (obj: GraphComponentState) => void) {
+    with<T>(closure: (obj: GraphComponentState) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -1535,9 +1535,9 @@ export class HotkeySystemRefMut extends HotkeySystemRef {
 }
 
 export class HotkeySystem extends HotkeySystemRefMut {
-    with(closure: (obj: HotkeySystem) => void) {
+    with<T>(closure: (obj: HotkeySystem) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -1624,9 +1624,9 @@ export class LayoutRefMut extends LayoutRef {
 }
 
 export class Layout extends LayoutRefMut {
-    with(closure: (obj: Layout) => void) {
+    with<T>(closure: (obj: Layout) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -1742,9 +1742,9 @@ export class LayoutEditorRefMut extends LayoutEditorRef {
 }
 
 export class LayoutEditor extends LayoutEditorRefMut {
-    with(closure: (obj: LayoutEditor) => void) {
+    with<T>(closure: (obj: LayoutEditor) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -1806,9 +1806,9 @@ export class PossibleTimeSaveComponentRefMut extends PossibleTimeSaveComponentRe
 }
 
 export class PossibleTimeSaveComponent extends PossibleTimeSaveComponentRefMut {
-    with(closure: (obj: PossibleTimeSaveComponent) => void) {
+    with<T>(closure: (obj: PossibleTimeSaveComponent) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -1858,9 +1858,9 @@ export class PossibleTimeSaveComponentStateRefMut extends PossibleTimeSaveCompon
 }
 
 export class PossibleTimeSaveComponentState extends PossibleTimeSaveComponentStateRefMut {
-    with(closure: (obj: PossibleTimeSaveComponentState) => void) {
+    with<T>(closure: (obj: PossibleTimeSaveComponentState) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -1891,9 +1891,9 @@ export class PotentialCleanUpRefMut extends PotentialCleanUpRef {
 }
 
 export class PotentialCleanUp extends PotentialCleanUpRefMut {
-    with(closure: (obj: PotentialCleanUp) => void) {
+    with<T>(closure: (obj: PotentialCleanUp) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -1943,9 +1943,9 @@ export class PreviousSegmentComponentRefMut extends PreviousSegmentComponentRef 
 }
 
 export class PreviousSegmentComponent extends PreviousSegmentComponentRefMut {
-    with(closure: (obj: PreviousSegmentComponent) => void) {
+    with<T>(closure: (obj: PreviousSegmentComponent) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -2002,9 +2002,9 @@ export class PreviousSegmentComponentStateRefMut extends PreviousSegmentComponen
 }
 
 export class PreviousSegmentComponentState extends PreviousSegmentComponentStateRefMut {
-    with(closure: (obj: PreviousSegmentComponentState) => void) {
+    with<T>(closure: (obj: PreviousSegmentComponentState) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -2155,9 +2155,9 @@ export class RunRefMut extends RunRef {
 }
 
 export class Run extends RunRefMut {
-    with(closure: (obj: Run) => void) {
+    with<T>(closure: (obj: Run) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -2433,9 +2433,9 @@ export class RunEditorRefMut extends RunEditorRef {
 }
 
 export class RunEditor extends RunEditorRefMut {
-    with(closure: (obj: RunEditor) => void) {
+    with<T>(closure: (obj: RunEditor) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -2512,9 +2512,9 @@ export class RunMetadataRefMut extends RunMetadataRef {
 }
 
 export class RunMetadata extends RunMetadataRefMut {
-    with(closure: (obj: RunMetadata) => void) {
+    with<T>(closure: (obj: RunMetadata) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -2551,9 +2551,9 @@ export class RunMetadataVariableRefMut extends RunMetadataVariableRef {
 }
 
 export class RunMetadataVariable extends RunMetadataVariableRefMut {
-    with(closure: (obj: RunMetadataVariable) => void) {
+    with<T>(closure: (obj: RunMetadataVariable) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -2587,9 +2587,9 @@ export class RunMetadataVariablesIterRefMut extends RunMetadataVariablesIterRef 
 }
 
 export class RunMetadataVariablesIter extends RunMetadataVariablesIterRefMut {
-    with(closure: (obj: RunMetadataVariablesIter) => void) {
+    with<T>(closure: (obj: RunMetadataVariablesIter) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -2655,9 +2655,9 @@ export class SegmentRefMut extends SegmentRef {
 }
 
 export class Segment extends SegmentRefMut {
-    with(closure: (obj: Segment) => void) {
+    with<T>(closure: (obj: Segment) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -2692,9 +2692,9 @@ export class SegmentHistoryRefMut extends SegmentHistoryRef {
 }
 
 export class SegmentHistory extends SegmentHistoryRefMut {
-    with(closure: (obj: SegmentHistory) => void) {
+    with<T>(closure: (obj: SegmentHistory) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -2731,9 +2731,9 @@ export class SegmentHistoryElementRefMut extends SegmentHistoryElementRef {
 }
 
 export class SegmentHistoryElement extends SegmentHistoryElementRefMut {
-    with(closure: (obj: SegmentHistoryElement) => void) {
+    with<T>(closure: (obj: SegmentHistoryElement) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -2766,9 +2766,9 @@ export class SegmentHistoryIterRefMut extends SegmentHistoryIterRef {
 }
 
 export class SegmentHistoryIter extends SegmentHistoryIterRefMut {
-    with(closure: (obj: SegmentHistoryIter) => void) {
+    with<T>(closure: (obj: SegmentHistoryIter) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -2792,9 +2792,9 @@ export class SeparatorComponentRefMut extends SeparatorComponentRef {
 }
 
 export class SeparatorComponent extends SeparatorComponentRefMut {
-    with(closure: (obj: SeparatorComponent) => void) {
+    with<T>(closure: (obj: SeparatorComponent) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -2830,9 +2830,9 @@ export class SettingValueRefMut extends SettingValueRef {
 }
 
 export class SettingValue extends SettingValueRefMut {
-    with(closure: (obj: SettingValue) => void) {
+    with<T>(closure: (obj: SettingValue) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -2947,14 +2947,14 @@ export class SharedTimerRef {
         liveSplitCoreNative.SharedTimer_replace_inner(this.ptr, timer.ptr);
         timer.ptr = 0;
     }
-    readWith(action: (timer: TimerRef) => void) {
-        this.read().with(function (lock) {
-            action(lock.timer());
+    readWith<T>(action: (timer: TimerRef) => T): T {
+        return this.read().with(function (lock) {
+            return action(lock.timer());
         });
     }
-    writeWith(action: (timer: TimerRefMut) => void) {
-        this.write().with(function (lock) {
-            action(lock.timer());
+    writeWith<T>(action: (timer: TimerRefMut) => T): T {
+        return this.write().with(function (lock) {
+            return action(lock.timer());
         });
     }
     constructor(ptr: number) {
@@ -2966,9 +2966,9 @@ export class SharedTimerRefMut extends SharedTimerRef {
 }
 
 export class SharedTimer extends SharedTimerRefMut {
-    with(closure: (obj: SharedTimer) => void) {
+    with<T>(closure: (obj: SharedTimer) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -3054,9 +3054,9 @@ export class SplitsComponentRefMut extends SplitsComponentRef {
 }
 
 export class SplitsComponent extends SplitsComponentRefMut {
-    with(closure: (obj: SplitsComponent) => void) {
+    with<T>(closure: (obj: SplitsComponent) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -3148,9 +3148,9 @@ export class SplitsComponentStateRefMut extends SplitsComponentStateRef {
 }
 
 export class SplitsComponentState extends SplitsComponentStateRefMut {
-    with(closure: (obj: SplitsComponentState) => void) {
+    with<T>(closure: (obj: SplitsComponentState) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -3194,9 +3194,9 @@ export class SumOfBestCleanerRefMut extends SumOfBestCleanerRef {
 }
 
 export class SumOfBestCleaner extends SumOfBestCleanerRefMut {
-    with(closure: (obj: SumOfBestCleaner) => void) {
+    with<T>(closure: (obj: SumOfBestCleaner) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -3240,9 +3240,9 @@ export class SumOfBestComponentRefMut extends SumOfBestComponentRef {
 }
 
 export class SumOfBestComponent extends SumOfBestComponentRefMut {
-    with(closure: (obj: SumOfBestComponent) => void) {
+    with<T>(closure: (obj: SumOfBestComponent) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -3292,9 +3292,9 @@ export class SumOfBestComponentStateRefMut extends SumOfBestComponentStateRef {
 }
 
 export class SumOfBestComponentState extends SumOfBestComponentStateRefMut {
-    with(closure: (obj: SumOfBestComponentState) => void) {
+    with<T>(closure: (obj: SumOfBestComponentState) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -3350,9 +3350,9 @@ export class TextComponentRefMut extends TextComponentRef {
 }
 
 export class TextComponent extends TextComponentRefMut {
-    with(closure: (obj: TextComponent) => void) {
+    with<T>(closure: (obj: TextComponent) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -3416,9 +3416,9 @@ export class TextComponentStateRefMut extends TextComponentStateRef {
 }
 
 export class TextComponentState extends TextComponentStateRefMut {
-    with(closure: (obj: TextComponentState) => void) {
+    with<T>(closure: (obj: TextComponentState) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -3479,9 +3479,9 @@ export class TimeRefMut extends TimeRef {
 }
 
 export class Time extends TimeRefMut {
-    with(closure: (obj: Time) => void) {
+    with<T>(closure: (obj: Time) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -3519,9 +3519,9 @@ export class TimeSpanRefMut extends TimeSpanRef {
 }
 
 export class TimeSpan extends TimeSpanRefMut {
-    with(closure: (obj: TimeSpan) => void) {
+    with<T>(closure: (obj: TimeSpan) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -3754,9 +3754,9 @@ export class TimerRefMut extends TimerRef {
 }
 
 export class Timer extends TimerRefMut {
-    with(closure: (obj: Timer) => void) {
+    with<T>(closure: (obj: Timer) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -3825,9 +3825,9 @@ export class TimerComponentRefMut extends TimerComponentRef {
 }
 
 export class TimerComponent extends TimerComponentRefMut {
-    with(closure: (obj: TimerComponent) => void) {
+    with<T>(closure: (obj: TimerComponent) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -3884,9 +3884,9 @@ export class TimerComponentStateRefMut extends TimerComponentStateRef {
 }
 
 export class TimerComponentState extends TimerComponentStateRefMut {
-    with(closure: (obj: TimerComponentState) => void) {
+    with<T>(closure: (obj: TimerComponentState) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -3917,9 +3917,9 @@ export class TimerReadLockRefMut extends TimerReadLockRef {
 }
 
 export class TimerReadLock extends TimerReadLockRefMut {
-    with(closure: (obj: TimerReadLock) => void) {
+    with<T>(closure: (obj: TimerReadLock) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -3950,9 +3950,9 @@ export class TimerWriteLockRefMut extends TimerWriteLockRef {
 }
 
 export class TimerWriteLock extends TimerWriteLockRefMut {
-    with(closure: (obj: TimerWriteLock) => void) {
+    with<T>(closure: (obj: TimerWriteLock) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -3996,9 +3996,9 @@ export class TitleComponentRefMut extends TitleComponentRef {
 }
 
 export class TitleComponent extends TitleComponentRefMut {
-    with(closure: (obj: TitleComponent) => void) {
+    with<T>(closure: (obj: TitleComponent) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -4090,9 +4090,9 @@ export class TitleComponentStateRefMut extends TitleComponentStateRef {
 }
 
 export class TitleComponentState extends TitleComponentStateRefMut {
-    with(closure: (obj: TitleComponentState) => void) {
+    with<T>(closure: (obj: TitleComponentState) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -4136,9 +4136,9 @@ export class TotalPlaytimeComponentRefMut extends TotalPlaytimeComponentRef {
 }
 
 export class TotalPlaytimeComponent extends TotalPlaytimeComponentRefMut {
-    with(closure: (obj: TotalPlaytimeComponent) => void) {
+    with<T>(closure: (obj: TotalPlaytimeComponent) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }
@@ -4188,9 +4188,9 @@ export class TotalPlaytimeComponentStateRefMut extends TotalPlaytimeComponentSta
 }
 
 export class TotalPlaytimeComponentState extends TotalPlaytimeComponentStateRefMut {
-    with(closure: (obj: TotalPlaytimeComponentState) => void) {
+    with<T>(closure: (obj: TotalPlaytimeComponentState) => T): T {
         try {
-            closure(this);
+            return closure(this);
         } finally {
             this.dispose();
         }

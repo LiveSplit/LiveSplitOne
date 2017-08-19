@@ -1,7 +1,10 @@
 import * as React from "react";
 import Sidebar from "react-sidebar";
 import AutoRefreshLayout from "../layout/AutoRefreshLayout";
-import { Layout, LayoutEditor, Run, RunEditor, Segment, Timer, TimerPhase, TimingMethod } from "../livesplit";
+import {
+    HotkeySystem, Layout, LayoutEditor, Run, RunEditor,
+    Segment, SharedTimer, Timer, TimerPhase, TimingMethod,
+} from "../livesplit";
 import { exportFile, openFileAsArrayBuffer } from "../util/FileUtil";
 import { andThen, assertNull, expect, maybeDispose, maybeDisposeAndThen } from "../util/OptionUtil";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
@@ -9,7 +12,8 @@ import { RunEditor as RunEditorComponent } from "./RunEditor";
 import { Route, SideBarContent } from "./SideBarContent";
 
 export interface State {
-    timer: Timer,
+    hotkeySystem: HotkeySystem | null,
+    timer: SharedTimer,
     layout: Layout,
     sidebarOpen: boolean,
     runEditor: RunEditor | null,
@@ -28,10 +32,13 @@ export class LiveSplit extends React.Component<{}, State> {
         run.setGameName("Game");
         run.setCategoryName("Category");
         run.pushSegment(Segment.new("Time"));
+
         const timer = expect(
             Timer.new(run),
             "The Default Run should be a valid Run",
-        );
+        ).intoShared();
+
+        const hotkeySystem = HotkeySystem.new(timer.share());
 
         if (window.location.hash.indexOf("#/splits-io/") === 0) {
             const loadingRun = Run.new();
@@ -39,7 +46,7 @@ export class LiveSplit extends React.Component<{}, State> {
             loadingRun.setCategoryName("Loading...");
             loadingRun.pushSegment(Segment.new("Time"));
             assertNull(
-                timer.setRun(loadingRun),
+                timer.writeWith((t) => t.setRun(loadingRun)),
                 "The Default Loading Run should be a valid Run",
             );
             this.loadFromSplitsIO(window.location.hash.substr("#/splits-io/".length));
@@ -49,7 +56,7 @@ export class LiveSplit extends React.Component<{}, State> {
                 maybeDispose(
                     andThen(
                         Run.parseString(lss),
-                        (r) => timer.setRun(r),
+                        (r) => timer.writeWith((t) => t.setRun(r)),
                     ),
                 );
             }
@@ -72,6 +79,7 @@ export class LiveSplit extends React.Component<{}, State> {
             runEditor: null,
             sidebarOpen: false,
             timer,
+            hotkeySystem,
         };
     }
 
@@ -90,6 +98,7 @@ export class LiveSplit extends React.Component<{}, State> {
         window.removeEventListener("contextmenu", this.rightClickEvent);
         this.state.timer.dispose();
         this.state.layout.dispose();
+        maybeDispose(this.state.hotkeySystem);
     }
 
     public render() {
@@ -117,7 +126,9 @@ export class LiveSplit extends React.Component<{}, State> {
                         }}
                     >
                         <AutoRefreshLayout
-                            getState={() => this.state.layout.stateAsJson(this.state.timer)}
+                            getState={() => this.state.timer.readWith(
+                                (t) => this.state.layout.stateAsJson(t),
+                            )}
                         />
                         <div className="buttons">
                             <button onClick={(_) => this.onSplit()}>
@@ -148,9 +159,7 @@ export class LiveSplit extends React.Component<{}, State> {
             <SideBarContent
                 route={route}
                 callbacks={this}
-                accessTimer={(closure) => {
-                    closure(this.state.timer);
-                }}
+                timer={this.state.timer}
             />
         );
 
@@ -173,7 +182,7 @@ export class LiveSplit extends React.Component<{}, State> {
             const run = Run.parseArray(new Int8Array(file));
             if (run) {
                 maybeDisposeAndThen(
-                    timer.setRun(run),
+                    timer.writeWith((t) => t.setRun(run)),
                     () => alert("Empty Splits are not supported."),
                 );
             } else {
@@ -183,15 +192,15 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     public setCurrentTimingMethod(timingMethod: TimingMethod) {
-        this.state.timer.setCurrentTimingMethod(timingMethod);
+        this.state.timer.writeWith((t) => t.setCurrentTimingMethod(timingMethod));
     }
 
     public switchToPreviousComparison() {
-        this.state.timer.switchToPreviousComparison();
+        this.state.timer.writeWith((t) => t.switchToPreviousComparison());
     }
 
     public switchToNextComparison() {
-        this.state.timer.switchToNextComparison();
+        this.state.timer.writeWith((t) => t.switchToNextComparison());
     }
 
     public openFromSplitsIO() {
@@ -206,16 +215,16 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     public uploadToSplitsIO() {
-        const lss = this.state.timer.getRun().saveAsLss();
-        let xhr = new XMLHttpRequest();
-        xhr.open("POST", "https://splits.io/api/v4/runs", true);
-        xhr.onload = () => {
-            const response = JSON.parse(xhr.responseText);
+        const lss = this.state.timer.readWith((t) => t.getRun().saveAsLss());
+        const firstRequest = new XMLHttpRequest();
+        firstRequest.open("POST", "https://splits.io/api/v4/runs", true);
+        firstRequest.onload = () => {
+            const response = JSON.parse(firstRequest.responseText);
             const claim_uri = response.uris.claim_uri;
             const request = response.presigned_request;
 
-            xhr = new XMLHttpRequest();
-            xhr.open(request.method, request.uri, true);
+            const secondRequest = new XMLHttpRequest();
+            secondRequest.open(request.method, request.uri, true);
 
             const formData = new FormData();
             const fields = request.fields;
@@ -228,28 +237,34 @@ export class LiveSplit extends React.Component<{}, State> {
             formData.append("x-amz-signature", fields["x-amz-signature"]);
             formData.append("file", lss);
 
-            xhr.onload = () => {
+            secondRequest.onload = () => {
                 window.open(claim_uri);
             };
-            xhr.onerror = () => {
+            secondRequest.onerror = () => {
                 alert("Failed to upload the splits.");
             };
 
-            xhr.send(formData);
+            secondRequest.send(formData);
         };
-        xhr.onerror = () => {
+        firstRequest.onerror = () => {
             alert("Failed to upload the splits.");
         };
-        xhr.send(null);
+        firstRequest.send(null);
     }
 
     public exportSplits() {
-        const lss = this.state.timer.getRun().saveAsLss();
-        exportFile(this.state.timer.getRun().extendedFileName(true) + ".lss", lss);
+        const { lss, name } = this.state.timer.readWith((t) => {
+            const run = t.getRun();
+            return {
+                lss: run.saveAsLss(),
+                name: run.extendedFileName(true),
+            }
+        });
+        exportFile(name + ".lss", lss);
     }
 
     public saveSplits() {
-        const lss = this.state.timer.getRun().saveAsLss();
+        const lss = this.state.timer.readWith((t) => t.getRun().saveAsLss());
         localStorage.setItem("splits", lss);
     }
 
@@ -259,8 +274,15 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     public openRunEditor() {
-        if (this.state.timer.currentPhase() === TimerPhase.NotRunning) {
-            const run = this.state.timer.getRun().clone();
+        const run = this.state.timer.readWith((t) => {
+            if (t.currentPhase() === TimerPhase.NotRunning) {
+                return t.getRun().clone();
+            } else {
+                return null;
+            }
+        });
+
+        if (run != null) {
             const editor = RunEditor.new(run);
             this.setState({
                 ...this.state,
@@ -280,7 +302,7 @@ export class LiveSplit extends React.Component<{}, State> {
         const run = runEditor.close();
         if (save) {
             assertNull(
-                this.state.timer.setRun(run),
+                this.state.timer.writeWith((t) => t.setRun(run)),
                 "The Run Editor should always return a valid Run",
             );
             this.setState({
@@ -350,7 +372,7 @@ export class LiveSplit extends React.Component<{}, State> {
                     maybeDispose(
                         andThen(
                             Run.parseArray(new Int8Array(xhr.response)),
-                            (r) => timer.setRun(r),
+                            (r) => timer.writeWith((t) => t.setRun(r)),
                         ),
                     );
                 };
@@ -382,27 +404,27 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     private onSplit() {
-        this.state.timer.splitOrStart();
+        this.state.timer.writeWith((t) => t.splitOrStart());
     }
 
     private onReset() {
-        this.state.timer.reset(true);
+        this.state.timer.writeWith((t) => t.reset(true));
     }
 
     private onPause() {
-        this.state.timer.togglePauseOrStart();
+        this.state.timer.writeWith((t) => t.togglePauseOrStart());
     }
 
     private onUndo() {
-        this.state.timer.undoSplit();
+        this.state.timer.writeWith((t) => t.undoSplit());
     }
 
     private onSkip() {
-        this.state.timer.skipSplit();
+        this.state.timer.writeWith((t) => t.skipSplit());
     }
 
     private onPrintDebug() {
-        this.state.timer.printDebug();
+        this.state.timer.readWith((t) => t.printDebug());
     }
 
     private onKeyPress(e: KeyboardEvent) {

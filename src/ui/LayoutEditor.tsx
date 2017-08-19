@@ -6,7 +6,7 @@ import SettingsComponent from "./Settings";
 
 export interface Props {
     editor: LiveSplit.LayoutEditor,
-    timer: LiveSplit.TimerRef,
+    timer: LiveSplit.SharedTimerRef,
 };
 export interface State {
     editor: LiveSplit.LayoutEditorStateJson,
@@ -205,7 +205,9 @@ export class LayoutEditor extends React.Component<Props, State> {
                     marginLeft: "15px",
                 }}>
                     <DragAutoRefreshLayout
-                        getState={() => this.props.editor.layoutStateAsJson(this.props.timer)}
+                        getState={() => this.props.timer.readWith(
+                            (t) => this.props.editor.layoutStateAsJson(t),
+                        )}
                         onClick={(i) => this.selectComponent(i)}
                         onDrag={(i) => {
                             this.props.editor.select(i);

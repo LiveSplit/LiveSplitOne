@@ -1,5 +1,5 @@
 import * as React from "react";
-import { TimerRefMut, TimingMethod } from "../livesplit";
+import { SharedTimerRef, TimingMethod } from "../livesplit";
 
 export type Route = "main" | "run-editor" | "layout-editor";
 
@@ -22,7 +22,7 @@ export interface SidebarCallbacks {
 export interface Props {
     route: Route,
     callbacks: SidebarCallbacks,
-    accessTimer(closure: (timer: TimerRefMut) => void): void,
+    timer: SharedTimerRef,
 }
 
 export interface State {
@@ -169,12 +169,17 @@ export class SideBarContent extends React.Component<Props, State> {
 
     private update() {
         if (this.props.route === "main") {
-            this.props.accessTimer((timer) => {
-                this.setState({
-                    ...this.state,
-                    comparison: timer.currentComparison(),
-                    timingMethod: timer.currentTimingMethod(),
-                });
+            const { comparison, timingMethod } = this.props.timer.readWith((t) => {
+                return {
+                    comparison: t.currentComparison(),
+                    timingMethod: t.currentTimingMethod(),
+                };
+            });
+
+            this.setState({
+                ...this.state,
+                comparison,
+                timingMethod,
             });
         }
     }
