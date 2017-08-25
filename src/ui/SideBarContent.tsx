@@ -23,6 +23,7 @@ export interface Props {
     route: Route,
     callbacks: SidebarCallbacks,
     timer: SharedTimerRef,
+    sidebarOpen: boolean,
 }
 
 export interface State {
@@ -168,7 +169,7 @@ export class SideBarContent extends React.Component<Props, State> {
     }
 
     private update() {
-        if (this.props.route === "main") {
+        if (this.props.route === "main" && this.props.sidebarOpen) {
             const { comparison, timingMethod } = this.props.timer.readWith((t) => {
                 return {
                     comparison: t.currentComparison(),
@@ -176,11 +177,13 @@ export class SideBarContent extends React.Component<Props, State> {
                 };
             });
 
-            this.setState({
-                ...this.state,
-                comparison,
-                timingMethod,
-            });
+            if (comparison !== this.state.comparison || timingMethod !== this.state.timingMethod) {
+                this.setState({
+                    ...this.state,
+                    comparison,
+                    timingMethod,
+                });
+            }
         }
     }
 }

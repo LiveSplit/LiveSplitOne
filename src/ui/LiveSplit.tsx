@@ -160,6 +160,7 @@ export class LiveSplit extends React.Component<{}, State> {
                 route={route}
                 callbacks={this}
                 timer={this.state.timer}
+                sidebarOpen={this.state.sidebarOpen}
             />
         );
 
