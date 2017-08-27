@@ -6,18 +6,18 @@ import {
     Segment, SharedTimer, Timer, TimerPhase, TimingMethod,
 } from "../livesplit";
 import { exportFile, openFileAsArrayBuffer } from "../util/FileUtil";
-import { andThen, assertNull, expect, maybeDispose, maybeDisposeAndThen } from "../util/OptionUtil";
+import { andThen, assertNull, expect, maybeDispose, maybeDisposeAndThen, Option } from "../util/OptionUtil";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
 import { Route, SideBarContent } from "./SideBarContent";
 
 export interface State {
-    hotkeySystem: HotkeySystem | null,
+    hotkeySystem: Option<HotkeySystem>,
     timer: SharedTimer,
     layout: Layout,
     sidebarOpen: boolean,
-    runEditor: RunEditor | null,
-    layoutEditor: LayoutEditor | null,
+    runEditor: Option<RunEditor>,
+    layoutEditor: Option<LayoutEditor>,
 }
 
 export class LiveSplit extends React.Component<{}, State> {
@@ -62,7 +62,7 @@ export class LiveSplit extends React.Component<{}, State> {
             }
         }
 
-        let layout: Layout | null = null;
+        let layout: Option<Layout> = null;
         try {
             const data = localStorage.getItem("layout");
             if (data) {

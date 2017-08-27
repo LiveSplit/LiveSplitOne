@@ -148,6 +148,11 @@ export class LayoutEditor extends React.Component<Props, State> {
                                 <i className="fa fa-minus" aria-hidden="true"></i>
                             </button>
                             <button
+                                onClick={(_) => this.duplicateComponent()}
+                            >
+                                <i className="fa fa-files-o" aria-hidden="true"></i>
+                            </button>
+                            <button
                                 onClick={(_) => this.moveComponentUp()}
                                 className={this.state.editor.buttons.can_move_up ? "" : "disabled"}
                             >
@@ -251,6 +256,11 @@ export class LayoutEditor extends React.Component<Props, State> {
 
     private moveComponentDown() {
         this.props.editor.moveComponentDown();
+        this.update();
+    }
+
+    private duplicateComponent() {
+        this.props.editor.duplicateComponent();
         this.update();
     }
 }

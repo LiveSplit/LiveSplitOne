@@ -363,6 +363,7 @@ liveSplitCoreNative.LayoutEditor_remove_component = emscriptenModule.cwrap('Layo
 liveSplitCoreNative.LayoutEditor_move_component_up = emscriptenModule.cwrap('LayoutEditor_move_component_up', null, ["number"]);
 liveSplitCoreNative.LayoutEditor_move_component_down = emscriptenModule.cwrap('LayoutEditor_move_component_down', null, ["number"]);
 liveSplitCoreNative.LayoutEditor_move_component = emscriptenModule.cwrap('LayoutEditor_move_component', null, ["number", "number"]);
+liveSplitCoreNative.LayoutEditor_duplicate_component = emscriptenModule.cwrap('LayoutEditor_duplicate_component', null, ["number"]);
 liveSplitCoreNative.LayoutEditor_set_component_settings_value = emscriptenModule.cwrap('LayoutEditor_set_component_settings_value', null, ["number", "number", "number"]);
 liveSplitCoreNative.LayoutEditor_set_general_settings_value = emscriptenModule.cwrap('LayoutEditor_set_general_settings_value', null, ["number", "number", "number"]);
 liveSplitCoreNative.PossibleTimeSaveComponent_new = emscriptenModule.cwrap('PossibleTimeSaveComponent_new', "number", []);
@@ -1718,6 +1719,12 @@ export class LayoutEditorRefMut extends LayoutEditorRef {
             throw "this is disposed";
         }
         liveSplitCoreNative.LayoutEditor_move_component(this.ptr, dstIndex);
+    }
+    duplicateComponent() {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.LayoutEditor_duplicate_component(this.ptr);
     }
     setComponentSettingsValue(index: number, value: SettingValue) {
         if (this.ptr == 0) {

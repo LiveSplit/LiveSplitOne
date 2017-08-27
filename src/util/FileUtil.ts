@@ -1,9 +1,11 @@
+import { Option } from "./OptionUtil";
+
 export function openFileAsArrayBuffer(callback: (data: ArrayBuffer, file: File) => void) {
     const input = document.createElement("input");
     input.setAttribute("type", "file");
     input.onchange = (e: any) => {
-        const file: File | null = e.target.files[0];
-        if (!file) {
+        const file: Option<File> = e.target.files[0];
+        if (file == null) {
             return;
         }
         const reader = new FileReader();

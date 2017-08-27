@@ -1,5 +1,6 @@
 import * as React from "react";
 import { SharedTimerRef, TimingMethod } from "../livesplit";
+import { Option } from "../util/OptionUtil";
 
 export type Route = "main" | "run-editor" | "layout-editor";
 
@@ -27,8 +28,8 @@ export interface Props {
 }
 
 export interface State {
-    comparison: string | null,
-    timingMethod: TimingMethod | null,
+    comparison: Option<string>,
+    timingMethod: Option<TimingMethod>,
 }
 
 export class SideBarContent extends React.Component<Props, State> {

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Color, SettingsDescriptionJson, SettingValue } from "../livesplit";
-import { expect } from "../util/OptionUtil";
+import { expect, Option } from "../util/OptionUtil";
 import ColorPicker from "./ColorPicker";
 
 export interface Props {
@@ -194,8 +194,8 @@ export default class SettingsComponent extends React.Component<Props> {
                 }
                 case "Gradient": {
                     let type: string;
-                    let color1: Color | null = null;
-                    let color2: Color | null = null;
+                    let color1: Option<Color> = null;
+                    let color2: Option<Color> = null;
 
                     if (value.Gradient !== "Transparent") {
                         type = Object.keys(value.Gradient)[0];
@@ -221,8 +221,8 @@ export default class SettingsComponent extends React.Component<Props> {
 
                     const colorsToValue = (
                         type: string,
-                        color1: Color | null,
-                        color2: Color | null,
+                        color1: Option<Color>,
+                        color2: Option<Color>,
                     ) => {
                         color1 = color1 ? color1 : [0.0, 0.0, 0.0, 0.0];
                         color2 = color2 ? color2 : color1;
