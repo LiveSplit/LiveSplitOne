@@ -2,7 +2,7 @@ import * as React from "react";
 import * as LiveSplit from "../livesplit";
 import { gradientToCss } from "../util/ColorUtil";
 
-export interface Props { state: LiveSplit.SumOfBestComponentStateJson };
+export interface Props { state: LiveSplit.SumOfBestComponentStateJson }
 
 export default class SumOfBest extends React.Component<Props> {
     public render() {
@@ -22,6 +22,6 @@ export default class SumOfBest extends React.Component<Props> {
                     </tbody>
                 </table>
             </div>
-        )
+        );
     }
 }

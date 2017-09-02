@@ -7,10 +7,11 @@ export interface Props { state: LiveSplit.TimerComponentStateJson }
 export function renderToSVG(
     state: LiveSplit.TimerComponentStateJson,
     className = "timer",
-    height = 60,
 ): JSX.Element {
     const time = state.time;
     const fraction = state.fraction;
+    const height = state.height;
+
     let shiftX;
     switch (state.fraction.length) {
         case 0: shiftX = 0; break;

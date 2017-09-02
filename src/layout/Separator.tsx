@@ -15,6 +15,6 @@ export default class Separator extends React.Component<Props> {
                     backgroundColor: colorToCss(this.props.layoutState.separators_color),
                 }}
             />
-        )
+        );
     }
 }

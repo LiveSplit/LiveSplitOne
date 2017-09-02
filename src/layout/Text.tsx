@@ -28,6 +28,6 @@ export default class Text extends React.Component<Props> {
                     </tbody>
                 </table>
             </div>
-        )
+        );
     }
 }

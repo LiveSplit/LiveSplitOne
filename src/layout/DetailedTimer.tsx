@@ -12,29 +12,14 @@ export default class DetailedTimer extends React.Component<Props> {
         children.push(renderToSVG(
             this.props.state.timer,
             "timer",
-            40,
         ));
 
         children.push(renderToSVG(
             this.props.state.segment_timer,
             "segment-timer",
-            25,
         ));
 
         const leftSide = [];
-
-        function formatComparison(comparison: LiveSplit.DetailedTimerComponentComparisonStateJson) {
-            return (
-                <tr>
-                    <td>{comparison.name + ":"}</td>
-                    <td className="time" style={{
-                        "padding-left": "6px",
-                    }}>
-                        {comparison.time}
-                    </td>
-                </tr>
-            );
-        }
 
         const table = [];
 
@@ -61,4 +46,17 @@ export default class DetailedTimer extends React.Component<Props> {
             </div>
         );
     }
+}
+
+function formatComparison(comparison: LiveSplit.DetailedTimerComponentComparisonStateJson) {
+    return (
+        <tr>
+            <td>{comparison.name + ":"}</td>
+            <td className="time" style={{
+                paddingLeft: 6,
+            }}>
+                {comparison.time}
+            </td>
+        </tr>
+    );
 }

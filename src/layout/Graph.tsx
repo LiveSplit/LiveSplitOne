@@ -7,7 +7,7 @@ export interface Props { state: LiveSplit.GraphComponentStateJson }
 export default class Graph extends React.Component<Props> {
     public render() {
         const width = 300;
-        const height = 110;
+        const height = this.props.state.height;
 
         const middle = height * this.props.state.middle;
 

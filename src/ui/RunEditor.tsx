@@ -4,7 +4,7 @@ import * as LiveSplit from "../livesplit";
 import { openFileAsArrayBuffer } from "../util/FileUtil";
 import { TextBox } from "./TextBox";
 
-export interface Props { editor: LiveSplit.RunEditor };
+export interface Props { editor: LiveSplit.RunEditor }
 export interface State {
     editor: LiveSplit.RunEditorStateJson,
     offsetIsValid: boolean,
@@ -178,7 +178,7 @@ export class RunEditor extends React.Component<Props, State> {
                         Game Time
                     </button>
                 </div>
-                <div className="editer-group">
+                <div className="editor-group">
                     <div className="btn-group">
                         <button onClick={(_) => this.insertSegmentAbove()}>
                             Insert Above
@@ -217,18 +217,18 @@ export class RunEditor extends React.Component<Props, State> {
                             >
                                 Other…
                             </ContextMenuTrigger>
-                            <ContextMenu id="other-button-context-menu">
-                                <MenuItem onClick={(_) => this.clearHistory()}>
-                                    Clear History
-                                </MenuItem>
-                                <MenuItem onClick={(_) => this.clearTimes()}>
-                                    Clear Times
-                                </MenuItem>
-                                <MenuItem onClick={(_) => this.cleanSumOfBest()}>
-                                    Clean Sum of Best
-                                </MenuItem>
-                            </ContextMenu>
                         </button>
+                        <ContextMenu id="other-button-context-menu">
+                            <MenuItem onClick={(_) => this.clearHistory()}>
+                                Clear History
+                            </MenuItem>
+                            <MenuItem onClick={(_) => this.clearTimes()}>
+                                Clear Times
+                            </MenuItem>
+                            <MenuItem onClick={(_) => this.cleanSumOfBest()}>
+                                Clean Sum of Best
+                            </MenuItem>
+                        </ContextMenu>
                     </div>
                     <table className="table run-editor-table">
                         <thead className="table-header">
@@ -436,7 +436,7 @@ export class RunEditor extends React.Component<Props, State> {
                     </table>
                 </div>
             </div >
-        )
+        );
     }
 
     private cleanSumOfBest() {
@@ -564,7 +564,7 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private getGameIcon(): string {
-        if (this.state.editor.icon_change !== null) {
+        if (this.state.editor.icon_change != null) {
             this.gameIcon = this.state.editor.icon_change;
         }
         return this.gameIcon;

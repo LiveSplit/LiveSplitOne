@@ -1,4 +1,4 @@
-import { Color, Gradient } from "../livesplit"
+import { Color, Gradient } from "../livesplit";
 
 export function colorToCss(color: Color): string {
     const r = Math.round(color[0] * 255);

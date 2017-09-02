@@ -1,10 +1,12 @@
-const path = require('path');
+const path = require("path");
 
 const basePath = __dirname;
 const distPath = path.join(basePath, "dist");
 
+const isProduction = process.env.NODE_ENV === "production";
+
 module.exports = {
-    entry: "./src/index.tsx",
+    entry: ["babel-polyfill", "whatwg-fetch", "./src/index.tsx"],
     output: {
         filename: "bundle.js",
         path: distPath,
@@ -21,28 +23,50 @@ module.exports = {
 
     resolve: {
         // Add '.ts' and '.tsx' as resolvable extensions.
-        extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"]
+        extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
     },
 
     module: {
         loaders: [
             // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
-            { test: /\.tsx?$/, loader: "awesome-typescript-loader" },
+            {
+                test: /\.tsx?$/,
+                use: [
+                    {
+                        loader: "babel-loader",
+                        options: {
+                            presets: [
+                                [
+                                    "env",
+                                    {
+                                        targets: {
+                                            uglify: isProduction,
+                                        },
+                                        forceAllTransforms: isProduction,
+                                    },
+                                ],
+                            ],
+                        },
+                    },
+                    "ts-loader",
+                ],
+                exclude: "/node_modules",
+            },
             {
                 test: /\.css$/,
-                use: ['style-loader', 'css-loader']
+                use: ["style-loader", "css-loader"],
             },
             {
                 test: /\.(png|jpg|gif|woff)$/,
                 use: [
                     {
-                        loader: 'url-loader',
+                        loader: "url-loader",
                         options: {
                             limit: 8192,
                             publicPath: "dist/",
-                        }
-                    }
-                ]
+                        },
+                    },
+                ],
             },
         ],
 
@@ -56,7 +80,7 @@ module.exports = {
     },
 
     node: {
-        fs: 'empty'
+        fs: "empty",
     },
 
     // When importing a module whose path matches one of the following, just
@@ -65,6 +89,6 @@ module.exports = {
     // dependencies, which allows browsers to cache those libraries between builds.
     externals: {
         "react": "React",
-        "react-dom": "ReactDOM"
+        "react-dom": "ReactDOM",
     },
 };

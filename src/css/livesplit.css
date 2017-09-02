@@ -416,7 +416,7 @@ button {
     width:50%;
 }
 
-/* Run Editer */
+/* Run Editor */
 .table {
 	width: 100%;
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
@@ -456,7 +456,7 @@ button {
     margin-top: 0;
 }
 
-.editer-group {
+.editor-group {
 	display: inline-flex
 }
 
@@ -485,7 +485,7 @@ input.name {
 }
 
 @media screen and (max-width: 425px) {
-    .editer-group {
+    .editor-group {
         display: list-item;
     }
     .btn-group {

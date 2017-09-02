@@ -7,7 +7,7 @@ import SettingsComponent from "./Settings";
 export interface Props {
     editor: LiveSplit.LayoutEditor,
     timer: LiveSplit.SharedTimerRef,
-};
+}
 export interface State {
     editor: LiveSplit.LayoutEditorStateJson,
     showComponentSettings: boolean,
@@ -33,7 +33,8 @@ export class LayoutEditor extends React.Component<Props, State> {
                 <tr key={i}
                     onClick={(_) => this.selectComponent(i)}
                     draggable
-                    onDragStart={(_) => {
+                    onDragStart={(e) => {
+                        e.dataTransfer.setData("text/plain", "");
                         this.props.editor.select(i);
                         this.update();
                     }}

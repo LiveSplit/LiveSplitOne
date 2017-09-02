@@ -4,7 +4,7 @@
         "sourceMap": false,
         "noImplicitAny": true,
         "module": "commonjs",
-        "target": "es5",
+        "target": "es2017",
         "jsx": "react",
         "strictNullChecks": true,
         "noImplicitReturns": true,

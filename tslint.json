@@ -3,10 +3,14 @@
     "extends": [
         "tslint:recommended"
     ],
-    "jsRules": {},
+    "jsRules": {
+        "object-literal-sort-keys": false
+    },
     "rules": {
         "semicolon": [
-            false
+            true,
+            "always",
+            "ignore-interfaces"
         ],
         "interface-name": [
             false
@@ -17,7 +21,17 @@
         "no-shadowed-variable": false,
         "object-literal-sort-keys": [
             false
-        ]
+        ],
+        "strict-boolean-expressions": true,
+        "no-invalid-this": [
+            true
+        ],
+        "no-unused-expression": [
+            true
+        ],
+        "no-var-keyword": true,
+        "prefer-object-spread": true,
+        "strict-type-predicates": true
     },
     "rulesDirectory": []
 }

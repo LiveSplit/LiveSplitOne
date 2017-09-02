@@ -1,6 +1,7 @@
 import * as React from "react";
 import { LayoutStateJson } from "../livesplit";
 import { colorToCss, gradientToCss } from "../util/ColorUtil";
+import { Option } from "../util/OptionUtil";
 import Component from "./Component";
 
 export interface Props {
@@ -14,8 +15,8 @@ export interface Props {
 
 export interface State {
     layoutState: LayoutStateJson,
-    startIndex: number | null,
-    hoverIndex: number | null,
+    startIndex: Option<number>,
+    hoverIndex: Option<number>,
 }
 
 export default class AutoRefreshLayout extends React.Component<Props, State> {
@@ -63,7 +64,8 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
                             key={i}
                             onClick={(_) => this.props.onClick(i)}
                             draggable
-                            onDragStart={(_) => {
+                            onDragStart={(e) => {
+                                e.dataTransfer.setData("text/plain", "");
                                 this.setState({
                                     ...this.state,
                                     hoverIndex: i,
@@ -115,7 +117,7 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
     }
 }
 
-function getBorderDiv(index: number, state: State, props: Props): JSX.Element | null {
+function getBorderDiv(index: number, state: State, props: Props): Option<JSX.Element> {
     const style: any = {
         height: "100%",
         position: "absolute",

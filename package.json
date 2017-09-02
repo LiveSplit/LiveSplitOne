@@ -7,34 +7,42 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "run": "python -m SimpleHTTPServer 8080",
     "lint": "node_modules/.bin/tslint",
-    "watch": "webpack --progress --watch",
+    "watch": "node_modules/.bin/webpack --progress --watch",
     "start": "webpack-dev-server --open",
-    "build": "webpack"
+    "build": "node_modules/.bin/webpack"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/node": "^8.0.2",
     "@types/react": "^15.0.31",
     "@types/react-color": "^2.11.4",
     "@types/react-dom": "^15.5.1",
     "@types/react-sidebar": "^2.2.1",
+    "babel-polyfill": "^6.26.0",
     "react": "^15.4.1",
     "react-color": "^2.13.1",
     "react-contextmenu": "^2.6.3",
     "react-dom": "^15.6.1",
-    "react-sidebar": "^2.2.1"
+    "react-sidebar": "^2.2.1",
+    "whatwg-fetch": "^2.0.3"
   },
   "devDependencies": {
+    "@types/node": "^8.0.26",
     "awesome-typescript-loader": "^3.0.0-beta.17",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-es2017": "^6.24.1",
     "css-loader": "^0.28.4",
     "file-loader": "^0.11.2",
     "source-map-loader": "^0.1.5",
     "style-loader": "^0.18.2",
+    "ts-loader": "^2.3.4",
     "tslint": "^5.5.0",
     "typescript": "^2.1.4",
     "url-loader": "^0.5.9",
-    "webpack": "~2.2.1",
+    "webpack": "^3.5.5",
     "webpack-dev-server": "^2.7.1"
   }
 }

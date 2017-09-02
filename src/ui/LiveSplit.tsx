@@ -7,6 +7,7 @@ import {
 } from "../livesplit";
 import { exportFile, openFileAsArrayBuffer } from "../util/FileUtil";
 import { andThen, assertNull, expect, maybeDispose, maybeDisposeAndThen, Option } from "../util/OptionUtil";
+import * as SplitsIO from "../util/SplitsIO";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
 import { Route, SideBarContent } from "./SideBarContent";
@@ -52,7 +53,7 @@ export class LiveSplit extends React.Component<{}, State> {
             this.loadFromSplitsIO(window.location.hash.substr("#/splits-io/".length));
         } else {
             const lss = localStorage.getItem("splits");
-            if (lss && lss.length > 0) {
+            if (lss != null) {
                 maybeDispose(
                     andThen(
                         Run.parseString(lss),
@@ -69,7 +70,7 @@ export class LiveSplit extends React.Component<{}, State> {
                 layout = Layout.parseJson(JSON.parse(data));
             }
         } catch (_) { /* Looks like local storage has no valid data */ }
-        if (!layout) {
+        if (layout == null) {
             layout = Layout.defaultLayout();
         }
 
@@ -181,7 +182,7 @@ export class LiveSplit extends React.Component<{}, State> {
         openFileAsArrayBuffer((file) => {
             const timer = this.state.timer;
             const run = Run.parseArray(new Int8Array(file));
-            if (run) {
+            if (run != null) {
                 maybeDisposeAndThen(
                     timer.writeWith((t) => t.setRun(run)),
                     () => alert("Empty Splits are not supported."),
@@ -215,42 +216,13 @@ export class LiveSplit extends React.Component<{}, State> {
         this.loadFromSplitsIO(id);
     }
 
-    public uploadToSplitsIO() {
+    public uploadToSplitsIO(): Promise<Window | void> {
         const lss = this.state.timer.readWith((t) => t.getRun().saveAsLss());
-        const firstRequest = new XMLHttpRequest();
-        firstRequest.open("POST", "https://splits.io/api/v4/runs", true);
-        firstRequest.onload = () => {
-            const response = JSON.parse(firstRequest.responseText);
-            const claim_uri = response.uris.claim_uri;
-            const request = response.presigned_request;
 
-            const secondRequest = new XMLHttpRequest();
-            secondRequest.open(request.method, request.uri, true);
-
-            const formData = new FormData();
-            const fields = request.fields;
-
-            formData.append("key", fields.key);
-            formData.append("policy", fields.policy);
-            formData.append("x-amz-credential", fields["x-amz-credential"]);
-            formData.append("x-amz-algorithm", fields["x-amz-algorithm"]);
-            formData.append("x-amz-date", fields["x-amz-date"]);
-            formData.append("x-amz-signature", fields["x-amz-signature"]);
-            formData.append("file", lss);
-
-            secondRequest.onload = () => {
-                window.open(claim_uri);
-            };
-            secondRequest.onerror = () => {
-                alert("Failed to upload the splits.");
-            };
-
-            secondRequest.send(formData);
-        };
-        firstRequest.onerror = () => {
-            alert("Failed to upload the splits.");
-        };
-        firstRequest.send(null);
+        return SplitsIO
+            .uploadLss(lss)
+            .then((claimUri) => window.open(claimUri))
+            .catch((_) => alert("Failed to upload the splits."));
     }
 
     public exportSplits() {
@@ -259,7 +231,7 @@ export class LiveSplit extends React.Component<{}, State> {
             return {
                 lss: run.saveAsLss(),
                 name: run.extendedFileName(true),
-            }
+            };
         });
         exportFile(name + ".lss", lss);
     }
@@ -359,28 +331,19 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     private loadFromSplitsIO(id: string) {
-        const component = this;
-        const apiXhr = new XMLHttpRequest();
-        apiXhr.open("GET", "https://splits.io/api/v4/runs/" + id, true);
-        apiXhr.onload = () => {
-            const response = JSON.parse(apiXhr.responseText);
-            if (response && response.run && response.run.program) {
-                const xhr = new XMLHttpRequest();
-                xhr.open("GET", "https://splits.io/" + id + "/download/" + response.run.program, true);
-                xhr.responseType = "arraybuffer";
-                xhr.onload = () => {
-                    const timer = component.state.timer;
-                    maybeDispose(
-                        andThen(
-                            Run.parseArray(new Int8Array(xhr.response)),
-                            (r) => timer.writeWith((t) => t.setRun(r)),
-                        ),
+        SplitsIO.downloadById(id)
+            .then((run) => {
+                if (run != null) {
+                    maybeDisposeAndThen(
+                        this.state.timer.writeWith((t) => t.setRun(run)),
+                        () => alert("The downloaded splits are not valid."),
                     );
-                };
-                xhr.send(null);
-            }
-        };
-        apiXhr.send(null);
+                } else {
+                    alert("Couldn't parse the downloaded splits.");
+                }
+            },
+            (_) => alert("Failed to download the splits."),
+        );
     }
 
     private onScroll(e: WheelEvent) {
