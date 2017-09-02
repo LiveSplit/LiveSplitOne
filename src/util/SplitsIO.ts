@@ -1,6 +1,6 @@
 import { Run } from "../livesplit";
 
-function mapPromiseErr<T, E>(promise: Promise<T>, err: E): ResultPromise<T, E> {
+function mapPromiseErr<T, E>(promise: Promise<T>, err: E): Promise<T> {
     return promise.catch((_) => { throw err; });
 }
 
@@ -8,7 +8,7 @@ async function validatedFetch<E>(
     input: RequestInfo,
     init: RequestInit | undefined,
     err: E,
-): ResultPromise<Response, E> {
+): Promise<Response> {
     const r = await mapPromiseErr(
         fetch(input, init),
         err,
@@ -21,15 +21,13 @@ async function validatedFetch<E>(
     return r;
 }
 
-type ResultPromise<S, E> = Promise<S>;
-
 export enum UploadError {
     ApiRequestErrored,
     InvalidJsonResponse,
     UploadRequestErrored,
 }
 
-export async function uploadLss(lss: string): ResultPromise<string, UploadError> {
+export async function uploadLss(lss: string): Promise<string> {
     const response = await validatedFetch(
         "https://splits.io/api/v4/runs",
         {
@@ -75,7 +73,7 @@ export enum DownloadError {
     FailedParsing,
 }
 
-export async function downloadById(id: string): ResultPromise<Run, DownloadError> {
+export async function downloadById(id: string): Promise<Run> {
     const response = await validatedFetch(
         `https://splits.io/api/v4/runs/${id}`,
         {
