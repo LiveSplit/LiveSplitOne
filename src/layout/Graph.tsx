@@ -46,7 +46,8 @@ export default class Graph extends React.Component<Props> {
             length -= 1;
         }
 
-        for (const point of this.props.state.points) {
+        for (let i = 0; i < length; i++) {
+            const point = this.props.state.points[i];
             points += `${width * point.x},${height * point.y} `;
         }
 
@@ -68,7 +69,8 @@ export default class Graph extends React.Component<Props> {
                 points={`${x1},${middle} ${x1},${y1} ${x2},${y2} ${x2},${middle}`}
                 style={{
                     fill: colorPartialFill,
-                }} />;
+                }}
+            />;
 
             children.push(fill);
         }
