@@ -78,13 +78,18 @@ export default class ColorPicker extends React.Component<Props, State> {
 
 function toPickerColor(color: number[]): RGBColor {
     return {
-        a: color[3],
-        b: 255 * color[2],
-        g: 255 * color[1],
         r: 255 * color[0],
+        g: 255 * color[1],
+        b: 255 * color[2],
+        a: color[3],
     };
 }
 
 function toLSColor(color: RGBColor): number[] {
-    return [color.r / 255, color.g / 255, color.b / 255, color.a != null ? color.a : 1.0];
+    return [
+        color.r / 255,
+        color.g / 255,
+        color.b / 255,
+        color.a != null ? color.a : 1.0,
+    ];
 }

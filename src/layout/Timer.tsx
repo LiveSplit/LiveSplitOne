@@ -19,8 +19,8 @@ export function renderToSVG(
         case 3: shiftX = height; break;
         default: throw new Error("Unexpected Fraction Length");
     }
-    const x = `${294 - shiftX}px`;
-    const y = `${0.88 * height}px`;
+    const x = `${294 - 0.85 * shiftX}px`;
+    const y = `${0.82 * height}px`;
 
     return (
         <svg
@@ -49,12 +49,12 @@ export function renderToSVG(
             <text className="timer-time" style={{
                 fill: `url(#${className}-text-gradient)`,
                 fontFamily: "timer, sans-serif",
-                fontSize: `${height}px`,
+                fontSize: `${0.9 * height}px`,
             }} x={x} y={y} textAnchor="end">{time}</text>
             <text className="timer-time" style={{
                 fill: `url(#${className}-text-gradient)`,
                 fontFamily: "timer, sans-serif",
-                fontSize: `${0.7 * height}px`,
+                fontSize: `${0.6 * height}px`,
             }} x="294px" y={y} textAnchor="end">{fraction}</text>
         </svg>
     );

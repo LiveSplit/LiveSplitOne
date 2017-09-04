@@ -74,18 +74,24 @@ export interface TitleComponentStateJson {
 
 export interface SplitsComponentStateJson {
     splits: SplitStateJson[],
+    icon_changes: SplitsComponentIconChangeJson[],
     show_final_separator: boolean,
     current_split_gradient: Gradient,
 }
 
+export interface SplitsComponentIconChangeJson {
+    segment_index: number,
+    icon: string,
+}
+
 export interface SplitStateJson {
-    icon_change: string | null,
     name: string,
     delta: string,
     time: string,
     semantic_color: SemanticColor,
     visual_color: Color,
     is_current_split: boolean,
+    index: number,
 }
 
 export interface PreviousSegmentComponentStateJson {
@@ -501,7 +507,9 @@ liveSplitCoreNative.SplitsComponent_set_separator_last_split = emscriptenModule.
 liveSplitCoreNative.SplitsComponentState_drop = emscriptenModule.cwrap('SplitsComponentState_drop', null, ["number"]);
 liveSplitCoreNative.SplitsComponentState_final_separator_shown = emscriptenModule.cwrap('SplitsComponentState_final_separator_shown', "number", ["number"]);
 liveSplitCoreNative.SplitsComponentState_len = emscriptenModule.cwrap('SplitsComponentState_len', "number", ["number"]);
-liveSplitCoreNative.SplitsComponentState_icon_change = emscriptenModule.cwrap('SplitsComponentState_icon_change', "string", ["number", "number"]);
+liveSplitCoreNative.SplitsComponentState_icon_change_count = emscriptenModule.cwrap('SplitsComponentState_icon_change_count', "number", ["number"]);
+liveSplitCoreNative.SplitsComponentState_icon_change_segment_index = emscriptenModule.cwrap('SplitsComponentState_icon_change_segment_index', "number", ["number", "number"]);
+liveSplitCoreNative.SplitsComponentState_icon_change_icon = emscriptenModule.cwrap('SplitsComponentState_icon_change_icon', "string", ["number", "number"]);
 liveSplitCoreNative.SplitsComponentState_name = emscriptenModule.cwrap('SplitsComponentState_name', "string", ["number", "number"]);
 liveSplitCoreNative.SplitsComponentState_delta = emscriptenModule.cwrap('SplitsComponentState_delta', "string", ["number", "number"]);
 liveSplitCoreNative.SplitsComponentState_time = emscriptenModule.cwrap('SplitsComponentState_time', "string", ["number", "number"]);
@@ -3106,11 +3114,25 @@ export class SplitsComponentStateRef {
         const result = liveSplitCoreNative.SplitsComponentState_len(this.ptr);
         return result;
     }
-    iconChange(index: number): string | null {
+    iconChangeCount(): number {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        const result = liveSplitCoreNative.SplitsComponentState_icon_change(this.ptr, index);
+        const result = liveSplitCoreNative.SplitsComponentState_icon_change_count(this.ptr);
+        return result;
+    }
+    iconChangeSegmentIndex(index: number): number {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = liveSplitCoreNative.SplitsComponentState_icon_change_segment_index(this.ptr, index);
+        return result;
+    }
+    iconChangeIcon(index: number): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = liveSplitCoreNative.SplitsComponentState_icon_change_icon(this.ptr, index);
         return result;
     }
     name(index: number): string {

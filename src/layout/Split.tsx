@@ -8,7 +8,6 @@ export interface Props {
     icon: string,
     separatorInFrontOfSplit: boolean,
     layoutState: LiveSplit.LayoutStateJson,
-    index: number,
 }
 
 export default class Split extends React.Component<Props> {
@@ -20,11 +19,17 @@ export default class Split extends React.Component<Props> {
         const currentSplit = this.props.split.is_current_split ? "current-split" : "";
         const separator = this.props.separatorInFrontOfSplit ? "split-separator" : "";
 
+        const hasIcon = this.props.icon !== "";
+
         const innerStyle: any = {};
-        if (this.props.index % 2 === 1) {
+        if (this.props.split.index % 2 === 1) {
             innerStyle.borderBottom = `1px solid ${colorToCss(this.props.layoutState.thin_separators_color)}`;
-            innerStyle.borderTop = innerStyle.borderBottom;
+            innerStyle.backgroundColor = "hsla(0, 0%, 100%, 0.04)";
+        } else {
+            innerStyle.borderBottom = "1px solid transparent";
         }
+        innerStyle.borderTop = innerStyle.borderBottom;
+
         if (this.props.separatorInFrontOfSplit) {
             innerStyle.borderTop = `2px solid ${colorToCss(this.props.layoutState.separators_color)}`;
         }
@@ -40,11 +45,11 @@ export default class Split extends React.Component<Props> {
                 style={outerStyle}
             >
                 <div
-                    className={this.props.icon !== "" ? "split-icon-container" : "split-icon-container-empty"}
+                    className={hasIcon ? "split-icon-container" : "split-icon-container-empty"}
                     style={innerStyle}
                 >
                     {
-                        this.props.icon !== "" &&
+                        hasIcon &&
                         <img className="split-icon" src={this.props.icon} />
                     }
                 </div>

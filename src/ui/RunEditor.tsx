@@ -531,13 +531,11 @@ export class RunEditor extends React.Component<Props, State> {
             this.props.editor.selectedSetIconFromArray(new Int8Array(file));
             this.update();
         });
-        this.update();
     }
 
     private removeSegmentIcon(index: number) {
         this.props.editor.selectOnly(index);
         this.props.editor.selectedRemoveIcon();
-        this.update();
     }
 
     private getSegmentIconUrl(index: number): string {

@@ -16,6 +16,13 @@ export default class Splits extends React.Component<Props> {
     }
 
     public render() {
+        for (const iconChange of this.props.state.icon_changes) {
+            while (iconChange.segment_index >= this.iconUrls.length) {
+                this.iconUrls.push("");
+            }
+            this.iconUrls[iconChange.segment_index] = iconChange.icon;
+        }
+
         return (
             <div className="splits">
                 {
@@ -24,9 +31,8 @@ export default class Splits extends React.Component<Props> {
                             split={s}
                             splitsState={this.props.state}
                             layoutState={this.props.layoutState}
-                            icon={this.getIconUrl(i)}
-                            key={i.toString()}
-                            index={i}
+                            icon={this.iconUrls[s.index]}
+                            key={s.index.toString()}
                             separatorInFrontOfSplit={
                                 this.props.state.show_final_separator &&
                                 i + 1 === this.props.state.splits.length
@@ -36,16 +42,5 @@ export default class Splits extends React.Component<Props> {
                 }
             </div>
         );
-    }
-
-    private getIconUrl(index: number): string {
-        while (index >= this.iconUrls.length) {
-            this.iconUrls.push("");
-        }
-        const iconChange = this.props.state.splits[index].icon_change;
-        if (iconChange != null) {
-            this.iconUrls[index] = iconChange;
-        }
-        return this.iconUrls[index];
     }
 }

@@ -331,16 +331,12 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     private loadFromSplitsIO(id: string) {
-        SplitsIO.downloadById(id)
-            .then((run) => {
-                if (run != null) {
-                    maybeDisposeAndThen(
-                        this.state.timer.writeWith((t) => t.setRun(run)),
-                        () => alert("The downloaded splits are not valid."),
-                    );
-                } else {
-                    alert("Couldn't parse the downloaded splits.");
-                }
+        SplitsIO.downloadById(id).then(
+            (run) => {
+                maybeDisposeAndThen(
+                    this.state.timer.writeWith((t) => t.setRun(run)),
+                    () => alert("The downloaded splits are not valid."),
+                );
             },
             (_) => alert("Failed to download the splits."),
         );
