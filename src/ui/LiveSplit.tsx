@@ -6,7 +6,7 @@ import {
     Segment, SharedTimer, Timer, TimerPhase, TimingMethod,
 } from "../livesplit";
 import { exportFile, openFileAsArrayBuffer } from "../util/FileUtil";
-import { andThen, assertNull, expect, maybeDispose, maybeDisposeAndThen, Option } from "../util/OptionUtil";
+import { assertNull, expect, maybeDispose, maybeDisposeAndThen, Option } from "../util/OptionUtil";
 import * as SplitsIO from "../util/SplitsIO";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
@@ -54,12 +54,12 @@ export class LiveSplit extends React.Component<{}, State> {
         } else {
             const lss = localStorage.getItem("splits");
             if (lss != null) {
-                maybeDispose(
-                    andThen(
-                        Run.parseString(lss),
+                const result = Run.parseString(lss);
+                if (result.parsedSuccessfully()) {
+                    maybeDispose(result.unwrap().with(
                         (r) => timer.writeWith((t) => t.setRun(r)),
-                    ),
-                );
+                    ));
+                }
             }
         }
 
@@ -181,8 +181,9 @@ export class LiveSplit extends React.Component<{}, State> {
     public importSplits() {
         openFileAsArrayBuffer((file) => {
             const timer = this.state.timer;
-            const run = Run.parseArray(new Int8Array(file));
-            if (run != null) {
+            const result = Run.parseArray(new Int8Array(file));
+            if (result.parsedSuccessfully()) {
+                const run = result.unwrap();
                 maybeDisposeAndThen(
                     timer.writeWith((t) => t.setRun(run)),
                     () => alert("Empty Splits are not supported."),

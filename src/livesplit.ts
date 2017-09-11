@@ -374,6 +374,10 @@ liveSplitCoreNative.LayoutEditor_move_component = emscriptenModule.cwrap('Layout
 liveSplitCoreNative.LayoutEditor_duplicate_component = emscriptenModule.cwrap('LayoutEditor_duplicate_component', null, ["number"]);
 liveSplitCoreNative.LayoutEditor_set_component_settings_value = emscriptenModule.cwrap('LayoutEditor_set_component_settings_value', null, ["number", "number", "number"]);
 liveSplitCoreNative.LayoutEditor_set_general_settings_value = emscriptenModule.cwrap('LayoutEditor_set_general_settings_value', null, ["number", "number", "number"]);
+liveSplitCoreNative.ParseRunResult_drop = emscriptenModule.cwrap('ParseRunResult_drop', null, ["number"]);
+liveSplitCoreNative.ParseRunResult_unwrap = emscriptenModule.cwrap('ParseRunResult_unwrap', "number", ["number"]);
+liveSplitCoreNative.ParseRunResult_parsed_successfully = emscriptenModule.cwrap('ParseRunResult_parsed_successfully', "number", ["number"]);
+liveSplitCoreNative.ParseRunResult_timer_kind = emscriptenModule.cwrap('ParseRunResult_timer_kind', "string", ["number"]);
 liveSplitCoreNative.PossibleTimeSaveComponent_new = emscriptenModule.cwrap('PossibleTimeSaveComponent_new', "number", []);
 liveSplitCoreNative.PossibleTimeSaveComponent_drop = emscriptenModule.cwrap('PossibleTimeSaveComponent_drop', null, ["number"]);
 liveSplitCoreNative.PossibleTimeSaveComponent_into_generic = emscriptenModule.cwrap('PossibleTimeSaveComponent_into_generic', "number", ["number"]);
@@ -1792,6 +1796,54 @@ export class LayoutEditor extends LayoutEditorRefMut {
     }
 }
 
+export class ParseRunResultRef {
+    ptr: number;
+    parsedSuccessfully(): boolean {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = liveSplitCoreNative.ParseRunResult_parsed_successfully(this.ptr) != 0;
+        return result;
+    }
+    timerKind(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = liveSplitCoreNative.ParseRunResult_timer_kind(this.ptr);
+        return result;
+    }
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+export class ParseRunResultRefMut extends ParseRunResultRef {
+}
+
+export class ParseRunResult extends ParseRunResultRefMut {
+    with<T>(closure: (obj: ParseRunResult) => T): T {
+        try {
+            return closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    dispose() {
+        if (this.ptr != 0) {
+            liveSplitCoreNative.ParseRunResult_drop(this.ptr);
+            this.ptr = 0;
+        }
+    }
+    unwrap(): Run {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = new Run(liveSplitCoreNative.ParseRunResult_unwrap(this.ptr));
+        this.ptr = 0;
+        return result;
+    }
+}
+
 export class PossibleTimeSaveComponentRef {
     ptr: number;
     stateAsJson(timer: TimerRef): any {
@@ -2189,38 +2241,27 @@ export class Run extends RunRefMut {
         const result = new Run(liveSplitCoreNative.Run_new());
         return result;
     }
-    static parse(data: number, length: number): Run | null {
-        const result = new Run(liveSplitCoreNative.Run_parse(data, length));
-        if (result.ptr == 0) {
-            return null;
-        }
+    static parse(data: number, length: number): ParseRunResult {
+        const result = new ParseRunResult(liveSplitCoreNative.Run_parse(data, length));
         return result;
     }
-    static parseArray(data: Int8Array): Run | null {
+    static parseArray(data: Int8Array): ParseRunResult {
         const buf = emscriptenModule._malloc(data.length);
         try {
             emscriptenModule.writeArrayToMemory(data, buf);
             const ptr = liveSplitCoreNative.Run_parse(buf, data.length);
-
-            if (ptr == 0) {
-                return null;
-            }
-            return new Run(ptr);
+            return new ParseRunResult(ptr);
         } finally {
             emscriptenModule._free(buf);
         }
     }
-    static parseString(text: string): Run | null {
+    static parseString(text: string): ParseRunResult {
         const len = (text.length << 2) + 1;
         const buf = emscriptenModule._malloc(len);
         try {
             const actualLen = emscriptenModule.stringToUTF8(text, buf, len);
             const ptr = liveSplitCoreNative.Run_parse(buf, actualLen);
-
-            if (ptr == 0) {
-                return null;
-            }
-            return new Run(ptr);
+            return new ParseRunResult(ptr);
         } finally {
             emscriptenModule._free(buf);
         }

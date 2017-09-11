@@ -1,4 +1,5 @@
 import { Run } from "../livesplit";
+import { PostRunResponse } from "./json/PostRunResponse";
 
 function mapPromiseErr<T, E>(promise: Promise<T>, err: E): Promise<T> {
     return promise.catch((_) => { throw err; });
@@ -36,7 +37,7 @@ export async function uploadLss(lss: string): Promise<string> {
         UploadError.ApiRequestErrored,
     );
 
-    const json = await mapPromiseErr(
+    const json: PostRunResponse = await mapPromiseErr(
         response.json(),
         UploadError.InvalidJsonResponse,
     );
@@ -89,10 +90,10 @@ export async function downloadById(id: string): Promise<Run> {
         DownloadError.InvalidBuffer,
     );
 
-    const run = Run.parseArray(new Int8Array(data));
+    const result = Run.parseArray(new Int8Array(data));
 
-    if (run != null) {
-        return run;
+    if (result.parsedSuccessfully()) {
+        return result.unwrap();
     } else {
         throw DownloadError.FailedParsing;
     }

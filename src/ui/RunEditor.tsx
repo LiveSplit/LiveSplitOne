@@ -469,12 +469,12 @@ export class RunEditor extends React.Component<Props, State> {
 
     private importComparison() {
         openFileAsArrayBuffer((data, file) => {
-            const run = LiveSplit.Run.parseArray(new Int8Array(data));
-            if (!run) {
+            const result = LiveSplit.Run.parseArray(new Int8Array(data));
+            if (!result.parsedSuccessfully()) {
                 alert("Couldn't parse the splits.");
                 return;
             }
-            run.with((run) => {
+            result.unwrap().with((run) => {
                 const comparisonName = prompt("Comparison Name:", file.name.replace(/\.[^/.]+$/, ""));
                 if (!comparisonName) {
                     return;
