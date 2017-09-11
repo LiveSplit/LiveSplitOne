@@ -19,10 +19,10 @@
     "@types/react-dom": "^15.5.1",
     "@types/react-sidebar": "^2.2.1",
     "babel-polyfill": "^6.26.0",
-    "react": "^15.4.1",
+    "react": "^16.0.0-rc.2",
     "react-color": "^2.13.1",
     "react-contextmenu": "^2.6.3",
-    "react-dom": "^15.6.1",
+    "react-dom": "^16.0.0-rc.2",
     "react-sidebar": "^2.2.1",
     "whatwg-fetch": "^2.0.3"
   },

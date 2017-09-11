@@ -25,16 +25,16 @@ export default class Graph extends React.Component<Props> {
 
         for (const y of this.props.state.horizontal_grid_lines) {
             const line = <line x1="0" y1={height * y} x2="100%" y2={height * y} style={{
-                "stroke": colorGridLines,
-                "stroke-width": "2",
+                stroke: colorGridLines,
+                strokeWidth: "2",
             }} />;
             children.push(line);
         }
 
         for (const x of this.props.state.vertical_grid_lines) {
             const line = <line x1={`${x * 100}%`} y1="0" x2={`${x * 100}%`} y2={height} style={{
-                "stroke": colorGridLines,
-                "stroke-width": "2",
+                stroke: colorGridLines,
+                strokeWidth: "2",
             }} />;
             children.push(line);
         }
@@ -88,8 +88,8 @@ export default class Graph extends React.Component<Props> {
                 : colorGraphLines;
 
             const line = <line x1={px} y1={py} x2={x} y2={y} style={{
-                "stroke": fill,
-                "stroke-width": "2",
+                stroke: fill,
+                strokeWidth: "2",
             }} />;
             children.push(line);
 

@@ -35,13 +35,13 @@ export function renderToSVG(
                     <stop
                         offset="0%"
                         style={{
-                            "stop-color": colorToCss(state.top_color),
+                            stopColor: colorToCss(state.top_color),
                         }}
                     />
                     <stop
                         offset="100%"
                         style={{
-                            "stop-color": colorToCss(state.bottom_color),
+                            stopColor: colorToCss(state.bottom_color),
                         }}
                     />
                 </linearGradient>
