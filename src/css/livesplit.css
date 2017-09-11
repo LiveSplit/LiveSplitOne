@@ -424,7 +424,7 @@ button {
 .table-body{
     display: table-row-group;
 }
-.table>.table-header,
+.table>.table-header>tr,
 .table-body>* {
 	display: table-row;
 	background: rgba(0, 0, 0, 0.5);
@@ -432,12 +432,12 @@ button {
 .table-body>*:nth-of-type(odd) {
 	background: rgba(0, 0, 0, 0.2);
 }
-.table>.table-header>*,
+.table>.table-header>tr>*,
 .table-body>*>* {
 	padding: 3px 12px;
 	display: table-cell;
 }
-.table>.table-header>*:nth-child(2),
+.table>.table-header>tr>*:nth-child(2),
 .table-body>*>*:nth-child(2) {
 	padding: 3px 12px 3px 5px;
 }
@@ -466,13 +466,13 @@ input.name {
     width: 160px;
 }
 
-.table-header>td {
+.table-header>tr>th {
     width: 78px;
     font-weight: bold;
     text-align: center;
 }
 
-.table-header>td:after {
+.table-header>tr>th:after {
     content:' ';
     position: relative;
     display:block;
@@ -576,7 +576,7 @@ input[Type="text"] {
     font-family:inherit;
 }
 
-.table-header>td:nth-child(1):after {
+.table-header>tr>th:nth-child(1):after {
     margin: 0;
     margin-left: -4px;
     margin-right: 7px;

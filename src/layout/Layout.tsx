@@ -10,6 +10,7 @@ export interface Props {
 export default class Layout extends React.Component<Props> {
     public render() {
         const layoutState = this.props.state;
+        const counts = new Map<string, number>();
 
         return (
             <div
@@ -20,9 +21,17 @@ export default class Layout extends React.Component<Props> {
                 }}
             >
                 {
-                    this.props.state.components.map((c) =>
-                        <Component state={c} layoutState={layoutState} />,
-                    )
+                    this.props.state.components.map((c) => {
+                        const componentType = Object.keys(c)[0];
+                        const id = counts.get(componentType) || 0;
+                        counts.set(componentType, id + 1);
+
+                        return <Component
+                            key={`${componentType}${id}`}
+                            state={c}
+                            layoutState={layoutState}
+                        />;
+                    })
                 }
             </div>
         );

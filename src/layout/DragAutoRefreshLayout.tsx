@@ -49,6 +49,7 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
 
     public render() {
         const layoutState = this.state.layoutState;
+        const counts = new Map<string, number>();
 
         return (
             <div
@@ -59,9 +60,13 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
                 }}
             >
                 {
-                    layoutState.components.map((c, i) =>
-                        <div
-                            key={i}
+                    layoutState.components.map((c, i) => {
+                        const componentType = Object.keys(c)[0];
+                        const id = counts.get(componentType) || 0;
+                        counts.set(componentType, id + 1);
+
+                        return <div
+                            key={`${componentType}${id}`}
                             onClick={(_) => this.props.onClick(i)}
                             draggable
                             onDragStart={(e) => {
@@ -109,8 +114,8 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
                                 getBorderDiv(i, this.state, this.props)
                             }
                             <Component state={c} layoutState={layoutState} />
-                        </div>,
-                    )
+                        </div>;
+                    })
                 }
             </div>
         );

@@ -93,9 +93,9 @@ export class RunEditor extends React.Component<Props, State> {
                                 <img
                                     src={gameIcon}
                                     style={{
-                                        "height": gameIconSize,
-                                        "object-fit": "contain",
-                                        "width": gameIconSize,
+                                        height: gameIconSize,
+                                        objectFit: "contain",
+                                        width: gameIconSize,
                                     }}
                                 />
                             }
@@ -232,53 +232,55 @@ export class RunEditor extends React.Component<Props, State> {
                     </div>
                     <table className="table run-editor-table">
                         <thead className="table-header">
-                            <td style={{
-                                paddingLeft: 4,
-                                paddingRight: 0,
-                                width: "inherit",
-                            }}>Icon</td>
-                            <td>Segment Name</td>
-                            <td>Split Time</td>
-                            <td>Segment Time</td>
-                            <td>Best Segment</td>
-                            {
-                                this.state.editor.comparison_names.map((comparison, comparisonIndex) => {
-                                    let contextTrigger: any = null;
-                                    const toggleMenu = (e: any) => {
-                                        if (contextTrigger) {
-                                            contextTrigger.handleContextClick(e);
-                                        }
-                                    };
-                                    const id = `comparison-${comparisonIndex}-context-menu`;
-                                    return (
-                                        <td
-                                            style={{
-                                                cursor: "pointer",
-                                            }}
-                                            onClick={(e) => toggleMenu(e)}
-                                        >
-                                            <ContextMenuTrigger
-                                                id={id}
-                                                ref={(c) => contextTrigger = c}
+                            <tr>
+                                <th style={{
+                                    paddingLeft: 4,
+                                    paddingRight: 0,
+                                    width: "inherit",
+                                }}>Icon</th>
+                                <th>Segment Name</th>
+                                <th>Split Time</th>
+                                <th>Segment Time</th>
+                                <th>Best Segment</th>
+                                {
+                                    this.state.editor.comparison_names.map((comparison, comparisonIndex) => {
+                                        let contextTrigger: any = null;
+                                        const toggleMenu = (e: any) => {
+                                            if (contextTrigger) {
+                                                contextTrigger.handleContextClick(e);
+                                            }
+                                        };
+                                        const id = `comparison-${comparisonIndex}-context-menu`;
+                                        return (
+                                            <th
+                                                style={{
+                                                    cursor: "pointer",
+                                                }}
+                                                onClick={(e) => toggleMenu(e)}
                                             >
-                                                {comparison}
-                                            </ContextMenuTrigger>
-                                            <ContextMenu id={id}>
-                                                <MenuItem onClick={(_) =>
-                                                    this.renameComparison(comparison)
-                                                }>
-                                                    Rename
+                                                <ContextMenuTrigger
+                                                    id={id}
+                                                    ref={(c) => contextTrigger = c}
+                                                >
+                                                    {comparison}
+                                                </ContextMenuTrigger>
+                                                <ContextMenu id={id}>
+                                                    <MenuItem onClick={(_) =>
+                                                        this.renameComparison(comparison)
+                                                    }>
+                                                        Rename
                                                 </MenuItem>
-                                                <MenuItem onClick={(_) =>
-                                                    this.removeComparison(comparison)
-                                                }>
-                                                    Remove
+                                                    <MenuItem onClick={(_) =>
+                                                        this.removeComparison(comparison)
+                                                    }>
+                                                        Remove
                                                 </MenuItem>
-                                            </ContextMenu>
-                                        </td>
-                                    );
-                                })
-                            }
+                                                </ContextMenu>
+                                            </th>
+                                        );
+                                    })
+                                }
+                            </tr>
                         </thead>
                         <tbody className="table-body">
                             {
@@ -330,9 +332,9 @@ export class RunEditor extends React.Component<Props, State> {
                                                         <img
                                                             src={segmentIcon}
                                                             style={{
-                                                                "height": segmentIconSize,
-                                                                "object-fit": "contain",
-                                                                "width": segmentIconSize,
+                                                                height: segmentIconSize,
+                                                                objectFit: "contain",
+                                                                width: segmentIconSize,
                                                             }}
                                                         />
                                                     }

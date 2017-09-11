@@ -19,25 +19,46 @@ export default class Graph extends React.Component<Props> {
         const colorCompleteFill = colorToCss(this.props.state.complete_fill_color);
         const colorBestSegment = colorToCss(this.props.state.best_segment_color);
 
-        const rect1 = <rect width="100%" height={middle} style={{ fill: colorTop }} />;
-        const rect2 = <rect y={middle} width="100%" height={height - middle} style={{ fill: colorBottom }} />;
+        const rect1 = <rect
+            key="rect1"
+            width="100%"
+            height={middle}
+            style={{ fill: colorTop }}
+        />;
+        const rect2 = <rect
+            key="rect2"
+            y={middle}
+            width="100%"
+            height={height - middle}
+            style={{ fill: colorBottom }}
+        />;
         const children = [rect1, rect2];
 
-        for (const y of this.props.state.horizontal_grid_lines) {
-            const line = <line x1="0" y1={height * y} x2="100%" y2={height * y} style={{
-                stroke: colorGridLines,
-                strokeWidth: "2",
-            }} />;
+        this.props.state.horizontal_grid_lines.forEach((y, i) => {
+            const line = <line
+                key={`hline${i}`}
+                x1="0" y1={height * y}
+                x2="100%" y2={height * y}
+                style={{
+                    stroke: colorGridLines,
+                    strokeWidth: "2",
+                }}
+            />;
             children.push(line);
-        }
+        });
 
-        for (const x of this.props.state.vertical_grid_lines) {
-            const line = <line x1={`${x * 100}%`} y1="0" x2={`${x * 100}%`} y2={height} style={{
-                stroke: colorGridLines,
-                strokeWidth: "2",
-            }} />;
+        this.props.state.vertical_grid_lines.forEach((x, i) => {
+            const line = <line
+                key={`vline${i}`}
+                x1={`${x * 100}%`} y1="0"
+                x2={`${x * 100}%`} y2={height}
+                style={{
+                    stroke: colorGridLines,
+                    strokeWidth: "2",
+                }}
+            />;
             children.push(line);
-        }
+        });
 
         let points = "";
 
@@ -53,7 +74,7 @@ export default class Graph extends React.Component<Props> {
 
         points += `${width * this.props.state.points[length - 1].x},${middle}`;
 
-        const fill = <polygon points={points} style={{
+        const fill = <polygon key="fill" points={points} style={{
             fill: colorCompleteFill,
         }} />;
 
@@ -66,6 +87,7 @@ export default class Graph extends React.Component<Props> {
             const y2 = height * this.props.state.points[length].y;
 
             const fill = <polygon
+                key="pfill"
                 points={`${x1},${middle} ${x1},${y1} ${x2},${y2} ${x2},${middle}`}
                 style={{
                     fill: colorPartialFill,
@@ -87,14 +109,24 @@ export default class Graph extends React.Component<Props> {
                 ? colorBestSegment
                 : colorGraphLines;
 
-            const line = <line x1={px} y1={py} x2={x} y2={y} style={{
-                stroke: fill,
-                strokeWidth: "2",
-            }} />;
+            const line = <line
+                key={`s${i}`}
+                x1={px} y1={py}
+                x2={x} y2={y}
+                style={{
+                    stroke: fill,
+                    strokeWidth: "2",
+                }}
+            />;
             children.push(line);
 
             if (i !== this.props.state.points.length - 1 || !this.props.state.is_live_delta_active) {
-                const circle = <ellipse cx={x} cy={y} rx="2.5" ry="2.5" style={{ fill }} />;
+                const circle = <ellipse
+                    key={`p${i}`}
+                    cx={x} cy={y}
+                    rx="2.5" ry="2.5"
+                    style={{ fill }}
+                />;
                 childrenPoints.push(circle);
             }
         }
