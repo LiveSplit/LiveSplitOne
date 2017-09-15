@@ -582,7 +582,7 @@ input[Type="text"] {
     margin-right: 7px;
 }
 
-svg.timer, svg.graph {
+svg.graph {
     display: block;
 }
 

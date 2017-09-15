@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit";
-import { gradientToCss } from "../util/ColorUtil";
+import { colorToCss, gradientToCss } from "../util/ColorUtil";
+import { map } from "../util/OptionUtil";
 
 export interface Props { state: LiveSplit.TitleComponentStateJson }
 
@@ -41,6 +42,7 @@ export default class Title extends React.Component<Props> {
                 className="title"
                 style={{
                     background: gradientToCss(this.props.state.background),
+                    color: map(this.props.state.text_color, colorToCss),
                 }}
             >
                 {icon}

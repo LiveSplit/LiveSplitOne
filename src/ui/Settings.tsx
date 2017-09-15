@@ -192,6 +192,58 @@ export default class SettingsComponent extends React.Component<Props> {
                         />;
                     break;
                 }
+                case "OptionalColor": {
+                    const children = [];
+
+                    if (value.OptionalColor != null) {
+                        children.push(
+                            <ColorPicker
+                                color={value.OptionalColor}
+                                setColor={(color) => {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        SettingValue.fromOptionalColor(
+                                            color[0],
+                                            color[1],
+                                            color[2],
+                                            color[3],
+                                        ),
+                                    );
+                                }}
+                            />,
+                        );
+                    }
+
+                    component =
+                        <span>
+                            <input
+                                type="checkbox"
+                                checked={value.OptionalColor != null}
+                                style={{
+                                    float: "left",
+                                }}
+                                onChange={(e) => {
+                                    if (e.target.checked) {
+                                        this.props.setValue(
+                                            valueIndex,
+                                            SettingValue.fromOptionalColor(1.0, 1.0, 1.0, 1.0),
+                                        );
+                                    } else {
+                                        this.props.setValue(
+                                            valueIndex,
+                                            SettingValue.fromOptionalEmptyColor(),
+                                        );
+                                    }
+                                }}
+                            />
+                            <div style={{
+                                overflow: "hidden",
+                            }}>
+                                {children}
+                            </div>
+                        </span >;
+                    break;
+                }
                 case "Gradient": {
                     let type: string;
                     let color1: Option<Color> = null;

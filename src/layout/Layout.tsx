@@ -26,9 +26,12 @@ export default class Layout extends React.Component<Props> {
                         const id = counts.get(componentType) || 0;
                         counts.set(componentType, id + 1);
 
+                        const key = `${componentType}${id}`;
+
                         return <Component
-                            key={`${componentType}${id}`}
+                            key={key}
                             state={c}
+                            componentId={key}
                             layoutState={layoutState}
                         />;
                     })

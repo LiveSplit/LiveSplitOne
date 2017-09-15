@@ -2,11 +2,14 @@ import * as React from "react";
 import * as LiveSplit from "../livesplit";
 import { colorToCss, gradientToCss } from "../util/ColorUtil";
 
-export interface Props { state: LiveSplit.TimerComponentStateJson }
+export interface Props {
+    state: LiveSplit.TimerComponentStateJson,
+    componentId: string,
+}
 
 export function renderToSVG(
     state: LiveSplit.TimerComponentStateJson,
-    className = "timer",
+    className: string,
 ): JSX.Element {
     const time = state.time;
     const fraction = state.fraction;
@@ -27,6 +30,7 @@ export function renderToSVG(
             className={className}
             height={`${height}px`}
             style={{
+                display: "block",
                 background: gradientToCss(state.background),
             }}
         >
@@ -62,6 +66,6 @@ export function renderToSVG(
 
 export default class Timer extends React.Component<Props> {
     public render() {
-        return renderToSVG(this.props.state);
+        return renderToSVG(this.props.state, this.props.componentId);
     }
 }

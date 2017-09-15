@@ -19,6 +19,7 @@ import TotalPlaytime from "./TotalPlaytime";
 export interface Props {
     state: ComponentStateJson,
     layoutState: LayoutStateJson,
+    componentId: string,
 }
 
 export default class Component extends React.Component<Props> {
@@ -61,7 +62,7 @@ export default class Component extends React.Component<Props> {
                 return <Text state={componentState.Text} />;
             }
             case "Timer": {
-                return <Timer state={componentState.Timer} />;
+                return <Timer state={componentState.Timer} componentId={this.props.componentId} />;
             }
             case "Title": {
                 return <Title state={componentState.Title} />;

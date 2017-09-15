@@ -60,7 +60,7 @@ export default class Split extends React.Component<Props> {
                     {this.props.split.name}
                 </div>
                 <div
-                    className={"split-delta time"}
+                    className="split-delta time"
                     style={{
                         ...innerStyle,
                         color: colorToCss(this.props.split.visual_color),

@@ -31,9 +31,15 @@ export default class DetailedTimer extends React.Component<Props> {
             table.push(formatComparison(this.props.state.comparison2));
         }
 
-        leftSide.push(table);
+        leftSide.push(
+            <table className="detailed-timer-left-side">
+                <tbody>
+                    {table}
+                </tbody>
+            </table>,
+        );
 
-        children.push(<div className="detailed-timer-left-side">{leftSide}</div>);
+        children.push(<div>{leftSide}</div>);
 
         return (
             <div
@@ -51,8 +57,9 @@ export default class DetailedTimer extends React.Component<Props> {
 function formatComparison(comparison: LiveSplit.DetailedTimerComponentComparisonStateJson) {
     return (
         <tr>
-            <td>{comparison.name + ":"}</td>
+            <td style={{ padding: 0 }}>{comparison.name + ":"}</td>
             <td className="time" style={{
+                padding: 0,
                 paddingLeft: 6,
             }}>
                 {comparison.time}

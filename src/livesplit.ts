@@ -64,6 +64,7 @@ export interface TimerComponentStateJson {
 
 export interface TitleComponentStateJson {
     background: Gradient,
+    text_color: Color | null,
     icon_change: string | null,
     line1: string,
     line2: string | null,
@@ -96,6 +97,7 @@ export interface SplitStateJson {
 
 export interface PreviousSegmentComponentStateJson {
     background: Gradient,
+    label_color: Color | null,
     text: string,
     time: string,
     semantic_color: SemanticColor,
@@ -104,12 +106,16 @@ export interface PreviousSegmentComponentStateJson {
 
 export interface SumOfBestComponentStateJson {
     background: Gradient,
+    label_color: Color | null,
+    value_color: Color | null,
     text: string,
     time: string,
 }
 
 export interface PossibleTimeSaveComponentStateJson {
     background: Gradient,
+    label_color: Color | null,
+    value_color: Color | null,
     text: string,
     time: string,
 }
@@ -143,18 +149,23 @@ export type TextComponentStateJson =
 
 export interface TotalPlaytimeComponentStateJson {
     background: Gradient,
+    label_color: Color | null,
+    value_color: Color | null,
     text: string,
     time: string,
 }
 
 export interface CurrentPaceComponentStateJson {
     background: Gradient,
+    label_color: Color | null,
+    value_color: Color | null,
     text: string,
     time: string,
 }
 
 export interface DeltaComponentStateJson {
     background: Gradient,
+    label_color: Color | null,
     text: string,
     time: string,
     semantic_color: SemanticColor,
@@ -163,6 +174,8 @@ export interface DeltaComponentStateJson {
 
 export interface CurrentComparisonComponentStateJson {
     background: Gradient,
+    label_color: Color | null,
+    value_color: Color | null,
     text: string,
     comparison: string,
 }
@@ -216,6 +229,7 @@ export type SettingsDescriptionValueJson =
     { DigitsFormat: DigitsFormatJson } |
     { OptionalTimingMethod: TimingMethodJson | null } |
     { Color: Color } |
+    { OptionalColor: Color | null } |
     { Gradient: Gradient };
 
 export type AccuracyJson = "Seconds" | "Tenths" | "Hundredths";
@@ -488,6 +502,8 @@ liveSplitCoreNative.SettingValue_from_digits_format = emscriptenModule.cwrap('Se
 liveSplitCoreNative.SettingValue_from_optional_timing_method = emscriptenModule.cwrap('SettingValue_from_optional_timing_method', "number", ["string"]);
 liveSplitCoreNative.SettingValue_from_optional_empty_timing_method = emscriptenModule.cwrap('SettingValue_from_optional_empty_timing_method', "number", []);
 liveSplitCoreNative.SettingValue_from_color = emscriptenModule.cwrap('SettingValue_from_color', "number", ["number", "number", "number", "number"]);
+liveSplitCoreNative.SettingValue_from_optional_color = emscriptenModule.cwrap('SettingValue_from_optional_color', "number", ["number", "number", "number", "number"]);
+liveSplitCoreNative.SettingValue_from_optional_empty_color = emscriptenModule.cwrap('SettingValue_from_optional_empty_color', "number", []);
 liveSplitCoreNative.SettingValue_from_transparent_gradient = emscriptenModule.cwrap('SettingValue_from_transparent_gradient', "number", []);
 liveSplitCoreNative.SettingValue_from_vertical_gradient = emscriptenModule.cwrap('SettingValue_from_vertical_gradient', "number", ["number", "number", "number", "number", "number", "number", "number", "number"]);
 liveSplitCoreNative.SettingValue_from_horizontal_gradient = emscriptenModule.cwrap('SettingValue_from_horizontal_gradient', "number", ["number", "number", "number", "number", "number", "number", "number", "number"]);
@@ -2956,6 +2972,14 @@ export class SettingValue extends SettingValueRefMut {
     }
     static fromColor(r: number, g: number, b: number, a: number): SettingValue {
         const result = new SettingValue(liveSplitCoreNative.SettingValue_from_color(r, g, b, a));
+        return result;
+    }
+    static fromOptionalColor(r: number, g: number, b: number, a: number): SettingValue {
+        const result = new SettingValue(liveSplitCoreNative.SettingValue_from_optional_color(r, g, b, a));
+        return result;
+    }
+    static fromOptionalEmptyColor(): SettingValue {
+        const result = new SettingValue(liveSplitCoreNative.SettingValue_from_optional_empty_color());
         return result;
     }
     static fromTransparentGradient(): SettingValue {

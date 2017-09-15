@@ -65,8 +65,10 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
                         const id = counts.get(componentType) || 0;
                         counts.set(componentType, id + 1);
 
+                        const key = `${componentType}${id}`;
+
                         return <div
-                            key={`${componentType}${id}`}
+                            key={key}
                             onClick={(_) => this.props.onClick(i)}
                             draggable
                             onDragStart={(e) => {
@@ -113,7 +115,7 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
                             {
                                 getBorderDiv(i, this.state, this.props)
                             }
-                            <Component state={c} layoutState={layoutState} />
+                            <Component state={c} layoutState={layoutState} componentId={key} />
                         </div>;
                     })
                 }
