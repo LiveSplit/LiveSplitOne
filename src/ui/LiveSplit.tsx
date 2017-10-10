@@ -54,7 +54,7 @@ export class LiveSplit extends React.Component<{}, State> {
         } else {
             const lss = localStorage.getItem("splits");
             if (lss != null) {
-                const result = Run.parseString(lss);
+                const result = Run.parseString(lss, "", false);
                 if (result.parsedSuccessfully()) {
                     maybeDispose(result.unwrap().with(
                         (r) => timer.writeWith((t) => t.setRun(r)),
@@ -181,7 +181,7 @@ export class LiveSplit extends React.Component<{}, State> {
     public importSplits() {
         openFileAsArrayBuffer((file) => {
             const timer = this.state.timer;
-            const result = Run.parseArray(new Int8Array(file));
+            const result = Run.parseArray(new Int8Array(file), "", false);
             if (result.parsedSuccessfully()) {
                 const run = result.unwrap();
                 maybeDisposeAndThen(

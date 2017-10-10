@@ -412,7 +412,8 @@ liveSplitCoreNative.PreviousSegmentComponentState_text = emscriptenModule.cwrap(
 liveSplitCoreNative.PreviousSegmentComponentState_time = emscriptenModule.cwrap('PreviousSegmentComponentState_time', "string", ["number"]);
 liveSplitCoreNative.PreviousSegmentComponentState_semantic_color = emscriptenModule.cwrap('PreviousSegmentComponentState_semantic_color', "string", ["number"]);
 liveSplitCoreNative.Run_new = emscriptenModule.cwrap('Run_new', "number", []);
-liveSplitCoreNative.Run_parse = emscriptenModule.cwrap('Run_parse', "number", ["number", "number"]);
+liveSplitCoreNative.Run_parse = emscriptenModule.cwrap('Run_parse', "number", ["number", "number", "string", "number"]);
+liveSplitCoreNative.Run_parse_file_handle = emscriptenModule.cwrap('Run_parse_file_handle', "number", ["number", "string", "number"]);
 liveSplitCoreNative.Run_drop = emscriptenModule.cwrap('Run_drop', null, ["number"]);
 liveSplitCoreNative.Run_clone = emscriptenModule.cwrap('Run_clone', "number", ["number"]);
 liveSplitCoreNative.Run_game_name = emscriptenModule.cwrap('Run_game_name', "string", ["number"]);
@@ -429,6 +430,9 @@ liveSplitCoreNative.Run_segment = emscriptenModule.cwrap('Run_segment', "number"
 liveSplitCoreNative.Run_attempt_history_len = emscriptenModule.cwrap('Run_attempt_history_len', "number", ["number"]);
 liveSplitCoreNative.Run_attempt_history_index = emscriptenModule.cwrap('Run_attempt_history_index', "number", ["number", "number"]);
 liveSplitCoreNative.Run_save_as_lss = emscriptenModule.cwrap('Run_save_as_lss', "string", ["number"]);
+liveSplitCoreNative.Run_custom_comparisons_len = emscriptenModule.cwrap('Run_custom_comparisons_len', "number", ["number"]);
+liveSplitCoreNative.Run_custom_comparison = emscriptenModule.cwrap('Run_custom_comparison', "string", ["number", "number"]);
+liveSplitCoreNative.Run_auto_splitter_settings = emscriptenModule.cwrap('Run_auto_splitter_settings', "string", ["number"]);
 liveSplitCoreNative.Run_push_segment = emscriptenModule.cwrap('Run_push_segment', null, ["number", "number"]);
 liveSplitCoreNative.Run_set_game_name = emscriptenModule.cwrap('Run_set_game_name', null, ["number", "string"]);
 liveSplitCoreNative.Run_set_category_name = emscriptenModule.cwrap('Run_set_category_name', null, ["number", "string"]);
@@ -2209,6 +2213,27 @@ export class RunRef {
         const result = liveSplitCoreNative.Run_save_as_lss(this.ptr);
         return result;
     }
+    customComparisonsLen(): number {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = liveSplitCoreNative.Run_custom_comparisons_len(this.ptr);
+        return result;
+    }
+    customComparison(index: number): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = liveSplitCoreNative.Run_custom_comparison(this.ptr, index);
+        return result;
+    }
+    autoSplitterSettings(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = liveSplitCoreNative.Run_auto_splitter_settings(this.ptr);
+        return result;
+    }
     constructor(ptr: number) {
         this.ptr = ptr;
     }
@@ -2257,26 +2282,30 @@ export class Run extends RunRefMut {
         const result = new Run(liveSplitCoreNative.Run_new());
         return result;
     }
-    static parse(data: number, length: number): ParseRunResult {
-        const result = new ParseRunResult(liveSplitCoreNative.Run_parse(data, length));
+    static parse(data: number, length: number, path: string, loadFiles: boolean): ParseRunResult {
+        const result = new ParseRunResult(liveSplitCoreNative.Run_parse(data, length, path, loadFiles ? 1 : 0));
         return result;
     }
-    static parseArray(data: Int8Array): ParseRunResult {
+    static parseFileHandle(handle: number, path: string, loadFiles: boolean): ParseRunResult {
+        const result = new ParseRunResult(liveSplitCoreNative.Run_parse_file_handle(handle, path, loadFiles ? 1 : 0));
+        return result;
+    }
+    static parseArray(data: Int8Array, path: string, loadFiles: boolean): ParseRunResult {
         const buf = emscriptenModule._malloc(data.length);
         try {
             emscriptenModule.writeArrayToMemory(data, buf);
-            const ptr = liveSplitCoreNative.Run_parse(buf, data.length);
+            const ptr = liveSplitCoreNative.Run_parse(buf, data.length, path, loadFiles ? 1 : 0);
             return new ParseRunResult(ptr);
         } finally {
             emscriptenModule._free(buf);
         }
     }
-    static parseString(text: string): ParseRunResult {
+    static parseString(text: string, path: string, loadFiles: boolean): ParseRunResult {
         const len = (text.length << 2) + 1;
         const buf = emscriptenModule._malloc(len);
         try {
             const actualLen = emscriptenModule.stringToUTF8(text, buf, len);
-            const ptr = liveSplitCoreNative.Run_parse(buf, actualLen);
+            const ptr = liveSplitCoreNative.Run_parse(buf, actualLen, path, loadFiles ? 1 : 0);
             return new ParseRunResult(ptr);
         } finally {
             emscriptenModule._free(buf);

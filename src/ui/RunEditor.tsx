@@ -471,7 +471,7 @@ export class RunEditor extends React.Component<Props, State> {
 
     private importComparison() {
         openFileAsArrayBuffer((data, file) => {
-            const result = LiveSplit.Run.parseArray(new Int8Array(data));
+            const result = LiveSplit.Run.parseArray(new Int8Array(data), "", false);
             if (!result.parsedSuccessfully()) {
                 alert("Couldn't parse the splits.");
                 return;
