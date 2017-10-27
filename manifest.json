@@ -1,0 +1,13 @@
+{
+  "name": "LiveSplit One",
+  "short_name": "LiveSplit One",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#171717",
+  "description": "A version of LiveSplit that works on a lot of platforms.",
+  "icons": [{
+    "src": "images/icon.png",
+    "sizes": "1000x1000",
+    "type": "image/png"
+  }]
+}
