@@ -125,16 +125,15 @@ export class LiveSplit extends React.Component<{}, State> {
                             margin: "10px",
                             marginBottom: "5px",
                         }}
-                    >
-                        <AutoRefreshLayout
-                            getState={() => this.state.timer.readWith(
-                                (t) => this.state.layout.stateAsJson(t),
-                            )}
-                        />
+                    >   
+                        <div onClick={(_) => this.onSplit()} style={{margin: "0px"}}>
+                            <AutoRefreshLayout
+                                getState={() => this.state.timer.readWith(
+                                    (t) => this.state.layout.stateAsJson(t),
+                                )}
+                            />
+                        </div>
                         <div className="buttons">
-                            <button onClick={(_) => this.onSplit()}>
-                                <i className="fa fa-play" aria-hidden="true" />
-                            </button>
                             <div className="small">
                                 <button onClick={(_) => this.onUndo()}>
                                     <i className="fa fa-arrow-up" aria-hidden="true" /></button>
