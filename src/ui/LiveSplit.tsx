@@ -5,7 +5,7 @@ import {
     HotkeySystem, Layout, LayoutEditor, Run, RunEditor,
     Segment, SharedTimer, Timer, TimerPhase, TimingMethod,
 } from "../livesplit";
-import { exportFile, openFileAsArrayBuffer } from "../util/FileUtil";
+import { exportFile, openFileAsArrayBuffer, openFileAsString} from "../util/FileUtil";
 import { assertNull, expect, maybeDispose, maybeDisposeAndThen, Option } from "../util/OptionUtil";
 import * as SplitsIO from "../util/SplitsIO";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
@@ -244,6 +244,26 @@ export class LiveSplit extends React.Component<{}, State> {
     public saveLayout() {
         const layout = this.state.layout.settingsAsJson();
         localStorage.setItem("layout", JSON.stringify(layout));
+    }
+
+    public importLayout() {
+        openFileAsString((file) => {
+            try {
+                /*XXX: I highly recommend replacing this routine with one that does not require a refresh*/
+                /*The line below this one throws an error if the file isnt valid json.*/
+                JSON.parse(file);
+                localStorage.setItem('layout', file);
+                /* I need the refresh as I could not get it to work without refreshing. */
+                if (confirm('Loading layouts requires a refresh. Continue?')) {location.reload();}
+            } catch(err) {
+                alert("Error loading layout (Are you sure this is a LiveSplit One layout?) - " + err);
+            }
+        });
+    }
+
+    public exportLayout() {
+        const layout = this.state.layout.settingsAsJson();
+        exportFile("layout.ls1l", JSON.stringify(layout));
     }
 
     public openRunEditor() {
