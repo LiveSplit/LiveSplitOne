@@ -15,6 +15,8 @@ export interface SidebarCallbacks {
     uploadToSplitsIO(): void,
     openLayoutEditor(): void,
     saveLayout(): void,
+    importLayout(): void,
+    exportLayout(): void,
     switchToPreviousComparison(): void,
     switchToNextComparison(): void,
     setCurrentTimingMethod(timingMethod: TimingMethod): void,
@@ -125,6 +127,12 @@ export class SideBarContent extends React.Component<Props, State> {
                         </button>
                         <button onClick={(_) => this.props.callbacks.saveLayout()}>
                             <i className="fa fa-floppy-o" aria-hidden="true" /> Save Layout
+                        </button>
+                        <button onClick={(_) => this.props.callbacks.importLayout()}>
+                            <i className="fa fa-download" aria-hidden="true" /> Import Layout
+                        </button>
+                        <button onClick={(_) => this.props.callbacks.exportLayout()}>
+                            <i className="fa fa-upload" aria-hidden="true" /> Export Layout
                         </button>
                         <hr />
                         <h2>Compare Against</h2>
