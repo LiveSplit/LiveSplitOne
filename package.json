@@ -19,10 +19,10 @@
     "@types/react-dom": "^15.5.1",
     "@types/react-sidebar": "^2.2.1",
     "babel-polyfill": "^6.26.0",
-    "react": "^16.0.0-rc.2",
+    "react": "^16.0.0",
     "react-color": "^2.13.1",
     "react-contextmenu": "^2.6.3",
-    "react-dom": "^16.0.0-rc.2",
+    "react-dom": "^16.0.0",
     "react-sidebar": "^2.2.1",
     "whatwg-fetch": "^2.0.3"
   },
@@ -38,10 +38,10 @@
     "source-map-loader": "^0.1.5",
     "style-loader": "^0.18.2",
     "ts-loader": "^2.3.4",
-    "tslint": "^5.5.0",
-    "typescript": "^2.5.2",
+    "tslint": "^5.8.0",
+    "typescript": "^2.6.1",
     "url-loader": "^0.5.9",
-    "webpack": "^3.5.5",
+    "webpack": "^3.8.1",
     "webpack-dev-server": "^2.7.1"
   }
 }

@@ -125,8 +125,8 @@ export class LiveSplit extends React.Component<{}, State> {
                             margin: "10px",
                             marginBottom: "5px",
                         }}
-                    >   
-                        <div onClick={(_) => this.onSplit()} style={{margin: "0px"}}>
+                    >
+                        <div onClick={(_) => this.onSplit()} style={{ margin: "0px" }}>
                             <AutoRefreshLayout
                                 getState={() => this.state.timer.readWith(
                                     (t) => this.state.layout.stateAsJson(t),
@@ -216,13 +216,13 @@ export class LiveSplit extends React.Component<{}, State> {
         this.loadFromSplitsIO(id);
     }
 
-    public uploadToSplitsIO(): Promise<Window | void> {
+    public uploadToSplitsIO(): Promise<Option<Window>> {
         const lss = this.state.timer.readWith((t) => t.getRun().saveAsLss());
 
         return SplitsIO
             .uploadLss(lss)
             .then((claimUri) => window.open(claimUri))
-            .catch((_) => alert("Failed to upload the splits."));
+            .catch((_) => { alert("Failed to upload the splits."); return null; });
     }
 
     public exportSplits() {
