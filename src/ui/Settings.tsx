@@ -416,6 +416,27 @@ export default class SettingsComponent extends React.Component<Props> {
                         </span>;
                     break;
                 }
+                case "Alignment": {
+                    component = <select
+                        value={value.Alignment}
+                        onChange={(e) => {
+                            this.props.setValue(
+                                valueIndex,
+                                expect(
+                                    SettingValue.fromAlignment(e.target.value),
+                                    "Unexpected Alignment",
+                                ),
+                            );
+                        }}
+                    >
+                        <option value="Auto">Automatic</option>
+                        <option value="Left">Left</option>
+                        <option value="Center">Center</option>
+                    </select>;
+                    break;
+                }
+                default:
+                    throw new Error("Unexpected Setting Type");
             }
             settingsRows.push(
                 <tr>

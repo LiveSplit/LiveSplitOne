@@ -511,6 +511,7 @@ liveSplitCoreNative.SettingValue_from_optional_empty_color = emscriptenModule.cw
 liveSplitCoreNative.SettingValue_from_transparent_gradient = emscriptenModule.cwrap('SettingValue_from_transparent_gradient', "number", []);
 liveSplitCoreNative.SettingValue_from_vertical_gradient = emscriptenModule.cwrap('SettingValue_from_vertical_gradient', "number", ["number", "number", "number", "number", "number", "number", "number", "number"]);
 liveSplitCoreNative.SettingValue_from_horizontal_gradient = emscriptenModule.cwrap('SettingValue_from_horizontal_gradient', "number", ["number", "number", "number", "number", "number", "number", "number", "number"]);
+liveSplitCoreNative.SettingValue_from_alignment = emscriptenModule.cwrap('SettingValue_from_alignment', "number", ["string"]);
 liveSplitCoreNative.SettingValue_drop = emscriptenModule.cwrap('SettingValue_drop', null, ["number"]);
 liveSplitCoreNative.SharedTimer_drop = emscriptenModule.cwrap('SharedTimer_drop', null, ["number"]);
 liveSplitCoreNative.SharedTimer_share = emscriptenModule.cwrap('SharedTimer_share', "number", ["number"]);
@@ -583,6 +584,7 @@ liveSplitCoreNative.Timer_loading_times = emscriptenModule.cwrap('Timer_loading_
 liveSplitCoreNative.Timer_current_phase = emscriptenModule.cwrap('Timer_current_phase', "number", ["number"]);
 liveSplitCoreNative.Timer_get_run = emscriptenModule.cwrap('Timer_get_run', "number", ["number"]);
 liveSplitCoreNative.Timer_print_debug = emscriptenModule.cwrap('Timer_print_debug', null, ["number"]);
+liveSplitCoreNative.Timer_current_time = emscriptenModule.cwrap('Timer_current_time', "number", ["number"]);
 liveSplitCoreNative.Timer_replace_run = emscriptenModule.cwrap('Timer_replace_run', "number", ["number", "number", "number"]);
 liveSplitCoreNative.Timer_set_run = emscriptenModule.cwrap('Timer_set_run', "number", ["number", "number"]);
 liveSplitCoreNative.Timer_start = emscriptenModule.cwrap('Timer_start', null, ["number"]);
@@ -3023,6 +3025,13 @@ export class SettingValue extends SettingValueRefMut {
         const result = new SettingValue(liveSplitCoreNative.SettingValue_from_horizontal_gradient(r1, g1, b1, a1, r2, g2, b2, a2));
         return result;
     }
+    static fromAlignment(value: string): SettingValue | null {
+        const result = new SettingValue(liveSplitCoreNative.SettingValue_from_alignment(value));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
 }
 
 export class SharedTimerRef {
@@ -3719,6 +3728,13 @@ export class TimerRef {
             throw "this is disposed";
         }
         liveSplitCoreNative.Timer_print_debug(this.ptr);
+    }
+    currentTime(): TimeRef {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = new TimeRef(liveSplitCoreNative.Timer_current_time(this.ptr));
+        return result;
     }
     constructor(ptr: number) {
         this.ptr = ptr;

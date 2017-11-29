@@ -12,7 +12,9 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
-        "alwaysStrict": true
+        "alwaysStrict": true,
+        "strictFunctionTypes": true,
+        "strict": true
     },
     "include": [
         "./src/**/*"

@@ -14,9 +14,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/react": "^15.0.31",
+    "@types/react": "^16.0.25",
     "@types/react-color": "^2.11.4",
-    "@types/react-dom": "^15.5.1",
+    "@types/react-dom": "^16.0.3",
     "@types/react-sidebar": "^2.2.1",
     "babel-polyfill": "^6.26.0",
     "react": "^16.0.0",
