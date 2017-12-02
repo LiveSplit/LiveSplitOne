@@ -126,15 +126,16 @@ button.toggle-right {
 
 .title > div >  span,
 div#lower-row > div {
-    display: block;
     width: inherit;
-    text-align: center;
     font-size: 13px;
 }
 
 span.title-game {
     line-height: 19px;
     width: 95% !important;
+    display: flex;
+    height: 50%;
+    justify-content: center;
 }
 
 span.title-game,
@@ -142,18 +143,21 @@ div#lower-row {
     padding: 0px 6px;
 }
 
-div#lower-row > * {
-    display: inline-block !important;
-}
-
 div#lower-row > div.title-attempts {
     width: 40px;
     text-align: right;
+    display: inline-block;
+    vertical-align: bottom;
+    padding-bottom: 4px;
 }
 
 div#lower-row > div.title-category {
     width: calc(100% - 80px);
     padding-left: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
 }
 
 .detailed-timer {
@@ -169,6 +173,7 @@ div#lower-row > div.title-category {
 
 div.meta-left > span.title-game {
     margin-right: 0px;
+    justify-content: baseline;
 }
 
 .title > div.meta-left > span,
@@ -179,6 +184,19 @@ div.meta-left > div#lower-row > div:not(.title-attempts) {
 div.meta-left > div#lower-row > div.title-category {
     width: calc(100% - 40px);
     padding: 0;
+    justify-content: baseline;
+}
+
+div.meta-two-lines > div#lower-row > div.title-category {
+    align-items: baseline;
+    vertical-align: top;
+    padding-top: 1px;
+}
+
+div.meta-two-lines > div#lower-row > div.title-attempts {
+    vertical-align: top;
+    padding-bottom: 0;
+    padding-top: 1px;
 }
 
 .game-icon-container {
