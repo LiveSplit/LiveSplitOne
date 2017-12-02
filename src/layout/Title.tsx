@@ -19,6 +19,7 @@ export default class Title extends React.Component<Props> {
 
         const finishedRunsExist = this.props.state.finished_runs != null;
         const attemptsExist = this.props.state.attempts != null;
+        const twoLines = this.props.state.line2 != null;
         let attemptsLabel = "";
 
         if (finishedRunsExist) {
@@ -46,10 +47,10 @@ export default class Title extends React.Component<Props> {
                 }}
             >
                 {icon}
-                <div className={"run-meta" + (!this.props.state.is_centered ? " meta-left" : "")}>
-                    <span className="title-game">{this.props.state.line1}</span>
-                    <div id="lower-row">
-                        <div className="title-category">{this.props.state.line2}</div>
+                <div className={"run-meta" + (!this.props.state.is_centered ? " meta-left" : "") + (twoLines ? " meta-two-lines" : "")}>
+                    {twoLines ? <span className="title-game">{this.props.state.line1}</span> : <div style={{ display: "none" }} />}
+                    <div id="lower-row" style={{ height: (twoLines ? "50%" : "100%") }}>
+                        <div className="title-category"> {twoLines ? this.props.state.line2 : this.props.state.line1}</div>
                         <div className="title-attempts">{attemptsLabel}</div>
                     </div>
                 </div>
