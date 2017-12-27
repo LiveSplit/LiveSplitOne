@@ -269,7 +269,7 @@ export interface RunEditorRowJson {
     segment_time: string,
     best_segment_time: string,
     comparison_times: string[],
-    selected: "NotSelected" | "Selected" | "CurrentRow",
+    selected: "NotSelected" | "Selected" | "Active",
 }
 
 export type SemanticColor = "Default" |
@@ -364,6 +364,8 @@ liveSplitCoreNative.GraphComponentState_is_live_delta_active = emscriptenModule.
 liveSplitCoreNative.GraphComponentState_is_flipped = emscriptenModule.cwrap('GraphComponentState_is_flipped', "number", ["number"]);
 liveSplitCoreNative.HotkeySystem_new = emscriptenModule.cwrap('HotkeySystem_new', "number", ["number"]);
 liveSplitCoreNative.HotkeySystem_drop = emscriptenModule.cwrap('HotkeySystem_drop', null, ["number"]);
+liveSplitCoreNative.HotkeySystem_deactivate = emscriptenModule.cwrap('HotkeySystem_deactivate', null, ["number"]);
+liveSplitCoreNative.HotkeySystem_activate = emscriptenModule.cwrap('HotkeySystem_activate', null, ["number"]);
 liveSplitCoreNative.Layout_new = emscriptenModule.cwrap('Layout_new', "number", []);
 liveSplitCoreNative.Layout_default_layout = emscriptenModule.cwrap('Layout_default_layout', "number", []);
 liveSplitCoreNative.Layout_parse_json = emscriptenModule.cwrap('Layout_parse_json', "number", ["string"]);
@@ -454,13 +456,13 @@ liveSplitCoreNative.RunEditor_insert_segment_below = emscriptenModule.cwrap('Run
 liveSplitCoreNative.RunEditor_remove_segments = emscriptenModule.cwrap('RunEditor_remove_segments', null, ["number"]);
 liveSplitCoreNative.RunEditor_move_segments_up = emscriptenModule.cwrap('RunEditor_move_segments_up', null, ["number"]);
 liveSplitCoreNative.RunEditor_move_segments_down = emscriptenModule.cwrap('RunEditor_move_segments_down', null, ["number"]);
-liveSplitCoreNative.RunEditor_selected_set_icon = emscriptenModule.cwrap('RunEditor_selected_set_icon', null, ["number", "number", "number"]);
-liveSplitCoreNative.RunEditor_selected_remove_icon = emscriptenModule.cwrap('RunEditor_selected_remove_icon', null, ["number"]);
-liveSplitCoreNative.RunEditor_selected_set_name = emscriptenModule.cwrap('RunEditor_selected_set_name', null, ["number", "string"]);
-liveSplitCoreNative.RunEditor_selected_parse_and_set_split_time = emscriptenModule.cwrap('RunEditor_selected_parse_and_set_split_time', "number", ["number", "string"]);
-liveSplitCoreNative.RunEditor_selected_parse_and_set_segment_time = emscriptenModule.cwrap('RunEditor_selected_parse_and_set_segment_time', "number", ["number", "string"]);
-liveSplitCoreNative.RunEditor_selected_parse_and_set_best_segment_time = emscriptenModule.cwrap('RunEditor_selected_parse_and_set_best_segment_time', "number", ["number", "string"]);
-liveSplitCoreNative.RunEditor_selected_parse_and_set_comparison_time = emscriptenModule.cwrap('RunEditor_selected_parse_and_set_comparison_time', "number", ["number", "string", "string"]);
+liveSplitCoreNative.RunEditor_active_set_icon = emscriptenModule.cwrap('RunEditor_active_set_icon', null, ["number", "number", "number"]);
+liveSplitCoreNative.RunEditor_active_remove_icon = emscriptenModule.cwrap('RunEditor_active_remove_icon', null, ["number"]);
+liveSplitCoreNative.RunEditor_active_set_name = emscriptenModule.cwrap('RunEditor_active_set_name', null, ["number", "string"]);
+liveSplitCoreNative.RunEditor_active_parse_and_set_split_time = emscriptenModule.cwrap('RunEditor_active_parse_and_set_split_time', "number", ["number", "string"]);
+liveSplitCoreNative.RunEditor_active_parse_and_set_segment_time = emscriptenModule.cwrap('RunEditor_active_parse_and_set_segment_time', "number", ["number", "string"]);
+liveSplitCoreNative.RunEditor_active_parse_and_set_best_segment_time = emscriptenModule.cwrap('RunEditor_active_parse_and_set_best_segment_time', "number", ["number", "string"]);
+liveSplitCoreNative.RunEditor_active_parse_and_set_comparison_time = emscriptenModule.cwrap('RunEditor_active_parse_and_set_comparison_time', "number", ["number", "string", "string"]);
 liveSplitCoreNative.RunEditor_add_comparison = emscriptenModule.cwrap('RunEditor_add_comparison', "number", ["number", "string"]);
 liveSplitCoreNative.RunEditor_import_comparison = emscriptenModule.cwrap('RunEditor_import_comparison', "number", ["number", "number", "string"]);
 liveSplitCoreNative.RunEditor_remove_comparison = emscriptenModule.cwrap('RunEditor_remove_comparison', null, ["number", "string"]);
@@ -604,7 +606,7 @@ liveSplitCoreNative.Timer_switch_to_previous_comparison = emscriptenModule.cwrap
 liveSplitCoreNative.Timer_initialize_game_time = emscriptenModule.cwrap('Timer_initialize_game_time', null, ["number"]);
 liveSplitCoreNative.Timer_uninitialize_game_time = emscriptenModule.cwrap('Timer_uninitialize_game_time', null, ["number"]);
 liveSplitCoreNative.Timer_pause_game_time = emscriptenModule.cwrap('Timer_pause_game_time', null, ["number"]);
-liveSplitCoreNative.Timer_unpause_game_time = emscriptenModule.cwrap('Timer_unpause_game_time', null, ["number"]);
+liveSplitCoreNative.Timer_resume_game_time = emscriptenModule.cwrap('Timer_resume_game_time', null, ["number"]);
 liveSplitCoreNative.Timer_set_game_time = emscriptenModule.cwrap('Timer_set_game_time', null, ["number", "number"]);
 liveSplitCoreNative.Timer_set_loading_times = emscriptenModule.cwrap('Timer_set_loading_times', null, ["number", "number"]);
 liveSplitCoreNative.TimerComponent_new = emscriptenModule.cwrap('TimerComponent_new', "number", []);
@@ -1563,6 +1565,18 @@ export class GraphComponentState extends GraphComponentStateRefMut {
 
 export class HotkeySystemRef {
     ptr: number;
+    deactivate() {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.HotkeySystem_deactivate(this.ptr);
+    }
+    activate() {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        liveSplitCoreNative.HotkeySystem_activate(this.ptr);
+    }
     constructor(ptr: number) {
         this.ptr = ptr;
     }
@@ -2422,50 +2436,50 @@ export class RunEditorRefMut extends RunEditorRef {
         }
         liveSplitCoreNative.RunEditor_move_segments_down(this.ptr);
     }
-    selectedSetIcon(data: number, length: number) {
+    activeSetIcon(data: number, length: number) {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        liveSplitCoreNative.RunEditor_selected_set_icon(this.ptr, data, length);
+        liveSplitCoreNative.RunEditor_active_set_icon(this.ptr, data, length);
     }
-    selectedRemoveIcon() {
+    activeRemoveIcon() {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        liveSplitCoreNative.RunEditor_selected_remove_icon(this.ptr);
+        liveSplitCoreNative.RunEditor_active_remove_icon(this.ptr);
     }
-    selectedSetName(name: string) {
+    activeSetName(name: string) {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        liveSplitCoreNative.RunEditor_selected_set_name(this.ptr, name);
+        liveSplitCoreNative.RunEditor_active_set_name(this.ptr, name);
     }
-    selectedParseAndSetSplitTime(time: string): boolean {
+    activeParseAndSetSplitTime(time: string): boolean {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        const result = liveSplitCoreNative.RunEditor_selected_parse_and_set_split_time(this.ptr, time) != 0;
+        const result = liveSplitCoreNative.RunEditor_active_parse_and_set_split_time(this.ptr, time) != 0;
         return result;
     }
-    selectedParseAndSetSegmentTime(time: string): boolean {
+    activeParseAndSetSegmentTime(time: string): boolean {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        const result = liveSplitCoreNative.RunEditor_selected_parse_and_set_segment_time(this.ptr, time) != 0;
+        const result = liveSplitCoreNative.RunEditor_active_parse_and_set_segment_time(this.ptr, time) != 0;
         return result;
     }
-    selectedParseAndSetBestSegmentTime(time: string): boolean {
+    activeParseAndSetBestSegmentTime(time: string): boolean {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        const result = liveSplitCoreNative.RunEditor_selected_parse_and_set_best_segment_time(this.ptr, time) != 0;
+        const result = liveSplitCoreNative.RunEditor_active_parse_and_set_best_segment_time(this.ptr, time) != 0;
         return result;
     }
-    selectedParseAndSetComparisonTime(comparison: string, time: string): boolean {
+    activeParseAndSetComparisonTime(comparison: string, time: string): boolean {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        const result = liveSplitCoreNative.RunEditor_selected_parse_and_set_comparison_time(this.ptr, comparison, time) != 0;
+        const result = liveSplitCoreNative.RunEditor_active_parse_and_set_comparison_time(this.ptr, comparison, time) != 0;
         return result;
     }
     addComparison(comparison: string): boolean {
@@ -2526,11 +2540,11 @@ export class RunEditorRefMut extends RunEditorRef {
             emscriptenModule._free(buf);
         }
     }
-    selectedSetIconFromArray(data: Int8Array) {
+    activeSetIconFromArray(data: Int8Array) {
         const buf = emscriptenModule._malloc(data.length);
         try {
             emscriptenModule.writeArrayToMemory(data, buf);
-            this.selectedSetIcon(buf, data.length);
+            this.activeSetIcon(buf, data.length);
         } finally {
             emscriptenModule._free(buf);
         }
@@ -3868,11 +3882,11 @@ export class TimerRefMut extends TimerRef {
         }
         liveSplitCoreNative.Timer_pause_game_time(this.ptr);
     }
-    unpauseGameTime() {
+    resumeGameTime() {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        liveSplitCoreNative.Timer_unpause_game_time(this.ptr);
+        liveSplitCoreNative.Timer_resume_game_time(this.ptr);
     }
     setGameTime(time: TimeSpanRef) {
         if (this.ptr == 0) {

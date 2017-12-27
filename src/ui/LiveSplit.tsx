@@ -22,7 +22,6 @@ export interface State {
 }
 
 export class LiveSplit extends React.Component<{}, State> {
-    private keyEvent: EventListenerObject;
     private scrollEvent: EventListenerObject;
     private rightClickEvent: EventListenerObject;
 
@@ -87,15 +86,12 @@ export class LiveSplit extends React.Component<{}, State> {
     public componentWillMount() {
         this.scrollEvent = { handleEvent: (e: MouseWheelEvent) => this.onScroll(e) };
         window.addEventListener("wheel", this.scrollEvent);
-        this.keyEvent = { handleEvent: (e: KeyboardEvent) => this.onKeyPress(e) };
-        window.addEventListener("keypress", this.keyEvent);
         this.rightClickEvent = { handleEvent: (e: any) => this.onRightClick(e) };
         window.addEventListener("contextmenu", this.rightClickEvent, false);
     }
 
     public componentWillUnmount() {
         window.removeEventListener("wheel", this.scrollEvent);
-        window.removeEventListener("keypress", this.keyEvent);
         window.removeEventListener("contextmenu", this.rightClickEvent);
         this.state.timer.dispose();
         this.state.layout.dispose();
@@ -264,7 +260,7 @@ export class LiveSplit extends React.Component<{}, State> {
                     });
                     layout.remount();
                     return;
-            }
+                }
             } catch (_) { /* Failed to load the layout */ }
             alert("Error loading Layout. This may not be a LiveSplit One Layout.");
         });
@@ -285,6 +281,9 @@ export class LiveSplit extends React.Component<{}, State> {
         });
 
         if (run != null) {
+            if (this.state.hotkeySystem != null) {
+                this.state.hotkeySystem.deactivate();
+            }
             const editor = RunEditor.new(run);
             this.setState({
                 ...this.state,
@@ -321,9 +320,16 @@ export class LiveSplit extends React.Component<{}, State> {
             });
         }
         this.state.layout.remount();
+        if (this.state.hotkeySystem != null) {
+            this.state.hotkeySystem.activate();
+        }
     }
 
     public openLayoutEditor() {
+        if (this.state.hotkeySystem != null) {
+            this.state.hotkeySystem.deactivate();
+        }
+
         const layout = this.state.layout.clone();
         const editor = LayoutEditor.new(layout);
         this.setState({
@@ -356,6 +362,9 @@ export class LiveSplit extends React.Component<{}, State> {
                 sidebarOpen: false,
             });
             this.state.layout.remount();
+        }
+        if (this.state.hotkeySystem != null) {
+            this.state.hotkeySystem.activate();
         }
     }
 
@@ -410,68 +419,5 @@ export class LiveSplit extends React.Component<{}, State> {
 
     private onSkip() {
         this.state.timer.writeWith((t) => t.skipSplit());
-    }
-
-    private onPrintDebug() {
-        this.state.timer.readWith((t) => t.printDebug());
-    }
-
-    private onKeyPress(e: KeyboardEvent) {
-        if (this.state.runEditor || this.state.layoutEditor) {
-            return;
-        }
-
-        switch (e.charCode) {
-            case 47: {
-                // NumPad Slash
-                this.onPrintDebug();
-                break;
-            }
-            case 49: {
-                // NumPad 1
-                this.onSplit();
-                break;
-            }
-            case 50: {
-                // NumPad 2
-                this.onSkip();
-                break;
-            }
-            case 51: {
-                // NumPad 3
-                this.onReset();
-                break;
-            }
-            case 52: {
-                // NumPad 4
-                this.switchToPreviousComparison();
-                break;
-            }
-            case 53: {
-                // NumPad 5
-                this.onPause();
-                break;
-            }
-            case 54: {
-                // NumPad 6
-                this.switchToNextComparison();
-                break;
-            }
-            case 55: {
-                // NumPad 7
-                this.importSplits();
-                break;
-            }
-            case 56: {
-                // NumPad 8
-                this.onUndo();
-                break;
-            }
-            case 57: {
-                // NumPad 9
-                this.exportSplits();
-                break;
-            }
-        }
     }
 }

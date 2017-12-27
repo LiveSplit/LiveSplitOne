@@ -299,7 +299,7 @@ export class RunEditor extends React.Component<Props, State> {
                                         <tr
                                             key={segmentIndex.toString()}
                                             className={
-                                                (s.selected === "Selected" || s.selected === "CurrentRow") ?
+                                                (s.selected === "Selected" || s.selected === "Active") ?
                                                     "selected" :
                                                     ""
                                             }
@@ -530,14 +530,14 @@ export class RunEditor extends React.Component<Props, State> {
     private changeSegmentIcon(index: number) {
         this.props.editor.selectOnly(index);
         openFileAsArrayBuffer((file) => {
-            this.props.editor.selectedSetIconFromArray(new Int8Array(file));
+            this.props.editor.activeSetIconFromArray(new Int8Array(file));
             this.update();
         });
     }
 
     private removeSegmentIcon(index: number) {
         this.props.editor.selectOnly(index);
-        this.props.editor.selectedRemoveIcon();
+        this.props.editor.activeRemoveIcon();
     }
 
     private getSegmentIconUrl(index: number): string {
@@ -640,12 +640,12 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private handleSegmentNameChange(event: any) {
-        this.props.editor.selectedSetName(event.target.value);
+        this.props.editor.activeSetName(event.target.value);
         this.update();
     }
 
     private handleSplitTimeChange(event: any) {
-        const valid = this.props.editor.selectedParseAndSetSplitTime(event.target.value);
+        const valid = this.props.editor.activeParseAndSetSplitTime(event.target.value);
         const editor = {
             ...this.state.editor,
         };
@@ -661,7 +661,7 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private handleSegmentTimeChange(event: any) {
-        const valid = this.props.editor.selectedParseAndSetSegmentTime(event.target.value);
+        const valid = this.props.editor.activeParseAndSetSegmentTime(event.target.value);
         const editor = {
             ...this.state.editor,
         };
@@ -677,7 +677,7 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private handleBestSegmentTimeChange(event: any) {
-        const valid = this.props.editor.selectedParseAndSetBestSegmentTime(event.target.value);
+        const valid = this.props.editor.activeParseAndSetBestSegmentTime(event.target.value);
         const editor = {
             ...this.state.editor,
         };
@@ -694,7 +694,7 @@ export class RunEditor extends React.Component<Props, State> {
 
     private handleComparisonTimeChange(event: any, comparisonIndex: number) {
         const comparisonName = this.state.editor.comparison_names[comparisonIndex];
-        const valid = this.props.editor.selectedParseAndSetComparisonTime(comparisonName, event.target.value);
+        const valid = this.props.editor.activeParseAndSetComparisonTime(comparisonName, event.target.value);
         const editor = {
             ...this.state.editor,
         };
