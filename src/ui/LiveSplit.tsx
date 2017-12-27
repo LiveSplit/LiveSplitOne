@@ -255,21 +255,24 @@ export class LiveSplit extends React.Component<{}, State> {
     public importLayout() {
         openFileAsString((file) => {
             try {
-                /*XXX: I highly recommend replacing this routine with one that does not require a refresh*/
-                /*The line below this one throws an error if the file isnt valid json.*/
-                JSON.parse(file);
-                localStorage.setItem("layout", file);
-                /* I need the refresh as I could not get it to work without refreshing. */
-                if (confirm("Loading layouts requires a refresh. Continue?")) { location.reload(); }
-            } catch (err) {
-                alert("Error loading layout (Are you sure this is a LiveSplit One layout?) - " + err);
+                const layout = Layout.parseJson(JSON.parse(file));
+                if (layout != null) {
+                    this.state.layout.dispose();
+                    this.setState({
+                        ...this.state,
+                        layout,
+                    });
+                    layout.remount();
+                    return;
             }
+            } catch (_) { /* Failed to load the layout */ }
+            alert("Error loading Layout. This may not be a LiveSplit One Layout.");
         });
     }
 
     public exportLayout() {
         const layout = this.state.layout.settingsAsJson();
-        exportFile("layout.ls1l", JSON.stringify(layout));
+        exportFile("layout.ls1l", JSON.stringify(layout, null, 4));
     }
 
     public openRunEditor() {
