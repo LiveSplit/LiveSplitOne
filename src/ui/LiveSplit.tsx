@@ -99,24 +99,24 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     public render() {
-        const { route, content } = ((): { route: Route, content: JSX.Element } => {
+        const [route, content] = ((): [Route, JSX.Element] => {
             if (this.state.runEditor) {
-                return {
-                    route: "run-editor",
-                    content: <RunEditorComponent editor={this.state.runEditor} />,
-                };
+                return [
+                    "run-editor",
+                    <RunEditorComponent editor={this.state.runEditor} />,
+                ];
             } else if (this.state.layoutEditor) {
-                return {
-                    route: "layout-editor",
-                    content: <LayoutEditorComponent
+                return [
+                    "layout-editor",
+                    <LayoutEditorComponent
                         editor={this.state.layoutEditor}
                         timer={this.state.timer}
                     />,
-                };
+                ];
             } else {
-                return {
-                    route: "main",
-                    content: <div
+                return [
+                    "main",
+                    <div
                         style={{
                             margin: "10px",
                             marginBottom: "5px",
@@ -153,7 +153,7 @@ export class LiveSplit extends React.Component<{}, State> {
                             </div>
                         </div>
                     </div>,
-                };
+                ];
             }
         })();
 
@@ -228,12 +228,12 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     public exportSplits() {
-        const { lss, name } = this.state.timer.readWith((t) => {
+        const [lss, name] = this.state.timer.readWith((t) => {
             const run = t.getRun();
-            return {
-                lss: run.saveAsLss(),
-                name: run.extendedFileName(true),
-            };
+            return [
+                run.saveAsLss(),
+                run.extendedFileName(true),
+            ];
         });
         exportFile(name + ".lss", lss);
     }

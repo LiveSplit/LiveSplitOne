@@ -179,11 +179,11 @@ export class SideBarContent extends React.Component<Props, State> {
 
     private update() {
         if (this.props.route === "main" && this.props.sidebarOpen) {
-            const { comparison, timingMethod } = this.props.timer.readWith((t) => {
-                return {
-                    comparison: t.currentComparison(),
-                    timingMethod: t.currentTimingMethod(),
-                };
+            const [comparison, timingMethod] = this.props.timer.readWith((t): [string, number] => {
+                return [
+                    t.currentComparison(),
+                    t.currentTimingMethod(),
+                ];
             });
 
             if (comparison !== this.state.comparison || timingMethod !== this.state.timingMethod) {
