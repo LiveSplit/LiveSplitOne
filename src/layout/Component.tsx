@@ -1,5 +1,6 @@
 import * as React from "react";
 import { ComponentStateJson, LayoutStateJson } from "../livesplit";
+import { assertNever } from "../util/OptionUtil";
 import BlankSpace from "./BlankSpace";
 import CurrentComparison from "./CurrentComparison";
 import CurrentPace from "./CurrentPace";
@@ -24,61 +25,42 @@ export interface Props {
 
 export default class Component extends React.Component<Props> {
     public render() {
-        const componentState: any = this.props.state;
-        const layoutState = this.props.layoutState;
-
-        switch (Object.keys(componentState)[0]) {
-            case "CurrentComparison": {
-                return <CurrentComparison state={componentState.CurrentComparison} />;
-            }
-            case "CurrentPace": {
-                return <CurrentPace state={componentState.CurrentPace} />;
-            }
-            case "Delta": {
-                return <Delta state={componentState.Delta} />;
-            }
-            case "DetailedTimer": {
-                return <DetailedTimer state={componentState.DetailedTimer} />;
-            }
-            case "Graph": {
-                return <Graph state={componentState.Graph} />;
-            }
-            case "PossibleTimeSave": {
-                return <PossibleTimeSave state={componentState.PossibleTimeSave} />;
-            }
-            case "PreviousSegment": {
-                return <PreviousSegment state={componentState.PreviousSegment} />;
-            }
-            case "Splits": {
-                return <Splits
-                    state={componentState.Splits}
-                    layoutState={layoutState}
-                />;
-            }
-            case "SumOfBest": {
-                return <SumOfBest state={componentState.SumOfBest} />;
-            }
-            case "Text": {
-                return <Text state={componentState.Text} />;
-            }
-            case "Timer": {
-                return <Timer state={componentState.Timer} componentId={this.props.componentId} />;
-            }
-            case "Title": {
-                return <Title state={componentState.Title} />;
-            }
-            case "TotalPlaytime": {
-                return <TotalPlaytime state={componentState.TotalPlaytime} />;
-            }
-            case "Separator": {
-                return <Separator layoutState={layoutState} />;
-            }
-            case "BlankSpace": {
-                return <BlankSpace state={componentState.BlankSpace} />;
-            }
-            default: {
-                return null;
-            }
+        const { state, layoutState } = this.props;
+        if ("CurrentComparison" in state) {
+            return <CurrentComparison state={state.CurrentComparison} />;
+        } else if ("CurrentPace" in state) {
+            return <CurrentPace state={state.CurrentPace} />;
+        } else if ("Delta" in state) {
+            return <Delta state={state.Delta} />;
+        } else if ("DetailedTimer" in state) {
+            return <DetailedTimer state={state.DetailedTimer} />;
+        } else if ("Graph" in state) {
+            return <Graph state={state.Graph} />;
+        } else if ("PossibleTimeSave" in state) {
+            return <PossibleTimeSave state={state.PossibleTimeSave} />;
+        } else if ("PreviousSegment" in state) {
+            return <PreviousSegment state={state.PreviousSegment} />;
+        } else if ("Splits" in state) {
+            return <Splits
+                state={state.Splits}
+                layoutState={layoutState}
+            />;
+        } else if ("SumOfBest" in state) {
+            return <SumOfBest state={state.SumOfBest} />;
+        } else if ("Text" in state) {
+            return <Text state={state.Text} />;
+        } else if ("Timer" in state) {
+            return <Timer state={state.Timer} componentId={this.props.componentId} />;
+        } else if ("Title" in state) {
+            return <Title state={state.Title} />;
+        } else if ("TotalPlaytime" in state) {
+            return <TotalPlaytime state={state.TotalPlaytime} />;
+        } else if ("Separator" in state) {
+            return <Separator layoutState={layoutState} />;
+        } else if ("BlankSpace" in state) {
+            return <BlankSpace state={state.BlankSpace} />;
+        } else {
+            return assertNever(state);
         }
     }
 }

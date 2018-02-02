@@ -9,15 +9,15 @@ export default class Text extends React.Component<Props> {
     }
 
     public render() {
-        const componentState: any = this.props.state;
-        const text = componentState.Center != null ? (
+        const { state } = this.props;
+        const text = "Center" in state ? (
             <tr>
-                <td className="text-component-text center-text">{componentState.Center}</td>
+                <td className="text-component-text center-text">{state.Center}</td>
             </tr>
         ) : (
                 <tr>
-                    <td className="text-component-text">{componentState.Split[0]}</td>
-                    <td className="text-component-text">{componentState.Split[1]}</td>
+                    <td className="text-component-text">{state.Split[0]}</td>
+                    <td className="text-component-text">{state.Split[1]}</td>
                 </tr>
             );
         return (

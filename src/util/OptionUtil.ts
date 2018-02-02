@@ -15,6 +15,8 @@ interface MaybeDisposable {
     dispose?(): void,
 }
 
+export function assertNever(x: never): never { return x; }
+
 export function assertNull(obj: Option<MaybeDisposable>, message: string) {
     if (obj != null) {
         if (obj.dispose) {

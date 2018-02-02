@@ -10,24 +10,17 @@ export function colorToCss(color: Color): string {
 }
 
 export function gradientToCss(gradient: Gradient): string {
-    const gradientAny: any = gradient;
-    if (gradientAny === "Transparent") {
+    if (gradient === "Transparent") {
         return "transparent";
-    }
-    switch (Object.keys(gradient)[0]) {
-        case "Plain":
-            return colorToCss(gradientAny.Plain);
-        case "Vertical": {
-            const start = colorToCss(gradientAny.Vertical[0]);
-            const end = colorToCss(gradientAny.Vertical[1]);
-            return `linear-gradient(${start} 0%, ${end} 100%)`;
-        }
-        case "Horizontal": {
-            const start = colorToCss(gradientAny.Horizontal[0]);
-            const end = colorToCss(gradientAny.Horizontal[1]);
-            return `linear-gradient(to right, ${start} 0%, ${end} 100%)`;
-        }
-        default:
-            throw new Error("Unexpected Gradient Type");
+    } else if ("Plain" in gradient) {
+        return colorToCss(gradient.Plain);
+    } else if ("Vertical" in gradient) {
+        const start = colorToCss(gradient.Vertical[0]);
+        const end = colorToCss(gradient.Vertical[1]);
+        return `linear-gradient(${start} 0%, ${end} 100%)`;
+    } else {
+        const start = colorToCss(gradient.Horizontal[0]);
+        const end = colorToCss(gradient.Horizontal[1]);
+        return `linear-gradient(to right, ${start} 0%, ${end} 100%)`;
     }
 }

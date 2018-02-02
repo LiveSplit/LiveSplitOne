@@ -22,8 +22,8 @@ export interface State {
 }
 
 export class LiveSplit extends React.Component<{}, State> {
-    private scrollEvent: EventListenerObject;
-    private rightClickEvent: EventListenerObject;
+    private scrollEvent: Option<EventListenerObject>;
+    private rightClickEvent: Option<EventListenerObject>;
 
     constructor(props: {}) {
         super(props);
@@ -91,8 +91,14 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     public componentWillUnmount() {
-        window.removeEventListener("wheel", this.scrollEvent);
-        window.removeEventListener("contextmenu", this.rightClickEvent);
+        window.removeEventListener(
+            "wheel",
+            expect(this.scrollEvent, "A Scroll Event should exist"),
+        );
+        window.removeEventListener(
+            "contextmenu",
+            expect(this.rightClickEvent, "A Right Click Event should exist"),
+        );
         this.state.timer.dispose();
         this.state.layout.dispose();
         maybeDispose(this.state.hotkeySystem);
