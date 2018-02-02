@@ -2,3 +2,4 @@ node_modules
 dist
 npm-debug.log
 src/livesplit_core.js
+src/livesplit_core.wasm
