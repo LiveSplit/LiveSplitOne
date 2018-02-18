@@ -28,7 +28,7 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
                     layoutState: this.props.getState(),
                 });
             },
-            1000 / 30,
+            1000 / 60,
         );
     }
 

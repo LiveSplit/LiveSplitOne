@@ -49,7 +49,7 @@ export class SideBarContent extends React.Component<Props, State> {
     public componentWillMount() {
         this.intervalID = setInterval(
             () => this.update(),
-            1000 / 30,
+            1000 / 60,
         );
     }
 
