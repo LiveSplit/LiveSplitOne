@@ -132,7 +132,7 @@ div#lower-row > div {
 
 span.title-game {
     line-height: 19px;
-    width: 95% !important;
+    width: calc(100% - 12px) !important;
     display: flex;
     height: 50%;
     justify-content: center;
@@ -146,7 +146,6 @@ div#lower-row {
 div#lower-row > div.title-attempts {
     width: 40px;
     text-align: right;
-    display: inline-block;
     vertical-align: bottom;
     padding-bottom: 4px;
 }
@@ -213,8 +212,9 @@ div.meta-two-lines > div#lower-row > div.title-attempts {
     width: initial;
 }
 
-.run-meta > span,
-.run-meta > div#lower-row > div {
+.title-text,
+.title-attempts {
+    display: inline-block;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
