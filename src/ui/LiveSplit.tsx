@@ -245,7 +245,7 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     public saveSplits() {
-        const lss = this.state.timer.readWith((t) => t.getRun().saveAsLss());
+        const lss = this.state.timer.readWith((t) => t.saveAsLss());
         localStorage.setItem("splits", lss);
     }
 
