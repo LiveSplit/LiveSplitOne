@@ -887,6 +887,7 @@ liveSplitCoreNative.RunEditor_add_comparison = emscriptenModule.cwrap('RunEditor
 liveSplitCoreNative.RunEditor_import_comparison = emscriptenModule.cwrap('RunEditor_import_comparison', "number", ["number", "number", "string"]);
 liveSplitCoreNative.RunEditor_remove_comparison = emscriptenModule.cwrap('RunEditor_remove_comparison', null, ["number", "string"]);
 liveSplitCoreNative.RunEditor_rename_comparison = emscriptenModule.cwrap('RunEditor_rename_comparison', "number", ["number", "string", "string"]);
+liveSplitCoreNative.RunEditor_move_comparison = emscriptenModule.cwrap('RunEditor_move_comparison', "number", ["number", "number", "number"]);
 liveSplitCoreNative.RunEditor_clear_history = emscriptenModule.cwrap('RunEditor_clear_history', null, ["number"]);
 liveSplitCoreNative.RunEditor_clear_times = emscriptenModule.cwrap('RunEditor_clear_times', null, ["number"]);
 liveSplitCoreNative.RunEditor_clean_sum_of_best = emscriptenModule.cwrap('RunEditor_clean_sum_of_best', "number", ["number"]);
@@ -1006,6 +1007,7 @@ liveSplitCoreNative.Timer_is_game_time_paused = emscriptenModule.cwrap('Timer_is
 liveSplitCoreNative.Timer_loading_times = emscriptenModule.cwrap('Timer_loading_times', "number", ["number"]);
 liveSplitCoreNative.Timer_current_phase = emscriptenModule.cwrap('Timer_current_phase', "number", ["number"]);
 liveSplitCoreNative.Timer_get_run = emscriptenModule.cwrap('Timer_get_run', "number", ["number"]);
+liveSplitCoreNative.Timer_save_as_lss = emscriptenModule.cwrap('Timer_save_as_lss', "string", ["number"]);
 liveSplitCoreNative.Timer_print_debug = emscriptenModule.cwrap('Timer_print_debug', null, ["number"]);
 liveSplitCoreNative.Timer_current_time = emscriptenModule.cwrap('Timer_current_time', "number", ["number"]);
 liveSplitCoreNative.Timer_replace_run = emscriptenModule.cwrap('Timer_replace_run', "number", ["number", "number", "number"]);
@@ -3797,7 +3799,9 @@ export class RunRef {
         return result;
     }
     /**
-     * Saves the Run as a LiveSplit splits file (*.lss).
+     * Saves a Run as a LiveSplit splits file (*.lss). If the run is actively in
+     * use by a timer, use the appropriate method on the timer instead, in order to
+     * properly save the current attempt as well.
      */
     saveAsLss(): string {
         if (this.ptr == 0) {
@@ -4281,6 +4285,19 @@ export class RunEditorRefMut extends RunEditorRef {
             throw "this is disposed";
         }
         const result = liveSplitCoreNative.RunEditor_rename_comparison(this.ptr, oldName, newName) != 0;
+        return result;
+    }
+    /**
+     * Reorders the custom comparisons by moving the comparison with the source
+     * index specified to the destination index specified. Returns false if one
+     * of the indices is invalid. The indices are based on the comparison names of
+     * the Run Editor's state.
+     */
+    moveComparison(srcIndex: number, dstIndex: number): boolean {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = liveSplitCoreNative.RunEditor_move_comparison(this.ptr, srcIndex, dstIndex) != 0;
         return result;
     }
     /**
@@ -6449,6 +6466,16 @@ export class TimerRef {
             throw "this is disposed";
         }
         const result = new RunRef(liveSplitCoreNative.Timer_get_run(this.ptr));
+        return result;
+    }
+    /**
+     * Saves the Run in use by the Timer as a LiveSplit splits file (*.lss).
+     */
+    saveAsLss(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = liveSplitCoreNative.Timer_save_as_lss(this.ptr);
         return result;
     }
     /**

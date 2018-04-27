@@ -23,6 +23,7 @@ interface RowState {
 export class RunEditor extends React.Component<Props, State> {
     private gameIcon: string;
     private segmentIconUrls: string[];
+    private dragIndex: number = 0;
 
     constructor(props: Props) {
         super(props);
@@ -257,6 +258,25 @@ export class RunEditor extends React.Component<Props, State> {
                                                     cursor: "pointer",
                                                 }}
                                                 onClick={(e) => toggleMenu(e)}
+                                                draggable
+                                                onDragStart={(e) => {
+                                                    e.dataTransfer.setData("text/plain", "");
+                                                    this.dragIndex = comparisonIndex;
+                                                }}
+                                                onDragOver={(e) => {
+                                                    if (e.preventDefault) {
+                                                        e.preventDefault();
+                                                    }
+                                                    e.dataTransfer.dropEffect = "move";
+                                                }}
+                                                onDragEnd={(_) => this.update()}
+                                                onDrop={(e) => {
+                                                    if (e.stopPropagation) {
+                                                        e.stopPropagation();
+                                                    }
+                                                    this.props.editor.moveComparison(this.dragIndex, comparisonIndex);
+                                                    return false;
+                                                }}
                                             >
                                                 <ContextMenuTrigger
                                                     id={id}
