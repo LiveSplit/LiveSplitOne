@@ -39,11 +39,11 @@ export function maybeDisposeAndThen(obj: Option<Disposable>, f: () => void) {
     }
 }
 
-export function map<T, R>(obj: Option<T>, f: (obj: T) => R): Option<R> {
+export function map<T, R>(obj: Option<T>, f: (obj: T) => R): R | undefined {
     if (obj != null) {
         return f(obj);
     } else {
-        return null;
+        return undefined;
     }
 }
 
@@ -51,6 +51,6 @@ export function andThen<T, R>(obj: Option<T>, f: (obj: T) => Option<R>): Option<
     if (obj != null) {
         return f(obj);
     } else {
-        return null;
+        return undefined;
     }
 }

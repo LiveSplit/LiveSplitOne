@@ -273,7 +273,7 @@ export default class SettingsComponent extends React.Component<Props> {
                     }
                 };
 
-                const inputWidth = !color1 && !color2 ? "100%" : null;
+                const inputWidth = !color1 && !color2 ? "100%" : undefined;
                 const colorWidth = color1 && color2 ? "50%" : "100%";
 
                 const children: JSX.Element[] = [
