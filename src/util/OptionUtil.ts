@@ -46,11 +46,3 @@ export function map<T, R>(obj: Option<T>, f: (obj: T) => R): R | undefined {
         return undefined;
     }
 }
-
-export function andThen<T, R>(obj: Option<T>, f: (obj: T) => Option<R>): Option<R> {
-    if (obj != null) {
-        return f(obj);
-    } else {
-        return undefined;
-    }
-}
