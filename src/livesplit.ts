@@ -993,6 +993,7 @@ liveSplitCoreNative.Time_real_time = emscriptenModule.cwrap('Time_real_time', "n
 liveSplitCoreNative.Time_game_time = emscriptenModule.cwrap('Time_game_time', "number", ["number"]);
 liveSplitCoreNative.Time_index = emscriptenModule.cwrap('Time_index', "number", ["number", "number"]);
 liveSplitCoreNative.TimeSpan_from_seconds = emscriptenModule.cwrap('TimeSpan_from_seconds', "number", ["number"]);
+liveSplitCoreNative.TimeSpan_parse = emscriptenModule.cwrap('TimeSpan_parse', "number", ["string"]);
 liveSplitCoreNative.TimeSpan_drop = emscriptenModule.cwrap('TimeSpan_drop', null, ["number"]);
 liveSplitCoreNative.TimeSpan_clone = emscriptenModule.cwrap('TimeSpan_clone', "number", ["number"]);
 liveSplitCoreNative.TimeSpan_total_seconds = emscriptenModule.cwrap('TimeSpan_total_seconds', "number", ["number"]);
@@ -6388,6 +6389,17 @@ export class TimeSpan extends TimeSpanRefMut {
         const result = new TimeSpan(liveSplitCoreNative.TimeSpan_from_seconds(seconds));
         return result;
     }
+    /**
+     * Parses a Time Span from a string. Returns null if the time can't be
+     * parsed.
+     */
+    static parse(text: string): TimeSpan | null {
+        const result = new TimeSpan(liveSplitCoreNative.TimeSpan_parse(text));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
 }
 
 /**
@@ -6736,7 +6748,7 @@ export class TimerRefMut extends TimerRef {
     }
     /**
      * Sets the Game Time to the time specified. This also works if the Game
-     * Time is paused, which can be used as away of updating the Game Timer
+     * Time is paused, which can be used as a way of updating the Game Timer
      * periodically without it automatically moving forward. This ensures that
      * the Game Timer never shows any time that is not coming from the game.
      */

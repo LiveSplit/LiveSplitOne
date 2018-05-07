@@ -4,9 +4,10 @@ import AutoRefreshLayout from "../layout/AutoRefreshLayout";
 import {
     HotkeySystem, Layout, LayoutEditor, Run, RunEditor,
     Segment, SharedTimer, Timer, TimerPhase, TimingMethod,
+    TimeSpan, TimerRef, TimerRefMut,
 } from "../livesplit";
 import { exportFile, openFileAsArrayBuffer, openFileAsString } from "../util/FileUtil";
-import { assertNull, expect, maybeDispose, maybeDisposeAndThen, Option } from "../util/OptionUtil";
+import { Option, assertNull, expect, maybeDispose, maybeDisposeAndThen, map } from "../util/OptionUtil";
 import * as SplitsIO from "../util/SplitsIO";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
@@ -24,6 +25,7 @@ export interface State {
 export class LiveSplit extends React.Component<{}, State> {
     private scrollEvent: Option<EventListenerObject>;
     private rightClickEvent: Option<EventListenerObject>;
+    private connection: Option<WebSocket>;
 
     constructor(props: {}) {
         super(props);
@@ -129,7 +131,7 @@ export class LiveSplit extends React.Component<{}, State> {
                         }}
                     >
                         <div
-                            onClick={(_) => this.onSplit()}
+                            onClick={(_) => this.splitOrStart()}
                             style={{
                                 display: "inline-block",
                                 cursor: "pointer",
@@ -143,17 +145,17 @@ export class LiveSplit extends React.Component<{}, State> {
                         </div>
                         <div className="buttons">
                             <div className="small">
-                                <button onClick={(_) => this.onUndo()}>
+                                <button onClick={(_) => this.undoSplit()}>
                                     <i className="fa fa-arrow-up" aria-hidden="true" /></button>
-                                <button onClick={(_) => this.onPause()}>
+                                <button onClick={(_) => this.togglePauseOrStart()}>
                                     <i className="fa fa-pause" aria-hidden="true" />
                                 </button>
                             </div>
                             <div className="small">
-                                <button onClick={(_) => this.onSkip()}>
+                                <button onClick={(_) => this.skipSplit()}>
                                     <i className="fa fa-arrow-down" aria-hidden="true" />
                                 </button>
-                                <button onClick={(_) => this.onReset()}>
+                                <button onClick={(_) => this.reset()}>
                                     <i className="fa fa-times" aria-hidden="true" />
                                 </button>
                             </div>
@@ -169,6 +171,7 @@ export class LiveSplit extends React.Component<{}, State> {
                 callbacks={this}
                 timer={this.state.timer}
                 sidebarOpen={this.state.sidebarOpen}
+                connectionState={map(this.connection, (s) => s.readyState) || WebSocket.CLOSED}
             />
         );
 
@@ -202,15 +205,15 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     public setCurrentTimingMethod(timingMethod: TimingMethod) {
-        this.state.timer.writeWith((t) => t.setCurrentTimingMethod(timingMethod));
+        this.writeWith((t) => t.setCurrentTimingMethod(timingMethod));
     }
 
     public switchToPreviousComparison() {
-        this.state.timer.writeWith((t) => t.switchToPreviousComparison());
+        this.writeWith((t) => t.switchToPreviousComparison());
     }
 
     public switchToNextComparison() {
-        this.state.timer.writeWith((t) => t.switchToNextComparison());
+        this.writeWith((t) => t.switchToNextComparison());
     }
 
     public openFromSplitsIO() {
@@ -225,7 +228,7 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     public uploadToSplitsIO(): Promise<Option<Window>> {
-        const lss = this.state.timer.readWith((t) => t.getRun().saveAsLss());
+        const lss = this.readWith((t) => t.getRun().saveAsLss());
 
         return SplitsIO
             .uploadLss(lss)
@@ -234,7 +237,7 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     public exportSplits() {
-        const [lss, name] = this.state.timer.readWith((t) => {
+        const [lss, name] = this.readWith((t) => {
             const run = t.getRun();
             return [
                 run.saveAsLss(),
@@ -245,7 +248,7 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     public saveSplits() {
-        const lss = this.state.timer.readWith((t) => t.saveAsLss());
+        const lss = this.readWith((t) => t.saveAsLss());
         localStorage.setItem("splits", lss);
     }
 
@@ -278,7 +281,7 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     public openRunEditor() {
-        const run = this.state.timer.readWith((t) => {
+        const run = this.readWith((t) => {
             if (t.currentPhase() === TimerPhase.NotRunning) {
                 return t.getRun().clone();
             } else {
@@ -309,7 +312,7 @@ export class LiveSplit extends React.Component<{}, State> {
         const run = runEditor.close();
         if (save) {
             assertNull(
-                this.state.timer.writeWith((t) => t.setRun(run)),
+                this.writeWith((t) => t.setRun(run)),
                 "The Run Editor should always return a valid Run",
             );
             this.setState({
@@ -374,11 +377,53 @@ export class LiveSplit extends React.Component<{}, State> {
         }
     }
 
+    public connectToServerOrDisconnect() {
+        if (this.connection) {
+            if (this.connection.readyState === WebSocket.OPEN) {
+                this.connection.close();
+                this.forceUpdate();
+            }
+            return;
+        }
+        const url = prompt("Specify the WebSocket URL:");
+        if (!url) {
+            return;
+        }
+        this.connection = new WebSocket(url);
+        this.forceUpdate();
+        this.connection.onopen = (_) => this.forceUpdate();
+        this.connection.onmessage = (e) => {
+            // TODO Clone the Shared Timer. This assumes that `this` is always
+            // mounted.
+            if (typeof e.data === "string") {
+                const [command, ...args] = e.data.split(" ");
+                switch (command) {
+                    case "start": this.start(); break;
+                    case "split": this.split(); break;
+                    case "splitorstart": this.splitOrStart(); break;
+                    case "reset": this.reset(); break;
+                    case "togglepause": this.togglePauseOrStart(); break;
+                    case "undo": this.undoSplit(); break;
+                    case "skip": this.skipSplit(); break;
+                    case "initgametime": this.initializeGameTime(); break;
+                    case "setgametime": this.setGameTime(args[0]); break;
+                    case "setloadingtimes": this.setLoadingTimes(args[0]); break;
+                    case "pausegametime": this.pauseGameTime(); break;
+                    case "resumegametime": this.resumeGameTime(); break;
+                }
+            }
+        };
+        this.connection.onclose = (_) => {
+            this.connection = null;
+            this.forceUpdate();
+        };
+    }
+
     private loadFromSplitsIO(id: string) {
         SplitsIO.downloadById(id).then(
             (run) => {
                 maybeDisposeAndThen(
-                    this.state.timer.writeWith((t) => t.setRun(run)),
+                    this.writeWith((t) => t.setRun(run)),
                     () => alert("The downloaded splits are not valid."),
                 );
             },
@@ -407,23 +452,69 @@ export class LiveSplit extends React.Component<{}, State> {
         e.preventDefault();
     }
 
-    private onSplit() {
-        this.state.timer.writeWith((t) => t.splitOrStart());
+    private writeWith<T>(action: (timer: TimerRefMut) => T): T {
+        return this.state.timer.writeWith(action);
     }
 
-    private onReset() {
-        this.state.timer.writeWith((t) => t.reset(true));
+    private readWith<T>(action: (timer: TimerRef) => T): T {
+        return this.state.timer.readWith(action);
     }
 
-    private onPause() {
-        this.state.timer.writeWith((t) => t.togglePauseOrStart());
+    private start() {
+        this.writeWith((t) => t.start());
     }
 
-    private onUndo() {
-        this.state.timer.writeWith((t) => t.undoSplit());
+    private split() {
+        this.writeWith((t) => t.split());
     }
 
-    private onSkip() {
-        this.state.timer.writeWith((t) => t.skipSplit());
+    private splitOrStart() {
+        this.writeWith((t) => t.splitOrStart());
+    }
+
+    private reset() {
+        this.writeWith((t) => t.reset(true));
+    }
+
+    private togglePauseOrStart() {
+        this.writeWith((t) => t.togglePauseOrStart());
+    }
+
+    private undoSplit() {
+        this.writeWith((t) => t.undoSplit());
+    }
+
+    private skipSplit() {
+        this.writeWith((t) => t.skipSplit());
+    }
+
+    private initializeGameTime() {
+        this.writeWith((t) => t.initializeGameTime());
+    }
+
+    private setGameTime(gameTime: string) {
+        const time = TimeSpan.parse(gameTime);
+        if (time != null) {
+            time.with((time) => {
+                this.writeWith((t) => t.setGameTime(time));
+            });
+        }
+    }
+
+    private setLoadingTimes(loadingTimes: string) {
+        const time = TimeSpan.parse(loadingTimes);
+        if (time != null) {
+            time.with((time) => {
+                this.writeWith((t) => t.setLoadingTimes(time));
+            });
+        }
+    }
+
+    private pauseGameTime() {
+        this.writeWith((t) => t.pauseGameTime());
+    }
+
+    private resumeGameTime() {
+        this.writeWith((t) => t.resumeGameTime());
     }
 }

@@ -20,6 +20,7 @@ export interface SidebarCallbacks {
     switchToPreviousComparison(): void,
     switchToNextComparison(): void,
     setCurrentTimingMethod(timingMethod: TimingMethod): void,
+    connectToServerOrDisconnect(): void,
 }
 
 export interface Props {
@@ -27,6 +28,7 @@ export interface Props {
     callbacks: SidebarCallbacks,
     timer: SharedTimerRef,
     sidebarOpen: boolean,
+    connectionState: number,
 }
 
 export interface State {
@@ -133,6 +135,28 @@ export class SideBarContent extends React.Component<Props, State> {
                         </button>
                         <button onClick={(_) => this.props.callbacks.exportLayout()}>
                             <i className="fa fa-upload" aria-hidden="true" /> Export Layout
+                        </button>
+                        <hr />
+                        <button onClick={(_) => this.props.callbacks.connectToServerOrDisconnect()}>
+                            {
+                                (() => {
+                                    switch (this.props.connectionState) {
+                                        case WebSocket.OPEN:
+                                            return <div>
+                                                <i className="fa fa-power-off" aria-hidden="true" /> Disconnect
+                                            </div>;
+                                        case WebSocket.CLOSED:
+                                            return <div>
+                                                <i className="fa fa-desktop" aria-hidden="true" /> Connect to Server
+                                            </div>;
+                                        case WebSocket.CONNECTING:
+                                            return <div>Connecting...</div>;
+                                        case WebSocket.CLOSING:
+                                            return <div>Disconnecting...</div>;
+                                        default: throw new Error("Unknown WebSocket State");
+                                    }
+                                })()
+                            }
                         </button>
                         <hr />
                         <h2>Compare Against</h2>
