@@ -1,7 +1,7 @@
 dist: trusty
 language: node_js
 services: docker
-sudo: required
+# sudo: required
 env:
   global:
   - CRATE_NAME=LiveSplitOne
