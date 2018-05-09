@@ -8,6 +8,7 @@ export interface Props {
     label: string,
     invalid?: boolean,
     small?: boolean,
+    list?: [string, string[]],
 }
 
 export class TextBox extends React.Component<Props> {
@@ -19,10 +20,19 @@ export class TextBox extends React.Component<Props> {
         if (this.props.small) {
             className += " small";
         }
+        let name;
+        let list;
+        if (this.props.list != null) {
+            name = this.props.list[0];
+            list = <datalist id={name}>
+                {this.props.list[1].map((n, i) => <option key={i} value={n} />)}
+            </datalist>;
+        }
 
         return (
             <div className={className}>
                 <input
+                    list={name}
                     type="text"
                     required
                     className={this.props.className}
@@ -30,6 +40,7 @@ export class TextBox extends React.Component<Props> {
                     onChange={this.props.onChange}
                     onBlur={this.props.onBlur}
                 />
+                {list}
                 <span className="bar"></span>
                 <label>{this.props.label}</label>
             </div>

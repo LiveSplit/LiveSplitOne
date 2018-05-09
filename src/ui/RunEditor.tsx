@@ -4,6 +4,9 @@ import * as LiveSplit from "../livesplit";
 import { openFileAsArrayBuffer } from "../util/FileUtil";
 import { TextBox } from "./TextBox";
 import { toast } from "react-toastify";
+import {
+    downloadGameList, searchGames, getGameId, getCategories, downloadCategories,
+} from "../api/GameList";
 
 export interface Props { editor: LiveSplit.RunEditor }
 export interface State {
@@ -44,6 +47,10 @@ export class RunEditor extends React.Component<Props, State> {
 
         this.gameIcon = "";
         this.segmentIconUrls = [];
+
+        // TODO Handle closing the Run Editor
+        this.refreshGameList();
+        this.refreshCategoryList();
     }
 
     public render() {
@@ -120,6 +127,7 @@ export class RunEditor extends React.Component<Props, State> {
                                         value={this.state.editor.game}
                                         onChange={(e) => this.handleGameChange(e)}
                                         label="Game"
+                                        list={["run-editor-game-list", searchGames(this.state.editor.game)]}
                                     />
                                 </td>
                                 <td>
@@ -128,6 +136,10 @@ export class RunEditor extends React.Component<Props, State> {
                                         value={this.state.editor.category}
                                         onChange={(e) => this.handleCategoryChange(e)}
                                         label="Category"
+                                        list={[
+                                            "run-editor-category-list",
+                                            getCategories(this.state.editor.game) || ["Any%", "Low%", "100%"],
+                                        ]}
                                     />
                                 </td>
                             </tr>
@@ -600,6 +612,7 @@ export class RunEditor extends React.Component<Props, State> {
 
     private handleGameChange(event: any) {
         this.props.editor.setGameName(event.target.value);
+        this.refreshCategoryList();
         this.update();
     }
 
@@ -816,5 +829,19 @@ export class RunEditor extends React.Component<Props, State> {
     private switchTimingMethod(timingMethod: LiveSplit.TimingMethod) {
         this.props.editor.selectTimingMethod(timingMethod);
         this.update();
+    }
+
+    private async refreshGameList() {
+        await downloadGameList();
+        this.update();
+    }
+
+    private async refreshCategoryList() {
+        await downloadGameList();
+        const gameId = getGameId(this.state.editor.game);
+        if (gameId != null) {
+            await downloadCategories(gameId);
+            this.update();
+        }
     }
 }
