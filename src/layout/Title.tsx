@@ -49,19 +49,23 @@ export default class Title extends React.Component<Props> {
                 {icon}
                 <div
                     className={
-                        "run-meta" +
-                        (!this.props.state.is_centered ? " meta-left" : "") +
-                        (twoLines ? " meta-two-lines" : "")
+                        "run-meta"
+                        + (!this.props.state.is_centered ? " meta-left" : "")
+                        + (twoLines ? " meta-two-lines" : "")
                     }
                 >
                     {
-                        twoLines ?
-                            <span className="title-game">{this.props.state.line1}</span> :
-                            <div style={{ display: "none" }} />
+                        twoLines
+                            ? <span className="title-game">
+                                <div className="title-text">{this.props.state.line1}</div>
+                            </span>
+                            : <div style={{ display: "none" }} />
                     }
                     <div id="lower-row" style={{ height: (twoLines ? "50%" : "100%") }}>
                         <div className="title-category">
-                            {twoLines ? this.props.state.line2 : this.props.state.line1}
+                            <div className="title-text">
+                                {twoLines ? this.props.state.line2 : this.props.state.line1}
+                            </div>
                         </div>
                         <div className="title-attempts">{attemptsLabel}</div>
                     </div>
