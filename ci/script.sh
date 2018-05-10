@@ -6,12 +6,11 @@ SOURCE_BRANCH="master"
 TARGET_BRANCH="gh-pages"
 
 doCompile() {
-    (cd livesplit-core && cross rustc -p livesplit --target $TARGET --release -- -C opt-level=z)
+    (cd livesplit-core && cargo build -p cdylib --target wasm32-unknown-unknown --release)
     (cd livesplit-core/capi/bind_gen && cargo run)
 
-    cp livesplit-core/target/asmjs-unknown-emscripten/release/livesplit*.js* src/livesplit_core.js
-    cat livesplit-core/capi/js/exports.js >> src/livesplit_core.js
-    cp livesplit-core/capi/bindings/emscripten/livesplit_core.ts src/livesplit.ts
+    cp livesplit-core/target/wasm32-unknown-unknown/release/livesplit_core.wasm src/livesplit_core.wasm
+    cp livesplit-core/capi/bindings/wasm/livesplit_core.ts src/livesplit.ts
 
     npm install
     webpack -p
@@ -29,7 +28,7 @@ git config --global user.email "christopher.serr@gmail.com"
 git config --global user.name "Travis CI"
 git checkout -b gh-pages
 git add -f dist
-git add -f src/livesplit_core.js
+git add -f src/livesplit_core.wasm
 git commit -m "gh pages"
 
 ENCRYPTED_KEY_VAR="encrypted_${ENCRYPTION_LABEL}_key"

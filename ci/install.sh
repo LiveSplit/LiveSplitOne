@@ -12,6 +12,8 @@ main() {
         sort=sort
     fi
 
+    rustup target install $TARGET
+
     # This fetches latest stable release
     local tag=$(git ls-remote --tags --refs --exit-code https://github.com/japaric/cross \
                        | cut -d/ -f3 \
