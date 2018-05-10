@@ -7,11 +7,32 @@ export interface Props { state: LiveSplit.TitleComponentStateJson }
 
 export default class Title extends React.Component<Props> {
     private iconUrl: string;
+    private gameNameElement: React.RefObject<HTMLElement>;
 
     constructor(props: Props) {
         super(props);
 
         this.iconUrl = "";
+        this.gameNameElement = React.createRef();
+    }
+
+    public componentDidMount() {
+        const container = this.gameNameElement.current;
+        if (container === null) {
+            return;
+        }
+        if (this.getIconUrl() !== ""
+            && container.classList.contains("justify-center")
+            && container.parentElement != null
+            && container.offsetWidth > container.parentElement.offsetWidth - 100) {
+            if (!container.classList.contains("game-title-center-fix")) {
+                container.classList.add("game-title-center-fix");
+            }
+        } else {
+            if (container.classList.contains("game-title-center-fix")) {
+                container.classList.remove("game-title-center-fix");
+            }
+        }
     }
 
     public render() {
@@ -31,13 +52,18 @@ export default class Title extends React.Component<Props> {
         if (attemptsExist) {
             attemptsLabel += this.props.state.attempts;
         }
-
-        const icon = iconUrl !== "" ? (
+        const showIcon = iconUrl !== "";
+        const icon = showIcon ? (
             <div className="game-icon-container">
                 <img className="title-icon" src={iconUrl} />
             </div>
         ) : (<div style={{ display: "none" }} />);
 
+        const gameName = twoLines
+            ? <span ref={this.gameNameElement} className={"title-game" + (this.props.state.is_centered ? " justify-center" : "")}>
+                <div className="title-text">{this.props.state.line1}</div>
+            </span>
+            : <div style={{ display: "none" }} />;
         return (
             <div
                 className="title"
@@ -51,18 +77,18 @@ export default class Title extends React.Component<Props> {
                     className={
                         "run-meta"
                         + (!this.props.state.is_centered ? " meta-left" : "")
-                        + (twoLines ? " meta-two-lines" : "")
+                        + (twoLines ? " meta-two-lines" : " meta-one-line")
+                        + (showIcon ? " show-icon" : "")
                     }
                 >
                     {
-                        twoLines
-                            ? <span className="title-game">
-                                <div className="title-text">{this.props.state.line1}</div>
-                            </span>
-                            : <div style={{ display: "none" }} />
+                        gameName
                     }
                     <div id="lower-row" style={{ height: (twoLines ? "50%" : "100%") }}>
-                        <div className="title-category">
+                        <div className={
+                            "title-category"
+                            + (this.props.state.is_centered ? " justify-center" : "")
+                        }>
                             <div className="title-text">
                                 {twoLines ? this.props.state.line2 : this.props.state.line1}
                             </div>
