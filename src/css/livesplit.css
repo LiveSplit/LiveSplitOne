@@ -17,6 +17,20 @@ body {
     background: hsla(0, 0%, 9%, 1);
 }
 
+.toast-class {
+    border-radius: 2px !important;
+    min-height: 48px !important;
+}
+
+.toast-body {
+    margin: 10px 5px 10px 5px !important;
+}
+
+.toast-class > button {
+    margin-bottom: initial;
+    margin-top: initial;
+}
+
 #wrapper {
     transition: all 0.5s ease;
 }

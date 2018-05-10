@@ -18,12 +18,14 @@
     "@types/react-color": "^2.13.4",
     "@types/react-dom": "^16.0.5",
     "@types/react-sidebar": "^2.2.3",
+    "@types/react-toastify": "^4.0.0",
     "babel-polyfill": "^6.26.0",
     "react": "^16.3.2",
     "react-color": "^2.14.1",
     "react-contextmenu": "^2.9.2",
     "react-dom": "^16.3.2",
     "react-sidebar": "^2.3.2",
+    "react-toastify": "^4.0.1",
     "whatwg-fetch": "^2.0.4"
   },
   "devDependencies": {

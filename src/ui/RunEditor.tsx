@@ -3,6 +3,7 @@ import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
 import * as LiveSplit from "../livesplit";
 import { openFileAsArrayBuffer } from "../util/FileUtil";
 import { TextBox } from "./TextBox";
+import { toast } from "react-toastify";
 
 export interface Props { editor: LiveSplit.RunEditor }
 export interface State {
@@ -493,7 +494,7 @@ export class RunEditor extends React.Component<Props, State> {
         openFileAsArrayBuffer((data, file) => {
             const result = LiveSplit.Run.parseArray(new Int8Array(data), "", false);
             if (!result.parsedSuccessfully()) {
-                alert("Couldn't parse the splits.");
+                toast.error("Couldn't parse the splits.");
                 return;
             }
             result.unwrap().with((run) => {
@@ -503,7 +504,7 @@ export class RunEditor extends React.Component<Props, State> {
                 }
                 const valid = this.props.editor.importComparison(run, comparisonName);
                 if (!valid) {
-                    alert("The comparison could not be added. It may be a duplicate or a reserved name.");
+                    toast.error("The comparison could not be added. It may be a duplicate or a reserved name.");
                 } else {
                     this.update();
                 }
@@ -518,7 +519,7 @@ export class RunEditor extends React.Component<Props, State> {
             if (valid) {
                 this.update();
             } else {
-                alert("The comparison could not be added. It may be a duplicate or a reserved name.");
+                toast.error("The comparison could not be added. It may be a duplicate or a reserved name.");
             }
         }
     }
@@ -530,7 +531,7 @@ export class RunEditor extends React.Component<Props, State> {
             if (valid) {
                 this.update();
             } else {
-                alert("The comparison could not be renamed. It may be a duplicate or a reserved name.");
+                toast.error("The comparison could not be renamed. It may be a duplicate or a reserved name.");
             }
         }
     }

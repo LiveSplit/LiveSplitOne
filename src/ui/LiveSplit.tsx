@@ -12,6 +12,7 @@ import * as SplitsIO from "../util/SplitsIO";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
 import { Route, SideBarContent } from "./SideBarContent";
+import { toast } from "react-toastify";
 
 export interface State {
     hotkeySystem: Option<HotkeySystem>,
@@ -196,10 +197,10 @@ export class LiveSplit extends React.Component<{}, State> {
                 const run = result.unwrap();
                 maybeDisposeAndThen(
                     timer.writeWith((t) => t.setRun(run)),
-                    () => alert("Empty Splits are not supported."),
+                    () => toast.error("Empty Splits are not supported."),
                 );
             } else {
-                alert("Couldn't parse the splits.");
+                toast.error("Couldn't parse the splits.");
             }
         });
     }
@@ -233,7 +234,7 @@ export class LiveSplit extends React.Component<{}, State> {
         return SplitsIO
             .uploadLss(lss)
             .then((claimUri) => window.open(claimUri))
-            .catch((_) => { alert("Failed to upload the splits."); return null; });
+            .catch((_) => { toast.error("Failed to upload the splits."); return null; });
     }
 
     public exportSplits() {
@@ -271,7 +272,7 @@ export class LiveSplit extends React.Component<{}, State> {
                     return;
                 }
             } catch (_) { /* Failed to load the layout */ }
-            alert("Error loading Layout. This may not be a LiveSplit One Layout.");
+            toast.error("Error loading Layout. This may not be a LiveSplit One Layout.");
         });
     }
 
@@ -300,7 +301,7 @@ export class LiveSplit extends React.Component<{}, State> {
                 sidebarOpen: false,
             });
         } else {
-            alert("You can't edit your run while the timer is running.");
+            toast.error("You can't edit your run while the timer is running.");
         }
     }
 
@@ -389,9 +390,22 @@ export class LiveSplit extends React.Component<{}, State> {
         if (!url) {
             return;
         }
-        this.connection = new WebSocket(url);
+        try {
+            this.connection = new WebSocket(url);
+        } catch (e) {
+            toast.error(`Failed to connect: ${e}`);
+            throw e;
+        }
         this.forceUpdate();
-        this.connection.onopen = (_) => this.forceUpdate();
+        let wasConnected = false;
+        this.connection.onopen = (_) => {
+            wasConnected = true;
+            toast.info("Connected to server");
+            this.forceUpdate();
+        };
+        this.connection.onerror = (e) => {
+            toast.error(e);
+        };
         this.connection.onmessage = (e) => {
             // TODO Clone the Shared Timer. This assumes that `this` is always
             // mounted.
@@ -414,6 +428,9 @@ export class LiveSplit extends React.Component<{}, State> {
             }
         };
         this.connection.onclose = (_) => {
+            if (wasConnected) {
+                toast.info("Closed connection to server");
+            }
             this.connection = null;
             this.forceUpdate();
         };
@@ -424,10 +441,10 @@ export class LiveSplit extends React.Component<{}, State> {
             (run) => {
                 maybeDisposeAndThen(
                     this.writeWith((t) => t.setRun(run)),
-                    () => alert("The downloaded splits are not valid."),
+                    () => toast.error("The downloaded splits are not valid."),
                 );
             },
-            (_) => alert("Failed to download the splits."),
+            (_) => toast.error("Failed to download the splits."),
         );
     }
 
