@@ -8,7 +8,7 @@ env:
   - ENCRYPTION_LABEL: 341f345e5c8f
 matrix:
   include:
-  - env: TARGET=asmjs-unknown-emscripten
+  - env: TARGET=wasm32-unknown-unknown
     rust: nightly
 before_install: set -e
 install:
@@ -29,6 +29,3 @@ notifications:
 
 node_js:
   - "6"
-
-# Temporary fix for emscripten
-group: deprecated-2017Q2

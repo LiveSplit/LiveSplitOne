@@ -1,16 +1,16 @@
-core: bindings
-	@make -C livesplit-core/js
-	@cp livesplit-core/js/livesplit.js src/livesplit_core.js
-
-wasm: bindings
-	@make wasm -C livesplit-core/js
-	@cp livesplit-core/js/livesplit.js src/livesplit_core.js
-
 wasm-unknown:
 	@make bindings -C livesplit-core/capi/js
 	@cp livesplit-core/capi/bindings/wasm/livesplit_core.ts src/livesplit.ts
 	@make wasm-unknown -C livesplit-core/capi/js
 	@cp livesplit-core/capi/js/livesplit_core.wasm src/livesplit_core.wasm
+
+asmjs: bindings
+	@make -C livesplit-core/js
+	@cp livesplit-core/js/livesplit.js src/livesplit_core.js
+
+wasm-emscripten: bindings
+	@make wasm -C livesplit-core/js
+	@cp livesplit-core/js/livesplit.js src/livesplit_core.js
 
 debug: bindings
 	@make debug -C livesplit-core/js
@@ -27,4 +27,4 @@ build: core
 	webpack
 
 clean:
-	@make clean -C livesplit-core/js
+	@make clean -C livesplit-core/capi/js

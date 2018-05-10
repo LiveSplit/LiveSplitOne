@@ -6,11 +6,10 @@ SOURCE_BRANCH="master"
 TARGET_BRANCH="gh-pages"
 
 doCompile() {
-    (cd livesplit-core && cross rustc -p livesplit --target $TARGET --release -- -C opt-level=z)
+    (cd livesplit-core && cargo build -p cdylib --target wasm32-unknown-unknown --release)
     (cd livesplit-core/capi/bind_gen && cargo run)
 
-    cp livesplit-core/target/asmjs-unknown-emscripten/release/livesplit*.js* src/livesplit_core.js
-    cat livesplit-core/js/exports.js >> src/livesplit_core.js
+    cp livesplit-core/target/wasm32-unknown-unknown/release/livesplit_core.wasm src/livesplit_core.wasm
     cp livesplit-core/capi/bindings/emscripten/livesplit_core.ts src/livesplit.ts
 
     npm install

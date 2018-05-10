@@ -88,15 +88,16 @@ export async function load(path?: string) {
             },
             Date_now: function (ptr: number) {
                 const date = new Date();
-                const u16Slice = new Uint16Array(instance().exports.memory.buffer, ptr);
-                const u8Slice = new Uint8Array(instance().exports.memory.buffer, ptr);
-                u16Slice[0] = date.getUTCFullYear();
-                u8Slice[2] = date.getUTCMonth() + 1;
-                u8Slice[3] = date.getUTCDate();
-                u8Slice[4] = date.getUTCHours();
-                u8Slice[5] = date.getUTCMinutes();
-                u8Slice[6] = date.getUTCSeconds();
-                u16Slice[4] = date.getUTCMilliseconds();
+                const milliseconds = date.valueOf();
+                const u32Max = 0x100000000;
+                const seconds = milliseconds / 1000;
+                const secondsHigh = (seconds / u32Max) | 0;
+                const secondsLow = (seconds % u32Max) | 0;
+                const nanos = ((milliseconds % 1000) * 1000000) | 0;
+                const u32Slice = new Uint32Array(instance().exports.memory.buffer, ptr);
+                u32Slice[0] = secondsLow;
+                u32Slice[1] = secondsHigh;
+                u32Slice[2] = nanos;
             },
             HotkeyHook_new: function (handle: number) {
                 const listener = (ev: KeyboardEvent) => {
@@ -165,6 +166,7 @@ export type ComponentStateJson =
     { CurrentComparison: CurrentComparisonComponentStateJson } |
     { CurrentPace: CurrentPaceComponentStateJson } |
     { Delta: DeltaComponentStateJson } |
+    { DetailedTimer: DetailedTimerComponentStateJson } |
     { Graph: GraphComponentStateJson } |
     { PossibleTimeSave: PossibleTimeSaveComponentStateJson } |
     { PreviousSegment: PreviousSegmentComponentStateJson } |
@@ -192,6 +194,9 @@ export type Gradient =
     { Plain: Color } |
     { Vertical: Color[] } |
     { Horizontal: Color[] };
+
+/** Describes the Alignment of the Title in the Title Component. */
+export type Alignment = "Auto" | "Left" | "Center";
 
 /** The state object describes the information to visualize for the layout. */
 export interface LayoutStateJson {
@@ -240,8 +245,7 @@ export enum TimerPhase {
     Paused = 3,
 }
 
-/** The state object describes the information to visualize for this component.
- * */
+/** The state object describes the information to visualize for this component. */
 export interface BlankSpaceComponentStateJson {
     /** The background shown behind the component. */
     background: Gradient,
@@ -249,8 +253,7 @@ export interface BlankSpaceComponentStateJson {
     height: number,
 }
 
-/** The state object describes the information to visualize for this component.
- * */
+/** The state object describes the information to visualize for this component. */
 export interface TimerComponentStateJson {
     /** The background shown behind the component. */
     background: Gradient,
@@ -268,8 +271,7 @@ export interface TimerComponentStateJson {
     height: number,
 }
 
-/** The state object describes the information to visualize for this component.
- * */
+/** The state object describes the information to visualize for this component. */
 export interface TitleComponentStateJson {
     /** The background shown behind the component. */
     background: Gradient,
@@ -313,8 +315,7 @@ export interface TitleComponentStateJson {
     attempts: number | null,
 }
 
-/** The state object describes the information to visualize for this component.
- * */
+/** The state object describes the information to visualize for this component. */
 export interface SplitsComponentStateJson {
     /** The list of all the segments to visualize. */
     splits: SplitStateJson[],
@@ -358,8 +359,7 @@ export interface SplitsComponentIconChangeJson {
     icon: string,
 }
 
-/** The state object that describes a single segment's information to visualize.
- * */
+/** The state object that describes a single segment's information to visualize. */
 export interface SplitStateJson {
     /** The name of the segment. */
     name: string,
@@ -385,8 +385,7 @@ export interface SplitStateJson {
     index: number,
 }
 
-/** The state object describes the information to visualize for this component.
- * */
+/** The state object describes the information to visualize for this component. */
 export interface PreviousSegmentComponentStateJson {
     /** The background shown behind the component. */
     background: Gradient,
@@ -405,8 +404,7 @@ export interface PreviousSegmentComponentStateJson {
     visual_color: Color,
 }
 
-/** The state object describes the information to visualize for this component.
- * */
+/** The state object describes the information to visualize for this component. */
 export interface SumOfBestComponentStateJson {
     /** The background shown behind the component. */
     background: Gradient,
@@ -426,8 +424,7 @@ export interface SumOfBestComponentStateJson {
     time: string,
 }
 
-/** The state object describes the information to visualize for this component.
- * */
+/** The state object describes the information to visualize for this component. */
 export interface PossibleTimeSaveComponentStateJson {
     /** The background shown behind the component. */
     background: Gradient,
@@ -523,13 +520,20 @@ export interface GraphComponentStatePointJson {
     is_best_segment: boolean,
 }
 
+/** The state object describes the information to visualize for this component. */
+export interface TextComponentStateJson {
+    /** The background shown behind the component. */
+    background: Gradient,
+    /** The text to show for the component. */
+    text: TextComponentStateText,
+}
+
 /** The text that is supposed to be shown. */
-export type TextComponentStateJson =
+export type TextComponentStateText =
     { Center: string } |
     { Split: string[] };
 
-/** The state object describes the information to visualize for this component.
- * */
+/** The state object describes the information to visualize for this component. */
 export interface TotalPlaytimeComponentStateJson {
     /** The background shown behind the component. */
     background: Gradient,
@@ -549,8 +553,7 @@ export interface TotalPlaytimeComponentStateJson {
     time: string,
 }
 
-/** The state object describes the information to visualize for this component.
- * */
+/** The state object describes the information to visualize for this component. */
 export interface CurrentPaceComponentStateJson {
     /** The background shown behind the component. */
     background: Gradient,
@@ -570,8 +573,7 @@ export interface CurrentPaceComponentStateJson {
     time: string,
 }
 
-/** The state object describes the information to visualize for this component.
- * */
+/** The state object describes the information to visualize for this component. */
 export interface DeltaComponentStateJson {
     /** The background shown behind the component. */
     background: Gradient,
@@ -590,8 +592,7 @@ export interface DeltaComponentStateJson {
     visual_color: Color,
 }
 
-/** The state object describes the information to visualize for this component.
- * */
+/** The state object describes the information to visualize for this component. */
 export interface CurrentComparisonComponentStateJson {
     /** The background shown behind the component. */
     background: Gradient,
@@ -614,8 +615,7 @@ export interface CurrentComparisonComponentStateJson {
     comparison: string,
 }
 
-/** The state object describes the information to visualize for this component.
- * */
+/** The state object describes the information to visualize for this component. */
 export interface DetailedTimerComponentStateJson {
     /** The background shown behind the component. */
     background: Gradient,
@@ -728,7 +728,8 @@ export type SettingsDescriptionValueJson =
     { OptionalTimingMethod: TimingMethodJson | null } |
     { Color: Color } |
     { OptionalColor: Color | null } |
-    { Gradient: Gradient };
+    { Gradient: Gradient } |
+    { Alignment: Alignment };
 
 /**
  * The Accuracy describes how many digits to show for the fractional part of a
@@ -3598,7 +3599,9 @@ export class RunRef {
         return result;
     }
     /**
-     * Saves the Run as a LiveSplit splits file (*.lss).
+     * Saves a Run as a LiveSplit splits file (*.lss). If the run is actively in
+     * use by a timer, use the appropriate method on the timer instead, in order to
+     * properly save the current attempt as well.
      */
     saveAsLss(): string {
         if (this.ptr == 0) {
@@ -4111,6 +4114,19 @@ export class RunEditorRefMut extends RunEditorRef {
         const result = instance().exports.RunEditor_rename_comparison(this.ptr, oldName_allocated.ptr, newName_allocated.ptr) != 0;
         dealloc(oldName_allocated);
         dealloc(newName_allocated);
+        return result;
+    }
+    /**
+     * Reorders the custom comparisons by moving the comparison with the source
+     * index specified to the destination index specified. Returns false if one
+     * of the indices is invalid. The indices are based on the comparison names of
+     * the Run Editor's state.
+     */
+    moveComparison(srcIndex: number, dstIndex: number): boolean {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = instance().exports.RunEditor_move_comparison(this.ptr, srcIndex, dstIndex) != 0;
         return result;
     }
     /**
@@ -6215,6 +6231,19 @@ export class TimeSpan extends TimeSpanRefMut {
         const result = new TimeSpan(instance().exports.TimeSpan_from_seconds(seconds));
         return result;
     }
+    /**
+     * Parses a Time Span from a string. Returns null if the time can't be
+     * parsed.
+     */
+    static parse(text: string): TimeSpan | null {
+        const text_allocated = allocString(text);
+        const result = new TimeSpan(instance().exports.TimeSpan_parse(text_allocated.ptr));
+        dealloc(text_allocated);
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
 }
 
 /**
@@ -6294,6 +6323,16 @@ export class TimerRef {
         }
         const result = new RunRef(instance().exports.Timer_get_run(this.ptr));
         return result;
+    }
+    /**
+     * Saves the Run in use by the Timer as a LiveSplit splits file (*.lss).
+     */
+    saveAsLss(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = instance().exports.Timer_save_as_lss(this.ptr);
+        return decodeString(result);
     }
     /**
      * Prints out debug information representing the whole state of the Timer. This
@@ -6553,7 +6592,7 @@ export class TimerRefMut extends TimerRef {
     }
     /**
      * Sets the Game Time to the time specified. This also works if the Game
-     * Time is paused, which can be used as away of updating the Game Timer
+     * Time is paused, which can be used as a way of updating the Game Timer
      * periodically without it automatically moving forward. This ensures that
      * the Game Timer never shows any time that is not coming from the game.
      */
