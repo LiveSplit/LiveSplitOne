@@ -10,22 +10,29 @@ import "./css/font-awesome.css";
 import "./css/livesplit.css";
 
 async function run() {
-    await load("src/livesplit_core.wasm");
+    try {
+        await load("src/livesplit_core.wasm");
 
-    ReactDOM.render(
-        <div>
-            <LiveSplit />
-            <ToastContainer
-                position={toast.POSITION.BOTTOM_RIGHT}
-                toastClassName="toast-class"
-                bodyClassName="toast-body"
-                style={{
-                    textShadow: "none",
-                }}
-            />
-        </div>,
-        document.getElementById("base"),
-    );
+        ReactDOM.render(
+            <div>
+                <LiveSplit />
+                <ToastContainer
+                    position={toast.POSITION.BOTTOM_RIGHT}
+                    toastClassName="toast-class"
+                    bodyClassName="toast-body"
+                    style={{
+                        textShadow: "none",
+                    }}
+                />
+            </div>,
+            document.getElementById("base"),
+        );
+    } catch (_) {
+        alert(`Couldn't load LiveSplit One. \
+You may be using a browser that doesn't support WebAssembly. \
+Alternatively, you may be using an Adblocker like uBlock Origin. \
+Those are known to block WebAssembly.`);
+    }
 }
 
 run();
