@@ -4,12 +4,11 @@
   "description": "",
   "main": "dist/bundle.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "run": "python -m SimpleHTTPServer 8080",
-    "lint": "node_modules/.bin/tslint",
-    "watch": "node_modules/.bin/webpack --progress --watch",
+    "watch": "webpack --progress --watch",
+    "build:core": "node buildCore.js",
     "start": "webpack-dev-server --open",
-    "build": "node_modules/.bin/webpack"
+    "host": "webpack-dev-server",
+    "build": "webpack"
   },
   "author": "",
   "license": "ISC",
