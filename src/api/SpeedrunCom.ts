@@ -51,7 +51,53 @@ export interface Category {
     id: string,
     name: string,
     type: "per-game" | "per-level",
-    rules?: string,
+    rules: Option<string>,
+}
+
+export interface Leaderboard {
+    runs: Record[],
+    players?: PlayerData,
+}
+
+export interface PlayerData {
+    data: Player[],
+}
+
+export interface Player {
+    id: string,
+    names: Names,
+    weblink: string,
+}
+
+export interface Record {
+    place: number,
+    run: Run,
+}
+
+export interface Run {
+    comment: string,
+    players: Array<PlayerUserRef | PlayerGuestRef>,
+    times: Times,
+    splits: Option<Splits>,
+    weblink: string,
+}
+
+export interface PlayerUserRef {
+    rel: "user",
+    id: string,
+}
+
+export interface PlayerGuestRef {
+    rel: "guest",
+    name: string,
+}
+
+export interface Times {
+    primary: string,
+}
+
+export interface Splits {
+    uri: string,
 }
 
 function evaluateParameters(parameters: string[]): string {
@@ -66,6 +112,11 @@ function evaluateParameters(parameters: string[]): string {
 function getGamesUri(subUri: string): string {
     const GAMES_URI = "games";
     return `${BASE_URI}${GAMES_URI}${subUri}`;
+}
+
+function getLeaderboardsUri(subUri: string): string {
+    const LEADERBOARDS_URI = "leaderboards";
+    return `${BASE_URI}${LEADERBOARDS_URI}${subUri}`;
 }
 
 async function executeRequest<T>(uri: string): Promise<T> {
@@ -159,4 +210,17 @@ export async function getCategories(gameId: string): Promise<Category[]> {
     // TODO Remaining parameters
     const uri = getGamesUri(`/${gameId}/categories`);
     return executeRequest<Category[]>(uri);
+}
+
+export async function getLeaderboard(
+    gameId: string,
+    categoryId: string,
+    embeds?: Array<"players">,
+): Promise<Leaderboard> {
+    const parameters = [];
+    if (embeds != null) {
+        parameters.push(`embed=${embeds.join(",")}`);
+    }
+    const uri = getLeaderboardsUri(`/${gameId}/category/${categoryId}${evaluateParameters(parameters)}`);
+    return executeRequest<Leaderboard>(uri);
 }

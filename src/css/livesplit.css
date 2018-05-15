@@ -413,6 +413,11 @@ button {
 
 a {
     color: hsla(50, 100%, 50%, 1);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
 
 .run-editor {
@@ -572,7 +577,7 @@ input {
     font-family: 'fira', sans-serif;
 }
 
-input.number {
+.number {
     text-align: right;
     font-weight: bold;
     font-family: 'Roboto', sans-serif;
@@ -631,6 +636,10 @@ table.run-editor-table td>input {
 
 .selected {
     background: linear-gradient(rgb(51, 115, 244) 0%, rgb(21, 53, 116) 100%) !important;
+}
+
+.leaderboard-row:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
 }
 
 input[Type="text"] {

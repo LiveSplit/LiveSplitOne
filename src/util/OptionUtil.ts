@@ -17,6 +17,12 @@ interface MaybeDisposable {
 
 export function assertNever(x: never): never { return x; }
 
+export function assert(condition: boolean, message: string) {
+    if (!condition) {
+        throw new Error(message);
+    }
+}
+
 export function assertNull(obj: Option<MaybeDisposable>, message: string) {
     if (obj != null) {
         if (obj.dispose) {

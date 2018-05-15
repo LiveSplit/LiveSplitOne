@@ -1,11 +1,16 @@
 import * as fuzzy from "fuzzy";
-import { getGameHeaders, getCategories as apiGetCategories, Category } from "./SpeedrunCom";
+import {
+    getGameHeaders, getCategories as apiGetCategories, Category,
+    getLeaderboard as apiGetLeaderboard, Leaderboard,
+} from "./SpeedrunCom";
 import { Option } from "../util/OptionUtil";
 
 const gameList: string[] = [];
 const gameNameToIdMap: Map<string, string> = new Map();
 const gameIdToCategoriesMap: Map<string, Category[]> = new Map();
 const gameIdToCategoriesPromises: Map<string, Promise<void>> = new Map();
+const gameAndCategoryToLeaderboardPromises: Map<string, Promise<void>> = new Map();
+const gameAndCategoryToLeaderboardMap: Map<string, Leaderboard> = new Map();
 let gameListPromise: Option<Promise<void>> = null;
 
 export function searchGames(currentName: string): string[] {
@@ -32,7 +37,12 @@ export function getCategories(gameName: string): Category[] | undefined {
     return gameIdToCategoriesMap.get(gameId);
 }
 
-export function downloadCategories(gameId: string): Promise<void> {
+export function getLeaderboard(gameName: string, categoryName: string): Leaderboard | undefined {
+    const key = `${gameName}::cx::${categoryName}`; // TODO Properly escape
+    return gameAndCategoryToLeaderboardMap.get(key);
+}
+
+function downloadCategoriesByGameId(gameId: string): Promise<void> {
     let categoryPromise = gameIdToCategoriesPromises.get(gameId);
     if (categoryPromise == null) {
         categoryPromise = (async () => {
@@ -43,6 +53,15 @@ export function downloadCategories(gameId: string): Promise<void> {
         gameIdToCategoriesPromises.set(gameId, categoryPromise);
     }
     return categoryPromise;
+}
+
+export async function downloadCategories(gameName: string): Promise<Option<string>> {
+    await downloadGameList();
+    const gameId = getGameId(gameName);
+    if (gameId != null) {
+        await downloadCategoriesByGameId(gameId);
+    }
+    return gameId;
 }
 
 export function downloadGameList(): Promise<void> {
@@ -56,4 +75,30 @@ export function downloadGameList(): Promise<void> {
         })();
     }
     return gameListPromise;
+}
+
+export async function downloadLeaderboard(gameName: string, categoryName: string): Promise<void> {
+    const key = `${gameName}::cx::${categoryName}`; // TODO Properly escape
+    let promise = gameAndCategoryToLeaderboardPromises.get(key);
+    if (promise == null) {
+        promise = (async () => {
+            const gameId = await downloadCategories(gameName);
+            if (gameId == null) {
+                return;
+            }
+            const categories = getCategories(gameName);
+            if (categories == null) {
+                return;
+            }
+            const index = categories.map((c) => c.name).indexOf(categoryName);
+            if (index < 0) {
+                return;
+            }
+            const category = categories[index];
+            const leaderboard = await apiGetLeaderboard(gameId, category.id, ["players"]);
+            gameAndCategoryToLeaderboardMap.set(key, leaderboard);
+        })();
+        gameAndCategoryToLeaderboardPromises.set(key, promise);
+    }
+    return promise;
 }

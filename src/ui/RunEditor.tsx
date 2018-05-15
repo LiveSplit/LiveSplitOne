@@ -5,12 +5,13 @@ import { openFileAsArrayBuffer } from "../util/FileUtil";
 import { TextBox } from "./TextBox";
 import { toast } from "react-toastify";
 import {
-    downloadGameList, searchGames, getGameId, getCategories, downloadCategories,
+    downloadGameList, searchGames, getGameId, getCategories, downloadCategories, downloadLeaderboard, getLeaderboard,
 } from "../api/GameList";
 import { Category, getGame } from "../api/SpeedrunCom";
-import { Option } from "../util/OptionUtil";
+import { Option, expect, map, assert } from "../util/OptionUtil";
 import { Parser as CommonMarkParser } from "commonmark";
 import CommonMarkRenderer = require("commonmark-react-renderer");
+import { downloadById } from "../util/SplitsIO";
 
 export interface Props { editor: LiveSplit.RunEditor }
 export interface State {
@@ -18,7 +19,7 @@ export interface State {
     offsetIsValid: boolean,
     attemptCountIsValid: boolean,
     rowState: RowState,
-    isOnRulesTab: boolean,
+    tab: Tab,
 }
 
 interface RowState {
@@ -33,6 +34,7 @@ enum Tab {
     RealTime,
     GameTime,
     Rules,
+    Leaderboard,
 }
 
 export class RunEditor extends React.Component<Props, State> {
@@ -43,9 +45,10 @@ export class RunEditor extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
 
+        const state = props.editor.stateAsJson() as LiveSplit.RunEditorStateJson;
         this.state = {
             attemptCountIsValid: true,
-            editor: props.editor.stateAsJson(),
+            editor: state,
             offsetIsValid: true,
             rowState: {
                 bestSegmentTimeIsValid: true,
@@ -54,15 +57,18 @@ export class RunEditor extends React.Component<Props, State> {
                 segmentTimeIsValid: true,
                 splitTimeIsValid: true,
             },
-            isOnRulesTab: false,
+            tab: state.timing_method === "RealTime" ? Tab.RealTime : Tab.GameTime,
         };
 
         this.gameIcon = "";
         this.segmentIconUrls = [];
 
+        this.processIconChanges(state);
+
         // TODO Handle closing the Run Editor
         this.refreshGameList();
-        this.refreshCategoryList();
+        this.refreshCategoryList(state.game);
+        this.refreshLeaderboard(state.game, state.category);
     }
 
     public render() {
@@ -224,7 +230,7 @@ export class RunEditor extends React.Component<Props, State> {
                         Game Time
                     </button>
                     <button
-                        className={"toggle-right" + (
+                        className={"toggle-middle" + (
                             tab === Tab.Rules
                                 ? " button-pressed"
                                 : ""
@@ -232,6 +238,16 @@ export class RunEditor extends React.Component<Props, State> {
                         onClick={(_) => this.switchTab(Tab.Rules)}
                     >
                         Rules
+                    </button>
+                    <button
+                        className={"toggle-right" + (
+                            tab === Tab.Leaderboard
+                                ? " button-pressed"
+                                : ""
+                        )}
+                        onClick={(_) => this.switchTab(Tab.Leaderboard)}
+                    >
+                        Leaderboard
                     </button>
                 </div>
                 <div className="editor-group">
@@ -286,17 +302,99 @@ export class RunEditor extends React.Component<Props, State> {
                             </MenuItem>
                         </ContextMenu>
                     </div>
-                    {
-                        tab === Tab.Rules
-                            ? this.renderRulesTab(category)
-                            : this.renderSegmentsTable()
-                    }
+                    {this.renderTab(tab, category)}
                 </div>
             </div >
         );
     }
 
-    private renderRulesTab(category: Option<Category>) {
+    private renderTab(tab: Tab, category: Option<Category>): JSX.Element {
+        switch (tab) {
+            case Tab.RealTime:
+            case Tab.GameTime:
+                return this.renderSegmentsTable();
+            case Tab.Rules:
+                return this.renderRulesTab(category);
+            case Tab.Leaderboard:
+                return this.renderLeaderboard();
+        }
+    }
+
+    private renderLeaderboard(): JSX.Element {
+        const leaderboard = getLeaderboard(this.state.editor.game, this.state.editor.category);
+        if (leaderboard == null) {
+            return <div />;
+        }
+        return (
+            <table className="table run-editor-table">
+                <thead className="table-header">
+                    <tr>
+                        <th>Rank</th>
+                        <th>Player</th>
+                        <th>Time</th>
+                        <th>Splits</th>
+                    </tr>
+                </thead>
+                <tbody className="table-body">
+                    {leaderboard.runs.map((r) => (
+                        <tr title={r.run.comment} className="leaderboard-row">
+                            <td style={{ textAlign: "right" }}>{r.place}</td>
+                            <td>
+                                {
+                                    r.run.players.map((p, i) => {
+                                        if (p.rel === "user") {
+                                            const players = expect(
+                                                leaderboard.players,
+                                                "The leaderboard is supposed to have a players embed.",
+                                            );
+                                            const found = expect(
+                                                players.data.find((f) => f.id === p.id),
+                                                "The player is supposed to be embedded.",
+                                            );
+                                            return [
+                                                i !== 0 ? ", " : null,
+                                                <a target="_blank" href={found.weblink}>
+                                                    {found.names.international}
+                                                </a>,
+                                            ];
+                                        } else {
+                                            return [i !== 0 ? ", " : null, p.name];
+                                        }
+                                    })
+                                }
+                            </td>
+                            <td style={{ width: 120 }} className="number">
+                                <a href={r.run.weblink} target="_blank" style={{ color: "white" }}>
+                                    {
+                                        r.run.times.primary
+                                            .replace("PT", "")
+                                            .replace("S", "")
+                                            .replace("H", ":")
+                                            .replace("M", ":")
+                                            .split(":")
+                                            .map((s) => s.padStart(2, "0"))
+                                            .join(":")
+                                    }
+                                </a>
+                            </td>
+                            <td style={{ textAlign: "center" }}>
+                                {
+                                    map(r.run.splits, (s) => <i
+                                        onClick={(_) => this.downloadSplits(s.uri)}
+                                        className="fa fa-download"
+                                        style={{ cursor: "pointer" }}
+                                        aria-hidden="true"
+                                    />)
+                                }
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        );
+    }
+
+    private renderRulesTab(category: Option<Category>): JSX.Element {
         let rules = null;
         if (category != null && category.rules != null) {
             const parsed = new CommonMarkParser().parse(category.rules);
@@ -643,14 +741,24 @@ export class RunEditor extends React.Component<Props, State> {
         this.props.editor.activeRemoveIcon();
     }
 
+    private processIconChanges(state: LiveSplit.RunEditorStateJson) {
+        let index = 0;
+        for (const segment of state.segments) {
+            while (index >= this.segmentIconUrls.length) {
+                this.segmentIconUrls.push("");
+            }
+            const iconChange = segment.icon_change;
+            if (iconChange != null) {
+                this.segmentIconUrls[index] = iconChange;
+            }
+            index += 1;
+        }
+        if (state.icon_change != null) {
+            this.gameIcon = state.icon_change;
+        }
+    }
+
     private getSegmentIconUrl(index: number): string {
-        while (index >= this.segmentIconUrls.length) {
-            this.segmentIconUrls.push("");
-        }
-        const iconChange = this.state.editor.segments[index].icon_change;
-        if (iconChange != null) {
-            this.segmentIconUrls[index] = iconChange;
-        }
         return this.segmentIconUrls[index];
     }
 
@@ -667,30 +775,31 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private getGameIcon(): string {
-        if (this.state.editor.icon_change != null) {
-            this.gameIcon = this.state.editor.icon_change;
-        }
         return this.gameIcon;
     }
 
-    private update(isOnRulesTab?: boolean) {
+    private update(switchTab?: Tab) {
+        const state = this.props.editor.stateAsJson();
+        this.processIconChanges(state);
         this.setState({
             ...this.state,
-            editor: this.props.editor.stateAsJson(),
-            isOnRulesTab: isOnRulesTab === undefined
-                ? this.state.isOnRulesTab
-                : isOnRulesTab,
+            editor: state,
+            tab: switchTab === undefined
+                ? this.state.tab
+                : switchTab,
         });
     }
 
     private handleGameChange(event: any) {
         this.props.editor.setGameName(event.target.value);
-        this.refreshCategoryList();
+        this.refreshCategoryList(event.target.value);
+        this.refreshLeaderboard(event.target.value, this.state.editor.category);
         this.update();
     }
 
     private handleCategoryChange(event: any) {
         this.props.editor.setCategoryName(event.target.value);
+        this.refreshLeaderboard(this.state.editor.game, event.target.value);
         this.update();
     }
 
@@ -912,8 +1021,11 @@ export class RunEditor extends React.Component<Props, State> {
             case Tab.Rules: {
                 break;
             }
+            case Tab.Leaderboard: {
+                break;
+            }
         }
-        this.update(tab === Tab.Rules);
+        this.update(tab);
     }
 
     private async downloadBoxArt() {
@@ -957,22 +1069,45 @@ export class RunEditor extends React.Component<Props, State> {
         this.update();
     }
 
-    private async refreshCategoryList() {
-        await downloadGameList();
-        const gameId = getGameId(this.state.editor.game);
-        if (gameId != null) {
-            await downloadCategories(gameId);
-            this.update();
-        }
+    private async refreshCategoryList(gameName: string) {
+        await downloadCategories(gameName);
+        this.update();
+    }
+
+    private async refreshLeaderboard(gameName: string, categoryName: string) {
+        await downloadLeaderboard(gameName, categoryName);
+        this.update();
     }
 
     private getTab(): Tab {
-        if (this.state.isOnRulesTab) {
-            return Tab.Rules;
-        } else if (this.state.editor.timing_method === "RealTime") {
-            return Tab.RealTime;
-        } else {
-            return Tab.GameTime;
+        return this.state.tab;
+    }
+
+    private async downloadSplits(apiUri: string) {
+        const baseUri = "https://splits.io/api/v3/runs/";
+        assert(apiUri.startsWith(baseUri), "Unexpected splits i/o URL");
+        const splitsId = apiUri.slice(baseUri.length);
+        try {
+            const run = await downloadById(splitsId);
+            // TODO Race Condition with the Run Editor closing (and probably others)
+            run.with((run) => {
+                run.setGameName(this.state.editor.game);
+                run.setCategoryName(this.state.editor.category);
+                // TODO Metadata as well?
+
+                const newEditor = LiveSplit.RunEditor.new(run);
+                if (newEditor != null) {
+                    // TODO Oh no, not internal pointer stuff
+                    this.props.editor.dispose();
+                    this.props.editor.ptr = newEditor.ptr;
+
+                    this.update();
+                } else {
+                    toast.error("The downloaded splits are not suitable for being edited.");
+                }
+            });
+        } catch (_) {
+            toast.error("Failed to download the splits.");
         }
     }
 }
