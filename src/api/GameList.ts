@@ -1,10 +1,10 @@
 import * as fuzzy from "fuzzy";
-import { getGameHeaders, getCategories as apiGetCategories } from "./SpeedrunCom";
+import { getGameHeaders, getCategories as apiGetCategories, Category } from "./SpeedrunCom";
 import { Option } from "../util/OptionUtil";
 
 const gameList: string[] = [];
 const gameNameToIdMap: Map<string, string> = new Map();
-const gameIdToCategoriesMap: Map<string, string[]> = new Map();
+const gameIdToCategoriesMap: Map<string, Category[]> = new Map();
 const gameIdToCategoriesPromises: Map<string, Promise<void>> = new Map();
 let gameListPromise: Option<Promise<void>> = null;
 
@@ -24,7 +24,7 @@ export function getGameId(gameName: string): string | undefined {
     return gameNameToIdMap.get(gameName);
 }
 
-export function getCategories(gameName: string): string[] | undefined {
+export function getCategories(gameName: string): Category[] | undefined {
     const gameId = getGameId(gameName);
     if (gameId == null) {
         return undefined;
@@ -37,7 +37,7 @@ export function downloadCategories(gameId: string): Promise<void> {
     if (categoryPromise == null) {
         categoryPromise = (async () => {
             const categories = await apiGetCategories(gameId);
-            const categoryNames = categories.filter((c) => c.type === "per-game").map((c) => c.name);
+            const categoryNames = categories.filter((c) => c.type === "per-game");
             gameIdToCategoriesMap.set(gameId, categoryNames);
         })();
         gameIdToCategoriesPromises.set(gameId, categoryPromise);

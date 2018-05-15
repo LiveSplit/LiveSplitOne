@@ -7,6 +7,10 @@ import { toast } from "react-toastify";
 import {
     downloadGameList, searchGames, getGameId, getCategories, downloadCategories,
 } from "../api/GameList";
+import { Category } from "../api/SpeedrunCom";
+import { Option } from "../util/OptionUtil";
+import { Parser as CommonMarkParser } from "commonmark";
+import CommonMarkRenderer = require("commonmark-react-renderer");
 
 export interface Props { editor: LiveSplit.RunEditor }
 export interface State {
@@ -14,6 +18,7 @@ export interface State {
     offsetIsValid: boolean,
     attemptCountIsValid: boolean,
     rowState: RowState,
+    isOnRulesTab: boolean,
 }
 
 interface RowState {
@@ -22,6 +27,12 @@ interface RowState {
     bestSegmentTimeIsValid: boolean,
     comparisonIsValid: boolean[],
     index: number,
+}
+
+enum Tab {
+    RealTime,
+    GameTime,
+    Rules,
 }
 
 export class RunEditor extends React.Component<Props, State> {
@@ -43,6 +54,7 @@ export class RunEditor extends React.Component<Props, State> {
                 segmentTimeIsValid: true,
                 splitTimeIsValid: true,
             },
+            isOnRulesTab: false,
         };
 
         this.gameIcon = "";
@@ -56,7 +68,6 @@ export class RunEditor extends React.Component<Props, State> {
     public render() {
         const gameIcon = this.getGameIcon();
         const gameIconSize = 138;
-        const segmentIconSize = 19;
 
         let gameIconContextTrigger: any = null;
         const gameIconToggleMenu = (e: any) => {
@@ -71,6 +82,19 @@ export class RunEditor extends React.Component<Props, State> {
                 otherButtonContextTrigger.handleContextClick(e);
             }
         };
+
+        const tab = this.getTab();
+
+        let categoryNames = ["Any%", "Low%", "100%"];
+        let category = null;
+        const categoryList = getCategories(this.state.editor.game);
+        if (categoryList != null) {
+            categoryNames = categoryList.map((c) => c.name);
+            const categoryIndex = categoryNames.indexOf(this.state.editor.category);
+            if (categoryIndex >= 0) {
+                category = categoryList[categoryIndex];
+            }
+        }
 
         return (
             <div className="run-editor">
@@ -127,7 +151,10 @@ export class RunEditor extends React.Component<Props, State> {
                                         value={this.state.editor.game}
                                         onChange={(e) => this.handleGameChange(e)}
                                         label="Game"
-                                        list={["run-editor-game-list", searchGames(this.state.editor.game)]}
+                                        list={[
+                                            "run-editor-game-list",
+                                            searchGames(this.state.editor.game),
+                                        ]}
                                     />
                                 </td>
                                 <td>
@@ -138,7 +165,7 @@ export class RunEditor extends React.Component<Props, State> {
                                         label="Category"
                                         list={[
                                             "run-editor-category-list",
-                                            getCategories(this.state.editor.game) || ["Any%", "Low%", "100%"],
+                                            categoryNames,
                                         ]}
                                     />
                                 </td>
@@ -173,23 +200,33 @@ export class RunEditor extends React.Component<Props, State> {
                 <div className="timing-selection tab-bar">
                     <button
                         className={"toggle-left" + (
-                            this.state.editor.timing_method === "RealTime"
+                            tab === Tab.RealTime
                                 ? " button-pressed"
                                 : ""
                         )}
-                        onClick={(_) => this.switchTimingMethod(LiveSplit.TimingMethod.RealTime)}
+                        onClick={(_) => this.switchTab(Tab.RealTime)}
                     >
                         Real Time
                     </button>
                     <button
-                        className={"toggle-right" + (
-                            this.state.editor.timing_method === "GameTime"
+                        className={"toggle-middle" + (
+                            tab === Tab.GameTime
                                 ? " button-pressed"
                                 : ""
                         )}
-                        onClick={(_) => this.switchTimingMethod(LiveSplit.TimingMethod.GameTime)}
+                        onClick={(_) => this.switchTab(Tab.GameTime)}
                     >
                         Game Time
+                    </button>
+                    <button
+                        className={"toggle-right" + (
+                            tab === Tab.Rules
+                                ? " button-pressed"
+                                : ""
+                        )}
+                        onClick={(_) => this.switchTab(Tab.Rules)}
+                    >
+                        Rules
                     </button>
                 </div>
                 <div className="editor-group">
@@ -244,233 +281,258 @@ export class RunEditor extends React.Component<Props, State> {
                             </MenuItem>
                         </ContextMenu>
                     </div>
-                    <table className="table run-editor-table">
-                        <thead className="table-header">
-                            <tr>
-                                <th style={{
-                                    paddingLeft: 4,
-                                    paddingRight: 0,
-                                    width: "inherit",
-                                }}>Icon</th>
-                                <th>Segment Name</th>
-                                <th>Split Time</th>
-                                <th>Segment Time</th>
-                                <th>Best Segment</th>
-                                {
-                                    this.state.editor.comparison_names.map((comparison, comparisonIndex) => {
-                                        let contextTrigger: any = null;
-                                        const toggleMenu = (e: any) => {
-                                            if (contextTrigger) {
-                                                contextTrigger.handleContextClick(e);
-                                            }
-                                        };
-                                        const id = `comparison-${comparisonIndex}-context-menu`;
-                                        return (
-                                            <th
-                                                style={{
-                                                    cursor: "pointer",
-                                                }}
-                                                onClick={(e) => toggleMenu(e)}
-                                                draggable
-                                                onDragStart={(e) => {
-                                                    e.dataTransfer.setData("text/plain", "");
-                                                    this.dragIndex = comparisonIndex;
-                                                }}
-                                                onDragOver={(e) => {
-                                                    if (e.preventDefault) {
-                                                        e.preventDefault();
-                                                    }
-                                                    e.dataTransfer.dropEffect = "move";
-                                                }}
-                                                onDragEnd={(_) => this.update()}
-                                                onDrop={(e) => {
-                                                    if (e.stopPropagation) {
-                                                        e.stopPropagation();
-                                                    }
-                                                    this.props.editor.moveComparison(this.dragIndex, comparisonIndex);
-                                                    return false;
-                                                }}
-                                            >
-                                                <ContextMenuTrigger
-                                                    id={id}
-                                                    ref={(c) => contextTrigger = c}
-                                                >
-                                                    {comparison}
-                                                </ContextMenuTrigger>
-                                                <ContextMenu id={id}>
-                                                    <MenuItem onClick={(_) =>
-                                                        this.renameComparison(comparison)
-                                                    }>
-                                                        Rename
-                                                </MenuItem>
-                                                    <MenuItem onClick={(_) =>
-                                                        this.removeComparison(comparison)
-                                                    }>
-                                                        Remove
-                                                </MenuItem>
-                                                </ContextMenu>
-                                            </th>
-                                        );
-                                    })
-                                }
-                            </tr>
-                        </thead>
-                        <tbody className="table-body">
-                            {
-                                this.state.editor.segments.map((s, segmentIndex) => {
-                                    const segmentIcon = this.getSegmentIconUrl(segmentIndex);
-                                    const segmentIconContextMenuId = `segment-icon-${segmentIndex}-context-menu`;
-                                    let segmentIconContextTrigger: any = null;
-                                    const segmentIconToggleMenu = (e: any) => {
-                                        if (segmentIconContextTrigger) {
-                                            segmentIconContextTrigger.handleContextClick(e);
-                                            this.props.editor.selectOnly(segmentIndex);
-                                            this.update();
-                                        }
-                                    };
-                                    return (
-                                        <tr
-                                            key={segmentIndex.toString()}
-                                            className={
-                                                (s.selected === "Selected" || s.selected === "Active") ?
-                                                    "selected" :
-                                                    ""
-                                            }
-                                            onClick={(e) => this.changeSegmentSelection(e, segmentIndex)}
-                                        >
-                                            <td
-                                                style={{
-                                                    cursor: "pointer",
-                                                    height: segmentIconSize,
-                                                    paddingBottom: 0,
-                                                    paddingLeft: 16,
-                                                    paddingRight: 0,
-                                                    paddingTop: 2,
-                                                    width: segmentIconSize,
-                                                }}
-                                                onClick={(e) => {
-                                                    if (segmentIcon !== "") {
-                                                        segmentIconToggleMenu(e);
-                                                    } else {
-                                                        this.changeSegmentIcon(segmentIndex);
-                                                    }
-                                                }}
-                                            >
-                                                <ContextMenuTrigger
-                                                    id={segmentIconContextMenuId}
-                                                    ref={(c) => segmentIconContextTrigger = c}
-                                                >
-                                                    {
-                                                        segmentIcon !== "" &&
-                                                        <img
-                                                            src={segmentIcon}
-                                                            style={{
-                                                                height: segmentIconSize,
-                                                                objectFit: "contain",
-                                                                width: segmentIconSize,
-                                                            }}
-                                                        />
-                                                    }
-                                                </ContextMenuTrigger>
-                                                <ContextMenu id={segmentIconContextMenuId}>
-                                                    <MenuItem onClick={(_) => this.changeSegmentIcon(segmentIndex)}>
-                                                        Set Icon
-                                                    </MenuItem>
-                                                    <MenuItem onClick={(_) => this.removeSegmentIcon(segmentIndex)}>
-                                                        Remove Icon
-                                                    </MenuItem>
-                                                </ContextMenu>
-                                            </td>
-                                            <td>
-                                                <input
-                                                    className="name"
-                                                    type="text"
-                                                    value={s.name}
-                                                    onFocus={(_) => this.focusSegment(segmentIndex)}
-                                                    onChange={(e) => this.handleSegmentNameChange(e)}
-                                                />
-                                            </td>
-                                            <td>
-                                                <input
-                                                    className={
-                                                        this.state.rowState.index !== segmentIndex ||
-                                                            this.state.rowState.splitTimeIsValid ?
-                                                            "number" :
-                                                            "number invalid"
-                                                    }
-                                                    type="text"
-                                                    value={s.split_time}
-                                                    onFocus={(_) => this.focusSegment(segmentIndex)}
-                                                    onChange={(e) => this.handleSplitTimeChange(e)}
-                                                    onBlur={(_) => this.handleSplitTimeBlur()}
-                                                />
-                                            </td>
-                                            <td>
-                                                <input
-                                                    className={
-                                                        this.state.rowState.index !== segmentIndex ||
-                                                            this.state.rowState.segmentTimeIsValid ?
-                                                            "number" :
-                                                            "number invalid"
-                                                    }
-                                                    type="text"
-                                                    value={s.segment_time}
-                                                    onFocus={(_) => this.focusSegment(segmentIndex)}
-                                                    onChange={(e) => this.handleSegmentTimeChange(e)}
-                                                    onBlur={(_) => this.handleSegmentTimeBlur()}
-                                                />
-                                            </td>
-                                            <td>
-                                                <input
-                                                    className={
-                                                        this.state.rowState.index !== segmentIndex ||
-                                                            this.state.rowState.bestSegmentTimeIsValid ?
-                                                            "number" :
-                                                            "number invalid"
-                                                    }
-                                                    type="text"
-                                                    value={s.best_segment_time}
-                                                    onFocus={(_) => this.focusSegment(segmentIndex)}
-                                                    onChange={(e) => this.handleBestSegmentTimeChange(e)}
-                                                    onBlur={(_) => this.handleBestSegmentTimeBlur()}
-                                                />
-                                            </td>
-                                            {
-                                                this
-                                                    .state
-                                                    .editor
-                                                    .segments[segmentIndex]
-                                                    .comparison_times
-                                                    .map((comparisonTime, comparisonIndex) => (
-                                                        <td>
-                                                            <input
-                                                                className={
-                                                                    this.state.rowState.index !== segmentIndex ||
-                                                                        this.isComparisonValid(comparisonIndex) ?
-                                                                        "number" :
-                                                                        "number invalid"
-                                                                }
-                                                                type="text"
-                                                                value={comparisonTime}
-                                                                onFocus={(_) => this.focusSegment(segmentIndex)}
-                                                                onChange={(e) =>
-                                                                    this.handleComparisonTimeChange(e, comparisonIndex)
-                                                                }
-                                                                onBlur={(_) =>
-                                                                    this.handleComparisonTimeBlur(comparisonIndex)
-                                                                }
-                                                            />
-                                                        </td>
-                                                    ))
-                                            }
-                                        </tr>
-                                    );
-                                })
-                            }
-                        </tbody>
-                    </table>
+                    {
+                        tab === Tab.Rules
+                            ? this.renderRulesTab(category)
+                            : this.renderSegmentsTable()
+                    }
                 </div>
             </div >
+        );
+    }
+
+    private renderRulesTab(category: Option<Category>) {
+        let rules = null;
+        if (category != null) {
+            const parsed = new CommonMarkParser().parse(category.rules);
+            rules = new CommonMarkRenderer().render(parsed);
+        }
+        return (
+            <div className="run-editor-additional-info">
+                <div className="run-editor-rules">{rules}</div>
+            </div>
+        );
+    }
+
+    private renderSegmentsTable(): JSX.Element {
+        const segmentIconSize = 19;
+
+        return (
+            <table className="table run-editor-table">
+                <thead className="table-header">
+                    <tr>
+                        <th style={{
+                            paddingLeft: 4,
+                            paddingRight: 0,
+                            width: "inherit",
+                        }}>Icon</th>
+                        <th>Segment Name</th>
+                        <th>Split Time</th>
+                        <th>Segment Time</th>
+                        <th>Best Segment</th>
+                        {
+                            this.state.editor.comparison_names.map((comparison, comparisonIndex) => {
+                                let contextTrigger: any = null;
+                                const toggleMenu = (e: any) => {
+                                    if (contextTrigger) {
+                                        contextTrigger.handleContextClick(e);
+                                    }
+                                };
+                                const id = `comparison-${comparisonIndex}-context-menu`;
+                                return (
+                                    <th
+                                        style={{
+                                            cursor: "pointer",
+                                        }}
+                                        onClick={(e) => toggleMenu(e)}
+                                        draggable
+                                        onDragStart={(e) => {
+                                            e.dataTransfer.setData("text/plain", "");
+                                            this.dragIndex = comparisonIndex;
+                                        }}
+                                        onDragOver={(e) => {
+                                            if (e.preventDefault) {
+                                                e.preventDefault();
+                                            }
+                                            e.dataTransfer.dropEffect = "move";
+                                        }}
+                                        onDragEnd={(_) => this.update()}
+                                        onDrop={(e) => {
+                                            if (e.stopPropagation) {
+                                                e.stopPropagation();
+                                            }
+                                            this.props.editor.moveComparison(this.dragIndex, comparisonIndex);
+                                            return false;
+                                        }}
+                                    >
+                                        <ContextMenuTrigger
+                                            id={id}
+                                            ref={(c) => contextTrigger = c}
+                                        >
+                                            {comparison}
+                                        </ContextMenuTrigger>
+                                        <ContextMenu id={id}>
+                                            <MenuItem onClick={(_) =>
+                                                this.renameComparison(comparison)
+                                            }>
+                                                Rename
+                                            </MenuItem>
+                                            <MenuItem onClick={(_) =>
+                                                this.removeComparison(comparison)
+                                            }>
+                                                Remove
+                                            </MenuItem>
+                                        </ContextMenu>
+                                    </th>
+                                );
+                            })
+                        }
+                    </tr>
+                </thead>
+                <tbody className="table-body">
+                    {
+                        this.state.editor.segments.map((s, segmentIndex) => {
+                            const segmentIcon = this.getSegmentIconUrl(segmentIndex);
+                            const segmentIconContextMenuId = `segment-icon-${segmentIndex}-context-menu`;
+                            let segmentIconContextTrigger: any = null;
+                            const segmentIconToggleMenu = (e: any) => {
+                                if (segmentIconContextTrigger) {
+                                    segmentIconContextTrigger.handleContextClick(e);
+                                    this.props.editor.selectOnly(segmentIndex);
+                                    this.update();
+                                }
+                            };
+                            return (
+                                <tr
+                                    key={segmentIndex.toString()}
+                                    className={
+                                        (s.selected === "Selected" || s.selected === "Active") ?
+                                            "selected" :
+                                            ""
+                                    }
+                                    onClick={(e) => this.changeSegmentSelection(e, segmentIndex)}
+                                >
+                                    <td
+                                        style={{
+                                            cursor: "pointer",
+                                            height: segmentIconSize,
+                                            paddingBottom: 0,
+                                            paddingLeft: 16,
+                                            paddingRight: 0,
+                                            paddingTop: 2,
+                                            width: segmentIconSize,
+                                        }}
+                                        onClick={(e) => {
+                                            if (segmentIcon !== "") {
+                                                segmentIconToggleMenu(e);
+                                            } else {
+                                                this.changeSegmentIcon(segmentIndex);
+                                            }
+                                        }}
+                                    >
+                                        <ContextMenuTrigger
+                                            id={segmentIconContextMenuId}
+                                            ref={(c) => segmentIconContextTrigger = c}
+                                        >
+                                            {
+                                                segmentIcon !== "" &&
+                                                <img
+                                                    src={segmentIcon}
+                                                    style={{
+                                                        height: segmentIconSize,
+                                                        objectFit: "contain",
+                                                        width: segmentIconSize,
+                                                    }}
+                                                />
+                                            }
+                                        </ContextMenuTrigger>
+                                        <ContextMenu id={segmentIconContextMenuId}>
+                                            <MenuItem onClick={(_) => this.changeSegmentIcon(segmentIndex)}>
+                                                Set Icon
+                                            </MenuItem>
+                                            <MenuItem onClick={(_) => this.removeSegmentIcon(segmentIndex)}>
+                                                Remove Icon
+                                            </MenuItem>
+                                        </ContextMenu>
+                                    </td>
+                                    <td>
+                                        <input
+                                            className="name"
+                                            type="text"
+                                            value={s.name}
+                                            onFocus={(_) => this.focusSegment(segmentIndex)}
+                                            onChange={(e) => this.handleSegmentNameChange(e)}
+                                        />
+                                    </td>
+                                    <td>
+                                        <input
+                                            className={
+                                                this.state.rowState.index !== segmentIndex ||
+                                                    this.state.rowState.splitTimeIsValid ?
+                                                    "number" :
+                                                    "number invalid"
+                                            }
+                                            type="text"
+                                            value={s.split_time}
+                                            onFocus={(_) => this.focusSegment(segmentIndex)}
+                                            onChange={(e) => this.handleSplitTimeChange(e)}
+                                            onBlur={(_) => this.handleSplitTimeBlur()}
+                                        />
+                                    </td>
+                                    <td>
+                                        <input
+                                            className={
+                                                this.state.rowState.index !== segmentIndex ||
+                                                    this.state.rowState.segmentTimeIsValid ?
+                                                    "number" :
+                                                    "number invalid"
+                                            }
+                                            type="text"
+                                            value={s.segment_time}
+                                            onFocus={(_) => this.focusSegment(segmentIndex)}
+                                            onChange={(e) => this.handleSegmentTimeChange(e)}
+                                            onBlur={(_) => this.handleSegmentTimeBlur()}
+                                        />
+                                    </td>
+                                    <td>
+                                        <input
+                                            className={
+                                                this.state.rowState.index !== segmentIndex ||
+                                                    this.state.rowState.bestSegmentTimeIsValid ?
+                                                    "number" :
+                                                    "number invalid"
+                                            }
+                                            type="text"
+                                            value={s.best_segment_time}
+                                            onFocus={(_) => this.focusSegment(segmentIndex)}
+                                            onChange={(e) => this.handleBestSegmentTimeChange(e)}
+                                            onBlur={(_) => this.handleBestSegmentTimeBlur()}
+                                        />
+                                    </td>
+                                    {
+                                        this
+                                            .state
+                                            .editor
+                                            .segments[segmentIndex]
+                                            .comparison_times
+                                            .map((comparisonTime, comparisonIndex) => (
+                                                <td>
+                                                    <input
+                                                        className={
+                                                            this.state.rowState.index !== segmentIndex ||
+                                                                this.isComparisonValid(comparisonIndex) ?
+                                                                "number" :
+                                                                "number invalid"
+                                                        }
+                                                        type="text"
+                                                        value={comparisonTime}
+                                                        onFocus={(_) => this.focusSegment(segmentIndex)}
+                                                        onChange={(e) =>
+                                                            this.handleComparisonTimeChange(e, comparisonIndex)
+                                                        }
+                                                        onBlur={(_) =>
+                                                            this.handleComparisonTimeBlur(comparisonIndex)
+                                                        }
+                                                    />
+                                                </td>
+                                            ))
+                                    }
+                                </tr>
+                            );
+                        })
+                    }
+                </tbody>
+            </table>
         );
     }
 
@@ -603,10 +665,13 @@ export class RunEditor extends React.Component<Props, State> {
         return this.gameIcon;
     }
 
-    private update() {
+    private update(isOnRulesTab?: boolean) {
         this.setState({
             ...this.state,
             editor: this.props.editor.stateAsJson(),
+            isOnRulesTab: isOnRulesTab === undefined
+                ? this.state.isOnRulesTab
+                : isOnRulesTab,
         });
     }
 
@@ -826,9 +891,21 @@ export class RunEditor extends React.Component<Props, State> {
         this.update();
     }
 
-    private switchTimingMethod(timingMethod: LiveSplit.TimingMethod) {
-        this.props.editor.selectTimingMethod(timingMethod);
-        this.update();
+    private switchTab(tab: Tab) {
+        switch (tab) {
+            case Tab.RealTime: {
+                this.props.editor.selectTimingMethod(LiveSplit.TimingMethod.RealTime);
+                break;
+            }
+            case Tab.GameTime: {
+                this.props.editor.selectTimingMethod(LiveSplit.TimingMethod.GameTime);
+                break;
+            }
+            case Tab.Rules: {
+                break;
+            }
+        }
+        this.update(tab === Tab.Rules);
     }
 
     private async refreshGameList() {
@@ -842,6 +919,16 @@ export class RunEditor extends React.Component<Props, State> {
         if (gameId != null) {
             await downloadCategories(gameId);
             this.update();
+        }
+    }
+
+    private getTab(): Tab {
+        if (this.state.isOnRulesTab) {
+            return Tab.Rules;
+        } else if (this.state.editor.timing_method === "RealTime") {
+            return Tab.RealTime;
+        } else {
+            return Tab.GameTime;
         }
     }
 }

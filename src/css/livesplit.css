@@ -85,6 +85,10 @@ button.toggle-right {
     border-bottom-left-radius: 0px;
 }
 
+button.toggle-middle {
+    border-radius: 0px;
+}
+
 .layout {
     font-family: 'fira', sans-serif;
     font-size: 15px;
@@ -369,8 +373,26 @@ button {
     width: 48%;
 }
 
+a {
+    color: hsla(50, 100%, 50%, 1);
+}
+
 .run-editor {
     padding: 10px 10px 10px 10px;
+}
+
+.run-editor-additional-info {
+    width: 650px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    border: 1px solid hsl(0, 0%, 25%);
+    border-collapse: collapse;
+    margin-left: 5px;
+    background-color: hsla(0, 0%, 100%, 0.03);
+}
+
+.run-editor-rules {
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
 .group {
@@ -555,7 +577,6 @@ table.run-editor-table > tbody > tr > td > input:not(.name) {
 .timing-selection > button {
     position: relative;
     left: 170px;
-    width: 100px;
 }
 
 .tab-bar > button {
