@@ -49,7 +49,7 @@ export function downloadGameList(): Promise<void> {
     if (gameListPromise == null) {
         gameListPromise = (async () => {
             const pages = await getGameHeaders();
-            pages.iterElementsWith((game) => {
+            await pages.iterElementsWith((game) => {
                 gameList.push(game.names.international);
                 gameNameToIdMap.set(game.names.international, game.id);
             });

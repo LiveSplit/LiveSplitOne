@@ -51,7 +51,7 @@ export interface Category {
     id: string,
     name: string,
     type: "per-game" | "per-level",
-    rules: string,
+    rules?: string,
 }
 
 function evaluateParameters(parameters: string[]): string {

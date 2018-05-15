@@ -293,9 +293,12 @@ export class RunEditor extends React.Component<Props, State> {
 
     private renderRulesTab(category: Option<Category>) {
         let rules = null;
-        if (category != null) {
+        if (category != null && category.rules != null) {
             const parsed = new CommonMarkParser().parse(category.rules);
-            rules = new CommonMarkRenderer().render(parsed);
+            rules = new CommonMarkRenderer({
+                escapeHtml: true,
+                linkTarget: "_blank",
+            }).render(parsed);
         }
         return (
             <div className="run-editor-additional-info">
