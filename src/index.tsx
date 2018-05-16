@@ -35,4 +35,11 @@ Those are known to block WebAssembly.`);
     }
 }
 
+ReactDOM.render(
+    <div>
+        Loading...
+    </div>,
+    document.getElementById("base"),
+);
+
 run();
