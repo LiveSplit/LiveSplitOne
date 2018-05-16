@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import {
     downloadGameList, searchGames, getGameId, getCategories, downloadCategories,
 } from "../api/GameList";
-import { Category } from "../api/SpeedrunCom";
+import { Category, getGame } from "../api/SpeedrunCom";
 import { Option } from "../util/OptionUtil";
 import { Parser as CommonMarkParser } from "commonmark";
 import CommonMarkRenderer = require("commonmark-react-renderer");
@@ -110,11 +110,7 @@ export class RunEditor extends React.Component<Props, State> {
                             width: gameIconSize,
                         }}
                         onClick={(e) => {
-                            if (gameIcon !== "") {
-                                gameIconToggleMenu(e);
-                            } else {
-                                this.changeGameIcon();
-                            }
+                            gameIconToggleMenu(e);
                         }}
                     >
                         <ContextMenuTrigger
@@ -138,9 +134,18 @@ export class RunEditor extends React.Component<Props, State> {
                         <MenuItem onClick={(_) => this.changeGameIcon()}>
                             Set Icon
                         </MenuItem>
-                        <MenuItem onClick={(_) => this.removeGameIcon()}>
-                            Remove Icon
+                        <MenuItem onClick={(_) => this.downloadBoxArt()}>
+                            Download Box Art
                         </MenuItem>
+                        <MenuItem onClick={(_) => this.downloadIcon()}>
+                            Download Icon
+                        </MenuItem>
+                        {
+                            gameIcon !== "" &&
+                            <MenuItem onClick={(_) => this.removeGameIcon()}>
+                                Remove Icon
+                            </MenuItem>
+                        }
                     </ContextMenu>
                     <table className="run-editor-info-table">
                         <tbody>
@@ -909,6 +914,42 @@ export class RunEditor extends React.Component<Props, State> {
             }
         }
         this.update(tab === Tab.Rules);
+    }
+
+    private async downloadBoxArt() {
+        await downloadGameList();
+        const gameId = getGameId(this.state.editor.game);
+        if (gameId != null) {
+            const game = await getGame(gameId);
+            const uri = game.assets["cover-medium"].uri;
+            if (uri.startsWith("https://")) {
+                // Workaround until CORS is fixed
+                const proxyUri = `https://cors-buster-jfpactjnem.now.sh/${uri.slice("https://".length)}`;
+                const response = await fetch(proxyUri);
+                const buffer = await response.arrayBuffer();
+                // TODO Racy situation with Run Editor closing
+                this.props.editor.setGameIconFromArray(new Int8Array(buffer));
+                this.update();
+            }
+        }
+    }
+
+    private async downloadIcon() {
+        await downloadGameList();
+        const gameId = getGameId(this.state.editor.game);
+        if (gameId != null) {
+            const game = await getGame(gameId);
+            const uri = game.assets.icon.uri;
+            if (uri.startsWith("https://")) {
+                // Workaround until CORS is fixed
+                const proxyUri = `https://cors-buster-jfpactjnem.now.sh/${uri.slice("https://".length)}`;
+                const response = await fetch(proxyUri);
+                const buffer = await response.arrayBuffer();
+                // TODO Racy situation with Run Editor closing
+                this.props.editor.setGameIconFromArray(new Int8Array(buffer));
+                this.update();
+            }
+        }
     }
 
     private async refreshGameList() {

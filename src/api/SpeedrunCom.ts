@@ -68,10 +68,10 @@ function getGamesUri(subUri: string): string {
     return `${BASE_URI}${GAMES_URI}${subUri}`;
 }
 
-async function executeRequest<T>(uri: string): Promise<T[]> {
+async function executeRequest<T>(uri: string): Promise<T> {
     const response = await fetch(uri);
     const responseData = await response.json();
-    return responseData.data as T[];
+    return responseData.data as T;
 }
 
 export class Page<T> {
@@ -133,6 +133,11 @@ async function executePaginatedRequest<T>(uri: string): Promise<Page<T>> {
     return new Page(data as T[], next);
 }
 
+export async function getGame(gameId: string): Promise<Game> {
+    const uri = getGamesUri(`/${gameId}`);
+    return executeRequest<Game>(uri);
+}
+
 export async function getGames(name?: string): Promise<Page<Game>> {
     const parameters = [];
     if (name != null && name !== "") {
@@ -153,5 +158,5 @@ export async function getGameHeaders(elementsPerPage: number = 1000): Promise<Pa
 export async function getCategories(gameId: string): Promise<Category[]> {
     // TODO Remaining parameters
     const uri = getGamesUri(`/${gameId}/categories`);
-    return executeRequest<Category>(uri);
+    return executeRequest<Category[]>(uri);
 }
