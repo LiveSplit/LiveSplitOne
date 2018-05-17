@@ -43,10 +43,10 @@ A browser tab with LiveSplit One should now open.
 |---------|---------------|--------------|
 | Chrome  | ≥57          | |
 | Firefox | ≥52          | Slow Autocompletion |
-| Edge    | ≥16          | Hotkeys don't work |
+| Edge    | ≥16          | Hotkeys don't work<br>Autocompletion is unreadable |
 | Safari  | ≥11          | |
 | Opera   | ≥44          | |
-| iOS     | ≥11.2        | No Autocompletion<br>Upload / Download don't work |
+| iOS     | ≥11.2        | No Autocompletion<br>Import & Export don't work |
 | Android WebView | ≥62 | |
 | Chrome Android | ≥66 | |
 | Firefox Android | ≥60 | |
