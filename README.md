@@ -36,3 +36,19 @@ Now you can build and host LiveSplit One:
 npm run start
 ```
 A browser tab with LiveSplit One should now open.
+
+## Browser Support
+
+| Browser | Compatibility | Known Issues |
+|---------|---------------|--------------|
+| Chrome  | ≥57          | |
+| Firefox | ≥52          | Slow Autocompletion |
+| Edge    | ≥16          | Hotkeys don't work |
+| Safari  | ≥11          | |
+| Opera   | ≥44          | |
+| iOS     | ≥11.2        | No Autocompletion<br>Upload / Download don't work |
+| Android WebView | ≥62 | |
+| Chrome Android | ≥66 | |
+| Firefox Android | ≥60 | |
+| Internet Explorer | Unsupported | |
+| Opera Mini | Unsupported | |
