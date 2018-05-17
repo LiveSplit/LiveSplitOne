@@ -7,7 +7,7 @@ LiveSplit One is a version of LiveSplit that uses the multiplatform
 Technologies like React and Electron to create a new LiveSplit experience that
 works on a lot of different platforms.
 
-The Web Version is available [here](https://livesplit.github.io/LiveSplitOne/).
+The Web Version is available [here](https://one.livesplit.org/).
 
 ## Build Instructions
 
