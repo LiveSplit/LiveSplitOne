@@ -253,8 +253,10 @@ div.meta-two-lines > div#lower-row > div.title-attempts {
 .game-icon-container {
     max-width: 34px;
     min-width: 34px;
+    height: 30px;
     padding: 1px;
-    height: auto;
+    padding-left: 5px;
+    padding-top: 3px;
     position: absolute;
     left: 0
 }
@@ -280,7 +282,7 @@ div.meta-two-lines > div#lower-row > div.title-attempts {
 img.title-icon {
     max-width: 100%;
     max-height: 100%;
-    height: auto;
+    height: 100%;
     display: block;
     margin: auto;
 }
