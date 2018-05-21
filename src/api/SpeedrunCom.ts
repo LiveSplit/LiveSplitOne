@@ -94,6 +94,7 @@ export interface PlayerGuestRef {
 
 export interface Times {
     primary: string,
+    primary_t: number,
 }
 
 export interface Splits {

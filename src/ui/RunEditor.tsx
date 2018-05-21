@@ -12,6 +12,7 @@ import { Option, expect, map, assert } from "../util/OptionUtil";
 import { Parser as CommonMarkParser } from "commonmark";
 import CommonMarkRenderer = require("commonmark-react-renderer");
 import { downloadById } from "../util/SplitsIO";
+import { formatLeaderboardTime } from "../util/TimeUtil";
 
 export interface Props { editor: LiveSplit.RunEditor }
 export interface State {
@@ -325,6 +326,10 @@ export class RunEditor extends React.Component<Props, State> {
         if (leaderboard == null) {
             return <div />;
         }
+        // TODO Take this from the rules
+        const hideMilliseconds = leaderboard.runs.every((r) => {
+            return r.run.times.primary_t === Math.floor(r.run.times.primary_t);
+        });
         return (
             <table className="table run-editor-table">
                 <thead className="table-header">
@@ -338,7 +343,7 @@ export class RunEditor extends React.Component<Props, State> {
                 <tbody className="table-body">
                     {leaderboard.runs.map((r) => (
                         <tr title={r.run.comment} className="leaderboard-row">
-                            <td style={{ textAlign: "right" }}>{r.place}</td>
+                            <td className="number">{r.place}</td>
                             <td>
                                 {
                                     r.run.players.map((p, i) => {
@@ -365,16 +370,7 @@ export class RunEditor extends React.Component<Props, State> {
                             </td>
                             <td style={{ width: 120 }} className="number">
                                 <a href={r.run.weblink} target="_blank" style={{ color: "white" }}>
-                                    {
-                                        r.run.times.primary
-                                            .replace("PT", "")
-                                            .replace("S", "")
-                                            .replace("H", ":")
-                                            .replace("M", ":")
-                                            .split(":")
-                                            .map((s) => s.padStart(2, "0"))
-                                            .join(":")
-                                    }
+                                    {formatLeaderboardTime(r.run.times.primary_t, hideMilliseconds)}
                                 </a>
                             </td>
                             <td style={{ textAlign: "center" }}>
