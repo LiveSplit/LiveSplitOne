@@ -581,10 +581,13 @@ export class RunEditor extends React.Component<Props, State> {
                                     <td>
                                         <input
                                             className={
-                                                this.state.rowState.index !== segmentIndex ||
-                                                    this.state.rowState.segmentTimeIsValid ?
-                                                    "number" :
-                                                    "number invalid"
+                                                this.state.rowState.index !== segmentIndex
+                                                    || this.state.rowState.segmentTimeIsValid
+                                                    ? (s.segment_time === s.best_segment_time
+                                                        ? "number best-segment-time"
+                                                        : "number"
+                                                    )
+                                                    : "number invalid"
                                             }
                                             type="text"
                                             value={s.segment_time}
