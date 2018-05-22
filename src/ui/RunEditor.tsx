@@ -352,14 +352,21 @@ export class RunEditor extends React.Component<Props, State> {
                                                 leaderboard.players,
                                                 "The leaderboard is supposed to have a players embed.",
                                             );
-                                            const found = expect(
+                                                const player = expect(
                                                 players.data.find((f) => f.id === p.id),
                                                 "The player is supposed to be embedded.",
                                             );
+                                                const style = player["name-style"];
+                                                let color;
+                                                if (style.style === "gradient") {
+                                                    color = style["color-from"].dark;
+                                                } else {
+                                                    color = style.color.dark;
+                                                }
                                             return [
                                                 i !== 0 ? ", " : null,
-                                                <a target="_blank" href={found.weblink}>
-                                                    {found.names.international}
+                                                    <a target="_blank" href={player.weblink} style={{ color }}>
+                                                        {player.names.international}
                                                 </a>,
                                             ];
                                         } else {

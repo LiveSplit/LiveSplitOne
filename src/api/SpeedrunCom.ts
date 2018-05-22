@@ -67,6 +67,23 @@ export interface Player {
     id: string,
     names: Names,
     weblink: string,
+    "name-style": NameStyleSolid | NameStyleGradient,
+}
+
+export interface NameStyleSolid {
+    style: "solid",
+    color: Color,
+}
+
+export interface NameStyleGradient {
+    style: "gradient",
+    "color-from": Color,
+    "color-to": Color,
+}
+
+export interface Color {
+    light: string,
+    dark: string,
 }
 
 export interface Record {
@@ -80,6 +97,17 @@ export interface Run {
     times: Times,
     splits: Option<Splits>,
     weblink: string,
+    submitted: Option<string>,
+    date: Option<string>,
+    videos: Option<Videos>,
+}
+
+export interface Videos {
+    links: Video[],
+}
+
+export interface Video {
+    uri: string,
 }
 
 export interface PlayerUserRef {
