@@ -52,3 +52,11 @@ export function map<T, R>(obj: Option<T>, f: (obj: T) => R): R | undefined {
         return undefined;
     }
 }
+
+export function unwrapOr<T>(obj: Option<T>, or: T): T {
+    if (obj != null) {
+        return obj;
+    } else {
+        return or;
+    }
+}

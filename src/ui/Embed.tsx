@@ -1,0 +1,77 @@
+import * as React from "react";
+import { Option } from "../util/OptionUtil";
+
+export function resolveEmbed(uri: string): Option<JSX.Element> {
+    const youtube = tryYoutubeFromUri(uri);
+    if (youtube != null) {
+        return youtube;
+    }
+    const twitch = tryTwitchFromUri(uri);
+    if (twitch != null) {
+        return twitch;
+    }
+    return <p><a href={uri} target="_blank">{uri}</a></p>;
+}
+
+function tryYoutubeFromUri(uri: string): Option<JSX.Element> {
+    const youtubeBase = /https?:\/\/www\.youtube\.com\/watch\?v=([A-z0-9-]+)&?/;
+    let result = youtubeBase.exec(uri);
+    if (result == null) {
+        const youtubeBase2 = /https?:\/\/youtu\.be\/([A-z0-9-]+)/;
+        result = youtubeBase2.exec(uri);
+    }
+    if (result != null) {
+        return resolveYoutube(result[1]);
+    }
+    return null;
+}
+
+function tryTwitchFromUri(uri: string): Option<JSX.Element> {
+    const twitchBase = /https?:\/\/(www\.)?(go\.)?twitch\.tv\/.*\/v\/(\w+)&?/;
+    const twitchBase2 = /https?:\/\/(www\.)?(go\.)?twitch\.tv\/videos\/(\w+)&?/;
+    let result = twitchBase.exec(uri);
+    if (result == null) {
+        result = twitchBase2.exec(uri);
+    }
+    if (result != null) {
+        return resolveTwitch(result[3]);
+    }
+    return null;
+}
+
+function resolveYoutube(videoId: string): JSX.Element {
+    return (
+        <div style={{ paddingTop: 5 }}>
+            <iframe
+                id="ytplayer"
+                itemType="text/html"
+                src={`https://www.youtube.com/embed/${videoId}?wmode=transparent`
+                }
+                allowFullScreen
+                frameBorder="0"
+                style={{
+                    width: "100%",
+                    height: 240,
+                }}
+            />
+        </div>
+    );
+}
+
+function resolveTwitch(videoId: string): JSX.Element {
+    return (
+        <div style={{ paddingTop: 5 }}>
+            <iframe
+                id="ytplayer"
+                itemType="text/html"
+                src={`https://player.twitch.tv/?video=${videoId}&autoplay=false`}
+                allowFullScreen
+                frameBorder="0"
+                style={{
+                    width: "100%",
+                    height: 240,
+                }}
+            />
+        </div>
+    );
+}

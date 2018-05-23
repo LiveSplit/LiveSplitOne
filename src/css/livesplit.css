@@ -533,6 +533,16 @@ a:hover {
 .table-body>*:nth-of-type(odd) {
 	background: rgba(0, 0, 0, 0.2);
 }
+
+.table-row-even {
+	display: table-row;
+	background: rgba(0, 0, 0, 0.5) !important;
+}
+.table-row-odd {
+    display: table-row;
+	background: rgba(0, 0, 0, 0.2) !important;
+}
+
 .table>.table-header>tr>*,
 .table-body>*>* {
 	padding: 3px 12px;

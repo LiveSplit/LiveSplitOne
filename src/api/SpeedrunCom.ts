@@ -92,7 +92,7 @@ export interface Record {
 }
 
 export interface Run {
-    comment: string,
+    comment: Option<string>,
     players: Array<PlayerUserRef | PlayerGuestRef>,
     times: Times,
     splits: Option<Splits>,

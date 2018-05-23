@@ -8,11 +8,12 @@ import {
     downloadGameList, searchGames, getGameId, getCategories, downloadCategories, downloadLeaderboard, getLeaderboard,
 } from "../api/GameList";
 import { Category, getGame } from "../api/SpeedrunCom";
-import { Option, expect, map, assert } from "../util/OptionUtil";
+import { Option, expect, map, assert, unwrapOr } from "../util/OptionUtil";
 import { Parser as CommonMarkParser } from "commonmark";
 import CommonMarkRenderer = require("commonmark-react-renderer");
 import { downloadById } from "../util/SplitsIO";
 import { formatLeaderboardTime } from "../util/TimeUtil";
+import { resolveEmbed } from "./Embed";
 
 export interface Props { editor: LiveSplit.RunEditor }
 export interface State {
@@ -42,6 +43,7 @@ export class RunEditor extends React.Component<Props, State> {
     private gameIcon: string;
     private segmentIconUrls: string[];
     private dragIndex: number = 0;
+    private expandedLeaderboardRows: Map<number, boolean> = new Map();
 
     constructor(props: Props) {
         super(props);
@@ -331,7 +333,7 @@ export class RunEditor extends React.Component<Props, State> {
             return r.run.times.primary_t === Math.floor(r.run.times.primary_t);
         });
         return (
-            <table className="table run-editor-table">
+            <table className="table run-editor-table" style={{ width: 450 }}>
                 <thead className="table-header">
                     <tr>
                         <th>Rank</th>
@@ -341,21 +343,52 @@ export class RunEditor extends React.Component<Props, State> {
                     </tr>
                 </thead>
                 <tbody className="table-body">
-                    {leaderboard.runs.map((r) => (
-                        <tr title={r.run.comment} className="leaderboard-row">
-                            <td className="number">{r.place}</td>
-                            <td>
-                                {
-                                    r.run.players.map((p, i) => {
-                                        if (p.rel === "user") {
-                                            const players = expect(
-                                                leaderboard.players,
-                                                "The leaderboard is supposed to have a players embed.",
-                                            );
+                    {leaderboard.runs.map((r, rowIndex) => {
+                        const evenOdd = rowIndex % 2 === 0 ? "table-row-odd" : "table-row-even";
+                        let expandedRow = null;
+                        if (this.expandedLeaderboardRows.get(rowIndex) === true) {
+                            let embed = null;
+                            if (r.run.videos != null && r.run.videos.links.length > 0) {
+                                const videoUri = r.run.videos.links[0].uri;
+                                embed = resolveEmbed(videoUri);
+                            }
+                            const parsedComment = new CommonMarkParser().parse(unwrapOr(r.run.comment, ""));
+                            const renderedComment = new CommonMarkRenderer({
+                                escapeHtml: true,
+                                linkTarget: "_blank",
+                            }).render(parsedComment);
+                            expandedRow =
+                                <tr className={evenOdd}>
+                                    <td colSpan={4}>
+                                        {embed}
+                                        <div>{renderedComment}</div>
+                                        <p>{`Date: ${unwrapOr(r.run.date, "").split("-").join("/")}`}</p>
+                                    </td>
+                                </tr>;
+                        }
+
+                        return [
+                            <tr
+                                title={unwrapOr(r.run.comment, "")}
+                                className={`leaderboard-row ${evenOdd}`}
+                                onClick={(_) => this.toggleExpandLeaderboardRow(rowIndex)}
+                                style={{
+                                    cursor: "pointer",
+                                }}
+                            >
+                                <td className="number">{r.place}</td>
+                                <td>
+                                    {
+                                        r.run.players.map((p, i) => {
+                                            if (p.rel === "user") {
+                                                const players = expect(
+                                                    leaderboard.players,
+                                                    "The leaderboard is supposed to have a players embed.",
+                                                );
                                                 const player = expect(
-                                                players.data.find((f) => f.id === p.id),
-                                                "The player is supposed to be embedded.",
-                                            );
+                                                    players.data.find((f) => f.id === p.id),
+                                                    "The player is supposed to be embedded.",
+                                                );
                                                 const style = player["name-style"];
                                                 let color;
                                                 if (style.style === "gradient") {
@@ -363,35 +396,37 @@ export class RunEditor extends React.Component<Props, State> {
                                                 } else {
                                                     color = style.color.dark;
                                                 }
-                                            return [
-                                                i !== 0 ? ", " : null,
+                                                return [
+                                                    i !== 0 ? ", " : null,
                                                     <a target="_blank" href={player.weblink} style={{ color }}>
                                                         {player.names.international}
-                                                </a>,
-                                            ];
-                                        } else {
-                                            return [i !== 0 ? ", " : null, p.name];
-                                        }
-                                    })
-                                }
-                            </td>
-                            <td style={{ width: 120 }} className="number">
-                                <a href={r.run.weblink} target="_blank" style={{ color: "white" }}>
-                                    {formatLeaderboardTime(r.run.times.primary_t, hideMilliseconds)}
-                                </a>
-                            </td>
-                            <td style={{ textAlign: "center" }}>
-                                {
-                                    map(r.run.splits, (s) => <i
-                                        onClick={(_) => this.downloadSplits(s.uri)}
-                                        className="fa fa-download"
-                                        style={{ cursor: "pointer" }}
-                                        aria-hidden="true"
-                                    />)
-                                }
-                            </td>
-                        </tr>
-                    ))}
+                                                    </a>,
+                                                ];
+                                            } else {
+                                                return [i !== 0 ? ", " : null, p.name];
+                                            }
+                                        })
+                                    }
+                                </td>
+                                <td style={{ width: 120 }} className="number">
+                                    <a href={r.run.weblink} target="_blank" style={{ color: "white" }}>
+                                        {formatLeaderboardTime(r.run.times.primary_t, hideMilliseconds)}
+                                    </a>
+                                </td>
+                                <td style={{ textAlign: "center" }}>
+                                    {
+                                        map(r.run.splits, (s) => <i
+                                            onClick={(_) => this.downloadSplits(s.uri)}
+                                            className="fa fa-download"
+                                            style={{ cursor: "pointer" }}
+                                            aria-hidden="true"
+                                        />)
+                                    }
+                                </td>
+                            </tr>,
+                            expandedRow,
+                        ];
+                    })}
                 </tbody>
             </table>
         );
@@ -800,12 +835,14 @@ export class RunEditor extends React.Component<Props, State> {
         this.props.editor.setGameName(event.target.value);
         this.refreshCategoryList(event.target.value);
         this.refreshLeaderboard(event.target.value, this.state.editor.category);
+        this.contractLeaderboardRows();
         this.update();
     }
 
     private handleCategoryChange(event: any) {
         this.props.editor.setCategoryName(event.target.value);
         this.refreshLeaderboard(this.state.editor.game, event.target.value);
+        this.contractLeaderboardRows();
         this.update();
     }
 
@@ -1031,7 +1068,12 @@ export class RunEditor extends React.Component<Props, State> {
                 break;
             }
         }
+        this.contractLeaderboardRows();
         this.update(tab);
+    }
+
+    private contractLeaderboardRows() {
+        this.expandedLeaderboardRows = new Map();
     }
 
     private async downloadBoxArt() {
@@ -1115,5 +1157,14 @@ export class RunEditor extends React.Component<Props, State> {
         } catch (_) {
             toast.error("Failed to download the splits.");
         }
+    }
+
+    private toggleExpandLeaderboardRow(rowIndex: number) {
+        if (this.expandedLeaderboardRows.get(rowIndex) === true) {
+            this.expandedLeaderboardRows.set(rowIndex, false);
+        } else {
+            this.expandedLeaderboardRows.set(rowIndex, true);
+        }
+        this.update();
     }
 }
