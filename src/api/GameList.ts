@@ -1,11 +1,12 @@
-import * as fuzzy from "fuzzy";
 import {
     getGameHeaders, getCategories as apiGetCategories, Category,
     getLeaderboard as apiGetLeaderboard, Leaderboard,
 } from "./SpeedrunCom";
 import { Option } from "../util/OptionUtil";
+import { FuzzyList } from "../livesplit";
 
 const gameList: string[] = [];
+let fuzzyList: Option<FuzzyList> = null;
 const gameNameToIdMap: Map<string, string> = new Map();
 const gameIdToCategoriesMap: Map<string, Category[]> = new Map();
 const gameIdToCategoriesPromises: Map<string, Promise<void>> = new Map();
@@ -14,15 +15,11 @@ const gameAndCategoryToLeaderboardMap: Map<string, Leaderboard> = new Map();
 let gameListPromise: Option<Promise<void>> = null;
 
 export function searchGames(currentName: string): string[] {
-    if (currentName === "") {
+    if (currentName === "" || fuzzyList == null) {
         return [];
     }
 
-    let list = fuzzy.filter(currentName, gameList);
-    if (list.length > 15) {
-        list = list.slice(0, 15);
-    }
-    return list.map((r) => r.original);
+    return fuzzyList.search(currentName, 15);
 }
 
 export function getGameId(gameName: string): string | undefined {
@@ -70,6 +67,10 @@ export function downloadGameList(): Promise<void> {
             const pages = await getGameHeaders();
             await pages.iterElementsWith((game) => {
                 gameList.push(game.names.international);
+                if (fuzzyList == null) {
+                    fuzzyList = FuzzyList.new();
+                }
+                fuzzyList.push(game.names.international);
                 gameNameToIdMap.set(game.names.international, game.id);
             });
         })();

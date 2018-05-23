@@ -2171,6 +2171,96 @@ export class DetailedTimerComponentState extends DetailedTimerComponentStateRefM
 }
 
 /**
+ * With a Fuzzy List, you can implement a fuzzy searching algorithm. The list
+ * stores all the items that can be searched for. With the `search` method you
+ * can then execute the actual fuzzy search with returns a list of all the
+ * elements found. This can be used to implement searching in a list of games.
+ */
+export class FuzzyListRef {
+    ptr: number;
+    /**
+     * Searches for the pattern provided in the list. A list of all the
+     * matching elements is returned. The returned list has a maximum amount of
+     * elements provided to this method.
+     */
+    search(pattern: string, max: number): any {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const pattern_allocated = allocString(pattern);
+        const result = instance().exports.FuzzyList_search(this.ptr, pattern_allocated.ptr, max);
+        dealloc(pattern_allocated);
+        return JSON.parse(decodeString(result));
+    }
+    /**
+     * This constructor is an implementation detail. Do not use this.
+     */
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+/**
+ * With a Fuzzy List, you can implement a fuzzy searching algorithm. The list
+ * stores all the items that can be searched for. With the `search` method you
+ * can then execute the actual fuzzy search with returns a list of all the
+ * elements found. This can be used to implement searching in a list of games.
+ */
+export class FuzzyListRefMut extends FuzzyListRef {
+    /**
+     * Adds a new element to the list.
+     */
+    push(text: string) {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const text_allocated = allocString(text);
+        instance().exports.FuzzyList_push(this.ptr, text_allocated.ptr);
+        dealloc(text_allocated);
+    }
+}
+
+/**
+ * With a Fuzzy List, you can implement a fuzzy searching algorithm. The list
+ * stores all the items that can be searched for. With the `search` method you
+ * can then execute the actual fuzzy search with returns a list of all the
+ * elements found. This can be used to implement searching in a list of games.
+ */
+export class FuzzyList extends FuzzyListRefMut {
+    /**
+     * Allows for scoped usage of the object. The object is guaranteed to get
+     * disposed once this function returns. You are free to dispose the object
+     * early yourself anywhere within the scope. The scope's return value gets
+     * carried to the outside of this function.
+     */
+    with<T>(closure: (obj: FuzzyList) => T): T {
+        try {
+            return closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    /**
+     * Disposes the object, allowing it to clean up all of its memory. You need
+     * to call this for every object that you don't use anymore and hasn't
+     * already been disposed.
+     */
+    dispose() {
+        if (this.ptr != 0) {
+            instance().exports.FuzzyList_drop(this.ptr);
+            this.ptr = 0;
+        }
+    }
+    /**
+     * Creates a new Fuzzy List.
+     */
+    static new(): FuzzyList {
+        const result = new FuzzyList(instance().exports.FuzzyList_new());
+        return result;
+    }
+}
+
+/**
  * The general settings of the layout that apply to all components.
  */
 export class GeneralLayoutSettingsRef {
