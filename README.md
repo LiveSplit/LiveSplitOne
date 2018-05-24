@@ -35,7 +35,8 @@ Now you can build and host LiveSplit One:
 ```
 npm run start
 ```
-A browser tab with LiveSplit One should now open.
+A browser tab with LiveSplit One should now open. Alternatively you can use `npm
+run serve` to just host it without opening a browser tab.
 
 ## Browser Support
 

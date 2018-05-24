@@ -807,7 +807,7 @@ export type SettingsDescriptionValueJson =
  * The Accuracy describes how many digits to show for the fractional part of a
  * time.
  */
-export type AccuracyJson = "Seconds" | "Tenths" | "Hundredths";
+export type AccuracyJson = "Seconds" | "Tenths" | "Hundredths" | "Milliseconds";
 
 /**
  * A Timing Method describes which form of timing is used. This can either be

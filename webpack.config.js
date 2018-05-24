@@ -1,3 +1,5 @@
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const CopyWebpackPlugin = require("copy-webpack-plugin");
 const path = require("path");
 
 const basePath = __dirname;
@@ -25,6 +27,15 @@ module.exports = {
         // Add '.ts' and '.tsx' as resolvable extensions.
         extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js"],
     },
+
+    plugins: [
+        new HtmlWebpackPlugin({
+            template: "./src/index.html",
+        }),
+        new CopyWebpackPlugin([
+            { from: "src/livesplit_core.wasm", to: "livesplit_core.wasm" },
+        ], {}),
+    ],
 
     module: {
         loaders: [
@@ -63,7 +74,6 @@ module.exports = {
                         loader: "url-loader",
                         options: {
                             limit: 8192,
-                            publicPath: "dist/",
                         },
                     },
                 ],

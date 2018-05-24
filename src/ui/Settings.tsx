@@ -135,6 +135,7 @@ export default class SettingsComponent extends React.Component<Props> {
                         <option value="Seconds">Seconds</option>
                         <option value="Tenths">Tenths</option>
                         <option value="Hundredths">Hundredths</option>
+                        <option value="Milliseconds">Milliseconds</option>
                     </select>;
             } else if ("DigitsFormat" in value) {
                 component =

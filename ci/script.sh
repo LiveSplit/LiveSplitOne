@@ -27,8 +27,8 @@ doCompile
 git config --global user.email "christopher.serr@gmail.com"
 git config --global user.name "Travis CI"
 git checkout -b gh-pages
-git add -f dist
-git add -f src/livesplit_core.wasm
+mv dist/* .
+git add :/
 git commit -m "gh pages"
 
 ENCRYPTED_KEY_VAR="encrypted_${ENCRYPTION_LABEL}_key"

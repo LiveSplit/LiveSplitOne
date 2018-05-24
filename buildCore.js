@@ -1,5 +1,5 @@
-const { spawnSync } = require('child_process');
-const fs = require('fs');
+const { spawnSync } = require("child_process");
+const fs = require("fs");
 
 spawnSync(
     "cargo",
@@ -7,7 +7,7 @@ spawnSync(
     {
         cwd: "livesplit-core/capi/bind_gen",
         stdio: "inherit",
-    }
+    },
 );
 
 fs
@@ -25,7 +25,7 @@ spawnSync(
     {
         cwd: "livesplit-core",
         stdio: "inherit",
-    }
+    },
 );
 
 fs

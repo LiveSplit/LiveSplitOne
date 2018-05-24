@@ -20,6 +20,7 @@ export function renderToSVG(
         case 0: shiftX = 0; break;
         case 2: shiftX = height * 0.6; break;
         case 3: shiftX = height; break;
+        case 4: shiftX = height / 0.71; break;
         default: throw new Error("Unexpected Fraction Length");
     }
     const x = `${294 - 0.85 * shiftX}px`;

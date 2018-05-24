@@ -11,7 +11,7 @@ import "./css/livesplit.css";
 
 async function run() {
     try {
-        await load("src/livesplit_core.wasm");
+        await load("livesplit_core.wasm");
 
         ReactDOM.render(
             <div>
