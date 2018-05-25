@@ -43,7 +43,7 @@ run serve` to just host it without opening a browser tab.
 | Browser | Compatibility | Known Issues |
 |---------|---------------|--------------|
 | Chrome  | ≥57          | |
-| Firefox | ≥52          | Slow Autocompletion |
+| Firefox | ≥52          | Autocompletion List incomplete |
 | Edge    | ≥16          | Hotkeys don't work<br>Autocompletion is unreadable |
 | Safari  | ≥11          | |
 | Opera   | ≥44          | |
