@@ -2,7 +2,7 @@ import * as React from "react";
 import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
 import DragAutoRefreshLayout from "../layout/DragAutoRefreshLayout";
 import * as LiveSplit from "../livesplit";
-import SettingsComponent from "./Settings";
+import { SettingsComponent } from "./Settings";
 
 export interface Props {
     editor: LiveSplit.LayoutEditor,
@@ -70,6 +70,7 @@ export class LayoutEditor extends React.Component<Props, State> {
         const settings = this.state.showComponentSettings
             ? (
                 <SettingsComponent
+                    factory={LiveSplit.SettingValue}
                     state={this.state.editor.component_settings}
                     setValue={(index, value) => {
                         this.props.editor.setComponentSettingsValue(index, value);
@@ -78,6 +79,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                 />
             ) : (
                 <SettingsComponent
+                    factory={LiveSplit.SettingValue}
                     state={this.state.editor.general_settings}
                     setValue={(index, value) => {
                         this.props.editor.setGeneralSettingsValue(index, value);
@@ -204,11 +206,13 @@ export class LayoutEditor extends React.Component<Props, State> {
                             Component
                         </button>
                     </div>
-                    {settings}
+                    <div style={{ marginLeft: 20 }}>
+                        {settings}
+                    </div>
                 </div>
                 <div style={{
-                    margin: "20px",
-                    marginLeft: "15px",
+                    margin: 20,
+                    marginLeft: 15,
                 }}>
                     <DragAutoRefreshLayout
                         getState={() => this.props.timer.readWith(

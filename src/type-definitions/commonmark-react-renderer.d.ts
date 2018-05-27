@@ -8,6 +8,7 @@ declare module "commonmark-react-renderer" {
     interface Options {
         escapeHtml?: boolean,
         linkTarget?: string,
+        softBreak?: string,
     }
     export = ReactRenderer;
 }

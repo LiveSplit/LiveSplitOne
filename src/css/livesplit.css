@@ -597,7 +597,7 @@ input {
     font-family: 'Roboto', sans-serif;
 }
 
-.run-editor-table {
+.run-editor-tab {
     margin-left: 5px;
 }
 
@@ -740,22 +740,21 @@ svg.graph {
     background: linear-gradient(rgb(51, 115, 244) 0%, rgb(21, 53, 116) 100%);
 }
 
-.component-settings {
-    margin-left: 20px;
+.settings-table {
     width: 500px;
 }
 
-.component-settings > tbody > tr {
+.settings-table > tbody > tr {
     height: 30px;
 }
 
-.component-settings > tbody > tr > td:nth-child(1) {
+.settings-table > tbody > tr > td:nth-child(1) {
     width: 250px;
 }
 
-.component-settings > tbody > tr > td:nth-child(2) > input,
-.component-settings > tbody > tr > td:nth-child(2) > span,
-.component-settings > tbody > tr > td:nth-child(2) > select {
+.settings-table > tbody > tr > td:nth-child(2) > input,
+.settings-table > tbody > tr > td:nth-child(2) > span,
+.settings-table > tbody > tr > td:nth-child(2) > select {
     width: 100%;
 }
 

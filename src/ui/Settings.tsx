@@ -1,16 +1,102 @@
 import * as React from "react";
-import { Color, SettingsDescriptionJson, SettingValue } from "../livesplit";
+import { Color, SettingsDescriptionJson, SettingsDescriptionValueJson } from "../livesplit";
 import { assertNever, expect, Option } from "../util/OptionUtil";
 import ColorPicker from "./ColorPicker";
 
-export interface Props {
-    setValue: (index: number, value: SettingValue) => void,
+export interface Props<T> {
+    setValue: (index: number, value: T) => void,
     state: SettingsDescriptionJson,
+    factory: SettingValueFactory<T>,
 }
 
-export default class SettingsComponent extends React.Component<Props> {
+export interface SettingValueFactory<T> {
+    fromBool(v: boolean): T;
+    fromUint(value: number): T;
+    fromInt(value: number): T;
+    fromString(value: string): T;
+    fromOptionalString(value: string): T;
+    fromOptionalEmptyString(): T;
+    fromFloat(value: number): T;
+    fromAccuracy(value: string): T | null;
+    fromDigitsFormat(value: string): T | null;
+    fromOptionalTimingMethod(value: string): T | null;
+    fromOptionalEmptyTimingMethod(): T;
+    fromColor(r: number, g: number, b: number, a: number): T;
+    fromOptionalColor(r: number, g: number, b: number, a: number): T;
+    fromOptionalEmptyColor(): T;
+    fromTransparentGradient(): T;
+    fromVerticalGradient(
+        r1: number, g1: number, b1: number, a1: number,
+        r2: number, g2: number, b2: number, a2: number,
+    ): T;
+    fromHorizontalGradient(
+        r1: number, g1: number, b1: number, a1: number,
+        r2: number, g2: number, b2: number, a2: number,
+    ): T;
+    fromAlignment(value: string): T | null;
+}
+
+export class JsonSettingValueFactory {
+    public fromBool(v: boolean): SettingsDescriptionValueJson {
+        return { Bool: v };
+    }
+    public fromUint(_: number): SettingsDescriptionValueJson {
+        throw new Error("Not implemented");
+    }
+    public fromInt(_: number): SettingsDescriptionValueJson {
+        throw new Error("Not implemented");
+    }
+    public fromString(v: string): SettingsDescriptionValueJson {
+        return { String: v };
+    }
+    public fromOptionalString(_: string): SettingsDescriptionValueJson {
+        throw new Error("Not implemented");
+    }
+    public fromOptionalEmptyString(): SettingsDescriptionValueJson {
+        throw new Error("Not implemented");
+    }
+    public fromFloat(_: number): SettingsDescriptionValueJson {
+        throw new Error("Not implemented");
+    }
+    public fromAccuracy(_: string): SettingsDescriptionValueJson | null {
+        throw new Error("Not implemented");
+    }
+    public fromDigitsFormat(_: string): SettingsDescriptionValueJson | null {
+        throw new Error("Not implemented");
+    }
+    public fromOptionalTimingMethod(_: string): SettingsDescriptionValueJson | null {
+        throw new Error("Not implemented");
+    }
+    public fromOptionalEmptyTimingMethod(): SettingsDescriptionValueJson {
+        throw new Error("Not implemented");
+    }
+    public fromColor(): SettingsDescriptionValueJson {
+        throw new Error("Not implemented");
+    }
+    public fromOptionalColor(): SettingsDescriptionValueJson {
+        throw new Error("Not implemented");
+    }
+    public fromOptionalEmptyColor(): SettingsDescriptionValueJson {
+        throw new Error("Not implemented");
+    }
+    public fromTransparentGradient(): SettingsDescriptionValueJson {
+        throw new Error("Not implemented");
+    }
+    public fromVerticalGradient(): SettingsDescriptionValueJson {
+        throw new Error("Not implemented");
+    }
+    public fromHorizontalGradient(): SettingsDescriptionValueJson {
+        throw new Error("Not implemented");
+    }
+    public fromAlignment(_: string): SettingsDescriptionValueJson | null {
+        throw new Error("Not implemented");
+    }
+}
+
+export class SettingsComponent<T> extends React.Component<Props<T>> {
     public render() {
         const settingsRows: JSX.Element[] = [];
+        const { factory } = this.props;
 
         this.props.state.fields.forEach((field, valueIndex) => {
             const { value } = field;
@@ -23,7 +109,7 @@ export default class SettingsComponent extends React.Component<Props> {
                         onChange={(e) => {
                             this.props.setValue(
                                 valueIndex,
-                                SettingValue.fromBool(e.target.checked),
+                                factory.fromBool(e.target.checked),
                             );
                         }}
                     />;
@@ -37,7 +123,7 @@ export default class SettingsComponent extends React.Component<Props> {
                         onChange={(e) => {
                             this.props.setValue(
                                 valueIndex,
-                                SettingValue.fromUint(e.target.valueAsNumber),
+                                factory.fromUint(e.target.valueAsNumber),
                             );
                         }}
                     />;
@@ -50,7 +136,7 @@ export default class SettingsComponent extends React.Component<Props> {
                         onChange={(e) => {
                             this.props.setValue(
                                 valueIndex,
-                                SettingValue.fromInt(e.target.valueAsNumber),
+                                factory.fromInt(e.target.valueAsNumber),
                             );
                         }}
                     />;
@@ -61,7 +147,7 @@ export default class SettingsComponent extends React.Component<Props> {
                         onChange={(e) => {
                             this.props.setValue(
                                 valueIndex,
-                                SettingValue.fromString(e.target.value),
+                                factory.fromString(e.target.value),
                             );
                         }}
                     />;
@@ -74,12 +160,12 @@ export default class SettingsComponent extends React.Component<Props> {
                             if (e.target.checked) {
                                 this.props.setValue(
                                     valueIndex,
-                                    SettingValue.fromOptionalString(""),
+                                    factory.fromOptionalString(""),
                                 );
                             } else {
                                 this.props.setValue(
                                     valueIndex,
-                                    SettingValue.fromOptionalEmptyString(),
+                                    factory.fromOptionalEmptyString(),
                                 );
                             }
                         }}
@@ -94,7 +180,7 @@ export default class SettingsComponent extends React.Component<Props> {
                             onChange={(e) => {
                                 this.props.setValue(
                                     valueIndex,
-                                    SettingValue.fromOptionalString(e.target.value),
+                                    factory.fromOptionalString(e.target.value),
                                 );
                             }}
                         />,
@@ -114,7 +200,7 @@ export default class SettingsComponent extends React.Component<Props> {
                         onChange={(e) => {
                             this.props.setValue(
                                 valueIndex,
-                                SettingValue.fromFloat(e.target.valueAsNumber),
+                                factory.fromFloat(e.target.valueAsNumber),
                             );
                         }}
                     />;
@@ -126,7 +212,7 @@ export default class SettingsComponent extends React.Component<Props> {
                             this.props.setValue(
                                 valueIndex,
                                 expect(
-                                    SettingValue.fromAccuracy(e.target.value),
+                                    factory.fromAccuracy(e.target.value),
                                     "Unexpected Accuracy",
                                 ),
                             );
@@ -145,7 +231,7 @@ export default class SettingsComponent extends React.Component<Props> {
                             this.props.setValue(
                                 valueIndex,
                                 expect(
-                                    SettingValue.fromDigitsFormat(e.target.value),
+                                    factory.fromDigitsFormat(e.target.value),
                                     "Unexpected Digits Format",
                                 ),
                             );
@@ -165,7 +251,7 @@ export default class SettingsComponent extends React.Component<Props> {
                         setColor={(color) => {
                             this.props.setValue(
                                 valueIndex,
-                                SettingValue.fromColor(
+                                factory.fromColor(
                                     color[0],
                                     color[1],
                                     color[2],
@@ -184,7 +270,7 @@ export default class SettingsComponent extends React.Component<Props> {
                             setColor={(color) => {
                                 this.props.setValue(
                                     valueIndex,
-                                    SettingValue.fromOptionalColor(
+                                    factory.fromOptionalColor(
                                         color[0],
                                         color[1],
                                         color[2],
@@ -208,12 +294,12 @@ export default class SettingsComponent extends React.Component<Props> {
                                 if (e.target.checked) {
                                     this.props.setValue(
                                         valueIndex,
-                                        SettingValue.fromOptionalColor(1.0, 1.0, 1.0, 1.0),
+                                        factory.fromOptionalColor(1.0, 1.0, 1.0, 1.0),
                                     );
                                 } else {
                                     this.props.setValue(
                                         valueIndex,
-                                        SettingValue.fromOptionalEmptyColor(),
+                                        factory.fromOptionalEmptyColor(),
                                     );
                                 }
                             }}
@@ -254,18 +340,18 @@ export default class SettingsComponent extends React.Component<Props> {
                     color2 = color2 ? color2 : color1;
                     switch (type) {
                         case "Transparent":
-                            return SettingValue.fromTransparentGradient();
+                            return factory.fromTransparentGradient();
                         case "Plain":
-                            return SettingValue.fromColor(
+                            return factory.fromColor(
                                 color1[0], color1[1], color1[2], color1[3],
                             );
                         case "Vertical":
-                            return SettingValue.fromVerticalGradient(
+                            return factory.fromVerticalGradient(
                                 color1[0], color1[1], color1[2], color1[3],
                                 color2[0], color2[1], color2[2], color2[3],
                             );
                         case "Horizontal":
-                            return SettingValue.fromHorizontalGradient(
+                            return factory.fromHorizontalGradient(
                                 color1[0], color1[1], color1[2], color1[3],
                                 color2[0], color2[1], color2[2], color2[3],
                             );
@@ -347,14 +433,14 @@ export default class SettingsComponent extends React.Component<Props> {
                                 this.props.setValue(
                                     valueIndex,
                                     expect(
-                                        SettingValue.fromOptionalTimingMethod("RealTime"),
+                                        factory.fromOptionalTimingMethod("RealTime"),
                                         "Unexpected Optional Timing Method",
                                     ),
                                 );
                             } else {
                                 this.props.setValue(
                                     valueIndex,
-                                    SettingValue.fromOptionalEmptyTimingMethod(),
+                                    factory.fromOptionalEmptyTimingMethod(),
                                 );
                             }
                         }}
@@ -370,7 +456,7 @@ export default class SettingsComponent extends React.Component<Props> {
                                 this.props.setValue(
                                     valueIndex,
                                     expect(
-                                        SettingValue.fromOptionalTimingMethod(e.target.value),
+                                        factory.fromOptionalTimingMethod(e.target.value),
                                         "Unexpected Optional Timing Method",
                                     ),
                                 );
@@ -393,7 +479,7 @@ export default class SettingsComponent extends React.Component<Props> {
                         this.props.setValue(
                             valueIndex,
                             expect(
-                                SettingValue.fromAlignment(e.target.value),
+                                factory.fromAlignment(e.target.value),
                                 "Unexpected Alignment",
                             ),
                         );
@@ -402,6 +488,25 @@ export default class SettingsComponent extends React.Component<Props> {
                     <option value="Auto">Automatic</option>
                     <option value="Left">Left</option>
                     <option value="Center">Center</option>
+                </select>;
+            } else if ("CustomCombobox" in value) {
+                const isError = value.CustomCombobox.mandatory
+                    && value.CustomCombobox.value.length === 0;
+                component = <select
+                    value={value.CustomCombobox.value}
+                    onChange={(e) => {
+                        this.props.setValue(
+                            valueIndex,
+                            factory.fromString(e.target.value),
+                        );
+                    }}
+                    style={{
+                        backgroundColor: isError
+                            ? "hsla(0, 100%, 20%, 1)"
+                            : undefined,
+                    }}
+                >
+                    {value.CustomCombobox.list.map((v) => <option value={v}>{v}</option>)}
                 </select>;
             } else {
                 assertNever(value);
@@ -416,7 +521,7 @@ export default class SettingsComponent extends React.Component<Props> {
         });
 
         return (
-            <table className="component-settings table" >
+            <table className="table settings-table" >
                 <tbody className="table-body">
                     {settingsRows}
                 </tbody>

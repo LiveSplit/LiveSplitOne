@@ -5,15 +5,18 @@ import { openFileAsArrayBuffer } from "../util/FileUtil";
 import { TextBox } from "./TextBox";
 import { toast } from "react-toastify";
 import {
-    downloadGameList, searchGames, getGameId, getCategories, downloadCategories, downloadLeaderboard, getLeaderboard,
+    downloadGameList, searchGames, getCategories, downloadCategories,
+    downloadLeaderboard, getLeaderboard, downloadPlatformList, getPlatforms,
+    downloadRegionList, getRegions, downloadGameInfo, getGameInfo,
 } from "../api/GameList";
-import { Category, getGame } from "../api/SpeedrunCom";
+import { Category } from "../api/SpeedrunCom";
 import { Option, expect, map, assert, unwrapOr } from "../util/OptionUtil";
 import { Parser as CommonMarkParser } from "commonmark";
 import CommonMarkRenderer = require("commonmark-react-renderer");
 import { downloadById } from "../util/SplitsIO";
 import { formatLeaderboardTime } from "../util/TimeUtil";
 import { resolveEmbed } from "./Embed";
+import { SettingsComponent, JsonSettingValueFactory } from "./Settings";
 
 export interface Props { editor: LiveSplit.RunEditor }
 export interface State {
@@ -35,6 +38,7 @@ interface RowState {
 enum Tab {
     RealTime,
     GameTime,
+    Variables,
     Rules,
     Leaderboard,
 }
@@ -70,8 +74,11 @@ export class RunEditor extends React.Component<Props, State> {
 
         // TODO Handle closing the Run Editor
         this.refreshGameList();
+        this.refreshGameInfo(state.game);
         this.refreshCategoryList(state.game);
         this.refreshLeaderboard(state.game, state.category);
+        this.refreshPlatformList();
+        this.refreshRegionList();
     }
 
     public render() {
@@ -234,6 +241,16 @@ export class RunEditor extends React.Component<Props, State> {
                     </button>
                     <button
                         className={"toggle-middle" + (
+                            tab === Tab.Variables
+                                ? " button-pressed"
+                                : ""
+                        )}
+                        onClick={(_) => this.switchTab(Tab.Variables)}
+                    >
+                        Variables
+                    </button>
+                    <button
+                        className={"toggle-middle" + (
                             tab === Tab.Rules
                                 ? " button-pressed"
                                 : ""
@@ -316,11 +333,146 @@ export class RunEditor extends React.Component<Props, State> {
             case Tab.RealTime:
             case Tab.GameTime:
                 return this.renderSegmentsTable();
+            case Tab.Variables:
+                return this.renderVariablesTab(category);
             case Tab.Rules:
                 return this.renderRulesTab(category);
             case Tab.Leaderboard:
                 return this.renderLeaderboard();
         }
+    }
+
+    private renderVariablesTab(category: Option<Category>): JSX.Element {
+        const metadata = this.state.editor.metadata;
+        const gameInfo = getGameInfo(this.state.editor.game);
+        const fields: LiveSplit.SettingsDescriptionFieldJson[] = [];
+        const additionalVariables: LiveSplit.SettingsDescriptionFieldJson[] = [];
+        let regionOffset = -1;
+        let platformOffset = -1;
+        let emulatorOffset = -1;
+        if (gameInfo != null) {
+            const regionList = [""];
+            const platformList = [""];
+            const allRegions = getRegions();
+            const allPlatforms = getPlatforms();
+            if (allRegions.size !== 0) {
+                for (const regionId of gameInfo.regions) {
+                    const regionName = allRegions.get(regionId);
+                    if (regionName != null) {
+                        regionList.push(regionName);
+                    }
+                }
+            }
+            if (allPlatforms.size !== 0) {
+                for (const platformId of gameInfo.platforms) {
+                    const platformName = allPlatforms.get(platformId);
+                    if (platformName != null) {
+                        platformList.push(platformName);
+                    }
+                }
+            }
+            const variables = expect(gameInfo.variables, "We need the variables to be embedded");
+            for (const variable of variables.data) {
+                if (
+                    (variable.category == null || (variable.category === map(category, (c) => c.id)))
+                    && (variable.scope.type === "full-game" || variable.scope.type === "global")
+                ) {
+                    additionalVariables.push({
+                        text: variable.name,
+                        value: {
+                            CustomCombobox: {
+                                value: Object.keys(metadata.variables).indexOf(variable.name) >= 0
+                                    ? metadata.variables[variable.name]
+                                    : "",
+                                list: ["", ...Object.values(variable.values.values).map((v) => v.label)],
+                                mandatory: variable.mandatory,
+                            },
+                        },
+                    });
+                }
+            }
+
+            if (regionList.length > 1) {
+                regionOffset = fields.length;
+                fields.push({
+                    text: "Region",
+                    value: {
+                        CustomCombobox: {
+                            value: metadata.region_name,
+                            list: regionList,
+                            mandatory: false,
+                        },
+                    },
+                });
+            }
+            platformOffset = fields.length;
+            fields.push({
+                text: "Platform",
+                value: {
+                    CustomCombobox: {
+                        value: metadata.platform_name,
+                        list: platformList,
+                        mandatory: true,
+                    },
+                },
+            });
+            if (gameInfo.ruleset["emulators-allowed"]) {
+                emulatorOffset = fields.length;
+                fields.push({
+                    text: "Uses Emulator",
+                    value: {
+                        Bool: metadata.uses_emulator,
+                    },
+                });
+            }
+        }
+
+        const customVariablesOffset = fields.length;
+
+        fields.push(...additionalVariables);
+        return (
+            <div className="run-editor-tab">
+                <SettingsComponent
+                    factory={new JsonSettingValueFactory()}
+                    state={{ fields }}
+                    setValue={(index, value) => {
+                        function unwrapString(value: LiveSplit.SettingsDescriptionValueJson): string {
+                            if ("String" in value) {
+                                return value.String;
+                            } else {
+                                throw new Error("Expected Setting value to be a string.");
+                            }
+                        }
+                        function unwrapBool(value: LiveSplit.SettingsDescriptionValueJson): boolean {
+                            if ("Bool" in value) {
+                                return value.Bool;
+                            } else {
+                                throw new Error("Expected Setting value to be a boolean.");
+                            }
+                        }
+                        if (index === regionOffset) {
+                            const region = unwrapString(value);
+                            this.props.editor.setRegionName(region);
+                        } else if (index === platformOffset) {
+                            const platform = unwrapString(value);
+                            this.props.editor.setPlatformName(platform);
+                        } else if (index === emulatorOffset) {
+                            const emulatorUsage = unwrapBool(value);
+                            this.props.editor.setEmulatorUsage(emulatorUsage);
+                        } else {
+                            const stringValue = unwrapString(value);
+                            const key = additionalVariables[index - customVariablesOffset].text;
+                            if (stringValue !== "") {
+                                this.props.editor.setVariable(key, stringValue);
+                            } else {
+                                this.props.editor.removeVariable(key);
+                            }
+                        }
+                        this.update();
+                    }}
+                />
+            </div>
+        );
     }
 
     private renderLeaderboard(): JSX.Element {
@@ -333,7 +485,7 @@ export class RunEditor extends React.Component<Props, State> {
             return r.run.times.primary_t === Math.floor(r.run.times.primary_t);
         });
         return (
-            <table className="table run-editor-table" style={{ width: 450 }}>
+            <table className="table run-editor-tab" style={{ width: 450 }}>
                 <thead className="table-header">
                     <tr>
                         <th>Rank</th>
@@ -356,6 +508,7 @@ export class RunEditor extends React.Component<Props, State> {
                             const renderedComment = new CommonMarkRenderer({
                                 escapeHtml: true,
                                 linkTarget: "_blank",
+                                softBreak: "br",
                             }).render(parsedComment);
                             expandedRow =
                                 <tr className={evenOdd}>
@@ -439,11 +592,34 @@ export class RunEditor extends React.Component<Props, State> {
             rules = new CommonMarkRenderer({
                 escapeHtml: true,
                 linkTarget: "_blank",
+                softBreak: "br",
             }).render(parsed);
+        }
+        const gameInfo = getGameInfo(this.state.editor.game);
+        let gameRules = null;
+        if (gameInfo != null) {
+            const additionalRules = [];
+            const ruleset = gameInfo.ruleset;
+            if (ruleset["default-time"] !== "realtime") {
+                additionalRules.push(
+                    ruleset["default-time"] === "realtime_noloads"
+                        ? "are timed without the loading times"
+                        : "are timed with Game Time",
+                );
+            }
+            if (ruleset["require-video"]) {
+                additionalRules.push("require video proof");
+            }
+            if (additionalRules.length !== 0) {
+                gameRules =
+                    <p style={{ fontStyle: "italic" }}>
+                        Runs of this game {additionalRules.join(" and ")}.
+                    </p>;
+            }
         }
         return (
             <div className="run-editor-additional-info">
-                <div className="run-editor-rules">{rules}</div>
+                <div className="run-editor-rules">{gameRules}{rules}</div>
             </div>
         );
     }
@@ -452,7 +628,7 @@ export class RunEditor extends React.Component<Props, State> {
         const segmentIconSize = 19;
 
         return (
-            <table className="table run-editor-table">
+            <table className="table run-editor-tab run-editor-table">
                 <thead className="table-header">
                     <tr>
                         <th style={{
@@ -832,7 +1008,9 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private handleGameChange(event: any) {
+        this.props.editor.clearMetadata();
         this.props.editor.setGameName(event.target.value);
+        this.refreshGameInfo(event.target.value);
         this.refreshCategoryList(event.target.value);
         this.refreshLeaderboard(event.target.value, this.state.editor.category);
         this.contractLeaderboardRows();
@@ -840,6 +1018,7 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private handleCategoryChange(event: any) {
+        this.clearCategorySpecificVariables();
         this.props.editor.setCategoryName(event.target.value);
         this.refreshLeaderboard(this.state.editor.game, event.target.value);
         this.contractLeaderboardRows();
@@ -1061,12 +1240,6 @@ export class RunEditor extends React.Component<Props, State> {
                 this.props.editor.selectTimingMethod(LiveSplit.TimingMethod.GameTime);
                 break;
             }
-            case Tab.Rules: {
-                break;
-            }
-            case Tab.Leaderboard: {
-                break;
-            }
         }
         this.contractLeaderboardRows();
         this.update(tab);
@@ -1077,10 +1250,10 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private async downloadBoxArt() {
-        await downloadGameList();
-        const gameId = getGameId(this.state.editor.game);
-        if (gameId != null) {
-            const game = await getGame(gameId);
+        const gameName = this.state.editor.game;
+        await downloadGameInfo(gameName);
+        const game = getGameInfo(gameName);
+        if (game != null) {
             const uri = game.assets["cover-medium"].uri;
             if (uri.startsWith("https://")) {
                 // Workaround until CORS is fixed
@@ -1095,10 +1268,10 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private async downloadIcon() {
-        await downloadGameList();
-        const gameId = getGameId(this.state.editor.game);
-        if (gameId != null) {
-            const game = await getGame(gameId);
+        const gameName = this.state.editor.game;
+        await downloadGameInfo(gameName);
+        const game = getGameInfo(gameName);
+        if (game != null) {
             const uri = game.assets.icon.uri;
             if (uri.startsWith("https://")) {
                 // Workaround until CORS is fixed
@@ -1114,6 +1287,21 @@ export class RunEditor extends React.Component<Props, State> {
 
     private async refreshGameList() {
         await downloadGameList();
+        this.update();
+    }
+
+    private async refreshPlatformList() {
+        await downloadPlatformList();
+        this.update();
+    }
+
+    private async refreshRegionList() {
+        await downloadRegionList();
+        this.update();
+    }
+
+    private async refreshGameInfo(gameName: string) {
+        await downloadGameInfo(gameName);
         this.update();
     }
 
@@ -1166,5 +1354,30 @@ export class RunEditor extends React.Component<Props, State> {
             this.expandedLeaderboardRows.set(rowIndex, true);
         }
         this.update();
+    }
+
+    private clearCategorySpecificVariables() {
+        const categoryList = getCategories(this.state.editor.game);
+        if (categoryList != null) {
+            for (const category of categoryList) {
+                if (category.name !== this.state.editor.category) {
+                    continue;
+                }
+                const gameInfo = getGameInfo(this.state.editor.game);
+                if (gameInfo == null) {
+                    continue;
+                }
+                const variables = expect(gameInfo.variables, "We need the variables to be embedded");
+                for (const variable of variables.data) {
+                    if (
+                        variable.category === map(category, (c) => c.id)
+                        && (variable.scope.type === "full-game" || variable.scope.type === "global")
+                    ) {
+                        this.props.editor.removeVariable(variable.name);
+                    }
+                }
+                break;
+            }
+        }
     }
 }

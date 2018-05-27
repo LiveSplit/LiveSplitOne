@@ -9,8 +9,47 @@ export interface Game {
     weblink: string,
     released: number,
     "release-date": string,
-    // TODO Remaining
     assets: Assets,
+    ruleset: Rules,
+    platforms: string[],
+    regions: string[],
+    variables?: Variables,
+}
+
+export interface Rules {
+    "show-milliseconds": boolean,
+    "require-verification": boolean,
+    "require-video": boolean,
+    "run-times": TimingMethod[],
+    "default-time": TimingMethod,
+    "emulators-allowed": boolean,
+}
+
+export type TimingMethod = "realtime" | "realtime_noloads" | "ingame";
+
+export interface Variables {
+    data: Variable[],
+}
+
+export interface Variable {
+    id: string,
+    name: string,
+    category: Option<string>,
+    scope: VariableScope,
+    values: VariableValues,
+    mandatory: boolean,
+}
+
+export interface VariableScope {
+    type: "global" | "full-game" | "all-levels" | "single-level",
+}
+
+export interface VariableValues {
+    values: { [id: string]: VariableValue },
+}
+
+export interface VariableValue {
+    label: string,
 }
 
 export interface GameHeader {
@@ -129,6 +168,16 @@ export interface Splits {
     uri: string,
 }
 
+export interface Platform {
+    id: string,
+    name: string,
+}
+
+export interface Region {
+    id: string,
+    name: string,
+}
+
 function evaluateParameters(parameters: string[]): string {
     const filtered = parameters.filter((p) => p.trim() !== "");
     if (filtered.length !== 0) {
@@ -146,6 +195,16 @@ function getGamesUri(subUri: string): string {
 function getLeaderboardsUri(subUri: string): string {
     const LEADERBOARDS_URI = "leaderboards";
     return `${BASE_URI}${LEADERBOARDS_URI}${subUri}`;
+}
+
+function getPlatformsUri(subUri: string): string {
+    const PLATFORMS_URI = "platforms";
+    return `${BASE_URI}${PLATFORMS_URI}${subUri}`;
+}
+
+function getRegionsUri(subUri: string): string {
+    const REGIONS_URI = "regions";
+    return `${BASE_URI}${REGIONS_URI}${subUri}`;
 }
 
 async function executeRequest<T>(uri: string): Promise<T> {
@@ -213,8 +272,12 @@ async function executePaginatedRequest<T>(uri: string): Promise<Page<T>> {
     return new Page(data as T[], next);
 }
 
-export async function getGame(gameId: string): Promise<Game> {
-    const uri = getGamesUri(`/${gameId}`);
+export async function getGame(gameId: string, embeds?: Array<"variables">): Promise<Game> {
+    const parameters = [];
+    if (embeds != null) {
+        parameters.push(`embed=${embeds.join(",")}`);
+    }
+    const uri = getGamesUri(`/${gameId}${evaluateParameters(parameters)}`);
     return executeRequest<Game>(uri);
 }
 
@@ -252,4 +315,22 @@ export async function getLeaderboard(
     }
     const uri = getLeaderboardsUri(`/${gameId}/category/${categoryId}${evaluateParameters(parameters)}`);
     return executeRequest<Leaderboard>(uri);
+}
+
+export async function getPlatforms(elementsPerPage?: number): Promise<Page<Platform>> {
+    const parameters = [];
+    if (elementsPerPage != null) {
+        parameters.push(`max=${elementsPerPage}`);
+    }
+    const uri = getPlatformsUri(evaluateParameters(parameters));
+    return executePaginatedRequest<Platform>(uri);
+}
+
+export async function getRegions(elementsPerPage?: number): Promise<Page<Region>> {
+    const parameters = [];
+    if (elementsPerPage != null) {
+        parameters.push(`max=${elementsPerPage}`);
+    }
+    const uri = getRegionsUri(evaluateParameters(parameters));
+    return executePaginatedRequest<Region>(uri);
 }
