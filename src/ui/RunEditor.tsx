@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import {
     downloadGameList, searchGames, getCategories, downloadCategories,
     downloadLeaderboard, getLeaderboard, downloadPlatformList, getPlatforms,
-    downloadRegionList, getRegions, downloadGameInfo, getGameInfo,
+    downloadRegionList, getRegions, downloadGameInfo, getGameInfo, replaceTwitchEmotes, downloadTwitchEmotes,
 } from "../api/GameList";
 import { Category } from "../api/SpeedrunCom";
 import { Option, expect, map, assert, unwrapOr } from "../util/OptionUtil";
@@ -79,6 +79,7 @@ export class RunEditor extends React.Component<Props, State> {
         this.refreshLeaderboard(state.game, state.category);
         this.refreshPlatformList();
         this.refreshRegionList();
+        downloadTwitchEmotes();
     }
 
     public render() {
@@ -504,7 +505,10 @@ export class RunEditor extends React.Component<Props, State> {
                                 const videoUri = r.run.videos.links[0].uri;
                                 embed = resolveEmbed(videoUri);
                             }
-                            const parsedComment = new CommonMarkParser().parse(unwrapOr(r.run.comment, ""));
+                            const comment = unwrapOr(r.run.comment, "");
+                            const commentWithEmotes = replaceTwitchEmotes(comment);
+
+                            const parsedComment = new CommonMarkParser().parse(commentWithEmotes);
                             const renderedComment = new CommonMarkRenderer({
                                 escapeHtml: true,
                                 linkTarget: "_blank",
@@ -514,7 +518,7 @@ export class RunEditor extends React.Component<Props, State> {
                                 <tr className={evenOdd}>
                                     <td colSpan={4}>
                                         {embed}
-                                        <div>{renderedComment}</div>
+                                        <div className="markdown">{renderedComment}</div>
                                         <p>{`Date: ${unwrapOr(r.run.date, "").split("-").join("/")}`}</p>
                                     </td>
                                 </tr>;
@@ -588,7 +592,8 @@ export class RunEditor extends React.Component<Props, State> {
     private renderRulesTab(category: Option<Category>): JSX.Element {
         let rules = null;
         if (category != null && category.rules != null) {
-            const parsed = new CommonMarkParser().parse(category.rules);
+            const rulesWithEmotes = replaceTwitchEmotes(category.rules);
+            const parsed = new CommonMarkParser().parse(rulesWithEmotes);
             rules = new CommonMarkRenderer({
                 escapeHtml: true,
                 linkTarget: "_blank",
@@ -619,7 +624,7 @@ export class RunEditor extends React.Component<Props, State> {
         }
         return (
             <div className="run-editor-additional-info">
-                <div className="run-editor-rules">{gameRules}{rules}</div>
+                <div className="run-editor-rules markdown">{gameRules}{rules}</div>
             </div>
         );
     }

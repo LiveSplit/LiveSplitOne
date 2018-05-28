@@ -11,6 +11,10 @@
 }
 
 /* Markdown */
+.markdown img {
+    vertical-align: middle;
+}
+
 code {
     padding: 2px 4px;
     font-size: 90%;
@@ -28,6 +32,7 @@ pre {
 code, kbd, pre, samp {
     font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
 }
+/* Markdown End */
 
 body {
     font-family: 'fira', sans-serif;

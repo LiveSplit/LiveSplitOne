@@ -7,6 +7,7 @@ import {
 } from "./SpeedrunCom";
 import { Option } from "../util/OptionUtil";
 import { FuzzyList } from "../livesplit";
+import { emoteList } from "./EmoteList";
 
 const gameList: string[] = [];
 let fuzzyList: Option<FuzzyList> = null;
@@ -22,6 +23,8 @@ const gameAndCategoryToLeaderboardMap: Map<string, Leaderboard> = new Map();
 let gameListPromise: Option<Promise<void>> = null;
 let platformListPromise: Option<Promise<void>> = null;
 let regionListPromise: Option<Promise<void>> = null;
+let twitchEmotePromise: Option<Promise<void>> = null;
+const twitchEmoteMap: Map<string, number> = new Map();
 
 export function searchGames(currentName: string): string[] {
     if (currentName === "" || fuzzyList == null) {
@@ -171,4 +174,29 @@ export async function downloadLeaderboard(gameName: string, categoryName: string
         gameAndCategoryToLeaderboardPromises.set(key, promise);
     }
     return promise;
+}
+
+export async function downloadTwitchEmotes(): Promise<void> {
+    if (twitchEmotePromise == null) {
+        twitchEmotePromise = (async () => {
+            const response = await fetch("https://twitchemotes.com/api_cache/v3/global.json");
+            const emotes = await response.json();
+            for (const emote of emotes) {
+                twitchEmoteMap.set(emote.code, emote.id);
+            }
+        })();
+    }
+    return twitchEmotePromise;
+}
+
+export function replaceTwitchEmotes(text: string): string {
+    return text.replace(/[A-Za-z0-9<):(\\;_>#/\]|]+/g, (matched) => {
+        const emoteId = emoteList[matched];
+        if (emoteId == null) {
+            return matched;
+        }
+
+        const url = `https://static-cdn.jtvnw.net/emoticons/v1/${emoteId}/1.0`;
+        return `![${url}](${url})`;
+    });
 }
