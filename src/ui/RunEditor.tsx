@@ -7,16 +7,15 @@ import { toast } from "react-toastify";
 import {
     downloadGameList, searchGames, getCategories, downloadCategories,
     downloadLeaderboard, getLeaderboard, downloadPlatformList, getPlatforms,
-    downloadRegionList, getRegions, downloadGameInfo, getGameInfo, replaceTwitchEmotes,
+    downloadRegionList, getRegions, downloadGameInfo, getGameInfo,
 } from "../api/GameList";
 import { Category, Run } from "../api/SpeedrunCom";
 import { Option, expect, map, assert, unwrapOr } from "../util/OptionUtil";
-import { Parser as CommonMarkParser } from "commonmark";
-import CommonMarkRenderer = require("commonmark-react-renderer");
 import { downloadById } from "../util/SplitsIO";
 import { formatLeaderboardTime } from "../util/TimeUtil";
 import { resolveEmbed } from "./Embed";
 import { SettingsComponent, JsonSettingValueFactory } from "./Settings";
+import { renderMarkdown } from "../util/Markdown";
 
 export interface Props { editor: LiveSplit.RunEditor }
 export interface State {
@@ -505,14 +504,7 @@ export class RunEditor extends React.Component<Props, State> {
                                 embed = resolveEmbed(videoUri);
                             }
                             const comment = unwrapOr(r.run.comment, "");
-                            const commentWithEmotes = replaceTwitchEmotes(comment);
-
-                            const parsedComment = new CommonMarkParser().parse(commentWithEmotes);
-                            const renderedComment = new CommonMarkRenderer({
-                                escapeHtml: true,
-                                linkTarget: "_blank",
-                                softBreak: "br",
-                            }).render(parsedComment);
+                            const renderedComment = renderMarkdown(comment);
                             expandedRow =
                                 <tr className={evenOdd}>
                                     <td colSpan={4}>
@@ -591,16 +583,11 @@ export class RunEditor extends React.Component<Props, State> {
     private renderRulesTab(category: Option<Category>): JSX.Element {
         let rules = null;
         if (category != null && category.rules != null) {
-            const rulesWithEmotes = replaceTwitchEmotes(category.rules);
-            const parsed = new CommonMarkParser().parse(rulesWithEmotes);
-            rules = new CommonMarkRenderer({
-                escapeHtml: true,
-                linkTarget: "_blank",
-                softBreak: "br",
-            }).render(parsed);
+            rules = renderMarkdown(category.rules);
         }
         const gameInfo = getGameInfo(this.state.editor.game);
         let gameRules = null;
+        const subcategoryRules = [];
         if (gameInfo != null) {
             const additionalRules = [];
             const ruleset = gameInfo.ruleset;
@@ -620,10 +607,25 @@ export class RunEditor extends React.Component<Props, State> {
                         Runs of this game {additionalRules.join(" and ")}.
                     </p>;
             }
+            const variables = expect(gameInfo.variables, "We need the variables to be embedded");
+            for (const variable of variables.data) {
+                if (
+                    (variable.category == null || (variable.category === map(category, (c) => c.id)))
+                    && (variable.scope.type === "full-game" || variable.scope.type === "global")
+                    && variable["is-subcategory"]
+                ) {
+                    const currentValue = this.state.editor.metadata.variables[variable.name];
+                    const foundValue = Object.values(variable.values.values).find((v) => v.label === currentValue);
+                    if (foundValue != null && foundValue.rules != null) {
+                        subcategoryRules.push(renderMarkdown(`## ${foundValue.label} Rules\n${foundValue.rules}`));
+                    }
+                }
+            }
         }
+
         return (
             <div className="run-editor-additional-info">
-                <div className="run-editor-rules markdown">{gameRules}{rules}</div>
+                <div className="run-editor-rules markdown">{gameRules}{rules}{subcategoryRules}</div>
             </div>
         );
     }

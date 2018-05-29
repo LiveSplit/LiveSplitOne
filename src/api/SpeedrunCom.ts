@@ -38,6 +38,7 @@ export interface Variable {
     scope: VariableScope,
     values: VariableValues,
     mandatory: boolean,
+    "is-subcategory": boolean,
 }
 
 export interface VariableScope {
@@ -50,6 +51,7 @@ export interface VariableValues {
 
 export interface VariableValue {
     label: string,
+    rules?: string,
 }
 
 export interface GameHeader {
