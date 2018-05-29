@@ -480,9 +480,19 @@ export class RunEditor extends React.Component<Props, State> {
             return <div />;
         }
         // TODO Take this from the rules
-        const hideMilliseconds = leaderboard.runs.every((r) => {
-            return r.run.times.primary_t === Math.floor(r.run.times.primary_t);
-        });
+        const gameInfo = getGameInfo(this.state.editor.game);
+        const platformList = getPlatforms();
+        const regionList = getRegions();
+
+        let hideMilliseconds: boolean;
+        if (gameInfo != null) {
+            hideMilliseconds = !gameInfo.ruleset["show-milliseconds"];
+        } else {
+            hideMilliseconds = leaderboard.runs.every((r) => {
+                return r.run.times.primary_t === Math.floor(r.run.times.primary_t);
+            });
+        }
+
         return (
             <table className="table run-editor-tab" style={{ width: 450 }}>
                 <thead className="table-header">
@@ -505,12 +515,69 @@ export class RunEditor extends React.Component<Props, State> {
                             }
                             const comment = unwrapOr(r.run.comment, "");
                             const renderedComment = renderMarkdown(comment);
+
+                            const platform = platformList.get(r.run.system.platform);
+                            const region = map(r.run.system.region, (r) => regionList.get(r));
+
+                            const renderedVariables = [];
+
+                            const variables = map(gameInfo, (g) => g.variables);
+                            if (variables != null) {
+                                for (const [keyId, valueId] of Object.entries(r.run.values)) {
+                                    const variable = variables.data.find((v) => v.id === keyId);
+                                    if (variable != null) {
+                                        const value = Object.entries(variable.values.values).find(
+                                            ([listValueId]) => listValueId === valueId,
+                                        );
+                                        if (value != null) {
+                                            const valueName = value[1].label;
+                                            renderedVariables.push(
+                                                <tr>
+                                                    <td>{variable.name}:</td>
+                                                    <td>{valueName}</td>
+                                                </tr>,
+                                            );
+                                        }
+                                    }
+                                }
+                            }
+
                             expandedRow =
                                 <tr className={evenOdd}>
                                     <td colSpan={4}>
                                         {embed}
-                                        <div className="markdown">{renderedComment}</div>
-                                        <p>{`Date: ${unwrapOr(r.run.date, "").split("-").join("/")}`}</p>
+                                        <div className="markdown" style={{
+                                            minHeight: 5,
+                                        }}>{renderedComment}</div>
+                                        <table style={{
+                                            borderSpacing: "10px 2px",
+                                            paddingBottom: 10,
+                                            marginLeft: -11,
+                                        }}>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Date:</td>
+                                                    <td>{unwrapOr(r.run.date, "").split("-").join("/")}</td>
+                                                </tr>
+                                                {map(
+                                                    region,
+                                                    (r) =>
+                                                        <tr>
+                                                            <td>Region:</td>
+                                                            <td>{r}</td>
+                                                        </tr>,
+                                                )}
+                                                {map(
+                                                    platform,
+                                                    (p) =>
+                                                        <tr>
+                                                            <td>Platform:</td>
+                                                            <td>{p}{r.run.system.emulated ? " Emulator" : null}</td>
+                                                        </tr>,
+                                                )}
+                                                {renderedVariables}
+                                            </tbody>
+                                        </table>
                                     </td>
                                 </tr>;
                         }
