@@ -1,5 +1,3 @@
-
-
 declare module "commonmark-react-renderer" {
     class ReactRenderer {
         constructor(options?: Options);

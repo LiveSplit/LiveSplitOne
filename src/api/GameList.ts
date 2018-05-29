@@ -7,7 +7,6 @@ import {
 } from "./SpeedrunCom";
 import { Option } from "../util/OptionUtil";
 import { FuzzyList } from "../livesplit";
-import { emoteList } from "./EmoteList";
 
 const gameList: string[] = [];
 let fuzzyList: Option<FuzzyList> = null;
@@ -172,16 +171,4 @@ export async function downloadLeaderboard(gameName: string, categoryName: string
         gameAndCategoryToLeaderboardPromises.set(key, promise);
     }
     return promise;
-}
-
-export function replaceTwitchEmotes(text: string): string {
-    return text.replace(/[A-Za-z0-9<):(\\;_>#/\]|]+/g, (matched) => {
-        const emoteId = emoteList[matched];
-        if (emoteId == null) {
-            return matched;
-        }
-
-        const url = `https://static-cdn.jtvnw.net/emoticons/v1/${emoteId}/1.0`;
-        return `![${url}](${url})`;
-    });
 }
