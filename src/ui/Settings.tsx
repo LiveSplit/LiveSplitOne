@@ -501,8 +501,8 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                         );
                     }}
                     style={{
-                        backgroundColor: isError
-                            ? "hsla(0, 100%, 20%, 1)"
+                        border: isError
+                            ? "1px solid rgb(255, 0, 0)"
                             : undefined,
                     }}
                 >

@@ -7,9 +7,9 @@ import { toast } from "react-toastify";
 import {
     downloadGameList, searchGames, getCategories, downloadCategories,
     downloadLeaderboard, getLeaderboard, downloadPlatformList, getPlatforms,
-    downloadRegionList, getRegions, downloadGameInfo, getGameInfo, replaceTwitchEmotes, downloadTwitchEmotes,
+    downloadRegionList, getRegions, downloadGameInfo, getGameInfo, replaceTwitchEmotes,
 } from "../api/GameList";
-import { Category } from "../api/SpeedrunCom";
+import { Category, Run } from "../api/SpeedrunCom";
 import { Option, expect, map, assert, unwrapOr } from "../util/OptionUtil";
 import { Parser as CommonMarkParser } from "commonmark";
 import CommonMarkRenderer = require("commonmark-react-renderer");
@@ -79,7 +79,6 @@ export class RunEditor extends React.Component<Props, State> {
         this.refreshLeaderboard(state.game, state.category);
         this.refreshPlatformList();
         this.refreshRegionList();
-        downloadTwitchEmotes();
     }
 
     public render() {
@@ -573,7 +572,7 @@ export class RunEditor extends React.Component<Props, State> {
                                 <td style={{ textAlign: "center" }}>
                                     {
                                         map(r.run.splits, (s) => <i
-                                            onClick={(_) => this.downloadSplits(s.uri)}
+                                            onClick={(_) => this.downloadSplits(r.run, s.uri)}
                                             className="fa fa-download"
                                             style={{ cursor: "pointer" }}
                                             aria-hidden="true"
@@ -1324,20 +1323,54 @@ export class RunEditor extends React.Component<Props, State> {
         return this.state.tab;
     }
 
-    private async downloadSplits(apiUri: string) {
+    private async downloadSplits(apiRun: Run, apiUri: string) {
         const baseUri = "https://splits.io/api/v3/runs/";
         assert(apiUri.startsWith(baseUri), "Unexpected splits i/o URL");
         const splitsId = apiUri.slice(baseUri.length);
         try {
-            const run = await downloadById(splitsId);
+            const gameName = this.state.editor.game;
+            const categoryName = this.state.editor.category;
+            const runDownload = downloadById(splitsId);
+            const platformListDownload = downloadPlatformList();
+            const regionListDownload = downloadRegionList();
+            const gameInfoDownload = downloadGameInfo(gameName);
+            await gameInfoDownload;
+            await platformListDownload;
+            await regionListDownload;
+            const run = await runDownload;
             // TODO Race Condition with the Run Editor closing (and probably others)
             run.with((run) => {
-                run.setGameName(this.state.editor.game);
-                run.setCategoryName(this.state.editor.category);
-                // TODO Metadata as well?
-
                 const newEditor = LiveSplit.RunEditor.new(run);
                 if (newEditor != null) {
+                    newEditor.setGameName(gameName);
+                    newEditor.setCategoryName(categoryName);
+                    const platform = getPlatforms().get(apiRun.system.platform);
+                    if (platform != null) {
+                        newEditor.setPlatformName(platform);
+                    }
+                    const region = map(apiRun.system.region, (r) => getRegions().get(r));
+                    if (region != null) {
+                        newEditor.setRegionName(region);
+                    }
+                    newEditor.setEmulatorUsage(apiRun.system.emulated);
+                    const variables = map(getGameInfo(gameName), (g) => g.variables);
+                    if (variables != null) {
+                        for (const [keyId, valueId] of Object.entries(apiRun.values)) {
+                            const variable = variables.data.find((v) => v.id === keyId);
+                            if (variable != null) {
+                                const value = Object.entries(variable.values.values).find(
+                                    ([listValueId]) => listValueId === valueId,
+                                );
+                                if (value != null) {
+                                    const valueName = value[1].label;
+                                    newEditor.setVariable(variable.name, valueName);
+                                }
+                            }
+                        }
+                    }
+                    // Needs to be set last in order for it not to dissociate again
+                    newEditor.setRunId(apiRun.id);
+
                     // TODO Oh no, not internal pointer stuff
                     this.props.editor.dispose();
                     this.props.editor.ptr = newEditor.ptr;

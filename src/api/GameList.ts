@@ -23,8 +23,6 @@ const gameAndCategoryToLeaderboardMap: Map<string, Leaderboard> = new Map();
 let gameListPromise: Option<Promise<void>> = null;
 let platformListPromise: Option<Promise<void>> = null;
 let regionListPromise: Option<Promise<void>> = null;
-let twitchEmotePromise: Option<Promise<void>> = null;
-const twitchEmoteMap: Map<string, number> = new Map();
 
 export function searchGames(currentName: string): string[] {
     if (currentName === "" || fuzzyList == null) {
@@ -174,19 +172,6 @@ export async function downloadLeaderboard(gameName: string, categoryName: string
         gameAndCategoryToLeaderboardPromises.set(key, promise);
     }
     return promise;
-}
-
-export async function downloadTwitchEmotes(): Promise<void> {
-    if (twitchEmotePromise == null) {
-        twitchEmotePromise = (async () => {
-            const response = await fetch("https://twitchemotes.com/api_cache/v3/global.json");
-            const emotes = await response.json();
-            for (const emote of emotes) {
-                twitchEmoteMap.set(emote.code, emote.id);
-            }
-        })();
-    }
-    return twitchEmotePromise;
 }
 
 export function replaceTwitchEmotes(text: string): string {

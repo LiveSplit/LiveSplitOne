@@ -4132,6 +4132,19 @@ export class RunEditorRefMut extends RunEditorRef {
         instance().exports.RunEditor_remove_game_icon(this.ptr);
     }
     /**
+     * Sets the speedrun.com Run ID of the run. You need to ensure that the
+     * record on speedrun.com matches up with the Personal Best of this run.
+     * This may be empty if there's no association.
+     */
+    setRunId(name: string) {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const name_allocated = allocString(name);
+        instance().exports.RunEditor_set_run_id(this.ptr, name_allocated.ptr);
+        dealloc(name_allocated);
+    }
+    /**
      * Sets the name of the region this game is from. This may be empty if it's
      * not specified.
      */

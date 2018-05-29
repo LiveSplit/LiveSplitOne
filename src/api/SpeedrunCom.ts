@@ -131,6 +131,7 @@ export interface Record {
 }
 
 export interface Run {
+    id: string,
     comment: Option<string>,
     players: Array<PlayerUserRef | PlayerGuestRef>,
     times: Times,
@@ -139,6 +140,14 @@ export interface Run {
     submitted: Option<string>,
     date: Option<string>,
     videos: Option<Videos>,
+    system: RunSystem,
+    values: { [key: string]: string },
+}
+
+export interface RunSystem {
+    emulated: boolean,
+    platform: string,
+    region: Option<string>,
 }
 
 export interface Videos {
