@@ -28,4 +28,4 @@ notifications:
     on_success: never
 
 node_js:
-  - "6"
+  - "10"

@@ -10,6 +10,10 @@
     src: url(FiraSans-Regular.woff);
 }
 
+img.emoji {
+    height: 28px;
+}
+
 /* Markdown */
 .markdown img {
     vertical-align: middle;

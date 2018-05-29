@@ -26,8 +26,10 @@
     "react-color": "^2.14.1",
     "react-contextmenu": "^2.9.2",
     "react-dom": "^16.3.2",
+    "react-linkifier": "^4.0.0",
     "react-sidebar": "^2.3.2",
     "react-toastify": "^4.0.1",
+    "react-twemoji": "0.0.8",
     "whatwg-fetch": "^2.0.4"
   },
   "devDependencies": {
