@@ -617,7 +617,12 @@ export class RunEditor extends React.Component<Props, State> {
                                                 );
                                                 return [
                                                     i !== 0 ? ", " : null,
-                                                    <a target="_blank" href={player.weblink} style={{ color }}>
+                                                    <a
+                                                        target="_blank"
+                                                        href={player.weblink}
+                                                        style={{ color }}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                    >
                                                         {flag}{player.names.international}
                                                     </a>,
                                                 ];
@@ -629,14 +634,22 @@ export class RunEditor extends React.Component<Props, State> {
                                     }
                                 </td>
                                 <td style={{ width: 120 }} className="number">
-                                    <a href={r.run.weblink} target="_blank" style={{ color: "white" }}>
+                                    <a
+                                        href={r.run.weblink}
+                                        target="_blank"
+                                        style={{ color: "white" }}
+                                        onClick={(e) => e.stopPropagation()}
+                                    >
                                         {formatLeaderboardTime(r.run.times.primary_t, hideMilliseconds)}
                                     </a>
                                 </td>
                                 <td style={{ textAlign: "center" }}>
                                     {
                                         map(r.run.splits, (s) => <i
-                                            onClick={(_) => this.downloadSplits(r.run, s.uri)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                this.downloadSplits(r.run, s.uri);
+                                            }}
                                             className="fa fa-download"
                                             style={{ cursor: "pointer" }}
                                             aria-hidden="true"
