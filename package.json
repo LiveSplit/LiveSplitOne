@@ -7,7 +7,8 @@
     "build:core": "node buildCore.js",
     "start": "webpack-dev-server --open",
     "serve": "webpack-dev-server",
-    "build": "webpack"
+    "build": "webpack",
+    "publish": "webpack -p"
   },
   "author": "",
   "license": "ISC",
@@ -39,6 +40,7 @@
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.4",
     "babel-preset-env": "^1.7.0",
+    "clean-webpack-plugin": "^0.1.19",
     "copy-webpack-plugin": "^4.5.1",
     "css-loader": "^0.28.11",
     "file-loader": "^1.1.11",
@@ -51,6 +53,7 @@
     "url-loader": "^1.0.1",
     "webpack": "^4.10.1",
     "webpack-cli": "^2.1.4",
-    "webpack-dev-server": "^3.1.4"
+    "webpack-dev-server": "^3.1.4",
+    "webpack-pwa-manifest": "^3.6.2"
   }
 }

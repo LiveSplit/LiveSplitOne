@@ -1,6 +1,8 @@
 module.exports = (env, argv) => {
     const HtmlWebpackPlugin = require("html-webpack-plugin");
     const CopyWebpackPlugin = require("copy-webpack-plugin");
+    const WebpackPwaManifest = require("webpack-pwa-manifest");
+    const CleanWebpackPlugin = require("clean-webpack-plugin");
     const path = require("path");
 
     const basePath = __dirname;
@@ -25,14 +27,28 @@ module.exports = (env, argv) => {
         },
 
         resolve: {
-            // Add '.ts' and '.tsx' as resolvable extensions.
             extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".json"],
         },
 
         plugins: [
+            ...(isProduction ? [new CleanWebpackPlugin(["dist"])] : []),
             new HtmlWebpackPlugin({
                 template: "./src/index.html",
             }),
+            ...(isProduction ? [new WebpackPwaManifest({
+                name: "LiveSplit One",
+                short_name: "LiveSplit One",
+                start_url: ".",
+                display: "standalone",
+                background_color: "#171717",
+                description: "A version of LiveSplit that works on a lot of platforms.",
+                icons: [
+                    {
+                        src: path.resolve("src/assets/icon.png"),
+                        sizes: [96, 128, 192, 256, 384, 512],
+                    },
+                ],
+            })] : []),
             new CopyWebpackPlugin([
                 { from: "src/livesplit_core.wasm", to: "livesplit_core.wasm" },
             ], {}),
@@ -69,7 +85,7 @@ module.exports = (env, argv) => {
                     use: ["style-loader", "css-loader"],
                 },
                 {
-                    test: /\.(png|jpg|gif|woff)$/,
+                    test: /\.(png|jpg|gif|woff|ico)$/,
                     use: [
                         {
                             loader: "url-loader",
@@ -80,9 +96,6 @@ module.exports = (env, argv) => {
                     ],
                 },
             ],
-
-            // rules: [
-            // ],
 
             // preLoaders: [
             //     // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.

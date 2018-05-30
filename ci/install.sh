@@ -4,8 +4,6 @@ main() {
     curl -sSf https://build.travis-ci.org/files/rustup-init.sh | sh -s -- --default-toolchain=nightly -y
     export PATH=$HOME/.cargo/bin:$PATH
 
-    npm install -g webpack
-
     local target=
     if [ $TRAVIS_OS_NAME = linux ]; then
         target=x86_64-unknown-linux-musl
