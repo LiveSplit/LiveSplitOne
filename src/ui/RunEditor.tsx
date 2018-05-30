@@ -15,7 +15,7 @@ import { downloadById } from "../util/SplitsIO";
 import { formatLeaderboardTime } from "../util/TimeUtil";
 import { resolveEmbed } from "./Embed";
 import { SettingsComponent, JsonSettingValueFactory } from "./Settings";
-import { renderMarkdown } from "../util/Markdown";
+import { renderMarkdown, replaceFlag } from "../util/Markdown";
 
 export interface Props { editor: LiveSplit.RunEditor }
 export interface State {
@@ -611,14 +611,19 @@ export class RunEditor extends React.Component<Props, State> {
                                                 } else {
                                                     color = style.color.dark;
                                                 }
+                                                const flag = map(
+                                                    player.location,
+                                                    (l) => replaceFlag(`[${l.country.code}]`),
+                                                );
                                                 return [
                                                     i !== 0 ? ", " : null,
                                                     <a target="_blank" href={player.weblink} style={{ color }}>
-                                                        {player.names.international}
+                                                        {flag}{player.names.international}
                                                     </a>,
                                                 ];
                                             } else {
-                                                return [i !== 0 ? ", " : null, p.name];
+                                                const withFlags = replaceFlag(p.name);
+                                                return [i !== 0 ? ", " : null, withFlags];
                                             }
                                         })
                                     }

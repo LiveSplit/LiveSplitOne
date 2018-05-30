@@ -101,14 +101,23 @@ export interface Leaderboard {
 }
 
 export interface PlayerData {
-    data: Player[],
+    data: User[],
 }
 
-export interface Player {
+export interface User {
     id: string,
     names: Names,
     weblink: string,
     "name-style": NameStyleSolid | NameStyleGradient,
+    location: Option<UserLocation>,
+}
+
+export interface UserLocation {
+    country: UserCountry,
+}
+
+export interface UserCountry {
+    code: string,
 }
 
 export interface NameStyleSolid {

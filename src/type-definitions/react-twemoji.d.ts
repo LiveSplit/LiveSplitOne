@@ -2,6 +2,7 @@ declare module "react-twemoji" {
     import { Component } from "react";
 
     export interface Props {
+        className?: string,
         options: Options,
     }
 

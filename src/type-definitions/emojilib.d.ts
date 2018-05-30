@@ -5,5 +5,6 @@ declare module "emojilib" {
 
     export interface Emoji {
         char: string,
+        keywords: string[],
     }
 }

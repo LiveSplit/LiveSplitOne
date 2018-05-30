@@ -18,6 +18,31 @@ export function replaceTwitchEmotes(text: string): string {
     });
 }
 
+export function replaceFlag(text: string): JSX.Element {
+    return (
+        <Twemoji className="inline-div" options={{ className: "flag" }}>
+            {
+                text.replace(/\[([A-Za-z/]{2,})\]/g, (_, emojiName: string) => {
+                    emojiName = emojiName.substr(0, 2).toLowerCase();
+                    if (emojiName === "gb") {
+                        emojiName = "uk";
+                    }
+                    const emoji = emojilib.lib[emojiName];
+                    if (emoji == null || emoji.keywords.indexOf("flag") < 0) {
+                        const emoji = Object.values(emojilib.lib)
+                            .find((e) => e.keywords.indexOf(emojiName) >= 0 && e.keywords.indexOf("flag") >= 0);
+                        if (emoji != null) {
+                            return emoji.char;
+                        }
+                        return "";
+                    }
+                    return emoji.char;
+                })
+            }
+        </Twemoji>
+    );
+}
+
 export function replaceEmojis(text: string): string {
     return text.replace(/:([A-Za-z0-9_]+):/g, (matched, emojiName) => {
         const emoji = emojilib.lib[emojiName];
@@ -39,10 +64,7 @@ export function renderMarkdown(markdown: string): JSX.Element {
     }).render(parsed);
 
     return (
-        <Twemoji options={{
-            ext: ".svg",
-            size: "svg",
-        }}>
+        <Twemoji options={{}}>
             <Linkifier target="_blank">
                 {renderedMarkdown}
             </Linkifier>
