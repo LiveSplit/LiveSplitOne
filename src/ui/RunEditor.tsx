@@ -42,11 +42,19 @@ enum Tab {
     Leaderboard,
 }
 
+interface Filters {
+    region?: string,
+    platform?: string,
+    isEmulated?: boolean,
+    variables: Map<string, string>,
+}
+
 export class RunEditor extends React.Component<Props, State> {
     private gameIcon: string;
     private segmentIconUrls: string[];
     private dragIndex: number = 0;
     private expandedLeaderboardRows: Map<number, boolean> = new Map();
+    private filters: Filters = { variables: new Map() };
 
     constructor(props: Props) {
         super(props);
@@ -88,13 +96,6 @@ export class RunEditor extends React.Component<Props, State> {
         const gameIconToggleMenu = (e: any) => {
             if (gameIconContextTrigger) {
                 gameIconContextTrigger.handleContextClick(e);
-            }
-        };
-
-        let otherButtonContextTrigger: any = null;
-        const otherButtonToggleMenu = (e: any) => {
-            if (otherButtonContextTrigger) {
-                otherButtonContextTrigger.handleContextClick(e);
             }
         };
 
@@ -270,75 +271,304 @@ export class RunEditor extends React.Component<Props, State> {
                     </button>
                 </div>
                 <div className="editor-group">
-                    <div className="btn-group">
-                        <button onClick={(_) => this.insertSegmentAbove()}>
-                            Insert Above
-                        </button>
-                        <button onClick={(_) => this.insertSegmentBelow()}>
-                            Insert Below
-                        </button>
-                        <button
-                            onClick={(_) => this.removeSegments()}
-                            className={this.state.editor.buttons.can_remove ? "" : "disabled"}
-                        >
-                            Remove Segment
-                        </button>
-                        <button
-                            onClick={(_) => this.moveSegmentsUp()}
-                            className={this.state.editor.buttons.can_move_up ? "" : "disabled"}
-                        >
-                            Move Up
-                        </button>
-                        <button
-                            onClick={(_) => this.moveSegmentsDown()}
-                            className={this.state.editor.buttons.can_move_down ? "" : "disabled"}
-                        >
-                            Move Down
-                        </button>
-                        <button onClick={(_) => this.addComparison()}>
-                            Add Comparison
-                        </button>
-                        <button onClick={(_) => this.importComparison()}>
-                            Import Comparison
-                        </button>
-                        <button onClick={(e) => otherButtonToggleMenu(e)}>
-                            <ContextMenuTrigger
-                                id="other-button-context-menu"
-                                ref={(c) => otherButtonContextTrigger = c}
-                            >
-                                Other…
-                            </ContextMenuTrigger>
-                        </button>
-                        <ContextMenu id="other-button-context-menu">
-                            <MenuItem onClick={(_) => this.clearHistory()}>
-                                Clear History
-                            </MenuItem>
-                            <MenuItem onClick={(_) => this.clearTimes()}>
-                                Clear Times
-                            </MenuItem>
-                            <MenuItem onClick={(_) => this.cleanSumOfBest()}>
-                                Clean Sum of Best
-                            </MenuItem>
-                        </ContextMenu>
-                    </div>
                     {this.renderTab(tab, category)}
                 </div>
             </div >
         );
     }
 
-    private renderTab(tab: Tab, category: Option<Category>): JSX.Element {
+    private renderSegmentListButtons(): JSX.Element {
+        let otherButtonContextTrigger: any = null;
+        const otherButtonToggleMenu = (e: any) => {
+            if (otherButtonContextTrigger) {
+                otherButtonContextTrigger.handleContextClick(e);
+            }
+        };
+
+        return (
+            <div className="btn-group">
+                <button onClick={(_) => this.insertSegmentAbove()}>
+                    Insert Above
+                </button>
+                <button onClick={(_) => this.insertSegmentBelow()}>
+                    Insert Below
+                </button>
+                <button
+                    onClick={(_) => this.removeSegments()}
+                    className={this.state.editor.buttons.can_remove ? "" : "disabled"}
+                >
+                    Remove Segment
+                </button>
+                <button
+                    onClick={(_) => this.moveSegmentsUp()}
+                    className={this.state.editor.buttons.can_move_up ? "" : "disabled"}
+                >
+                    Move Up
+                </button>
+                <button
+                    onClick={(_) => this.moveSegmentsDown()}
+                    className={this.state.editor.buttons.can_move_down ? "" : "disabled"}
+                >
+                    Move Down
+                </button>
+                <button onClick={(_) => this.addComparison()}>
+                    Add Comparison
+                </button>
+                <button onClick={(_) => this.importComparison()}>
+                    Import Comparison
+                </button>
+                <button onClick={(e) => otherButtonToggleMenu(e)}>
+                    <ContextMenuTrigger
+                        id="other-button-context-menu"
+                        ref={(c) => otherButtonContextTrigger = c}
+                    >
+                        Other…
+                    </ContextMenuTrigger>
+                </button>
+                <ContextMenu id="other-button-context-menu">
+                    <MenuItem onClick={(_) => this.clearHistory()}>
+                        Clear History
+                    </MenuItem>
+                    <MenuItem onClick={(_) => this.clearTimes()}>
+                        Clear Times
+                    </MenuItem>
+                    <MenuItem onClick={(_) => this.cleanSumOfBest()}>
+                        Clean Sum of Best
+                    </MenuItem>
+                </ContextMenu>
+            </div>
+        );
+    }
+
+    private renderEmptyButtons(): JSX.Element {
+        return <div style={{ width: 165 }} />;
+    }
+
+    private renderTab(tab: Tab, category: Option<Category>): JSX.Element[] {
         switch (tab) {
             case Tab.RealTime:
             case Tab.GameTime:
-                return this.renderSegmentsTable();
+                return [this.renderSegmentListButtons(), this.renderSegmentsTable()];
             case Tab.Variables:
-                return this.renderVariablesTab(category);
+                return [this.renderEmptyButtons(), this.renderVariablesTab(category)];
             case Tab.Rules:
-                return this.renderRulesTab(category);
+                return [this.renderEmptyButtons(), this.renderRulesTab(category)];
             case Tab.Leaderboard:
-                return this.renderLeaderboard();
+                return [this.renderLeaderboardButtons(category), this.renderLeaderboard()];
         }
+    }
+
+    private renderLeaderboardButtons(category: Option<Category>): JSX.Element {
+        const gameInfo = getGameInfo(this.state.editor.game);
+        if (gameInfo == null) {
+            return this.renderEmptyButtons();
+        }
+
+        const leaderboard = getLeaderboard(this.state.editor.game, this.state.editor.category);
+
+        const regionList = [""];
+        const platformList = [""];
+        const allRegions = getRegions();
+        const allPlatforms = getPlatforms();
+
+        const filterList = [];
+        const subcategoryBoxes = [];
+
+        if (allRegions.size !== 0) {
+            for (const regionId of gameInfo.regions) {
+                const regionName = allRegions.get(regionId);
+                if (regionName != null) {
+                    regionList.push(regionName);
+                }
+            }
+        }
+
+        if (allPlatforms.size !== 0) {
+            for (const platformId of gameInfo.platforms) {
+                const platformName = allPlatforms.get(platformId);
+                if (platformName != null) {
+                    platformList.push(platformName);
+                }
+            }
+        }
+
+        if (regionList.length > 2) {
+            filterList.push(<tr><td>Region:</td></tr>);
+            filterList.push(
+                <tr>
+                    <td>
+                        <select
+                            value={unwrapOr<string>(this.filters.region, "")}
+                            style={{
+                                width: "100%",
+                            }}
+                            onChange={(e) => {
+                                this.filters.region = e.target.value;
+                                this.updateFilters();
+                            }}
+                        >
+                            {regionList.map((v) => <option value={v}>{v}</option>)}
+                        </select>
+                    </td>
+                </tr>,
+            );
+        }
+
+        if (platformList.length > 2) {
+            filterList.push(<tr><td>Platform:</td></tr>);
+            filterList.push(
+                <tr>
+                    <td>
+                        <select
+                            value={unwrapOr<string>(this.filters.platform, "")}
+                            style={{
+                                width: "100%",
+                            }}
+                            onChange={(e) => {
+                                this.filters.platform = e.target.value;
+                                this.updateFilters();
+                            }}
+                        >
+                            {platformList.map((v) => <option value={v}>{v}</option>)}
+                        </select>
+                    </td>
+                </tr>,
+            );
+        }
+
+        if (gameInfo.ruleset["emulators-allowed"]) {
+            filterList.push(<tr><td>Emulator:</td></tr>);
+            filterList.push(
+                <tr>
+                    <td>
+                        <select
+                            value={
+                                this.filters.isEmulated === true
+                                    ? "Yes"
+                                    : this.filters.isEmulated === false
+                                        ? "No"
+                                        : ""
+                            }
+                            style={{
+                                width: "100%",
+                            }}
+                            onChange={(e) => {
+                                const value = e.target.value;
+                                if (value === "Yes") {
+                                    this.filters.isEmulated = true;
+                                } else if (value === "No") {
+                                    this.filters.isEmulated = false;
+                                } else {
+                                    this.filters.isEmulated = undefined;
+                                }
+                                this.updateFilters();
+                            }}
+                        >
+                            {["", "Yes", "No"].map((v) => <option value={v}>{v}</option>)}
+                        </select>
+                    </td>
+                </tr>,
+            );
+        }
+
+        const variables = expect(gameInfo.variables, "We need the variables to be embedded");
+        for (const variable of variables.data) {
+            if (
+                (variable.category == null || (variable.category === map(category, (c) => c.id)))
+                && (variable.scope.type === "full-game" || variable.scope.type === "global")
+            ) {
+                if (variable["is-subcategory"]) {
+                    subcategoryBoxes.push(
+                        <table className="table filter-table subcategory-table">
+                            <thead className="table-header">
+                                <tr>
+                                    <th>{variable.name}</th>
+                                </tr>
+                            </thead>
+                            <tbody className="table-body">
+                                {Object.values(variable.values.values).map(({ label }) => {
+                                    const currentFilterValue = this.filters.variables.get(variable.name);
+                                    const isSelected = currentFilterValue === label;
+                                    return (
+                                        <tr>
+                                            <td
+                                                className={isSelected ? "selected" : ""}
+                                                onClick={(_) => {
+                                                    this.filters.variables.set(variable.name, isSelected ? "" : label);
+                                                    this.updateFilters();
+                                                }}
+                                            >
+                                                {label}
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>,
+                    );
+                } else {
+                    filterList.push(<tr><td>{variable.name}:</td></tr>);
+                    filterList.push(
+                        <tr>
+                            <td>
+                                <select
+                                    value={unwrapOr<string>(this.filters.variables.get(variable.name), "")}
+                                    style={{
+                                        width: "100%",
+                                    }}
+                                    onChange={(e) => {
+                                        this.filters.variables.set(variable.name, e.target.value);
+                                        this.updateFilters();
+                                    }}
+                                >
+                                    <option value="" />
+                                    {Object.values(variable.values.values).map(
+                                        ({ label }) => <option value={label}>{label}</option>,
+                                    )}
+                                </select>
+                            </td>
+                        </tr>,
+                    );
+                }
+            }
+        }
+
+        return (
+            <div className="btn-group" style={{ width: 160, marginRight: 5 }}>
+                <button
+                    onClick={(_) => {
+                        if (leaderboard != null) {
+                            window.open(leaderboard.weblink, "_blank");
+                        }
+                    }}
+                    className={leaderboard == null ? "disabled" : ""}
+                >
+                    Open Page
+                </button>
+                <button className="disabled">
+                    Submit Run
+                </button>
+                <button className="disabled">
+                    Associate Run
+                </button>
+                {subcategoryBoxes}
+                <table className="table filter-table">
+                    <thead className="table-header">
+                        <tr>
+                            <th>Filters</th>
+                        </tr>
+                    </thead>
+                    <tbody className="table-body">
+                        {filterList}
+                    </tbody>
+                </table>
+            </div>
+        );
+    }
+
+    private updateFilters() {
+        this.resetIndividualLeaderboardState();
+        this.update();
     }
 
     private renderVariablesTab(category: Option<Category>): JSX.Element {
@@ -479,7 +709,6 @@ export class RunEditor extends React.Component<Props, State> {
         if (leaderboard == null) {
             return <div />;
         }
-        // TODO Take this from the rules
         const gameInfo = getGameInfo(this.state.editor.game);
         const platformList = getPlatforms();
         const regionList = getRegions();
@@ -493,6 +722,17 @@ export class RunEditor extends React.Component<Props, State> {
             });
         }
 
+        let rank = 0;
+        let unfilteredCount = 0;
+        let lastTime = "";
+
+        function isFiltered(value: string | undefined, filter: string | undefined): boolean {
+            return value !== undefined
+                && filter !== undefined
+                && filter !== ""
+                && value !== filter;
+        }
+
         return (
             <table className="table run-editor-tab" style={{ width: 450 }}>
                 <thead className="table-header">
@@ -504,9 +744,51 @@ export class RunEditor extends React.Component<Props, State> {
                     </tr>
                 </thead>
                 <tbody className="table-body">
-                    {leaderboard.runs.map((r, rowIndex) => {
+                    {leaderboard.runs.map((r) => {
+                        const platform = platformList.get(r.run.system.platform);
+                        if (isFiltered(platform, this.filters.platform)) {
+                            return null;
+                        }
+
+                        const region = map(r.run.system.region, (r) => regionList.get(r));
+                        if (isFiltered(region, this.filters.region)) {
+                            return null;
+                        }
+
+                        if (this.filters.isEmulated != null && r.run.system.emulated !== this.filters.isEmulated) {
+                            return null;
+                        }
+
+                        const renderedVariables = [];
+
+                        const variables = map(gameInfo, (g) => g.variables);
+                        if (variables != null) {
+                            for (const [keyId, valueId] of Object.entries(r.run.values)) {
+                                const variable = variables.data.find((v) => v.id === keyId);
+                                if (variable != null) {
+                                    const value = Object.entries(variable.values.values).find(
+                                        ([listValueId]) => listValueId === valueId,
+                                    );
+                                    const valueName = map(value, (v) => v[1].label);
+                                    if (isFiltered(valueName, this.filters.variables.get(variable.name))) {
+                                        return null;
+                                    }
+                                    if (valueName != null) {
+                                        renderedVariables.push(
+                                            <tr>
+                                                <td>{variable.name}:</td>
+                                                <td>{valueName}</td>
+                                            </tr>,
+                                        );
+                                    }
+                                }
+                            }
+                        }
+
+                        const rowIndex = unfilteredCount;
                         const evenOdd = rowIndex % 2 === 0 ? "table-row-odd" : "table-row-even";
                         let expandedRow = null;
+
                         if (this.expandedLeaderboardRows.get(rowIndex) === true) {
                             let embed = null;
                             if (r.run.videos != null && r.run.videos.links.length > 0) {
@@ -516,34 +798,8 @@ export class RunEditor extends React.Component<Props, State> {
                             const comment = unwrapOr(r.run.comment, "");
                             const renderedComment = renderMarkdown(comment);
 
-                            const platform = platformList.get(r.run.system.platform);
-                            const region = map(r.run.system.region, (r) => regionList.get(r));
-
-                            const renderedVariables = [];
-
-                            const variables = map(gameInfo, (g) => g.variables);
-                            if (variables != null) {
-                                for (const [keyId, valueId] of Object.entries(r.run.values)) {
-                                    const variable = variables.data.find((v) => v.id === keyId);
-                                    if (variable != null) {
-                                        const value = Object.entries(variable.values.values).find(
-                                            ([listValueId]) => listValueId === valueId,
-                                        );
-                                        if (value != null) {
-                                            const valueName = value[1].label;
-                                            renderedVariables.push(
-                                                <tr>
-                                                    <td>{variable.name}:</td>
-                                                    <td>{valueName}</td>
-                                                </tr>,
-                                            );
-                                        }
-                                    }
-                                }
-                            }
-
                             expandedRow =
-                                <tr className={evenOdd}>
+                                <tr key={`${r.run.id}_expanded`} className={evenOdd}>
                                     <td colSpan={4}>
                                         {embed}
                                         <div className="markdown" style={{
@@ -582,8 +838,16 @@ export class RunEditor extends React.Component<Props, State> {
                                 </tr>;
                         }
 
+                        unfilteredCount += 1;
+
+                        if (r.run.times.primary !== lastTime) {
+                            rank = unfilteredCount;
+                            lastTime = r.run.times.primary;
+                        }
+
                         return [
                             <tr
+                                key={r.run.id}
                                 title={unwrapOr(r.run.comment, "")}
                                 className={`leaderboard-row ${evenOdd}`}
                                 onClick={(_) => this.toggleExpandLeaderboardRow(rowIndex)}
@@ -591,7 +855,7 @@ export class RunEditor extends React.Component<Props, State> {
                                     cursor: "pointer",
                                 }}
                             >
-                                <td className="number">{r.place}</td>
+                                <td className="number">{rank}</td>
                                 <td>
                                     {
                                         r.run.players.map((p, i) => {
@@ -1104,7 +1368,7 @@ export class RunEditor extends React.Component<Props, State> {
         this.refreshGameInfo(event.target.value);
         this.refreshCategoryList(event.target.value);
         this.refreshLeaderboard(event.target.value, this.state.editor.category);
-        this.contractLeaderboardRows();
+        this.resetTotalLeaderboardState();
         this.update();
     }
 
@@ -1112,7 +1376,7 @@ export class RunEditor extends React.Component<Props, State> {
         this.clearCategorySpecificVariables();
         this.props.editor.setCategoryName(event.target.value);
         this.refreshLeaderboard(this.state.editor.game, event.target.value);
-        this.contractLeaderboardRows();
+        this.resetTotalLeaderboardState();
         this.update();
     }
 
@@ -1332,11 +1596,16 @@ export class RunEditor extends React.Component<Props, State> {
                 break;
             }
         }
-        this.contractLeaderboardRows();
+        this.resetTotalLeaderboardState();
         this.update(tab);
     }
 
-    private contractLeaderboardRows() {
+    private resetTotalLeaderboardState() {
+        this.resetIndividualLeaderboardState();
+        this.filters = { variables: new Map() };
+    }
+
+    private resetIndividualLeaderboardState() {
         this.expandedLeaderboardRows = new Map();
     }
 

@@ -96,6 +96,7 @@ export interface Category {
 }
 
 export interface Leaderboard {
+    weblink: string,
     runs: Record[],
     players?: PlayerData,
 }
