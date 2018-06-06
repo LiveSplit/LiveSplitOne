@@ -1,6 +1,6 @@
 <h1> <img src="https://raw.githubusercontent.com/LiveSplit/LiveSplit/master/LiveSplit/Resources/Icon.png" alt="LiveSplit" height="42" width="45" align="top"/> LiveSplit One</h1>
 
-[![Build Status](https://travis-ci.org/LiveSplit/LiveSplitOne.svg?branch=master)](https://travis-ci.org/LiveSplit/LiveSplitOne)
+[![Build Status](https://travis-ci.org/LiveSplit/LiveSplitOne.svg?branch=master)](https://travis-ci.org/LiveSplit/LiveSplitOne) [![Greenkeeper badge](https://badges.greenkeeper.io/LiveSplit/LiveSplitOne.svg)](https://greenkeeper.io/)
 
 LiveSplit One is a version of LiveSplit that uses the multiplatform
 [livesplit-core](https://github.com/LiveSplit/livesplit-core) Library and Web
