@@ -47,6 +47,7 @@ export interface VariableScope {
 
 export interface VariableValues {
     values: { [id: string]: VariableValue },
+    default: Option<string>,
 }
 
 export interface VariableValue {

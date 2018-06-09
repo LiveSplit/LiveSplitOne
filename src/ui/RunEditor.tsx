@@ -478,6 +478,20 @@ export class RunEditor extends React.Component<Props, State> {
                 && (variable.scope.type === "full-game" || variable.scope.type === "global")
             ) {
                 if (variable["is-subcategory"]) {
+                    let currentFilterValue = this.filters.variables.get(variable.name);
+                    if (currentFilterValue === undefined) {
+                        const runValue = this.state.editor.metadata.variables[variable.name];
+                        if (runValue != null) {
+                            currentFilterValue = runValue;
+                            this.filters.variables.set(variable.name, currentFilterValue);
+                        } else {
+                            const defaultValueId = variable.values.default;
+                            if (defaultValueId != null) {
+                                currentFilterValue = variable.values.values[defaultValueId].label;
+                                this.filters.variables.set(variable.name, currentFilterValue);
+                            }
+                        }
+                    }
                     subcategoryBoxes.push(
                         <table className="table filter-table subcategory-table">
                             <thead className="table-header">
@@ -487,7 +501,6 @@ export class RunEditor extends React.Component<Props, State> {
                             </thead>
                             <tbody className="table-body">
                                 {Object.values(variable.values.values).map(({ label }) => {
-                                    const currentFilterValue = this.filters.variables.get(variable.name);
                                     const isSelected = currentFilterValue === label;
                                     return (
                                         <tr>
