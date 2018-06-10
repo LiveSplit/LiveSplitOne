@@ -154,7 +154,7 @@ export interface Run {
     date: Option<string>,
     videos: Option<Videos>,
     system: RunSystem,
-    values: { [key: string]: string },
+    values: { [key: string]: string | undefined },
 }
 
 export interface RunSystem {

@@ -354,7 +354,7 @@ export class RunEditor extends React.Component<Props, State> {
             case Tab.Rules:
                 return [this.renderEmptyButtons(), this.renderRulesTab(category)];
             case Tab.Leaderboard:
-                return [this.renderLeaderboardButtons(category), this.renderLeaderboard()];
+                return [this.renderLeaderboardButtons(category), this.renderLeaderboard(category)];
         }
     }
 
@@ -717,7 +717,7 @@ export class RunEditor extends React.Component<Props, State> {
         );
     }
 
-    private renderLeaderboard(): JSX.Element {
+    private renderLeaderboard(category: Option<Category>): JSX.Element {
         const leaderboard = getLeaderboard(this.state.editor.game, this.state.editor.category);
         if (leaderboard == null) {
             return <div />;
@@ -740,8 +740,7 @@ export class RunEditor extends React.Component<Props, State> {
         let lastTime = "";
 
         function isFiltered(value: string | undefined, filter: string | undefined): boolean {
-            return value !== undefined
-                && filter !== undefined
+            return filter !== undefined
                 && filter !== ""
                 && value !== filter;
         }
@@ -783,9 +782,6 @@ export class RunEditor extends React.Component<Props, State> {
                                         ([listValueId]) => listValueId === valueId,
                                     );
                                     const valueName = map(value, (v) => v[1].label);
-                                    if (isFiltered(valueName, this.filters.variables.get(variable.name))) {
-                                        return null;
-                                    }
                                     if (valueName != null) {
                                         renderedVariables.push(
                                             <tr>
@@ -793,6 +789,20 @@ export class RunEditor extends React.Component<Props, State> {
                                                 <td>{valueName}</td>
                                             </tr>,
                                         );
+                                    }
+                                }
+                            }
+
+                            for (const variable of variables.data) {
+                                if (
+                                    (variable.category == null || (variable.category === map(category, (c) => c.id)))
+                                    && (variable.scope.type === "full-game" || variable.scope.type === "global")
+                                ) {
+                                    const variableValueId = r.run.values[variable.id];
+                                    const variableValue = map(variableValueId, (i) => variable.values.values[i]);
+                                    const filterValue = this.filters.variables.get(variable.name);
+                                    if (isFiltered(map(variableValue, (v) => v.label), filterValue)) {
+                                        return null;
                                     }
                                 }
                             }
