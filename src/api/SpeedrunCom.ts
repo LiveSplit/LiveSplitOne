@@ -91,6 +91,7 @@ export interface Asset {
 
 export interface Category {
     id: string,
+    weblink: string,
     name: string,
     type: "per-game" | "per-level",
     rules: Option<string>,
@@ -112,6 +113,10 @@ export interface User {
     weblink: string,
     "name-style": NameStyleSolid | NameStyleGradient,
     location: Option<UserLocation>,
+}
+
+export interface PlayerUser extends User {
+    rel: "user",
 }
 
 export interface UserLocation {
@@ -143,10 +148,16 @@ export interface Record {
     run: Run,
 }
 
-export interface Run {
+export type PlayersNotEmbedded = Array<PlayerUserRef | PlayerGuest>;
+
+export interface PlayersEmbedded {
+    data: Array<PlayerUser | PlayerGuest>,
+}
+
+export interface Run<PlayerEmbedding = PlayersNotEmbedded> {
     id: string,
     comment: Option<string>,
-    players: Array<PlayerUserRef | PlayerGuestRef>,
+    players: PlayerEmbedding,
     times: Times,
     splits: Option<Splits>,
     weblink: string,
@@ -176,7 +187,7 @@ export interface PlayerUserRef {
     id: string,
 }
 
-export interface PlayerGuestRef {
+export interface PlayerGuest {
     rel: "guest",
     name: string,
 }
@@ -199,6 +210,8 @@ export interface Region {
     id: string,
     name: string,
 }
+
+export type RunStatus = "new" | "verified" | "rejected";
 
 function evaluateParameters(parameters: string[]): string {
     const filtered = parameters.filter((p) => p.trim() !== "");
@@ -227,6 +240,11 @@ function getPlatformsUri(subUri: string): string {
 function getRegionsUri(subUri: string): string {
     const REGIONS_URI = "regions";
     return `${BASE_URI}${REGIONS_URI}${subUri}`;
+}
+
+function getRunsUri(subUri: string): string {
+    const RUNS_URI = "runs";
+    return `${BASE_URI}${RUNS_URI}${subUri}`;
 }
 
 async function executeRequest<T>(uri: string): Promise<T> {
@@ -355,4 +373,41 @@ export async function getRegions(elementsPerPage?: number): Promise<Page<Region>
     }
     const uri = getRegionsUri(evaluateParameters(parameters));
     return executePaginatedRequest<Region>(uri);
+}
+
+export async function getRuns(
+    embedPlayers: true,
+    categoryId?: string,
+    elementsPerPage?: number,
+    status?: RunStatus,
+): Promise<Page<Run<PlayersEmbedded>>>;
+
+export async function getRuns(
+    embedPlayers: false,
+    categoryId?: string,
+    elementsPerPage?: number,
+    status?: RunStatus,
+): Promise<Page<Run<PlayersNotEmbedded>>>;
+
+export async function getRuns(
+    embedPlayers: boolean,
+    categoryId?: string,
+    elementsPerPage?: number,
+    status?: RunStatus,
+): Promise<Page<Run<PlayersEmbedded | PlayersNotEmbedded>>> {
+    const parameters = [];
+    if (categoryId != null) {
+        parameters.push(`category=${categoryId}`);
+    }
+    if (elementsPerPage != null) {
+        parameters.push(`max=${elementsPerPage}`);
+    }
+    if (embedPlayers) {
+        parameters.push(`embed=${["players"].join(",")}`);
+    }
+    if (status != null) {
+        parameters.push(`status=${status}`);
+    }
+    const uri = getRunsUri(evaluateParameters(parameters));
+    return executePaginatedRequest<Run<PlayersEmbedded | PlayersNotEmbedded>>(uri);
 }

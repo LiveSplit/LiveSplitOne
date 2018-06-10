@@ -364,8 +364,6 @@ export class RunEditor extends React.Component<Props, State> {
             return this.renderEmptyButtons();
         }
 
-        const leaderboard = getLeaderboard(this.state.editor.game, this.state.editor.category);
-
         const regionList = [""];
         const platformList = [""];
         const allRegions = getRegions();
@@ -550,11 +548,11 @@ export class RunEditor extends React.Component<Props, State> {
             <div className="btn-group" style={{ width: 160, marginRight: 5 }}>
                 <button
                     onClick={(_) => {
-                        if (leaderboard != null) {
-                            window.open(leaderboard.weblink, "_blank");
+                        if (category != null) {
+                            window.open(category.weblink, "_blank");
                         }
                     }}
-                    className={leaderboard == null ? "disabled" : ""}
+                    className={category == null ? "disabled" : ""}
                 >
                     Open Page
                 </button>
@@ -732,8 +730,8 @@ export class RunEditor extends React.Component<Props, State> {
         if (gameInfo != null) {
             hideMilliseconds = !gameInfo.ruleset["show-milliseconds"];
         } else {
-            hideMilliseconds = leaderboard.runs.every((r) => {
-                return r.run.times.primary_t === Math.floor(r.run.times.primary_t);
+            hideMilliseconds = leaderboard.every((r) => {
+                return r.times.primary_t === Math.floor(r.times.primary_t);
             });
         }
 
@@ -747,6 +745,8 @@ export class RunEditor extends React.Component<Props, State> {
                 && value !== filter;
         }
 
+        const uniquenessSet = new Set();
+
         return (
             <table className="table run-editor-tab" style={{ width: 450 }}>
                 <thead className="table-header">
@@ -758,18 +758,18 @@ export class RunEditor extends React.Component<Props, State> {
                     </tr>
                 </thead>
                 <tbody className="table-body">
-                    {leaderboard.runs.map((r) => {
-                        const platform = platformList.get(r.run.system.platform);
+                    {leaderboard.map((run) => {
+                        const platform = platformList.get(run.system.platform);
                         if (isFiltered(platform, this.filters.platform)) {
                             return null;
                         }
 
-                        const region = map(r.run.system.region, (r) => regionList.get(r));
+                        const region = map(run.system.region, (r) => regionList.get(r));
                         if (isFiltered(region, this.filters.region)) {
                             return null;
                         }
 
-                        if (this.filters.isEmulated != null && r.run.system.emulated !== this.filters.isEmulated) {
+                        if (this.filters.isEmulated != null && run.system.emulated !== this.filters.isEmulated) {
                             return null;
                         }
 
@@ -777,7 +777,7 @@ export class RunEditor extends React.Component<Props, State> {
 
                         const variables = map(gameInfo, (g) => g.variables);
                         if (variables != null) {
-                            for (const [keyId, valueId] of Object.entries(r.run.values)) {
+                            for (const [keyId, valueId] of Object.entries(run.values)) {
                                 const variable = variables.data.find((v) => v.id === keyId);
                                 if (variable != null) {
                                     const value = Object.entries(variable.values.values).find(
@@ -800,7 +800,7 @@ export class RunEditor extends React.Component<Props, State> {
                                     (variable.category == null || (variable.category === map(category, (c) => c.id)))
                                     && (variable.scope.type === "full-game" || variable.scope.type === "global")
                                 ) {
-                                    const variableValueId = r.run.values[variable.id];
+                                    const variableValueId = run.values[variable.id];
                                     const variableValue = map(variableValueId, (i) => variable.values.values[i]);
                                     const filterValue = this.filters.variables.get(variable.name);
                                     if (isFiltered(map(variableValue, (v) => v.label), filterValue)) {
@@ -810,21 +810,30 @@ export class RunEditor extends React.Component<Props, State> {
                             }
                         }
 
+                        const uniquenessKeys = run.players.data.map(
+                            (p) => p.rel === "guest" ? `guest:${p.name}` : p.id,
+                        );
+                        const uniquenessKey = JSON.stringify(uniquenessKeys);
+                        if (uniquenessSet.has(uniquenessKey)) {
+                            return null;
+                        }
+                        uniquenessSet.add(uniquenessKey);
+
                         const rowIndex = unfilteredCount;
                         const evenOdd = rowIndex % 2 === 0 ? "table-row-odd" : "table-row-even";
                         let expandedRow = null;
 
                         if (this.expandedLeaderboardRows.get(rowIndex) === true) {
                             let embed = null;
-                            if (r.run.videos != null && r.run.videos.links.length > 0) {
-                                const videoUri = r.run.videos.links[0].uri;
+                            if (run.videos != null && run.videos.links.length > 0) {
+                                const videoUri = run.videos.links[0].uri;
                                 embed = resolveEmbed(videoUri);
                             }
-                            const comment = unwrapOr(r.run.comment, "");
+                            const comment = unwrapOr(run.comment, "");
                             const renderedComment = renderMarkdown(comment);
 
                             expandedRow =
-                                <tr key={`${r.run.id}_expanded`} className={evenOdd}>
+                                <tr key={`${run.id}_expanded`} className={evenOdd}>
                                     <td colSpan={4}>
                                         {embed}
                                         <div className="markdown" style={{
@@ -838,7 +847,7 @@ export class RunEditor extends React.Component<Props, State> {
                                             <tbody>
                                                 <tr>
                                                     <td>Date:</td>
-                                                    <td>{unwrapOr(r.run.date, "").split("-").join("/")}</td>
+                                                    <td>{unwrapOr(run.date, "").split("-").join("/")}</td>
                                                 </tr>
                                                 {map(
                                                     region,
@@ -853,7 +862,7 @@ export class RunEditor extends React.Component<Props, State> {
                                                     (p) =>
                                                         <tr>
                                                             <td>Platform:</td>
-                                                            <td>{p}{r.run.system.emulated ? " Emulator" : null}</td>
+                                                            <td>{p}{run.system.emulated ? " Emulator" : null}</td>
                                                         </tr>,
                                                 )}
                                                 {renderedVariables}
@@ -865,15 +874,15 @@ export class RunEditor extends React.Component<Props, State> {
 
                         unfilteredCount += 1;
 
-                        if (r.run.times.primary !== lastTime) {
+                        if (run.times.primary !== lastTime) {
                             rank = unfilteredCount;
-                            lastTime = r.run.times.primary;
+                            lastTime = run.times.primary;
                         }
 
                         return [
                             <tr
-                                key={r.run.id}
-                                title={unwrapOr(r.run.comment, "")}
+                                key={run.id}
+                                title={unwrapOr(run.comment, "")}
                                 className={`leaderboard-row ${evenOdd}`}
                                 onClick={(_) => this.toggleExpandLeaderboardRow(rowIndex)}
                                 style={{
@@ -883,17 +892,9 @@ export class RunEditor extends React.Component<Props, State> {
                                 <td className="number">{rank}</td>
                                 <td>
                                     {
-                                        r.run.players.map((p, i) => {
+                                        run.players.data.map((p, i) => {
                                             if (p.rel === "user") {
-                                                const players = expect(
-                                                    leaderboard.players,
-                                                    "The leaderboard is supposed to have a players embed.",
-                                                );
-                                                const player = expect(
-                                                    players.data.find((f) => f.id === p.id),
-                                                    "The player is supposed to be embedded.",
-                                                );
-                                                const style = player["name-style"];
+                                                const style = p["name-style"];
                                                 let color;
                                                 if (style.style === "gradient") {
                                                     color = style["color-from"].dark;
@@ -901,18 +902,18 @@ export class RunEditor extends React.Component<Props, State> {
                                                     color = style.color.dark;
                                                 }
                                                 const flag = map(
-                                                    player.location,
+                                                    p.location,
                                                     (l) => replaceFlag(`[${l.country.code}]`),
                                                 );
                                                 return [
                                                     i !== 0 ? ", " : null,
                                                     <a
                                                         target="_blank"
-                                                        href={player.weblink}
+                                                        href={p.weblink}
                                                         style={{ color }}
                                                         onClick={(e) => e.stopPropagation()}
                                                     >
-                                                        {flag}{player.names.international}
+                                                        {flag}{p.names.international}
                                                     </a>,
                                                 ];
                                             } else {
@@ -924,20 +925,20 @@ export class RunEditor extends React.Component<Props, State> {
                                 </td>
                                 <td style={{ width: 120 }} className="number">
                                     <a
-                                        href={r.run.weblink}
+                                        href={run.weblink}
                                         target="_blank"
                                         style={{ color: "white" }}
                                         onClick={(e) => e.stopPropagation()}
                                     >
-                                        {formatLeaderboardTime(r.run.times.primary_t, hideMilliseconds)}
+                                        {formatLeaderboardTime(run.times.primary_t, hideMilliseconds)}
                                     </a>
                                 </td>
                                 <td style={{ textAlign: "center" }}>
                                     {
-                                        map(r.run.splits, (s) => <i
+                                        map(run.splits, (s) => <i
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                this.downloadSplits(r.run, s.uri);
+                                                this.downloadSplits(run, s.uri);
                                             }}
                                             className="fa fa-download"
                                             style={{ cursor: "pointer" }}
@@ -1704,7 +1705,7 @@ export class RunEditor extends React.Component<Props, State> {
         return this.state.tab;
     }
 
-    private async downloadSplits(apiRun: Run, apiUri: string) {
+    private async downloadSplits<T>(apiRun: Run<T>, apiUri: string) {
         const baseUri = "https://splits.io/api/v3/runs/";
         assert(apiUri.startsWith(baseUri), "Unexpected splits i/o URL");
         const splitsId = apiUri.slice(baseUri.length);
