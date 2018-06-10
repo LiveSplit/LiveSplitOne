@@ -647,17 +647,19 @@ export class RunEditor extends React.Component<Props, State> {
                     },
                 });
             }
-            platformOffset = fields.length;
-            fields.push({
-                text: "Platform",
-                value: {
-                    CustomCombobox: {
-                        value: metadata.platform_name,
-                        list: platformList,
-                        mandatory: true,
+            if (platformList.length > 1) {
+                platformOffset = fields.length;
+                fields.push({
+                    text: "Platform",
+                    value: {
+                        CustomCombobox: {
+                            value: metadata.platform_name,
+                            list: platformList,
+                            mandatory: true,
+                        },
                     },
-                },
-            });
+                });
+            }
             if (gameInfo.ruleset["emulators-allowed"]) {
                 emulatorOffset = fields.length;
                 fields.push({
