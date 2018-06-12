@@ -20,6 +20,7 @@ after_script: set +e
 cache:
   directories:
     - $HOME/.cargo
+    - $HOME/binaryen
     - $TRAVIS_BUILD_DIR/livesplit-core/target
 before_cache:
 - chmod -R a+r $HOME/.cargo
