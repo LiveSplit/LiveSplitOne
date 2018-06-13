@@ -2,7 +2,6 @@ set -ex
 
 main() {
     curl -sSf https://build.travis-ci.org/files/rustup-init.sh | sh -s -- --default-toolchain=nightly -y
-    cd $HOME && git clone https://github.com/WebAssembly/binaryen
     export PATH=$HOME/.cargo/bin:$PATH
 
     local target=
@@ -11,7 +10,11 @@ main() {
         sort=sort
     fi
 
-    cd $HOME/binaryen && cmake . && make wasm-opt
+    cd $HOME
+    git -C binaryen pull || git clone https://github.com/WebAssembly/binaryen binaryen
+    cd binaryen
+    cmake .
+    make wasm-opt
 
     rustup target install $TARGET
 

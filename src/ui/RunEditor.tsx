@@ -7,9 +7,9 @@ import { toast } from "react-toastify";
 import {
     downloadGameList, searchGames, getCategories, downloadCategories,
     downloadLeaderboard, getLeaderboard, downloadPlatformList, getPlatforms,
-    downloadRegionList, getRegions, downloadGameInfo, getGameInfo,
+    downloadRegionList, getRegions, downloadGameInfo, getGameInfo, downloadGameInfoByGameId, downloadCategoriesByGameId,
 } from "../api/GameList";
-import { Category, Run } from "../api/SpeedrunCom";
+import { Category, Run, getRun } from "../api/SpeedrunCom";
 import { Option, expect, map, assert, unwrapOr } from "../util/OptionUtil";
 import { downloadById } from "../util/SplitsIO";
 import { formatLeaderboardTime } from "../util/TimeUtil";
@@ -340,8 +340,14 @@ export class RunEditor extends React.Component<Props, State> {
         );
     }
 
-    private renderEmptyButtons(): JSX.Element {
-        return <div style={{ width: 165 }} />;
+    private renderGeneralButtons(): JSX.Element {
+        return (
+            <div className="btn-group" style={{ width: 160, marginRight: 5 }}>
+                <button onClick={(_) => this.interactiveAssociateRunOrOpenPage()}>
+                    {this.state.editor.metadata.run_id !== "" ? "Open PB Page" : "Associate Run"}
+                </button>
+            </div>
+        );
     }
 
     private renderTab(tab: Tab, category: Option<Category>): JSX.Element[] {
@@ -350,9 +356,9 @@ export class RunEditor extends React.Component<Props, State> {
             case Tab.GameTime:
                 return [this.renderSegmentListButtons(), this.renderSegmentsTable()];
             case Tab.Variables:
-                return [this.renderEmptyButtons(), this.renderVariablesTab(category)];
+                return [this.renderGeneralButtons(), this.renderVariablesTab(category)];
             case Tab.Rules:
-                return [this.renderEmptyButtons(), this.renderRulesTab(category)];
+                return [this.renderGeneralButtons(), this.renderRulesTab(category)];
             case Tab.Leaderboard:
                 return [this.renderLeaderboardButtons(category), this.renderLeaderboard(category)];
         }
@@ -361,7 +367,7 @@ export class RunEditor extends React.Component<Props, State> {
     private renderLeaderboardButtons(category: Option<Category>): JSX.Element {
         const gameInfo = getGameInfo(this.state.editor.game);
         if (gameInfo == null) {
-            return this.renderEmptyButtons();
+            return this.renderGeneralButtons();
         }
 
         const regionList = [""];
@@ -554,13 +560,13 @@ export class RunEditor extends React.Component<Props, State> {
                     }}
                     className={category == null ? "disabled" : ""}
                 >
-                    Open Page
+                    Open Leaderboard
                 </button>
                 <button className="disabled">
                     Submit Run
                 </button>
-                <button className="disabled">
-                    Associate Run
+                <button onClick={(_) => this.interactiveAssociateRunOrOpenPage()}>
+                    {this.state.editor.metadata.run_id !== "" ? "Open PB Page" : "Associate Run"}
                 </button>
                 {subcategoryBoxes}
                 <table className="table filter-table">
@@ -1724,34 +1730,12 @@ export class RunEditor extends React.Component<Props, State> {
             run.with((run) => {
                 const newEditor = LiveSplit.RunEditor.new(run);
                 if (newEditor != null) {
-                    newEditor.setGameName(gameName);
-                    newEditor.setCategoryName(categoryName);
-                    const platform = getPlatforms().get(apiRun.system.platform);
-                    if (platform != null) {
-                        newEditor.setPlatformName(platform);
-                    }
-                    const region = map(apiRun.system.region, (r) => getRegions().get(r));
-                    if (region != null) {
-                        newEditor.setRegionName(region);
-                    }
-                    newEditor.setEmulatorUsage(apiRun.system.emulated);
-                    const variables = map(getGameInfo(gameName), (g) => g.variables);
-                    if (variables != null) {
-                        for (const [keyId, valueId] of Object.entries(apiRun.values)) {
-                            const variable = variables.data.find((v) => v.id === keyId);
-                            if (variable != null) {
-                                const value = Object.entries(variable.values.values).find(
-                                    ([listValueId]) => listValueId === valueId,
-                                );
-                                if (value != null) {
-                                    const valueName = value[1].label;
-                                    newEditor.setVariable(variable.name, valueName);
-                                }
-                            }
-                        }
-                    }
-                    // Needs to be set last in order for it not to dissociate again
-                    newEditor.setRunId(apiRun.id);
+                    associateRun(
+                        newEditor,
+                        gameName,
+                        categoryName,
+                        apiRun,
+                    );
 
                     // TODO Oh no, not internal pointer stuff
                     this.props.editor.dispose();
@@ -1800,4 +1784,81 @@ export class RunEditor extends React.Component<Props, State> {
             }
         }
     }
+
+    private async interactiveAssociateRunOrOpenPage() {
+        const currentRunId = this.state.editor.metadata.run_id;
+        if (currentRunId !== "") {
+            window.open(`https://www.speedrun.com/run/${currentRunId}`, "_blank");
+            return;
+        }
+
+        const idOrUrl = prompt("Specify the speedrun.com ID or URL of the run:");
+        if (idOrUrl == null) {
+            return;
+        }
+        const pattern = /^(?:(?:https?:\/\/)?(?:www\.)?speedrun\.com\/(?:\w+\/)?run\/)?(\w+)$/;
+        const matches = pattern.exec(idOrUrl);
+        if (matches == null) {
+            toast.error("Invalid speedrun.com ID or URL.");
+            return;
+        }
+        const runId = matches[1];
+        const run = await getRun(runId);
+        const gameInfo = await downloadGameInfoByGameId(run.game);
+        const categories = await downloadCategoriesByGameId(run.game);
+        const category = expect(
+            categories.find((c) => c.id === run.category),
+            "The category doesn't belong to the game.",
+        );
+
+        const gameName = gameInfo.names.international;
+        const categoryName = category.name;
+
+        associateRun(
+            this.props.editor,
+            gameName,
+            categoryName,
+            run,
+        );
+
+        this.refreshLeaderboard(gameName, categoryName);
+        this.resetTotalLeaderboardState();
+        this.update();
+    }
+}
+
+function associateRun<T>(
+    editor: LiveSplit.RunEditorRefMut,
+    gameName: string,
+    categoryName: string,
+    apiRun: Run<T>,
+) {
+    editor.setGameName(gameName);
+    editor.setCategoryName(categoryName);
+    const platform = getPlatforms().get(apiRun.system.platform);
+    if (platform != null) {
+        editor.setPlatformName(platform);
+    }
+    const region = map(apiRun.system.region, (r) => getRegions().get(r));
+    if (region != null) {
+        editor.setRegionName(region);
+    }
+    editor.setEmulatorUsage(apiRun.system.emulated);
+    const variables = map(getGameInfo(gameName), (g) => g.variables);
+    if (variables != null) {
+        for (const [keyId, valueId] of Object.entries(apiRun.values)) {
+            const variable = variables.data.find((v) => v.id === keyId);
+            if (variable != null) {
+                const value = Object.entries(variable.values.values).find(
+                    ([listValueId]) => listValueId === valueId,
+                );
+                if (value != null) {
+                    const valueName = value[1].label;
+                    editor.setVariable(variable.name, valueName);
+                }
+            }
+        }
+    }
+    // Needs to be set last in order for it not to dissociate again
+    editor.setRunId(apiRun.id);
 }

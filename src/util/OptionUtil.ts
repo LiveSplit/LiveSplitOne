@@ -1,9 +1,12 @@
+import { toast } from "react-toastify";
+
 export type Option<T> = T | null | undefined;
 
 export function expect<T>(obj: Option<T>, message: string): T {
     if (obj != null) {
         return obj;
     }
+    toast.error(`Bug: ${message}`);
     throw new Error(message);
 }
 

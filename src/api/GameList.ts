@@ -16,9 +16,9 @@ const platformList: Map<string, string> = new Map();
 const regionList: Map<string, string> = new Map();
 const gameNameToIdMap: Map<string, string> = new Map();
 const gameIdToCategoriesMap: Map<string, Category[]> = new Map();
-const gameIdToCategoriesPromises: Map<string, Promise<void>> = new Map();
+const gameIdToCategoriesPromises: Map<string, Promise<Category[]>> = new Map();
 const gameIdToGameInfoMap: Map<string, Game> = new Map();
-const gameIdToGameInfoPromises: Map<string, Promise<void>> = new Map();
+const gameIdToGameInfoPromises: Map<string, Promise<Game>> = new Map();
 const gameAndCategoryToLeaderboardPromises: Map<string, Promise<void>> = new Map();
 const gameAndCategoryToLeaderboardMap: Map<string, Array<Run<PlayersEmbedded>>> = new Map();
 let gameListPromise: Option<Promise<void>> = null;
@@ -66,13 +66,14 @@ export function getLeaderboard(gameName: string, categoryName: string): Array<Ru
     return gameAndCategoryToLeaderboardMap.get(key);
 }
 
-function downloadCategoriesByGameId(gameId: string): Promise<void> {
+export function downloadCategoriesByGameId(gameId: string): Promise<Category[]> {
     let categoryPromise = gameIdToCategoriesPromises.get(gameId);
     if (categoryPromise == null) {
         categoryPromise = (async () => {
             const categories = await apiGetCategories(gameId);
             const categoryNames = categories.filter((c) => c.type === "per-game");
             gameIdToCategoriesMap.set(gameId, categoryNames);
+            return categories;
         })();
         gameIdToCategoriesPromises.set(gameId, categoryPromise);
     }
@@ -88,12 +89,13 @@ export async function downloadCategories(gameName: string): Promise<Option<strin
     return gameId;
 }
 
-function downloadGameInfoByGameId(gameId: string): Promise<void> {
+export function downloadGameInfoByGameId(gameId: string): Promise<Game> {
     let gameInfoPromise = gameIdToGameInfoPromises.get(gameId);
     if (gameInfoPromise == null) {
         gameInfoPromise = (async () => {
             const gameInfo = await apiGetGame(gameId, ["variables"]);
             gameIdToGameInfoMap.set(gameId, gameInfo);
+            return gameInfo;
         })();
         gameIdToGameInfoPromises.set(gameId, gameInfoPromise);
     }

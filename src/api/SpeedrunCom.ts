@@ -156,15 +156,17 @@ export interface PlayersEmbedded {
 
 export interface Run<PlayerEmbedding = PlayersNotEmbedded> {
     id: string,
+    weblink: string,
+    game: string,
+    category: string,
+    videos: Option<Videos>,
     comment: Option<string>,
     players: PlayerEmbedding,
-    times: Times,
-    splits: Option<Splits>,
-    weblink: string,
-    submitted: Option<string>,
     date: Option<string>,
-    videos: Option<Videos>,
+    submitted: Option<string>,
+    times: Times,
     system: RunSystem,
+    splits: Option<Splits>,
     values: { [key: string]: string | undefined },
 }
 
@@ -410,4 +412,13 @@ export async function getRuns(
     }
     const uri = getRunsUri(evaluateParameters(parameters));
     return executePaginatedRequest<Run<PlayersEmbedded | PlayersNotEmbedded>>(uri);
+}
+
+export async function getRun(runId: string, embeds?: never[]): Promise<Run> {
+    const parameters = [];
+    if (embeds != null) {
+        parameters.push(`embed=${embeds.join(",")}`);
+    }
+    const uri = getRunsUri(`/${runId}${evaluateParameters(parameters)}`);
+    return executeRequest<Run>(uri);
 }
