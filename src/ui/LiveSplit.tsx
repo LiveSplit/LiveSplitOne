@@ -91,6 +91,14 @@ export class LiveSplit extends React.Component<{}, State> {
         window.addEventListener("wheel", this.scrollEvent);
         this.rightClickEvent = { handleEvent: (e: any) => this.onRightClick(e) };
         window.addEventListener("contextmenu", this.rightClickEvent, false);
+        window.onbeforeunload = (e) => {
+            const hasBeenModified = this.state.timer.readWith((t) => t.getRun().hasBeenModified());
+            if (hasBeenModified) {
+                e.returnValue = "There are unsaved changes. Do you really want to close LiveSplit One?";
+                return e.returnValue;
+            }
+            return null;
+        };
     }
 
     public componentWillUnmount() {
@@ -228,34 +236,53 @@ export class LiveSplit extends React.Component<{}, State> {
         this.loadFromSplitsIO(id);
     }
 
-    public uploadToSplitsIO(): Promise<Option<Window>> {
+    public async uploadToSplitsIO(): Promise<Option<Window>> {
         const lss = this.readWith((t) => t.getRun().saveAsLss());
 
-        return SplitsIO
-            .uploadLss(lss)
-            .then((claimUri) => window.open(claimUri))
-            .catch((_) => { toast.error("Failed to upload the splits."); return null; });
+        try {
+            const claimUri = await SplitsIO.uploadLss(lss);
+            return window.open(claimUri);
+        } catch (_) {
+            toast.error("Failed to upload the splits.");
+            return null;
+        }
     }
 
     public exportSplits() {
-        const [lss, name] = this.readWith((t) => {
+        const [lss, name] = this.writeWith((t) => {
+            t.markAsUnmodified();
             const run = t.getRun();
             return [
                 run.saveAsLss(),
                 run.extendedFileName(true),
             ];
         });
-        exportFile(name + ".lss", lss);
+        try {
+            exportFile(name + ".lss", lss);
+        } catch (_) {
+            toast.error("Failed to export the splits.");
+        }
     }
 
     public saveSplits() {
-        const lss = this.readWith((t) => t.saveAsLss());
-        localStorage.setItem("splits", lss);
+        const lss = this.writeWith((t) => {
+            t.markAsUnmodified();
+            return t.saveAsLss();
+        });
+        try {
+            localStorage.setItem("splits", lss);
+        } catch (_) {
+            toast.error("Failed to save the splits.");
+        }
     }
 
     public saveLayout() {
-        const layout = this.state.layout.settingsAsJson();
-        localStorage.setItem("layout", JSON.stringify(layout));
+        try {
+            const layout = this.state.layout.settingsAsJson();
+            localStorage.setItem("layout", JSON.stringify(layout));
+        } catch (_) {
+            toast.error("Failed to save the layout.");
+        }
     }
 
     public importLayout() {
@@ -436,16 +463,16 @@ export class LiveSplit extends React.Component<{}, State> {
         };
     }
 
-    private loadFromSplitsIO(id: string) {
-        SplitsIO.downloadById(id).then(
-            (run) => {
-                maybeDisposeAndThen(
-                    this.writeWith((t) => t.setRun(run)),
-                    () => toast.error("The downloaded splits are not valid."),
-                );
-            },
-            (_) => toast.error("Failed to download the splits."),
-        );
+    private async loadFromSplitsIO(id: string) {
+        try {
+            const run = await SplitsIO.downloadById(id);
+            maybeDisposeAndThen(
+                this.writeWith((t) => t.setRun(run)),
+                () => toast.error("The downloaded splits are not valid."),
+            );
+        } catch (_) {
+            toast.error("Failed to download the splits.");
+        }
     }
 
     private onScroll(e: WheelEvent) {

@@ -983,6 +983,99 @@ export type SemanticColor = "Default" |
 
 
 /**
+ * The analysis module provides a variety of functions for calculating
+ * information about runs.
+ */
+export class AnalysisRef {
+    ptr: number;
+    /**
+     * This constructor is an implementation detail. Do not use this.
+     */
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+/**
+ * The analysis module provides a variety of functions for calculating
+ * information about runs.
+ */
+export class AnalysisRefMut extends AnalysisRef {
+}
+
+/**
+ * The analysis module provides a variety of functions for calculating
+ * information about runs.
+ */
+export class Analysis extends AnalysisRefMut {
+    /**
+     * Allows for scoped usage of the object. The object is guaranteed to get
+     * disposed once this function returns. You are free to dispose the object
+     * early yourself anywhere within the scope. The scope's return value gets
+     * carried to the outside of this function.
+     */
+    with<T>(closure: (obj: Analysis) => T): T {
+        try {
+            return closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    /**
+     * Disposes the object, allowing it to clean up all of its memory. You need
+     * to call this for every object that you don't use anymore and hasn't
+     * already been disposed.
+     */
+    dispose() {
+        if (this.ptr != 0) {
+            this.ptr = 0;
+        }
+    }
+    /**
+     * Calculates the Sum of Best Segments for the timing method provided. This is
+     * the fastest time possible to complete a run of a category, based on
+     * information collected from all the previous attempts. This often matches up
+     * with the sum of the best segment times of all the segments, but that may not
+     * always be the case, as skipped segments may introduce combined segments that
+     * may be faster than the actual sum of their best segment times. The name is
+     * therefore a bit misleading, but sticks around for historical reasons. You
+     * can choose to do a simple calculation instead, which excludes the Segment
+     * History from the calculation process. If there's an active attempt, you can
+     * choose to take it into account as well. Can return null.
+     */
+    static calculateSumOfBest(run: RunRef, simpleCalculation: boolean, useCurrentRun: boolean, method: number): TimeSpan | null {
+        if (run.ptr == 0) {
+            throw "run is disposed";
+        }
+        const result = new TimeSpan(instance().exports.Analysis_calculate_sum_of_best(run.ptr, simpleCalculation ? 1 : 0, useCurrentRun ? 1 : 0, method));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    /**
+     * Calculates the total playtime of the passed Run.
+     */
+    static calculateTotalPlaytimeForRun(run: RunRef): TimeSpan {
+        if (run.ptr == 0) {
+            throw "run is disposed";
+        }
+        const result = new TimeSpan(instance().exports.Analysis_calculate_total_playtime_for_run(run.ptr));
+        return result;
+    }
+    /**
+     * Calculates the total playtime of the passed Timer.
+     */
+    static calculateTotalPlaytimeForTimer(timer: TimerRef): TimeSpan {
+        if (timer.ptr == 0) {
+            throw "timer is disposed";
+        }
+        const result = new TimeSpan(instance().exports.Analysis_calculate_total_playtime_for_timer(timer.ptr));
+        return result;
+    }
+}
+
+/**
  * An Atomic Date Time represents a UTC Date Time that tries to be as close to
  * an atomic clock as possible.
  */
@@ -3777,6 +3870,17 @@ export class RunRef {
         return result;
     }
     /**
+     * Returns whether the Run has been modified and should be saved so that the
+     * changes don't get lost.
+     */
+    hasBeenModified(): boolean {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = instance().exports.Run_has_been_modified(this.ptr) != 0;
+        return result;
+    }
+    /**
      * Accesses a certain segment of this Run. You may not provide an out of bounds
      * index.
      */
@@ -3900,6 +4004,16 @@ export class RunRefMut extends RunRef {
         const category_allocated = allocString(category);
         instance().exports.Run_set_category_name(this.ptr, category_allocated.ptr);
         dealloc(category_allocated);
+    }
+    /**
+     * Marks the Run as modified, so that it is known that there are changes
+     * that should be saved.
+     */
+    markAsModified() {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        instance().exports.Run_mark_as_modified(this.ptr);
     }
 }
 
@@ -6766,6 +6880,17 @@ export class TimerRefMut extends TimerRef {
         instance().exports.Timer_reset(this.ptr, updateSplits ? 1 : 0);
     }
     /**
+     * Resets the current attempt if there is one in progress. The splits are
+     * updated such that the current attempt's split times are being stored as
+     * the new Personal Best.
+     */
+    resetAndSetAttemptAsPb() {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        instance().exports.Timer_reset_and_set_attempt_as_pb(this.ptr);
+    }
+    /**
      * Pauses an active attempt that is not paused.
      */
     pause() {
@@ -6914,6 +7039,16 @@ export class TimerRefMut extends TimerRef {
             throw "time is disposed";
         }
         instance().exports.Timer_set_loading_times(this.ptr, time.ptr);
+    }
+    /**
+     * Marks the Run as unmodified, so that it is known that all the changes
+     * have been saved.
+     */
+    markAsUnmodified() {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        instance().exports.Timer_mark_as_unmodified(this.ptr);
     }
 }
 
