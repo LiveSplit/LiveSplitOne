@@ -46,6 +46,7 @@ interface Filters {
     region?: string,
     platform?: string,
     isEmulated?: boolean,
+    showObsolete: boolean,
     variables: Map<string, string>,
 }
 
@@ -54,7 +55,7 @@ export class RunEditor extends React.Component<Props, State> {
     private segmentIconUrls: string[];
     private dragIndex: number = 0;
     private expandedLeaderboardRows: Map<number, boolean> = new Map();
-    private filters: Filters = { variables: new Map() };
+    private filters: Filters = { variables: new Map(), showObsolete: false };
 
     constructor(props: Props) {
         super(props);
@@ -550,6 +551,27 @@ export class RunEditor extends React.Component<Props, State> {
             }
         }
 
+        filterList.push(<tr><td>Obsolete Runs:</td></tr>);
+        filterList.push(
+            <tr>
+                <td>
+                    <select
+                        value={this.filters.showObsolete ? "Shown" : "Hidden"}
+                        style={{
+                            width: "100%",
+                        }}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            this.filters.showObsolete = value === "Shown";
+                            this.updateFilters();
+                        }}
+                    >
+                        {["Shown", "Hidden"].map((v) => <option value={v}>{v}</option>)}
+                    </select>
+                </td>
+            </tr>,
+        );
+
         return (
             <div className="btn-group" style={{ width: 160, marginRight: 5 }}>
                 <button
@@ -742,7 +764,8 @@ export class RunEditor extends React.Component<Props, State> {
         }
 
         let rank = 0;
-        let unfilteredCount = 0;
+        let visibleRowCount = 0;
+        let uniqueCount = 0;
         let lastTime = "";
 
         function isFiltered(value: string | undefined, filter: string | undefined): boolean {
@@ -819,13 +842,15 @@ export class RunEditor extends React.Component<Props, State> {
                         const uniquenessKeys = run.players.data.map(
                             (p) => p.rel === "guest" ? `guest:${p.name}` : p.id,
                         );
+
                         const uniquenessKey = JSON.stringify(uniquenessKeys);
-                        if (uniquenessSet.has(uniquenessKey)) {
+                        const isUnique = !uniquenessSet.has(uniquenessKey);
+                        if (!isUnique && !this.filters.showObsolete) {
                             return null;
                         }
                         uniquenessSet.add(uniquenessKey);
 
-                        const rowIndex = unfilteredCount;
+                        const rowIndex = visibleRowCount;
                         const evenOdd = rowIndex % 2 === 0 ? "table-row-odd" : "table-row-even";
                         let expandedRow = null;
 
@@ -878,11 +903,13 @@ export class RunEditor extends React.Component<Props, State> {
                                 </tr>;
                         }
 
-                        unfilteredCount += 1;
-
-                        if (run.times.primary !== lastTime) {
-                            rank = unfilteredCount;
-                            lastTime = run.times.primary;
+                        visibleRowCount += 1;
+                        if (isUnique) {
+                            uniqueCount += 1;
+                            if (run.times.primary !== lastTime) {
+                                rank = uniqueCount;
+                                lastTime = run.times.primary;
+                            }
                         }
 
                         return [
@@ -895,7 +922,7 @@ export class RunEditor extends React.Component<Props, State> {
                                     cursor: "pointer",
                                 }}
                             >
-                                <td className="number">{rank}</td>
+                                <td className="number">{isUnique ? rank : "—"}</td>
                                 <td>
                                     {
                                         run.players.data.map((p, i) => {
@@ -1634,7 +1661,7 @@ export class RunEditor extends React.Component<Props, State> {
 
     private resetTotalLeaderboardState() {
         this.resetIndividualLeaderboardState();
-        this.filters = { variables: new Map() };
+        this.filters = { variables: new Map(), showObsolete: false };
     }
 
     private resetIndividualLeaderboardState() {
