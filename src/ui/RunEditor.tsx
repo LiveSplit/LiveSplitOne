@@ -1301,25 +1301,24 @@ export class RunEditor extends React.Component<Props, State> {
         this.update();
     }
 
-    private importComparison() {
-        openFileAsArrayBuffer((data, file) => {
-            const result = LiveSplit.Run.parseArray(new Int8Array(data), "", false);
-            if (!result.parsedSuccessfully()) {
-                toast.error("Couldn't parse the splits.");
+    private async importComparison() {
+        const [data, file] = await openFileAsArrayBuffer();
+        const result = LiveSplit.Run.parseArray(new Int8Array(data), "", false);
+        if (!result.parsedSuccessfully()) {
+            toast.error("Couldn't parse the splits.");
+            return;
+        }
+        result.unwrap().with((run) => {
+            const comparisonName = prompt("Comparison Name:", file.name.replace(/\.[^/.]+$/, ""));
+            if (!comparisonName) {
                 return;
             }
-            result.unwrap().with((run) => {
-                const comparisonName = prompt("Comparison Name:", file.name.replace(/\.[^/.]+$/, ""));
-                if (!comparisonName) {
-                    return;
-                }
-                const valid = this.props.editor.importComparison(run, comparisonName);
-                if (!valid) {
-                    toast.error("The comparison could not be added. It may be a duplicate or a reserved name.");
-                } else {
-                    this.update();
-                }
-            });
+            const valid = this.props.editor.importComparison(run, comparisonName);
+            if (!valid) {
+                toast.error("The comparison could not be added. It may be a duplicate or a reserved name.");
+            } else {
+                this.update();
+            }
         });
     }
 
@@ -1359,12 +1358,11 @@ export class RunEditor extends React.Component<Props, State> {
         return this.state.rowState.comparisonIsValid[index];
     }
 
-    private changeSegmentIcon(index: number) {
+    private async changeSegmentIcon(index: number) {
         this.props.editor.selectOnly(index);
-        openFileAsArrayBuffer((file) => {
-            this.props.editor.activeSetIconFromArray(new Int8Array(file));
-            this.update();
-        });
+        const [file] = await openFileAsArrayBuffer();
+        this.props.editor.activeSetIconFromArray(new Int8Array(file));
+        this.update();
     }
 
     private removeSegmentIcon(index: number) {
@@ -1393,11 +1391,10 @@ export class RunEditor extends React.Component<Props, State> {
         return this.segmentIconUrls[index];
     }
 
-    private changeGameIcon() {
-        openFileAsArrayBuffer((file) => {
-            this.props.editor.setGameIconFromArray(new Int8Array(file));
-            this.update();
-        });
+    private async changeGameIcon() {
+        const [file] = await openFileAsArrayBuffer();
+        this.props.editor.setGameIconFromArray(new Int8Array(file));
+        this.update();
     }
 
     private removeGameIcon() {

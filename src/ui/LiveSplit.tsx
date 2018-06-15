@@ -197,20 +197,19 @@ export class LiveSplit extends React.Component<{}, State> {
         );
     }
 
-    public importSplits() {
-        openFileAsArrayBuffer((file) => {
-            const timer = this.state.timer;
-            const result = Run.parseArray(new Int8Array(file), "", false);
-            if (result.parsedSuccessfully()) {
-                const run = result.unwrap();
-                maybeDisposeAndThen(
-                    timer.writeWith((t) => t.setRun(run)),
-                    () => toast.error("Empty Splits are not supported."),
-                );
-            } else {
-                toast.error("Couldn't parse the splits.");
-            }
-        });
+    public async importSplits() {
+        const [file] = await openFileAsArrayBuffer();
+        const timer = this.state.timer;
+        const result = Run.parseArray(new Int8Array(file), "", false);
+        if (result.parsedSuccessfully()) {
+            const run = result.unwrap();
+            maybeDisposeAndThen(
+                timer.writeWith((t) => t.setRun(run)),
+                () => toast.error("Empty Splits are not supported."),
+            );
+        } else {
+            toast.error("Couldn't parse the splits.");
+        }
     }
 
     public setCurrentTimingMethod(timingMethod: TimingMethod) {
@@ -285,22 +284,21 @@ export class LiveSplit extends React.Component<{}, State> {
         }
     }
 
-    public importLayout() {
-        openFileAsString((file) => {
-            try {
-                const layout = Layout.parseJson(JSON.parse(file));
-                if (layout != null) {
-                    this.state.layout.dispose();
-                    this.setState({
-                        ...this.state,
-                        layout,
-                    });
-                    layout.remount();
-                    return;
-                }
-            } catch (_) { /* Failed to load the layout */ }
-            toast.error("Error loading Layout. This may not be a LiveSplit One Layout.");
-        });
+    public async importLayout() {
+        const [file] = await openFileAsString();
+        try {
+            const layout = Layout.parseJson(JSON.parse(file));
+            if (layout != null) {
+                this.state.layout.dispose();
+                this.setState({
+                    ...this.state,
+                    layout,
+                });
+                layout.remount();
+                return;
+            }
+        } catch (_) { /* Failed to load the layout */ }
+        toast.error("Error loading Layout. This may not be a LiveSplit One Layout.");
     }
 
     public exportLayout() {
