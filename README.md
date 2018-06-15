@@ -42,14 +42,14 @@ run serve` to just host it without opening a browser tab.
 
 | Browser | Compatibility | Known Issues |
 |---------|---------------|--------------|
-| Chrome  | ≥57          | |
-| Firefox | ≥52          | Autocompletion List incomplete |
-| Edge    | ≥16          | Hotkeys don't work<br>Autocompletion is unreadable |
+| Chrome  | ≥57          | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/Google%20Chrome.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3AGoogle%20Chrome) |
+| Firefox | ≥52          | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/Firefox.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3AFirefox) |
+| Edge    | ≥16          | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/Microsoft%20Edge.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3AMicrosoft%20Edge) |
 | Safari  | ≥11          | |
-| Opera   | ≥44          | |
-| iOS     | ≥11.2        | No Autocompletion<br>Import & Export don't work |
-| Android WebView | ≥62 | |
-| Chrome Android | ≥66 | |
-| Firefox Android | ≥60 | |
-| Internet Explorer | Unsupported | |
+| Opera   | ≥44          | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/Google%20Chrome.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3AGoogle%20Chrome) |
+| iOS     | ≥11.2        | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/iOS.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3AiOS) |
+| Android WebView | ≥62 | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/Android.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3AAndroid) |
+| Chrome Android | ≥66 | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/Android.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3AAndroid) |
+| Firefox Android | ≥60 | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/Android.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3AAndroid) |
+| Internet Explorer | Unsupported | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/Internet%20Explorer.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3AInternet%20Explorer) |
 | Opera Mini | Unsupported | |
