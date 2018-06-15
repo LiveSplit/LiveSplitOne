@@ -60,22 +60,7 @@ module.exports = (env, argv) => {
                 {
                     test: /\.tsx?$/,
                     use: [
-                        {
-                            loader: "babel-loader",
-                            options: {
-                                presets: [
-                                    [
-                                        "env",
-                                        {
-                                            targets: {
-                                                uglify: isProduction,
-                                            },
-                                            forceAllTransforms: isProduction,
-                                        },
-                                    ],
-                                ],
-                            },
-                        },
+                        "babel-loader",
                         "ts-loader",
                     ],
                     exclude: "/node_modules",
