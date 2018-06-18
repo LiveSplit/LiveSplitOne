@@ -6,14 +6,17 @@ module.exports = (env, argv) => {
     const path = require("path");
 
     const basePath = __dirname;
-    const distPath = path.join(basePath, "dist");
 
     const isProduction = argv.mode === "production";
+    const isElectron = argv.electron != null;
+    const distPath = path.join(basePath, isElectron ? "dist/electron" : "dist/web");
 
     return {
-        entry: ["babel-polyfill", "whatwg-fetch", "./src/index.tsx"],
+        entry: {
+            "bundle": ["babel-polyfill", "whatwg-fetch", "./src/index.tsx"],
+        },
         output: {
-            filename: "bundle.js",
+            filename: "[name].js",
             path: distPath,
         },
 
@@ -31,7 +34,7 @@ module.exports = (env, argv) => {
         },
 
         plugins: [
-            ...(isProduction ? [new CleanWebpackPlugin(["dist"])] : []),
+            ...(isProduction ? [new CleanWebpackPlugin([distPath])] : []),
             new HtmlWebpackPlugin({
                 template: "./src/index.html",
             }),
@@ -51,6 +54,11 @@ module.exports = (env, argv) => {
             })] : []),
             new CopyWebpackPlugin([
                 { from: "src/livesplit_core.wasm", to: "livesplit_core.wasm" },
+                ...(
+                    isElectron
+                        ? [{ from: "src/electronMain.js", to: "index.js" }]
+                        : []
+                ),
             ], {}),
         ],
 

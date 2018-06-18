@@ -27,7 +27,7 @@ doCompile
 git config --global user.email "christopher.serr@gmail.com"
 git config --global user.name "Travis CI"
 git checkout -b gh-pages
-mv dist/* .
+mv dist/web/* .
 git add :/
 git commit -m "gh pages"
 

@@ -6,6 +6,7 @@
   "scripts": {
     "build:core": "node buildCore.js",
     "start": "webpack-dev-server --open",
+    "start:electron": "webpack --electron && electron dist/electron",
     "serve": "webpack-dev-server",
     "build": "webpack",
     "publish": "webpack -p"
@@ -43,6 +44,7 @@
     "clean-webpack-plugin": "^0.1.19",
     "copy-webpack-plugin": "^4.5.1",
     "css-loader": "^0.28.11",
+    "electron": "^2.0.2",
     "file-loader": "^1.1.11",
     "html-webpack-plugin": "^3.2.0",
     "source-map-loader": "^0.2.3",
