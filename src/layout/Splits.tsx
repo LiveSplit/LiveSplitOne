@@ -1,6 +1,8 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit";
 import Split from "./Split";
+import { gradientToCss, colorToCss } from "../util/ColorUtil";
+import { Option } from "../util/OptionUtil";
 
 export interface Props {
     state: LiveSplit.SplitsComponentStateJson,
@@ -23,11 +25,24 @@ export default class Splits extends React.Component<Props> {
             this.iconUrls[iconChange.segment_index] = iconChange.icon;
         }
 
+        const background = this.props.state.background;
+        const style: any = {};
+        let evenOdd: [Option<string>, Option<string>] = [null, null];
+        if ("Alternating" in background) {
+            evenOdd = [
+                colorToCss(background.Alternating[0]),
+                colorToCss(background.Alternating[1]),
+            ];
+        } else {
+            style.background = gradientToCss(background.Same);
+        }
+
         return (
-            <div className="splits">
+            <div className="splits" style={style}>
                 {
                     this.props.state.splits.map((s: LiveSplit.SplitStateJson, i: number) =>
                         <Split
+                            evenOdd={evenOdd}
                             split={s}
                             splitsState={this.props.state}
                             layoutState={this.props.layoutState}

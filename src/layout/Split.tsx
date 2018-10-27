@@ -1,9 +1,11 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit";
 import { colorToCss, gradientToCss } from "../util/ColorUtil";
+import { Option } from "../util/OptionUtil";
 
 export interface Props {
     splitsState: LiveSplit.SplitsComponentStateJson,
+    evenOdd: [Option<string>, Option<string>],
     split: LiveSplit.SplitStateJson,
     icon: string,
     separatorInFrontOfSplit: boolean,
@@ -23,10 +25,13 @@ export default class Split extends React.Component<Props> {
 
         const innerStyle: any = {};
         if (this.props.split.index % 2 === 1) {
-            innerStyle.borderBottom = `1px solid ${colorToCss(this.props.layoutState.thin_separators_color)}`;
-            innerStyle.backgroundColor = "hsla(0, 0%, 100%, 0.04)";
+            innerStyle.borderBottom = this.props.splitsState.show_thin_separators
+                ? `1px solid ${colorToCss(this.props.layoutState.thin_separators_color)}`
+                : "1px solid transparent";
+            innerStyle.backgroundColor = this.props.evenOdd[1];
         } else {
             innerStyle.borderBottom = "1px solid transparent";
+            innerStyle.backgroundColor = this.props.evenOdd[0];
         }
         innerStyle.borderTop = innerStyle.borderBottom;
 

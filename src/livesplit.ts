@@ -113,7 +113,7 @@ export async function load(path?: string) {
         },
     };
 
-    const request = fetch(path || 'livesplit_core.wasm');
+    let request = fetch(path || 'livesplit_core.wasm');
     if (typeof WebAssembly.instantiateStreaming === "function") {
         try {
             wasm = await WebAssembly.instantiateStreaming(request, imports);
@@ -121,6 +121,7 @@ export async function load(path?: string) {
         } catch { }
         // We retry with the normal instantiate here because Chrome 60 seems to
         // have instantiateStreaming, but it doesn't actually work.
+        request = fetch(path || 'livesplit_core.wasm');
     }
     const response = await request;
     const bytes = await response.arrayBuffer();
@@ -267,6 +268,14 @@ export type Gradient =
     { Vertical: Color[] } |
     { Horizontal: Color[] };
 
+/**
+ * Describes an extended form of a gradient, specifically made for use with
+ * lists. It allows specifying different coloration for the rows in a list.
+ */
+export type ListGradient =
+    { Same: Gradient } |
+    { Alternating: Color[] };
+
 /** Describes the Alignment of the Title in the Title Component. */
 export type Alignment = "Auto" | "Left" | "Center";
 
@@ -389,6 +398,8 @@ export interface TitleComponentStateJson {
 
 /** The state object describes the information to visualize for this component. */
 export interface SplitsComponentStateJson {
+    /** The background shown behind the splits. */
+    background: ListGradient,
     /** The list of all the segments to visualize. */
     splits: SplitStateJson[],
     /**
@@ -399,10 +410,20 @@ export interface SplitsComponentStateJson {
      */
     icon_changes: SplitsComponentIconChangeJson[],
     /**
+     * Specifies whether thin separators should be shown between the individual
+     * segments shown by the component.
+     */
+    show_thin_separators: boolean,
+    /**
      * Describes whether a more pronounced separator should be shown in front of
      * the last segment provided.
      */
     show_final_separator: boolean,
+    /**
+     * Specifies whether to display each split as two rows, with the segment
+     * name being in one row and the times being in the other.
+     */
+    display_two_rows: boolean,
     /**
      * The gradient to show behind the current segment as an indicator of it
      * being the current segment.
@@ -474,6 +495,11 @@ export interface PreviousSegmentComponentStateJson {
     semantic_color: SemanticColor,
     /** The visual color of the delta time. */
     visual_color: Color,
+    /**
+     * Specifies whether to display the name of the component and its value in
+     * two separate rows.
+     */
+    display_two_rows: boolean,
 }
 
 /** The state object describes the information to visualize for this component. */
@@ -494,6 +520,11 @@ export interface SumOfBestComponentStateJson {
     text: string,
     /** The sum of best segments. */
     time: string,
+    /**
+     * Specifies whether to display the name of the component and its value in
+     * two separate rows.
+     */
+    display_two_rows: boolean,
 }
 
 /** The state object describes the information to visualize for this component. */
@@ -514,6 +545,11 @@ export interface PossibleTimeSaveComponentStateJson {
     text: string,
     /** The current possible time save. */
     time: string,
+    /**
+     * Specifies whether to display the name of the component and its value in
+     * two separate rows.
+     */
+    display_two_rows: boolean,
 }
 
 /**
@@ -623,6 +659,11 @@ export interface TotalPlaytimeComponentStateJson {
     text: string,
     /** The total playtime. */
     time: string,
+    /**
+     * Specifies whether to display the name of the component and its value in
+     * two separate rows.
+     */
+    display_two_rows: boolean,
 }
 
 /** The state object describes the information to visualize for this component. */
@@ -643,6 +684,11 @@ export interface CurrentPaceComponentStateJson {
     text: string,
     /** The current pace. */
     time: string,
+    /**
+     * Specifies whether to display the name of the component and its value in
+     * two separate rows.
+     */
+    display_two_rows: boolean,
 }
 
 /** The state object describes the information to visualize for this component. */
@@ -662,6 +708,11 @@ export interface DeltaComponentStateJson {
     semantic_color: SemanticColor,
     /** The visual color of the delta time. */
     visual_color: Color,
+    /**
+     * Specifies whether to display the name of the component and its value in
+     * two separate rows.
+     */
+    display_two_rows: boolean,
 }
 
 /** The state object describes the information to visualize for this component. */
@@ -685,6 +736,11 @@ export interface CurrentComparisonComponentStateJson {
      * against.
      */
     comparison: string,
+    /**
+     * Specifies whether to display the name of the component and its value in
+     * two separate rows.
+     */
+    display_two_rows: boolean,
 }
 
 /** The state object describes the information to visualize for this component. */
@@ -801,6 +857,7 @@ export type SettingsDescriptionValueJson =
     { Color: Color } |
     { OptionalColor: Color | null } |
     { Gradient: Gradient } |
+    { ListGradient: ListGradient } |
     { Alignment: Alignment } |
     { CustomCombobox: CustomCombobox };
 
@@ -2316,7 +2373,7 @@ export class DetailedTimerComponentState extends DetailedTimerComponentStateRefM
 /**
  * With a Fuzzy List, you can implement a fuzzy searching algorithm. The list
  * stores all the items that can be searched for. With the `search` method you
- * can then execute the actual fuzzy search with returns a list of all the
+ * can then execute the actual fuzzy search which returns a list of all the
  * elements found. This can be used to implement searching in a list of games.
  */
 export class FuzzyListRef {
@@ -2346,7 +2403,7 @@ export class FuzzyListRef {
 /**
  * With a Fuzzy List, you can implement a fuzzy searching algorithm. The list
  * stores all the items that can be searched for. With the `search` method you
- * can then execute the actual fuzzy search with returns a list of all the
+ * can then execute the actual fuzzy search which returns a list of all the
  * elements found. This can be used to implement searching in a list of games.
  */
 export class FuzzyListRefMut extends FuzzyListRef {
@@ -2366,7 +2423,7 @@ export class FuzzyListRefMut extends FuzzyListRef {
 /**
  * With a Fuzzy List, you can implement a fuzzy searching algorithm. The list
  * stores all the items that can be searched for. With the `search` method you
- * can then execute the actual fuzzy search with returns a list of all the
+ * can then execute the actual fuzzy search which returns a list of all the
  * elements found. This can be used to implement searching in a list of games.
  */
 export class FuzzyList extends FuzzyListRefMut {
@@ -3236,7 +3293,8 @@ export class ParseRunResultRef {
         return result;
     }
     /**
-     * Accesses the name of the Parser that parsed the Run.
+     * Accesses the name of the Parser that parsed the Run. You may not call this
+     * if the Run wasn't parsed successfully.
      */
     timerKind(): string {
         if (this.ptr == 0) {
@@ -3244,6 +3302,19 @@ export class ParseRunResultRef {
         }
         const result = instance().exports.ParseRunResult_timer_kind(this.ptr);
         return decodeString(result);
+    }
+    /**
+     * Checks whether the Parser parsed a generic timer. Since a generic timer can
+     * have any name, it may clash with the specific timer formats that
+     * livesplit-core supports. With this function you can determine if a generic
+     * timer format was parsed, instead of one of the more specific timer formats.
+     */
+    isGenericTimer(): boolean {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = instance().exports.ParseRunResult_is_generic_timer(this.ptr) != 0;
+        return result;
     }
     /**
      * This constructor is an implementation detail. Do not use this.
@@ -5499,6 +5570,13 @@ export class SettingValue extends SettingValueRefMut {
      */
     static fromHorizontalGradient(r1: number, g1: number, b1: number, a1: number, r2: number, g2: number, b2: number, a2: number): SettingValue {
         const result = new SettingValue(instance().exports.SettingValue_from_horizontal_gradient(r1, g1, b1, a1, r2, g2, b2, a2));
+        return result;
+    }
+    /**
+     * Creates a new setting value from the alternating gradient provided as two RGBA colors.
+     */
+    static fromAlternatingGradient(r1: number, g1: number, b1: number, a1: number, r2: number, g2: number, b2: number, a2: number): SettingValue {
+        const result = new SettingValue(instance().exports.SettingValue_from_alternating_gradient(r1, g1, b1, a1, r2, g2, b2, a2));
         return result;
     }
     /**

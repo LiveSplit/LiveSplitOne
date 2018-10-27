@@ -33,6 +33,10 @@ export interface SettingValueFactory<T> {
         r1: number, g1: number, b1: number, a1: number,
         r2: number, g2: number, b2: number, a2: number,
     ): T;
+    fromAlternatingGradient(
+        r1: number, g1: number, b1: number, a1: number,
+        r2: number, g2: number, b2: number, a2: number,
+    ): T;
     fromAlignment(value: string): T | null;
 }
 
@@ -86,6 +90,9 @@ export class JsonSettingValueFactory {
         throw new Error("Not implemented");
     }
     public fromHorizontalGradient(): SettingsDescriptionValueJson {
+        throw new Error("Not implemented");
+    }
+    public fromAlternatingGradient(): SettingsDescriptionValueJson {
         throw new Error("Not implemented");
     }
     public fromAlignment(_: string): SettingsDescriptionValueJson | null {
@@ -379,6 +386,131 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             <option value="Plain">Plain</option>
                             <option value="Vertical">Vertical</option>
                             <option value="Horizontal">Horizontal</option>
+                        </select>
+                    </td>,
+                ];
+
+                if (color1) {
+                    children.push(
+                        <td style={{ width: colorWidth }}>
+                            <ColorPicker
+                                color={color1}
+                                setColor={(color) => {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        colorsToValue(type, color, color2),
+                                    );
+                                }}
+                            />
+                        </td>,
+                    );
+                }
+
+                if (color2) {
+                    children.push(
+                        <td style={{ width: colorWidth }}>
+                            <ColorPicker
+                                color={color2}
+                                setColor={(color) => {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        colorsToValue(type, color1, color),
+                                    );
+                                }}
+                            />
+                        </td>,
+                    );
+                }
+
+                component =
+                    <table style={{ width: "100%" }}>
+                        <tbody>
+                            <tr>
+                                {children}
+                            </tr>
+                        </tbody>
+                    </table>;
+            } else if ("ListGradient" in value) {
+                let type: string;
+                let color1: Option<Color> = null;
+                let color2: Option<Color> = null;
+                const listGradient = value.ListGradient;
+
+                if ("Alternating" in listGradient) {
+                    type = Object.keys(listGradient)[0];
+                    [color1, color2] = listGradient.Alternating;
+                } else {
+                    const gradient = listGradient.Same;
+                    if (gradient !== "Transparent") {
+                        type = Object.keys(gradient)[0];
+                        if ("Plain" in gradient) {
+                            color1 = gradient.Plain;
+                        } else if ("Vertical" in gradient) {
+                            [color1, color2] = gradient.Vertical;
+                        } else if ("Horizontal" in gradient) {
+                            [color1, color2] = gradient.Horizontal;
+                        } else {
+                            assertNever(gradient);
+                        }
+                    } else {
+                        type = "Transparent";
+                    }
+                }
+
+                const colorsToValue = (
+                    type: string,
+                    color1: Option<Color>,
+                    color2: Option<Color>,
+                ) => {
+                    color1 = color1 ? color1 : [0.0, 0.0, 0.0, 0.0];
+                    color2 = color2 ? color2 : color1;
+                    switch (type) {
+                        case "Transparent":
+                            return factory.fromTransparentGradient();
+                        case "Plain":
+                            return factory.fromColor(
+                                color1[0], color1[1], color1[2], color1[3],
+                            );
+                        case "Vertical":
+                            return factory.fromVerticalGradient(
+                                color1[0], color1[1], color1[2], color1[3],
+                                color2[0], color2[1], color2[2], color2[3],
+                            );
+                        case "Horizontal":
+                            return factory.fromHorizontalGradient(
+                                color1[0], color1[1], color1[2], color1[3],
+                                color2[0], color2[1], color2[2], color2[3],
+                            );
+                        case "Alternating":
+                            return factory.fromAlternatingGradient(
+                                color1[0], color1[1], color1[2], color1[3],
+                                color2[0], color2[1], color2[2], color2[3],
+                            );
+                        default:
+                            throw new Error("Unexpected Gradient Type");
+                    }
+                };
+
+                const inputWidth = !color1 && !color2 ? "100%" : undefined;
+                const colorWidth = color1 && color2 ? "50%" : "100%";
+
+                const children: JSX.Element[] = [
+                    <td>
+                        <select
+                            value={type}
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    colorsToValue(e.target.value, color1, color2),
+                                );
+                            }}
+                            style={{ width: inputWidth }}
+                        >
+                            <option value="Transparent">Transparent</option>
+                            <option value="Plain">Plain</option>
+                            <option value="Vertical">Vertical</option>
+                            <option value="Horizontal">Horizontal</option>
+                            <option value="Alternating">Alternating</option>
                         </select>
                     </td>,
                 ];
