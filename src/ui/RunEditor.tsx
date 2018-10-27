@@ -1672,9 +1672,7 @@ export class RunEditor extends React.Component<Props, State> {
         if (game != null) {
             const uri = game.assets["cover-medium"].uri;
             if (uri.startsWith("https://")) {
-                // Workaround until CORS is fixed
-                const proxyUri = `https://cors-buster-jfpactjnem.now.sh/${uri.slice("https://".length)}`;
-                const response = await fetch(proxyUri);
+                const response = await fetch(uri);
                 const buffer = await response.arrayBuffer();
                 // TODO Racy situation with Run Editor closing
                 this.props.editor.setGameIconFromArray(new Int8Array(buffer));
@@ -1690,9 +1688,7 @@ export class RunEditor extends React.Component<Props, State> {
         if (game != null) {
             const uri = game.assets.icon.uri;
             if (uri.startsWith("https://")) {
-                // Workaround until CORS is fixed
-                const proxyUri = `https://cors-buster-jfpactjnem.now.sh/${uri.slice("https://".length)}`;
-                const response = await fetch(proxyUri);
+                const response = await fetch(uri);
                 const buffer = await response.arrayBuffer();
                 // TODO Racy situation with Run Editor closing
                 this.props.editor.setGameIconFromArray(new Int8Array(buffer));
