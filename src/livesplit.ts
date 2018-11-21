@@ -400,6 +400,12 @@ export interface TitleComponentStateJson {
 export interface SplitsComponentStateJson {
     /** The background shown behind the splits. */
     background: ListGradient,
+    /**
+     * The column labels to visualize about the list of splits. If this is
+     * `null`, no labels are supposed to be visualized. The list is specified
+     * from right to left.
+     */
+    column_labels: string[] | null,
     /** The list of all the segments to visualize. */
     splits: SplitStateJson[],
     /**
@@ -456,14 +462,11 @@ export interface SplitsComponentIconChangeJson {
 export interface SplitStateJson {
     /** The name of the segment. */
     name: string,
-    /** The delta to show for this segment. */
-    delta: string,
-    /** The split time to show for this segment. */
-    time: string,
-    /** The semantic coloring information the delta time carries. */
-    semantic_color: SemanticColor,
-    /** The visual color of the delta time. */
-    visual_color: Color,
+    /**
+     * The state of each column from right to left. The amount of columns is
+     * not guaranteed to be the same across different splits.
+     */
+    columns: SplitColumnState[],
     /**
      * Describes if this segment is the segment the active attempt is currently
      * on.
@@ -473,9 +476,19 @@ export interface SplitStateJson {
      * The index of the segment based on all the segments of the run. This may
      * differ from the index of this `SplitStateJson` in the
      * `SplitsComponentStateJson` object, as there can be a scrolling window,
-     * showing only a subset of segments.
+     * showing only a subset of segments. Each index is guaranteed to be unique.
      */
     index: number,
+}
+
+/** Describes the state of a single segment's column to visualize. */
+export interface SplitColumnState {
+    /** The value shown in the column. */
+    value: string,
+    /** The semantic coloring information the value carries. */
+    semantic_color: SemanticColor,
+    /** The visual color of the value. */
+    visual_color: Color,
 }
 
 /** The state object describes the information to visualize for this component. */
@@ -632,6 +645,23 @@ export interface GraphComponentStatePointJson {
 export interface TextComponentStateJson {
     /** The background shown behind the component. */
     background: Gradient,
+    /**
+     * Specifies whether to display the left and right text is supposed to be
+     * displayed as two rows.
+     */
+    display_two_rows: boolean,
+    /**
+     * The color of the left part of the split up text or the whole text if
+     * it's not split up. If `None` is specified, the color is taken from the
+     * layout.
+     */
+    left_center_color: Color,
+    /**
+     * The color of the right part of the split up text. This can be ignored if
+     * the text is not split up. If `None` is specified, the color is taken
+     * from the layout.
+     */
+    right_color: Color,
     /** The text to show for the component. */
     text: TextComponentStateText,
 }
@@ -859,6 +889,9 @@ export type SettingsDescriptionValueJson =
     { Gradient: Gradient } |
     { ListGradient: ListGradient } |
     { Alignment: Alignment } |
+    { ColumnStartWith: ColumnStartWith } |
+    { ColumnUpdateWith: ColumnUpdateWith } |
+    { ColumnUpdateTrigger: ColumnUpdateTrigger } |
     { CustomCombobox: CustomCombobox };
 
 /**
@@ -870,6 +903,22 @@ export interface CustomCombobox {
     list: string[],
     mandatory: boolean,
 }
+
+/**
+ * Specifies the value a segment starts out with before it gets replaced
+ * with the current attempt's information when splitting.
+ */
+export type ColumnStartWith = "Empty" | "ComparisonTime" | "ComparisonSegmentTime";
+
+/**
+ * Once a certain condition is met, which is usually being on the split or
+ * already having completed the split, the time gets updated with the value
+ * specified here.
+ */
+export type ColumnUpdateWith = "DontUpdate" | "SplitTime" | "Delta" | "SegmentTime" | "SegmentDelta";
+
+/** Specifies when a column's value gets updated. */
+export type ColumnUpdateTrigger = "OnStartingSegment" | "Contextual" | "OnEndingSegment";
 
 /**
  * The Accuracy describes how many digits to show for the fractional part of a
@@ -5592,6 +5641,45 @@ export class SettingValue extends SettingValueRefMut {
         }
         return result;
     }
+    /**
+     * Creates a new setting value from the column start with name provided. If it
+     * doesn't match a known column start with, null is returned.
+     */
+    static fromColumnStartWith(value: string): SettingValue | null {
+        const value_allocated = allocString(value);
+        const result = new SettingValue(instance().exports.SettingValue_from_column_start_with(value_allocated.ptr));
+        dealloc(value_allocated);
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    /**
+     * Creates a new setting value from the column update with name provided. If it
+     * doesn't match a known column update with, null is returned.
+     */
+    static fromColumnUpdateWith(value: string): SettingValue | null {
+        const value_allocated = allocString(value);
+        const result = new SettingValue(instance().exports.SettingValue_from_column_update_with(value_allocated.ptr));
+        dealloc(value_allocated);
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    /**
+     * Creates a new setting value from the column update trigger. If it doesn't
+     * match a known column update trigger, null is returned.
+     */
+    static fromColumnUpdateTrigger(value: string): SettingValue | null {
+        const value_allocated = allocString(value);
+        const result = new SettingValue(instance().exports.SettingValue_from_column_update_trigger(value_allocated.ptr));
+        dealloc(value_allocated);
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
 }
 
 /**
@@ -5702,6 +5790,67 @@ export class SharedTimer extends SharedTimerRefMut {
     dispose() {
         if (this.ptr != 0) {
             instance().exports.SharedTimer_drop(this.ptr);
+            this.ptr = 0;
+        }
+    }
+}
+
+/**
+ * The state object that describes a single segment's information to visualize.
+ */
+export class SplitComponentStateRef {
+    ptr: number;
+    /**
+     * The amount of columns to visualize for the segment with the specified index.
+     * The columns are specified from right to left. You may not provide an out of
+     * bounds index. The amount of columns to visualize may differ from segment to
+     * segment.
+     */
+    columnsLen(index: number): number {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = instance().exports.SplitComponentState_columns_len(this.ptr, index);
+        return result;
+    }
+    /**
+     * This constructor is an implementation detail. Do not use this.
+     */
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+/**
+ * The state object that describes a single segment's information to visualize.
+ */
+export class SplitComponentStateRefMut extends SplitComponentStateRef {
+}
+
+/**
+ * The state object that describes a single segment's information to visualize.
+ */
+export class SplitComponentState extends SplitComponentStateRefMut {
+    /**
+     * Allows for scoped usage of the object. The object is guaranteed to get
+     * disposed once this function returns. You are free to dispose the object
+     * early yourself anywhere within the scope. The scope's return value gets
+     * carried to the outside of this function.
+     */
+    with<T>(closure: (obj: SplitComponentState) => T): T {
+        try {
+            return closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    /**
+     * Disposes the object, allowing it to clean up all of its memory. You need
+     * to call this for every object that you don't use anymore and hasn't
+     * already been disposed.
+     */
+    dispose() {
+        if (this.ptr != 0) {
             this.ptr = 0;
         }
     }
@@ -5962,36 +6111,27 @@ export class SplitsComponentStateRef {
         return decodeString(result);
     }
     /**
-     * The delta to show for the segment with the specified index. You may not
-     * provide an out of bounds index.
+     * The column's value to show for the split and column with the specified
+     * index. The columns are specified from right to left. You may not provide an
+     * out of bounds index.
      */
-    delta(index: number): string {
+    columnValue(index: number, columnIndex: number): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        const result = instance().exports.SplitsComponentState_delta(this.ptr, index);
+        const result = instance().exports.SplitsComponentState_column_value(this.ptr, index, columnIndex);
         return decodeString(result);
     }
     /**
-     * The split time to show for the segment with the specified index. You may not
-     * provide an out of bounds index.
+     * The semantic coloring information the column's value carries of the segment
+     * and column with the specified index. The columns are specified from right to
+     * left. You may not provide an out of bounds index.
      */
-    time(index: number): string {
+    columnSemanticColor(index: number, columnIndex: number): string {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        const result = instance().exports.SplitsComponentState_time(this.ptr, index);
-        return decodeString(result);
-    }
-    /**
-     * The semantic coloring information the delta time carries of the segment with
-     * the specified index. You may not provide an out of bounds index.
-     */
-    semanticColor(index: number): string {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        const result = instance().exports.SplitsComponentState_semantic_color(this.ptr, index);
+        const result = instance().exports.SplitsComponentState_column_semantic_color(this.ptr, index, columnIndex);
         return decodeString(result);
     }
     /**

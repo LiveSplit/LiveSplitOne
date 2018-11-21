@@ -40,7 +40,7 @@ export default class Splits extends React.Component<Props> {
         return (
             <div className="splits" style={style}>
                 {
-                    this.props.state.splits.map((s: LiveSplit.SplitStateJson, i: number) =>
+                    this.props.state.splits.map((s, i) =>
                         <Split
                             evenOdd={evenOdd}
                             split={s}

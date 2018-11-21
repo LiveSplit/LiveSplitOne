@@ -38,6 +38,9 @@ export interface SettingValueFactory<T> {
         r2: number, g2: number, b2: number, a2: number,
     ): T;
     fromAlignment(value: string): T | null;
+    fromColumnStartWith(value: string): T | null;
+    fromColumnUpdateWith(value: string): T | null;
+    fromColumnUpdateTrigger(value: string): T | null;
 }
 
 export class JsonSettingValueFactory {
@@ -96,6 +99,15 @@ export class JsonSettingValueFactory {
         throw new Error("Not implemented");
     }
     public fromAlignment(_: string): SettingsDescriptionValueJson | null {
+        throw new Error("Not implemented");
+    }
+    public fromColumnStartWith(_: string): SettingsDescriptionValueJson | null {
+        throw new Error("Not implemented");
+    }
+    public fromColumnUpdateWith(_: string): SettingsDescriptionValueJson | null {
+        throw new Error("Not implemented");
+    }
+    public fromColumnUpdateTrigger(_: string): SettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
 }
@@ -620,6 +632,59 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     <option value="Auto">Automatic</option>
                     <option value="Left">Left</option>
                     <option value="Center">Center</option>
+                </select>;
+            } else if ("ColumnStartWith" in value) {
+                component = <select
+                    value={value.ColumnStartWith}
+                    onChange={(e) => {
+                        this.props.setValue(
+                            valueIndex,
+                            expect(
+                                factory.fromColumnStartWith(e.target.value),
+                                "Unexpected Column Start With value",
+                            ),
+                        );
+                    }}
+                >
+                    <option value="Empty">Empty</option>
+                    <option value="ComparisonTime">Comparison Time</option>
+                    <option value="ComparisonSegmentTime">Comparison Segment Time</option>
+                </select>;
+            } else if ("ColumnUpdateWith" in value) {
+                component = <select
+                    value={value.ColumnUpdateWith}
+                    onChange={(e) => {
+                        this.props.setValue(
+                            valueIndex,
+                            expect(
+                                factory.fromColumnUpdateWith(e.target.value),
+                                "Unexpected Column Update With value",
+                            ),
+                        );
+                    }}
+                >
+                    <option value="DontUpdate">Dont Update</option>
+                    <option value="SplitTime">Split Time</option>
+                    <option value="Delta">Delta</option>
+                    <option value="SegmentTime">Segment Time</option>
+                    <option value="SegmentDelta">Segment Delta</option>
+                </select>;
+            } else if ("ColumnUpdateTrigger" in value) {
+                component = <select
+                    value={value.ColumnUpdateTrigger}
+                    onChange={(e) => {
+                        this.props.setValue(
+                            valueIndex,
+                            expect(
+                                factory.fromColumnUpdateTrigger(e.target.value),
+                                "Unexpected Column Update Trigger value",
+                            ),
+                        );
+                    }}
+                >
+                    <option value="OnStartingSegment">On Starting Segment</option>
+                    <option value="Contextual">Contextual</option>
+                    <option value="OnEndingSegment">On Ending Segment</option>
                 </select>;
             } else if ("CustomCombobox" in value) {
                 const isError = value.CustomCombobox.mandatory

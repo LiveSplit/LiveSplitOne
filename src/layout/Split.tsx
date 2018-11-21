@@ -50,6 +50,7 @@ export default class Split extends React.Component<Props> {
                 style={outerStyle}
             >
                 <div
+                    key="split-icon"
                     className={hasIcon ? "split-icon-container" : "split-icon-container-empty"}
                     style={innerStyle}
                 >
@@ -59,26 +60,26 @@ export default class Split extends React.Component<Props> {
                     }
                 </div>
                 <div
+                    key="split-name"
                     className="split-name"
                     style={innerStyle}
                 >
                     {this.props.split.name}
                 </div>
-                <div
-                    className="split-delta time"
-                    style={{
-                        ...innerStyle,
-                        color: colorToCss(this.props.split.visual_color),
-                    }}
-                >
-                    {this.props.split.delta}
-                </div>
-                <div
-                    className="split-time time"
-                    style={innerStyle}
-                >
-                    {this.props.split.time}
-                </div>
+                {
+                    this.props.split.columns.map((column, i) =>
+                        <div
+                            key={i}
+                            className="split-time time"
+                            style={{
+                                ...innerStyle,
+                                color: colorToCss(column.visual_color),
+                            }}
+                        >
+                            {column.value}
+                        </div>,
+                    ).reverse()
+                }
             </span>
         );
     }
