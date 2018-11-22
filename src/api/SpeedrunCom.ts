@@ -177,7 +177,7 @@ export interface RunSystem {
 }
 
 export interface Videos {
-    links: Video[],
+    links: Option<Video[]>,
 }
 
 export interface Video {

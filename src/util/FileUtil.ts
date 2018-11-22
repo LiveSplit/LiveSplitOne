@@ -27,8 +27,10 @@ export async function openFileAsArrayBuffer(): Promise<[ArrayBuffer, File]> {
     return new Promise((resolve: (_: [ArrayBuffer, File]) => void) => {
         const reader = new FileReader();
         reader.onload = () => {
-            const contents = reader.result;
-            resolve([contents, file]);
+            const contents = reader.result as Option<ArrayBuffer>;
+            if (contents != null) {
+                resolve([contents, file]);
+            }
         };
         reader.readAsArrayBuffer(file);
     });
@@ -39,8 +41,10 @@ export async function openFileAsString(): Promise<[string, File]> {
     return new Promise((resolve: (_: [string, File]) => void) => {
         const reader = new FileReader();
         reader.onload = () => {
-            const contents = reader.result;
-            resolve([contents, file]);
+            const contents = reader.result as Option<string>;
+            if (contents != null) {
+                resolve([contents, file]);
+            }
         };
         reader.readAsText(file);
     });

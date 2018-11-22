@@ -856,7 +856,7 @@ export class RunEditor extends React.Component<Props, State> {
 
                         if (this.expandedLeaderboardRows.get(rowIndex) === true) {
                             let embed = null;
-                            if (run.videos != null && run.videos.links.length > 0) {
+                            if (run.videos != null && run.videos.links != null && run.videos.links.length > 0) {
                                 const videoUri = run.videos.links[run.videos.links.length - 1].uri;
                                 embed = resolveEmbed(videoUri);
                             }
