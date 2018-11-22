@@ -2,7 +2,8 @@ import * as React from "react";
 import * as LiveSplit from "../livesplit";
 import Split from "./Split";
 import { gradientToCss, colorToCss } from "../util/ColorUtil";
-import { Option } from "../util/OptionUtil";
+import { Option, map } from "../util/OptionUtil";
+import SplitLabels from "./SplitLabels";
 
 export interface Props {
     state: LiveSplit.SplitsComponentStateJson,
@@ -40,6 +41,12 @@ export default class Splits extends React.Component<Props> {
         return (
             <div className="splits" style={style}>
                 {
+                    map(
+                        this.props.state.column_labels,
+                        (labels) => <SplitLabels labels={labels} />,
+                    )
+                }
+                {
                     this.props.state.splits.map((s, i) =>
                         <Split
                             evenOdd={evenOdd}
@@ -49,8 +56,9 @@ export default class Splits extends React.Component<Props> {
                             icon={this.iconUrls[s.index]}
                             key={s.index.toString()}
                             separatorInFrontOfSplit={
-                                this.props.state.show_final_separator &&
-                                i + 1 === this.props.state.splits.length
+                                (this.props.state.show_final_separator &&
+                                    i + 1 === this.props.state.splits.length)
+                                || (i === 0 && this.props.state.column_labels != null)
                             }
                         />,
                     )
