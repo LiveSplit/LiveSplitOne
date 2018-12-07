@@ -56,6 +56,6 @@
     "webpack": "^4.26.0",
     "webpack-cli": "^3.1.2",
     "webpack-dev-server": "^3.1.10",
-    "webpack-pwa-manifest": "^3.7.1"
+    "webpack-pwa-manifest": "^4.0.0"
   }
 }
