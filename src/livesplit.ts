@@ -892,6 +892,7 @@ export type SettingsDescriptionValueJson =
     { ColumnStartWith: ColumnStartWith } |
     { ColumnUpdateWith: ColumnUpdateWith } |
     { ColumnUpdateTrigger: ColumnUpdateTrigger } |
+    { Hotkey: string } |
     { CustomCombobox: CustomCombobox };
 
 /**
@@ -2849,6 +2850,112 @@ export class GraphComponentState extends GraphComponentStateRefMut {
 }
 
 /**
+ * The configuration to use for a Hotkey System. It describes with keys to use
+ * as hotkeys for the different actions.
+ */
+export class HotkeyConfigRef {
+    ptr: number;
+    /**
+     * Encodes generic description of the settings available for the hotkey
+     * configuration and their current values as JSON.
+     */
+    settingsDescriptionAsJson(): any {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = instance().exports.HotkeyConfig_settings_description_as_json(this.ptr);
+        return JSON.parse(decodeString(result));
+    }
+    /**
+     * Encodes the hotkey configuration as JSON.
+     */
+    asJson(): any {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = instance().exports.HotkeyConfig_as_json(this.ptr);
+        return JSON.parse(decodeString(result));
+    }
+    /**
+     * This constructor is an implementation detail. Do not use this.
+     */
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+/**
+ * The configuration to use for a Hotkey System. It describes with keys to use
+ * as hotkeys for the different actions.
+ */
+export class HotkeyConfigRefMut extends HotkeyConfigRef {
+    /**
+     * Sets a setting's value by its index to the given value.
+     * 
+     * false is returned if a hotkey is already in use by a different action.
+     * 
+     * This panics if the type of the value to be set is not compatible with the
+     * type of the setting's value. A panic can also occur if the index of the
+     * setting provided is out of bounds.
+     */
+    setValue(index: number, value: SettingValue): boolean {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (value.ptr == 0) {
+            throw "value is disposed";
+        }
+        const result = instance().exports.HotkeyConfig_set_value(this.ptr, index, value.ptr) != 0;
+        value.ptr = 0;
+        return result;
+    }
+}
+
+/**
+ * The configuration to use for a Hotkey System. It describes with keys to use
+ * as hotkeys for the different actions.
+ */
+export class HotkeyConfig extends HotkeyConfigRefMut {
+    /**
+     * Allows for scoped usage of the object. The object is guaranteed to get
+     * disposed once this function returns. You are free to dispose the object
+     * early yourself anywhere within the scope. The scope's return value gets
+     * carried to the outside of this function.
+     */
+    with<T>(closure: (obj: HotkeyConfig) => T): T {
+        try {
+            return closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    /**
+     * Disposes the object, allowing it to clean up all of its memory. You need
+     * to call this for every object that you don't use anymore and hasn't
+     * already been disposed.
+     */
+    dispose() {
+        if (this.ptr != 0) {
+            instance().exports.HotkeyConfig_drop(this.ptr);
+            this.ptr = 0;
+        }
+    }
+    /**
+     * Parses a hotkey configuration from the given JSON description. null is
+     * returned if it couldn't be parsed.
+     */
+    static parseJson(settings: any): HotkeyConfig | null {
+        const settings_allocated = allocString(JSON.stringify(settings));
+        const result = new HotkeyConfig(instance().exports.HotkeyConfig_parse_json(settings_allocated.ptr));
+        dealloc(settings_allocated);
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+}
+
+/**
  * With a Hotkey System the runner can use hotkeys on their keyboard to control
  * the Timer. The hotkeys are global, so the application doesn't need to be in
  * focus. The behavior of the hotkeys depends on the platform and is stubbed
@@ -2878,6 +2985,16 @@ export class HotkeySystemRef {
         instance().exports.HotkeySystem_activate(this.ptr);
     }
     /**
+     * Returns the hotkey configuration currently in use by the Hotkey System.
+     */
+    config(): HotkeyConfig {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = new HotkeyConfig(instance().exports.HotkeySystem_config(this.ptr));
+        return result;
+    }
+    /**
      * This constructor is an implementation detail. Do not use this.
      */
     constructor(ptr: number) {
@@ -2893,6 +3010,23 @@ export class HotkeySystemRef {
  * System temporarily. By default the Hotkey System is activated.
  */
 export class HotkeySystemRefMut extends HotkeySystemRef {
+    /**
+     * Applies a new hotkey configuration to the Hotkey System. Each hotkey is
+     * changed to the one specified in the configuration. This operation may fail
+     * if you provide a hotkey configuration where a hotkey is used for multiple
+     * operations. Returns false if the operation failed.
+     */
+    setConfig(config: HotkeyConfig): boolean {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (config.ptr == 0) {
+            throw "config is disposed";
+        }
+        const result = instance().exports.HotkeySystem_set_config(this.ptr, config.ptr) != 0;
+        config.ptr = 0;
+        return result;
+    }
 }
 
 /**
@@ -2936,6 +3070,25 @@ export class HotkeySystem extends HotkeySystemRefMut {
         }
         const result = new HotkeySystem(instance().exports.HotkeySystem_new(sharedTimer.ptr));
         sharedTimer.ptr = 0;
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    /**
+     * Creates a new Hotkey System for a Timer with a custom configuration for the
+     * hotkeys.
+     */
+    static withConfig(sharedTimer: SharedTimer, config: HotkeyConfig): HotkeySystem | null {
+        if (sharedTimer.ptr == 0) {
+            throw "sharedTimer is disposed";
+        }
+        if (config.ptr == 0) {
+            throw "config is disposed";
+        }
+        const result = new HotkeySystem(instance().exports.HotkeySystem_with_config(sharedTimer.ptr, config.ptr));
+        sharedTimer.ptr = 0;
+        config.ptr = 0;
         if (result.ptr == 0) {
             return null;
         }

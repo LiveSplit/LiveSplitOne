@@ -3,6 +3,9 @@ import { Color, SettingsDescriptionJson, SettingsDescriptionValueJson } from "..
 import { assertNever, expect, Option } from "../util/OptionUtil";
 import ColorPicker from "./ColorPicker";
 
+import "./Settings.css";
+import { HotkeyButton } from "./HotkeyButton";
+
 export interface Props<T> {
     setValue: (index: number, value: T) => void,
     state: SettingsDescriptionJson,
@@ -705,6 +708,18 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                 >
                     {value.CustomCombobox.list.map((v) => <option value={v}>{v}</option>)}
                 </select>;
+            } else if ("Hotkey" in value) {
+                component = (
+                    <HotkeyButton
+                        value={value.Hotkey}
+                        setValue={(value) => {
+                            this.props.setValue(
+                                valueIndex,
+                                factory.fromString(value),
+                            );
+                        }}
+                    />
+                );
             } else {
                 assertNever(value);
             }

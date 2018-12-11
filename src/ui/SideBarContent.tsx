@@ -2,7 +2,7 @@ import * as React from "react";
 import { SharedTimerRef, TimingMethod } from "../livesplit";
 import { Option } from "../util/OptionUtil";
 
-export type Route = "main" | "run-editor" | "layout-editor";
+export type Route = "main" | "run-editor" | "layout-editor" | "settings-editor";
 
 export interface SidebarCallbacks {
     closeRunEditor(save: boolean): void,
@@ -21,6 +21,8 @@ export interface SidebarCallbacks {
     switchToNextComparison(): void,
     setCurrentTimingMethod(timingMethod: TimingMethod): void,
     connectToServerOrDisconnect(): void,
+    openSettingsEditor(): void,
+    closeSettingsEditor(save: boolean): void,
 }
 
 export interface Props {
@@ -101,6 +103,26 @@ export class SideBarContent extends React.Component<Props, State> {
                     </div>
                 );
             }
+            case "settings-editor": {
+                return (
+                    <div className="sidebar-buttons">
+                        <div className="small">
+                            <button
+                                className="toggle-left"
+                                onClick={(_) => this.props.callbacks.closeSettingsEditor(true)}
+                            >
+                                <i className="fa fa-check" aria-hidden="true" /> OK
+                            </button>
+                            <button
+                                className="toggle-right"
+                                onClick={(_) => this.props.callbacks.closeSettingsEditor(false)}
+                            >
+                                <i className="fa fa-times" aria-hidden="true" /> Cancel
+                            </button>
+                        </div>
+                    </div>
+                );
+            }
             case "main": {
                 return (
                     <div className="sidebar-buttons">
@@ -135,28 +157,6 @@ export class SideBarContent extends React.Component<Props, State> {
                         </button>
                         <button onClick={(_) => this.props.callbacks.exportLayout()}>
                             <i className="fa fa-upload" aria-hidden="true" /> Export Layout
-                        </button>
-                        <hr />
-                        <button onClick={(_) => this.props.callbacks.connectToServerOrDisconnect()}>
-                            {
-                                (() => {
-                                    switch (this.props.connectionState) {
-                                        case WebSocket.OPEN:
-                                            return <div>
-                                                <i className="fa fa-power-off" aria-hidden="true" /> Disconnect
-                                            </div>;
-                                        case WebSocket.CLOSED:
-                                            return <div>
-                                                <i className="fa fa-desktop" aria-hidden="true" /> Connect to Server
-                                            </div>;
-                                        case WebSocket.CONNECTING:
-                                            return <div>Connecting...</div>;
-                                        case WebSocket.CLOSING:
-                                            return <div>Disconnecting...</div>;
-                                        default: throw new Error("Unknown WebSocket State");
-                                    }
-                                })()
-                            }
                         </button>
                         <hr />
                         <h2>Compare Against</h2>
@@ -195,6 +195,31 @@ export class SideBarContent extends React.Component<Props, State> {
                                 Game Time
                             </button>
                         </div>
+                        <hr />
+                        <button onClick={(_) => this.props.callbacks.connectToServerOrDisconnect()}>
+                            {
+                                (() => {
+                                    switch (this.props.connectionState) {
+                                        case WebSocket.OPEN:
+                                            return <div>
+                                                <i className="fa fa-power-off" aria-hidden="true" /> Disconnect
+                                            </div>;
+                                        case WebSocket.CLOSED:
+                                            return <div>
+                                                <i className="fa fa-desktop" aria-hidden="true" /> Connect to Server
+                                            </div>;
+                                        case WebSocket.CONNECTING:
+                                            return <div>Connecting...</div>;
+                                        case WebSocket.CLOSING:
+                                            return <div>Disconnecting...</div>;
+                                        default: throw new Error("Unknown WebSocket State");
+                                    }
+                                })()
+                            }
+                        </button>
+                        <button onClick={() => this.props.callbacks.openSettingsEditor()}>
+                            <i className="fa fa-cog" aria-hidden="true" /> Settings
+                        </button>
                     </div >
                 );
             }

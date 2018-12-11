@@ -6,8 +6,7 @@ export function expect<T>(obj: Option<T>, message: string): T {
     if (obj != null) {
         return obj;
     }
-    toast.error(`Bug: ${message}`);
-    throw new Error(message);
+    return panic(message);
 }
 
 interface Disposable {
@@ -18,11 +17,16 @@ interface MaybeDisposable {
     dispose?(): void,
 }
 
+export function panic(message: string): never {
+    toast.error(`Bug: ${message}`);
+    throw new Error(message);
+}
+
 export function assertNever(x: never): never { return x; }
 
 export function assert(condition: boolean, message: string) {
     if (!condition) {
-        throw new Error(message);
+        panic(message);
     }
 }
 
@@ -31,7 +35,7 @@ export function assertNull(obj: Option<MaybeDisposable>, message: string) {
         if (obj.dispose) {
             obj.dispose();
         }
-        throw new Error(message);
+        panic(message);
     }
 }
 

@@ -4,23 +4,36 @@ import AutoRefreshLayout from "../layout/AutoRefreshLayout";
 import {
     HotkeySystem, Layout, LayoutEditor, Run, RunEditor,
     Segment, SharedTimer, Timer, TimerPhase, TimingMethod,
-    TimeSpan, TimerRef, TimerRefMut,
+    TimeSpan, TimerRef, TimerRefMut, HotkeyConfig,
 } from "../livesplit";
 import { exportFile, openFileAsArrayBuffer, openFileAsString } from "../util/FileUtil";
-import { Option, assertNull, expect, maybeDispose, maybeDisposeAndThen, map } from "../util/OptionUtil";
+import { Option, assertNull, expect, maybeDispose, maybeDisposeAndThen, map, panic } from "../util/OptionUtil";
 import * as SplitsIO from "../util/SplitsIO";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
+import { SettingsEditor as SettingsEditorComponent } from "./SettingsEditor";
 import { Route, SideBarContent } from "./SideBarContent";
 import { toast } from "react-toastify";
 
+enum MenuKind {
+    Timer,
+    RunEditor,
+    LayoutEditor,
+    SettingsEditor,
+}
+
+type Menu =
+    { kind: MenuKind.Timer } |
+    { kind: MenuKind.RunEditor, editor: RunEditor } |
+    { kind: MenuKind.LayoutEditor, editor: LayoutEditor } |
+    { kind: MenuKind.SettingsEditor, config: HotkeyConfig };
+
 export interface State {
-    hotkeySystem: Option<HotkeySystem>,
+    hotkeySystem: HotkeySystem,
     timer: SharedTimer,
     layout: Layout,
     sidebarOpen: boolean,
-    runEditor: Option<RunEditor>,
-    layoutEditor: Option<LayoutEditor>,
+    menu: Menu,
 }
 
 export class LiveSplit extends React.Component<{}, State> {
@@ -41,7 +54,22 @@ export class LiveSplit extends React.Component<{}, State> {
             "The Default Run should be a valid Run",
         ).intoShared();
 
-        const hotkeySystem = HotkeySystem.new(timer.share());
+        let hotkeySystem = null;
+        const settings = localStorage.getItem("settings");
+        try {
+            if (settings) {
+                const config = HotkeyConfig.parseJson(JSON.parse(settings).hotkeys);
+                if (config != null) {
+                    hotkeySystem = HotkeySystem.withConfig(timer.share(), config);
+                }
+            }
+        } catch (_) { /* Looks like local storage has no valid data */ }
+        if (hotkeySystem == null) {
+            hotkeySystem = expect(
+                HotkeySystem.new(timer.share()),
+                "Couldn't initialize the hotkeys",
+            );
+        }
 
         if (window.location.hash.indexOf("#/splits-io/") === 0) {
             const loadingRun = Run.new();
@@ -78,8 +106,7 @@ export class LiveSplit extends React.Component<{}, State> {
 
         this.state = {
             layout,
-            layoutEditor: null,
-            runEditor: null,
+            menu: { kind: MenuKind.Timer },
             sidebarOpen: false,
             timer,
             hotkeySystem,
@@ -117,18 +144,23 @@ export class LiveSplit extends React.Component<{}, State> {
 
     public render() {
         const [route, content] = ((): [Route, JSX.Element] => {
-            if (this.state.runEditor) {
+            if (this.state.menu.kind === MenuKind.RunEditor) {
                 return [
                     "run-editor",
-                    <RunEditorComponent editor={this.state.runEditor} />,
+                    <RunEditorComponent editor={this.state.menu.editor} />,
                 ];
-            } else if (this.state.layoutEditor) {
+            } else if (this.state.menu.kind === MenuKind.LayoutEditor) {
                 return [
                     "layout-editor",
                     <LayoutEditorComponent
-                        editor={this.state.layoutEditor}
+                        editor={this.state.menu.editor}
                         timer={this.state.timer}
                     />,
+                ];
+            } else if (this.state.menu.kind === MenuKind.SettingsEditor) {
+                return [
+                    "settings-editor",
+                    <SettingsEditorComponent hotkeyConfig={this.state.menu.config} />,
                 ];
             } else {
                 return [
@@ -316,13 +348,14 @@ export class LiveSplit extends React.Component<{}, State> {
         });
 
         if (run != null) {
-            if (this.state.hotkeySystem != null) {
-                this.state.hotkeySystem.deactivate();
-            }
-            const editor = RunEditor.new(run);
+            this.state.hotkeySystem.deactivate();
+            const editor = expect(
+                RunEditor.new(run),
+                "The Run Editor should always be able to be opened.",
+            );
             this.setState({
                 ...this.state,
-                runEditor: editor,
+                menu: { kind: MenuKind.RunEditor, editor },
                 sidebarOpen: false,
             });
         } else {
@@ -331,61 +364,62 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     public closeRunEditor(save: boolean) {
-        const runEditor = expect(
-            this.state.runEditor,
-            "No Run Editor to close",
-        );
+        if (this.state.menu.kind !== MenuKind.RunEditor) {
+            panic("No Run Editor to close");
+            return;
+        }
+        const runEditor = this.state.menu.editor;
         const run = runEditor.close();
         if (save) {
             assertNull(
                 this.writeWith((t) => t.setRun(run)),
-                "The Run Editor should always return a valid Run",
+                "The Run Editor should always return a valid Run.",
             );
             this.setState({
                 ...this.state,
-                runEditor: null,
+                menu: { kind: MenuKind.Timer },
                 sidebarOpen: false,
             });
         } else {
             run.dispose();
             this.setState({
                 ...this.state,
-                runEditor: null,
+                menu: { kind: MenuKind.Timer },
                 sidebarOpen: false,
             });
         }
         this.state.layout.remount();
-        if (this.state.hotkeySystem != null) {
-            this.state.hotkeySystem.activate();
-        }
+        this.state.hotkeySystem.activate();
     }
 
     public openLayoutEditor() {
-        if (this.state.hotkeySystem != null) {
-            this.state.hotkeySystem.deactivate();
-        }
+        this.state.hotkeySystem.deactivate();
 
         const layout = this.state.layout.clone();
-        const editor = LayoutEditor.new(layout);
+        const editor = expect(
+            LayoutEditor.new(layout),
+            "The Layout Editor should always be able to be opened.",
+        );
         this.setState({
             ...this.state,
-            layoutEditor: editor,
+            menu: { kind: MenuKind.LayoutEditor, editor },
             sidebarOpen: false,
         });
     }
 
     public closeLayoutEditor(save: boolean) {
-        const layoutEditor = expect(
-            this.state.layoutEditor,
-            "No Layout Editor to close",
-        );
+        if (this.state.menu.kind !== MenuKind.LayoutEditor) {
+            panic("No Layout Editor to close.");
+            return;
+        }
+        const layoutEditor = this.state.menu.editor;
         const layout = layoutEditor.close();
         if (save) {
             this.state.layout.dispose();
             this.setState({
                 ...this.state,
                 layout,
-                layoutEditor: null,
+                menu: { kind: MenuKind.Timer },
                 sidebarOpen: false,
             });
             layout.remount();
@@ -393,14 +427,55 @@ export class LiveSplit extends React.Component<{}, State> {
             layout.dispose();
             this.setState({
                 ...this.state,
-                layoutEditor: null,
+                menu: { kind: MenuKind.Timer },
                 sidebarOpen: false,
             });
             this.state.layout.remount();
         }
-        if (this.state.hotkeySystem != null) {
-            this.state.hotkeySystem.activate();
+        this.state.hotkeySystem.activate();
+    }
+
+    public openSettingsEditor() {
+        this.state.hotkeySystem.deactivate();
+        this.setState({
+            ...this.state,
+            menu: {
+                kind: MenuKind.SettingsEditor,
+                config: this.state.hotkeySystem.config(),
+            },
+            sidebarOpen: false,
+        });
+    }
+
+    public closeSettingsEditor(save: boolean) {
+        const menu = this.state.menu;
+
+        if (menu.kind !== MenuKind.SettingsEditor) {
+            panic("No Settings Editor to close.");
+            return;
         }
+
+        if (save) {
+            try {
+                const hotkeys = menu.config.asJson();
+                const settings = { hotkeys };
+                localStorage.setItem("settings", JSON.stringify(settings));
+            } catch (_) {
+                toast.error("Failed to save the settings.");
+            }
+            this.state.hotkeySystem.setConfig(menu.config);
+        } else {
+            menu.config.dispose();
+        }
+
+        this.setState({
+            ...this.state,
+            menu: { kind: MenuKind.Timer },
+            sidebarOpen: false,
+        });
+
+        this.state.layout.remount();
+        this.state.hotkeySystem.activate();
     }
 
     public connectToServerOrDisconnect() {
