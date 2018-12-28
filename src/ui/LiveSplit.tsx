@@ -318,19 +318,23 @@ export class LiveSplit extends React.Component<{}, State> {
 
     public async importLayout() {
         const [file] = await openFileAsString();
+        let layout = null;
         try {
-            const layout = Layout.parseJson(JSON.parse(file));
-            if (layout != null) {
-                this.state.layout.dispose();
-                this.setState({
-                    ...this.state,
-                    layout,
-                });
-                layout.remount();
-                return;
-            }
+            layout = Layout.parseJson(JSON.parse(file));
         } catch (_) { /* Failed to load the layout */ }
-        toast.error("Error loading Layout. This may not be a LiveSplit One Layout.");
+        if (layout == null) {
+            layout = Layout.parseOriginalLivesplitString(file);
+        }
+        if (layout != null) {
+            this.state.layout.dispose();
+            this.setState({
+                ...this.state,
+                layout,
+            });
+            layout.remount();
+            return;
+        }
+        toast.error("The layout could not be loaded. This may not be a valid LiveSplit or LiveSplit One Layout.");
     }
 
     public exportLayout() {
@@ -549,7 +553,7 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     private onScroll(e: WheelEvent) {
-        const delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.deltaY)));
+        const delta = Math.max(-1, Math.min(1, -e.deltaY));
         if (delta === 1) {
             this.state.layout.scrollUp();
         } else if (delta === -1) {

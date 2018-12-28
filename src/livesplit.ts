@@ -3253,6 +3253,30 @@ export class Layout extends LayoutRefMut {
         }
         return result;
     }
+    /**
+     * Parses a layout saved by the original LiveSplit. This is lossy, as not
+     * everything can be converted completely. null is returned if it couldn't be
+     * parsed at all.
+     */
+    static parseOriginalLivesplit(data: number, length: number): Layout | null {
+        const result = new Layout(instance().exports.Layout_parse_original_livesplit(data, length));
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    static parseOriginalLivesplitArray(data: Int8Array): Layout | null {
+        const slice = allocInt8Array(data);
+        const result = Layout.parseOriginalLivesplit(slice.ptr, slice.len);
+        dealloc(slice);
+        return result;
+    }
+    static parseOriginalLivesplitString(text: string): Layout | null {
+        const slice = allocString(text);
+        const result = Layout.parseOriginalLivesplit(slice.ptr, slice.len);
+        dealloc(slice);
+        return result;
+    }
 }
 
 /**
