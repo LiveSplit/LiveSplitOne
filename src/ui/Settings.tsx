@@ -713,10 +713,17 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     <HotkeyButton
                         value={value.Hotkey}
                         setValue={(value) => {
-                            this.props.setValue(
-                                valueIndex,
-                                factory.fromString(value),
-                            );
+                            if (value != null) {
+                                this.props.setValue(
+                                    valueIndex,
+                                    factory.fromOptionalString(value),
+                                );
+                            } else {
+                                this.props.setValue(
+                                    valueIndex,
+                                    factory.fromOptionalEmptyString(),
+                                );
+                            }
                         }}
                     />
                 );

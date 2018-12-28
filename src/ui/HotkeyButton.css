@@ -1,5 +1,4 @@
-.hotkey-button {
-    width: 100%;
+.hotkey-box button {
     margin: 0px;
     font-size: 16px;
     height: 22px;
@@ -7,4 +6,10 @@
 
 .hotkey-button:focus {
     color: red;
+}
+
+.hotkey-box {
+    display: grid;
+    grid-template-columns: 1fr 30px;
+    column-gap: 5px;
 }
