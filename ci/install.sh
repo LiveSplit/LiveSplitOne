@@ -18,6 +18,8 @@ main() {
 
     rustup target install $TARGET
 
+    cargo install -f wasm-gc
+
     # This fetches latest stable release
     local tag=$(git ls-remote --tags --refs --exit-code https://github.com/japaric/cross \
                        | cut -d/ -f3 \

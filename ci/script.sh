@@ -10,6 +10,7 @@ doCompile() {
     (cd livesplit-core/capi/bind_gen && cargo run)
 
     $HOME/binaryen/bin/wasm-opt -O4 livesplit-core/target/wasm32-unknown-unknown/release/livesplit_core.wasm -o src/livesplit_core.wasm
+    wasm-gc src/livesplit_core.wasm
     cp livesplit-core/capi/bindings/wasm/livesplit_core.ts src/livesplit.ts
 
     npm install
