@@ -669,8 +669,10 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     <option value="DontUpdate">Dont Update</option>
                     <option value="SplitTime">Split Time</option>
                     <option value="Delta">Delta</option>
+                    <option value="DeltaWithFallback">Delta or Split Time If Empty</option>
                     <option value="SegmentTime">Segment Time</option>
                     <option value="SegmentDelta">Segment Delta</option>
+                    <option value="SegmentDeltaWithFallback">Segment Delta or Segment Time If Empty</option>
                 </select>;
             } else if ("ColumnUpdateTrigger" in value) {
                 component = <select

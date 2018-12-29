@@ -916,7 +916,7 @@ export type ColumnStartWith = "Empty" | "ComparisonTime" | "ComparisonSegmentTim
  * already having completed the split, the time gets updated with the value
  * specified here.
  */
-export type ColumnUpdateWith = "DontUpdate" | "SplitTime" | "Delta" | "SegmentTime" | "SegmentDelta";
+export type ColumnUpdateWith = "DontUpdate" | "SplitTime" | "Delta" | "DeltaWithFallback" | "SegmentTime" | "SegmentDelta" | "SegmentDeltaWithFallback";
 
 /** Specifies when a column's value gets updated. */
 export type ColumnUpdateTrigger = "OnStartingSegment" | "Contextual" | "OnEndingSegment";
