@@ -859,3 +859,19 @@ button.disabled, button.button-pressed.disabled, button.disabled:active {
     white-space: nowrap;
     overflow: hidden;
 }
+
+/* WebKit Scrollbars */
+::-webkit-scrollbar {
+    width: 10px
+}
+
+::-webkit-scrollbar-thumb {
+    background-clip: padding-box;
+    background-color: #303030;
+    border: 0px solid #0000;
+    border-radius: 10px
+}
+
+::-webkit-scrollbar-track-piece {
+    background-color: #0000
+}
