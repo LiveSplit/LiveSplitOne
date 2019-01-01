@@ -132,7 +132,7 @@ body {
 }
 
 .sidebar > div > div.small > button {
-    width: 125px;
+    width: 50%;
     height: 40px;
     font-size: 18px;
 }
@@ -144,7 +144,7 @@ body {
 }
 
 .choose-comparison > span {
-    width: 190px;
+    width: calc(100% - 60px);
     text-align: center;
     display: inline-block;
     font-size: 20px;
@@ -462,7 +462,7 @@ button {
 }
 
 .sidebar-buttons > button {
-    width: 250px;
+    width: 100%;
     height: 40px;
 }
 
