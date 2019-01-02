@@ -56,7 +56,9 @@ module.exports = (env, argv) => {
                 { from: "src/livesplit_core.wasm", to: "livesplit_core.wasm" },
                 ...(
                     isElectron
-                        ? [{ from: "src/electronMain.js", to: "index.js" }]
+                        ? [{ from: "src/electronMain.js", to: "index.js" },
+                           { from: "src/assets/icon.png", to: "icon.png" },
+                           { from: "package.json", to: "package.json" }]
                         : []
                 ),
             ], {}),

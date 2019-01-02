@@ -1,8 +1,8 @@
 {
   "name": "livesplit",
   "version": "1.0.0",
-  "description": "",
-  "main": "dist/bundle.js",
+  "description": "A version of LiveSplit that works on a lot of platforms.",
+  "main": "index.js",
   "scripts": {
     "build:core": "node buildCore.js",
     "start": "webpack-dev-server --open",
@@ -12,7 +12,43 @@
     "publish": "webpack -p"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
+  "build": {
+    "appId": "org.livesplit.one",
+    "productName": "LiveSplit One",
+    "copyright": "Copyright (c) 2016 Christopher Serr and Sergey Papushin",
+    "asar": true,
+    "publish": null,
+    "files": [
+      "!package.json",
+      "!node_modules/**/*",
+      {
+        "from": "dist/electron",
+        "to": "."
+      }
+    ],
+    "directories": {
+      "buildResources": "src/assets",
+      "output": "dist/electron-pkg"
+    },
+    "win": {
+      "target": "zip",
+      "icon": "src/assets/icon.ico"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "tar.gz"
+      ]
+    },
+    "appImage": {
+      "systemIntegration": "doNotAsk"
+    },
+    "mac": {
+      "icon": "src/assets/icon.icns",
+      "category": "public.app-category.utilities"
+    }
+  },
   "dependencies": {
     "@types/commonmark": "^0.27.1",
     "@types/react": "^16.7.6",
@@ -45,6 +81,7 @@
     "copy-webpack-plugin": "^4.6.0",
     "css-loader": "^1.0.1",
     "electron": "^3.0.10",
+    "electron-builder": "^20.38.4",
     "file-loader": "^2.0.0",
     "html-webpack-plugin": "^3.2.0",
     "source-map-loader": "^0.2.4",

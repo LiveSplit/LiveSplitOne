@@ -16,6 +16,9 @@ function createWindow() {
         autoHideMenuBar: true,
         minWidth: 300,
         minHeight: 60,
+        // Needed for the application icon to work properly on Linux.
+        // Without this, the window wouldn't have an icon.
+        icon: path.join(__dirname, "icon.png"),
     });
 
     // and load the index.html of the app.
