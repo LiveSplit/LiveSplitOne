@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.1.6",
-    "@types/node": "^10.12.10",
+    "@types/node": "^11.9.0",
     "awesome-typescript-loader": "^5.2.1",
     "babel-cli": "^6.26.0",
     "babel-loader": "^8.0.4",
