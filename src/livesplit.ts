@@ -416,6 +416,13 @@ export interface SplitsComponentStateJson {
      */
     icon_changes: SplitsComponentIconChangeJson[],
     /**
+     * Specifies whether the current run has any icons, even those that are not
+     * currently visible by the splits component. This allows for properly
+     * indenting the icon column, even when the icons are scrolled outside the
+     * splits component.
+     */
+    has_icons: boolean,
+    /**
      * Specifies whether thin separators should be shown between the individual
      * segments shown by the component.
      */
