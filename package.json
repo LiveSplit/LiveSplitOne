@@ -16,7 +16,7 @@
   "dependencies": {
     "@types/commonmark": "^0.27.1",
     "@types/react": "^16.7.6",
-    "@types/react-color": "^2.13.6",
+    "@types/react-color": "^3.0.0",
     "@types/react-dom": "^16.0.9",
     "@types/react-sidebar": "^3.0.0",
     "@types/react-toastify": "^4.0.1",
