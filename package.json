@@ -21,7 +21,7 @@
     "@types/react-sidebar": "^3.0.0",
     "@types/react-toastify": "^4.0.1",
     "babel-polyfill": "^6.26.0",
-    "commonmark": "^0.28.1",
+    "commonmark": "^0.29.0",
     "commonmark-react-renderer": "^4.3.4",
     "emojilib": "^2.4.0",
     "react": "^16.6.3",
