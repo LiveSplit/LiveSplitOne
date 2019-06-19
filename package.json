@@ -31,7 +31,7 @@
     "react-linkifier": "^4.0.0",
     "react-sidebar": "^3.0.2",
     "react-toastify": "^4.4.3",
-    "react-twemoji": "0.1.0",
+    "react-twemoji": "0.2.0",
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
