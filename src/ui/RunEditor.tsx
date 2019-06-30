@@ -336,6 +336,9 @@ export class RunEditor extends React.Component<Props, State> {
                     <MenuItem onClick={(_) => this.cleanSumOfBest()}>
                         Clean Sum of Best
                     </MenuItem>
+                    <MenuItem onClick={(_) => this.generateGoalComparison()}>
+                        Generate Goal Comparison
+                    </MenuItem>
                 </ContextMenu>
             </div>
         );
@@ -1271,6 +1274,17 @@ export class RunEditor extends React.Component<Props, State> {
                 </tbody>
             </table>
         );
+    }
+
+    private generateGoalComparison() {
+        const goalTime = prompt("Goal Time:");
+        if (goalTime) {
+            if (this.props.editor.parseAndGenerateGoalComparison(goalTime)) {
+                this.update();
+            } else {
+                toast.error("Failed generating the goal comparison.");
+            }
+        }
     }
 
     private cleanSumOfBest() {

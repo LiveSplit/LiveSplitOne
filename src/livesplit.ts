@@ -330,8 +330,8 @@ export enum TimerPhase {
 export interface BlankSpaceComponentStateJson {
     /** The background shown behind the component. */
     background: Gradient,
-    /** The height of the component. */
-    height: number,
+    /** The size of the component. */
+    size: number,
 }
 
 /** The state object describes the information to visualize for this component. */
@@ -900,7 +900,11 @@ export type SettingsDescriptionValueJson =
     { ColumnUpdateWith: ColumnUpdateWith } |
     { ColumnUpdateTrigger: ColumnUpdateTrigger } |
     { Hotkey: string } |
+    { LayoutDirection: LayoutDirection } |
     { CustomCombobox: CustomCombobox };
+
+/** Describes the direction the components of a layout are laid out in. */
+export type LayoutDirection = "Vertical" | "Horizontal";
 
 /**
  * A custom Combobox containing its current value and a list of possible
@@ -1513,13 +1517,13 @@ export class BlankSpaceComponent extends BlankSpaceComponentRefMut {
 export class BlankSpaceComponentStateRef {
     ptr: number;
     /**
-     * The height of the component.
+     * The size of the component.
      */
-    height(): number {
+    size(): number {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        const result = instance().exports.BlankSpaceComponentState_height(this.ptr);
+        const result = instance().exports.BlankSpaceComponentState_size(this.ptr);
         return result;
     }
     /**
@@ -4858,6 +4862,27 @@ export class RunEditorRefMut extends RunEditorRef {
         return result;
     }
     /**
+     * Parses a goal time and generates a custom goal comparison based on the
+     * parsed value. The comparison's times are automatically balanced based on the
+     * runner's history such that it roughly represents what split times for the
+     * goal time would roughly look like. Since it is populated by the runner's
+     * history, only goal times within the sum of the best segments and the sum of
+     * the worst segments are supported. Everything else is automatically capped by
+     * that range. The comparison is only populated for the selected timing method.
+     * The other timing method's comparison times are not modified by this, so you
+     * can call this again with the other timing method to generate the comparison
+     * times for both timing methods.
+     */
+    parseAndGenerateGoalComparison(time: string): boolean {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const time_allocated = allocString(time);
+        const result = instance().exports.RunEditor_parse_and_generate_goal_comparison(this.ptr, time_allocated.ptr) != 0;
+        dealloc(time_allocated);
+        return result;
+    }
+    /**
      * Clears out the Attempt History and the Segment Histories of all the
      * segments.
      */
@@ -5872,6 +5897,19 @@ export class SettingValue extends SettingValueRefMut {
     static fromColumnUpdateTrigger(value: string): SettingValue | null {
         const value_allocated = allocString(value);
         const result = new SettingValue(instance().exports.SettingValue_from_column_update_trigger(value_allocated.ptr));
+        dealloc(value_allocated);
+        if (result.ptr == 0) {
+            return null;
+        }
+        return result;
+    }
+    /**
+     * Creates a new setting value from the layout direction. If it doesn't
+     * match a known layout direction, null is returned.
+     */
+    static fromLayoutDirection(value: string): SettingValue | null {
+        const value_allocated = allocString(value);
+        const result = new SettingValue(instance().exports.SettingValue_from_layout_direction(value_allocated.ptr));
         dealloc(value_allocated);
         if (result.ptr == 0) {
             return null;

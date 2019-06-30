@@ -10,7 +10,7 @@ export default class BlankSpace extends React.Component<Props> {
             <div
                 className="blank-space"
                 style={{
-                    height: this.props.state.height,
+                    height: this.props.state.size,
                     background: gradientToCss(this.props.state.background),
                 }}
             />

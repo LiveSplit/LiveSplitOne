@@ -44,6 +44,7 @@ export interface SettingValueFactory<T> {
     fromColumnStartWith(value: string): T | null;
     fromColumnUpdateWith(value: string): T | null;
     fromColumnUpdateTrigger(value: string): T | null;
+    fromLayoutDirection(value: string): T | null;
 }
 
 export class JsonSettingValueFactory {
@@ -111,6 +112,9 @@ export class JsonSettingValueFactory {
         throw new Error("Not implemented");
     }
     public fromColumnUpdateTrigger(_: string): SettingsDescriptionValueJson | null {
+        throw new Error("Not implemented");
+    }
+    public fromLayoutDirection(_: string): SettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
 }
@@ -730,6 +734,23 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                         }}
                     />
                 );
+            } else if ("LayoutDirection" in value) {
+                component =
+                    <select
+                        value={value.LayoutDirection}
+                        onChange={(e) => {
+                            this.props.setValue(
+                                valueIndex,
+                                expect(
+                                    factory.fromLayoutDirection(e.target.value),
+                                    "Unexpected Layout Direction",
+                                ),
+                            );
+                        }}
+                    >
+                        <option value="Vertical">Vertical</option>
+                        <option value="Horizontal">Horizontal</option>
+                    </select>;
             } else {
                 assertNever(value);
             }
