@@ -182,6 +182,7 @@ button.toggle-middle {
 
 .previous-segment,
 .sum-of-best,
+.pb-chance,
 .possible-time-save,
 .total-playtime,
 .current-pace,
@@ -195,6 +196,7 @@ button.toggle-middle {
 
 .previous-segment-text,
 .sum-of-best-text,
+.pb-chance-text,
 .possible-time-save-text,
 .total-playtime-text,
 .current-pace-text,
@@ -205,6 +207,7 @@ button.toggle-middle {
 
 .previous-segment-time,
 .sum-of-best-time,
+.pb-chance-value,
 .possible-time-save-time,
 .total-playtime-time,
 .current-pace-time,

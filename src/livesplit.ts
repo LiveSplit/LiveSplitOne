@@ -241,6 +241,7 @@ export type ComponentStateJson =
     { Delta: DeltaComponentStateJson } |
     { DetailedTimer: DetailedTimerComponentStateJson } |
     { Graph: GraphComponentStateJson } |
+    { PbChance: PbChanceComponentStateJson } |
     { PossibleTimeSave: PossibleTimeSaveComponentStateJson } |
     { PreviousSegment: PreviousSegmentComponentStateJson } |
     { Separator: null } |
@@ -540,6 +541,31 @@ export interface SumOfBestComponentStateJson {
     text: string,
     /** The sum of best segments. */
     time: string,
+    /**
+     * Specifies whether to display the name of the component and its value in
+     * two separate rows.
+     */
+    display_two_rows: boolean,
+}
+
+/** The state object describes the information to visualize for this component. */
+export interface PbChanceComponentStateJson {
+    /** The background shown behind the component. */
+    background: Gradient,
+    /**
+     * The color of the label. If `null` is specified, the color is taken from
+     * the layout.
+     */
+    label_color: Color | null,
+    /**
+     * The color of the value. If `null` is specified, the color is taken from
+     * the layout.
+     */
+    value_color: Color | null,
+    /** The label's text. */
+    text: string,
+    /** The current PB Chance. */
+    pb_chance: string,
     /**
      * Specifies whether to display the name of the component and its value in
      * two separate rows.
@@ -3622,6 +3648,178 @@ export class ParseRunResult extends ParseRunResultRefMut {
         const result = new Run(instance().exports.ParseRunResult_unwrap(this.ptr));
         this.ptr = 0;
         return result;
+    }
+}
+
+/**
+ * The PB Chance Component is a component that shows how likely it is to beat
+ * the Personal Best. If there is no active attempt it shows the general chance
+ * of beating the Personal Best. During an attempt it actively changes based on
+ * how well the attempt is going.
+ */
+export class PbChanceComponentRef {
+    ptr: number;
+    /**
+     * Encodes the component's state information as JSON.
+     */
+    stateAsJson(timer: TimerRef): any {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (timer.ptr == 0) {
+            throw "timer is disposed";
+        }
+        const result = instance().exports.PbChanceComponent_state_as_json(this.ptr, timer.ptr);
+        return JSON.parse(decodeString(result));
+    }
+    /**
+     * Calculates the component's state based on the timer provided.
+     */
+    state(timer: TimerRef): PbChanceComponentState {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (timer.ptr == 0) {
+            throw "timer is disposed";
+        }
+        const result = new PbChanceComponentState(instance().exports.PbChanceComponent_state(this.ptr, timer.ptr));
+        return result;
+    }
+    /**
+     * This constructor is an implementation detail. Do not use this.
+     */
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+/**
+ * The PB Chance Component is a component that shows how likely it is to beat
+ * the Personal Best. If there is no active attempt it shows the general chance
+ * of beating the Personal Best. During an attempt it actively changes based on
+ * how well the attempt is going.
+ */
+export class PbChanceComponentRefMut extends PbChanceComponentRef {
+}
+
+/**
+ * The PB Chance Component is a component that shows how likely it is to beat
+ * the Personal Best. If there is no active attempt it shows the general chance
+ * of beating the Personal Best. During an attempt it actively changes based on
+ * how well the attempt is going.
+ */
+export class PbChanceComponent extends PbChanceComponentRefMut {
+    /**
+     * Allows for scoped usage of the object. The object is guaranteed to get
+     * disposed once this function returns. You are free to dispose the object
+     * early yourself anywhere within the scope. The scope's return value gets
+     * carried to the outside of this function.
+     */
+    with<T>(closure: (obj: PbChanceComponent) => T): T {
+        try {
+            return closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    /**
+     * Disposes the object, allowing it to clean up all of its memory. You need
+     * to call this for every object that you don't use anymore and hasn't
+     * already been disposed.
+     */
+    dispose() {
+        if (this.ptr != 0) {
+            instance().exports.PbChanceComponent_drop(this.ptr);
+            this.ptr = 0;
+        }
+    }
+    /**
+     * Creates a new PB Chance Component.
+     */
+    static new(): PbChanceComponent {
+        const result = new PbChanceComponent(instance().exports.PbChanceComponent_new());
+        return result;
+    }
+    /**
+     * Converts the component into a generic component suitable for using with a
+     * layout.
+     */
+    intoGeneric(): Component {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = new Component(instance().exports.PbChanceComponent_into_generic(this.ptr));
+        this.ptr = 0;
+        return result;
+    }
+}
+
+/**
+ * The state object describes the information to visualize for this component.
+ */
+export class PbChanceComponentStateRef {
+    ptr: number;
+    /**
+     * The label's text.
+     */
+    text(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = instance().exports.PbChanceComponentState_text(this.ptr);
+        return decodeString(result);
+    }
+    /**
+     * The current PB Chance.
+     */
+    pbChance(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = instance().exports.PbChanceComponentState_pb_chance(this.ptr);
+        return decodeString(result);
+    }
+    /**
+     * This constructor is an implementation detail. Do not use this.
+     */
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+/**
+ * The state object describes the information to visualize for this component.
+ */
+export class PbChanceComponentStateRefMut extends PbChanceComponentStateRef {
+}
+
+/**
+ * The state object describes the information to visualize for this component.
+ */
+export class PbChanceComponentState extends PbChanceComponentStateRefMut {
+    /**
+     * Allows for scoped usage of the object. The object is guaranteed to get
+     * disposed once this function returns. You are free to dispose the object
+     * early yourself anywhere within the scope. The scope's return value gets
+     * carried to the outside of this function.
+     */
+    with<T>(closure: (obj: PbChanceComponentState) => T): T {
+        try {
+            return closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    /**
+     * Disposes the object, allowing it to clean up all of its memory. You need
+     * to call this for every object that you don't use anymore and hasn't
+     * already been disposed.
+     */
+    dispose() {
+        if (this.ptr != 0) {
+            instance().exports.PbChanceComponentState_drop(this.ptr);
+            this.ptr = 0;
+        }
     }
 }
 

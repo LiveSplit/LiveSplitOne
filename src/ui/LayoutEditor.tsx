@@ -112,6 +112,9 @@ export class LayoutEditor extends React.Component<Props, State> {
                                 <MenuItem onClick={(_) => this.addComponent(LiveSplit.GraphComponent)}>
                                     Graph
                                 </MenuItem>
+                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.PbChanceComponent)}>
+                                    PB Chance
+                                </MenuItem>
                                 <MenuItem onClick={(_) => this.addComponent(LiveSplit.PossibleTimeSaveComponent)}>
                                     Possible Time Save
                                 </MenuItem>

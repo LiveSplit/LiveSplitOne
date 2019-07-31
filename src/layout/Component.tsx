@@ -16,6 +16,7 @@ import Text from "./Text";
 import Timer from "./Timer";
 import Title from "./Title";
 import TotalPlaytime from "./TotalPlaytime";
+import PbChance from "./PbChance";
 
 export interface Props {
     state: ComponentStateJson,
@@ -36,6 +37,8 @@ export default class Component extends React.Component<Props> {
             return <DetailedTimer state={state.DetailedTimer} />;
         } else if ("Graph" in state) {
             return <Graph state={state.Graph} />;
+        } else if ("PbChance" in state) {
+            return <PbChance state={state.PbChance} />;
         } else if ("PossibleTimeSave" in state) {
             return <PossibleTimeSave state={state.PossibleTimeSave} />;
         } else if ("PreviousSegment" in state) {
