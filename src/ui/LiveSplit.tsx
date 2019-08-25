@@ -268,7 +268,7 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     public async uploadToSplitsIO(): Promise<Option<Window>> {
-        const lss = this.readWith((t) => t.getRun().saveAsLss());
+        const lss = this.readWith((t) => t.saveAsLss());
 
         try {
             const claimUri = await SplitsIO.uploadLss(lss);
@@ -281,12 +281,10 @@ export class LiveSplit extends React.Component<{}, State> {
 
     public exportSplits() {
         const [lss, name] = this.writeWith((t) => {
+            const lss = t.saveAsLss();
+            const name = t.getRun().extendedFileName(true);
             t.markAsUnmodified();
-            const run = t.getRun();
-            return [
-                run.saveAsLss(),
-                run.extendedFileName(true),
-            ];
+            return [lss, name];
         });
         try {
             exportFile(name + ".lss", lss);
@@ -297,8 +295,9 @@ export class LiveSplit extends React.Component<{}, State> {
 
     public saveSplits() {
         const lss = this.writeWith((t) => {
+            const lss = t.saveAsLss();
             t.markAsUnmodified();
-            return t.saveAsLss();
+            return lss;
         });
         try {
             localStorage.setItem("splits", lss);
