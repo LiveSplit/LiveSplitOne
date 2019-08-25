@@ -2398,20 +2398,27 @@ export class DetailedTimerComponentStateRef {
         return decodeString(result);
     }
     /**
-     * The segment's icon encoded as a Data URL. This value is only specified
-     * whenever the icon changes. If you explicitly want to query this value,
-     * remount the component. The String itself may be empty. This indicates
-     * that there is no icon.
+     * The data of the segment's icon. This value is only specified whenever the
+     * icon changes. If you explicitly want to query this value, remount the
+     * component. The buffer itself may be empty. This indicates that there is no
+     * icon.
      */
-    iconChange(): string | null {
+    iconChangePtr(): number {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        const result = instance().exports.DetailedTimerComponentState_icon_change(this.ptr);
-        if (result == 0) {
-            return null;
+        const result = instance().exports.DetailedTimerComponentState_icon_change_ptr(this.ptr);
+        return result;
+    }
+    /**
+     * The length of the data of the segment's icon.
+     */
+    iconChangeLen(): number {
+        if (this.ptr == 0) {
+            throw "this is disposed";
         }
-        return decodeString(result);
+        const result = instance().exports.DetailedTimerComponentState_icon_change_len(this.ptr);
+        return result;
     }
     /**
      * The name of the segment. This may be null if it's not supposed to be
@@ -4282,15 +4289,25 @@ export class RunRef {
         return decodeString(result);
     }
     /**
-     * Accesses the Data URL storing the game icon's data. If there is no game
-     * icon, this returns an empty string instead of a URL.
+     * Accesses the game icon's data. If there is no game icon, this returns an
+     * empty buffer.
      */
-    gameIcon(): string {
+    gameIconPtr(): number {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        const result = instance().exports.Run_game_icon(this.ptr);
-        return decodeString(result);
+        const result = instance().exports.Run_game_icon_ptr(this.ptr);
+        return result;
+    }
+    /**
+     * Accesses the amount of bytes the game icon's data takes up.
+     */
+    gameIconLen(): number {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = instance().exports.Run_game_icon_len(this.ptr);
+        return result;
     }
     /**
      * Accesses the name of the category this Run is for.
@@ -5458,16 +5475,25 @@ export class SegmentRef {
         return decodeString(result);
     }
     /**
-     * Accesses the icon of the segment encoded as a Data URL storing the image's
-     * data. If the image's data is empty, this returns an empty string instead of
-     * a URL.
+     * Accesses the segment icon's data. If there is no segment icon, this returns
+     * an empty buffer.
      */
-    icon(): string {
+    iconPtr(): number {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        const result = instance().exports.Segment_icon(this.ptr);
-        return decodeString(result);
+        const result = instance().exports.Segment_icon_ptr(this.ptr);
+        return result;
+    }
+    /**
+     * Accesses the amount of bytes the segment icon's data takes up.
+     */
+    iconLen(): number {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = instance().exports.Segment_icon_len(this.ptr);
+        return result;
     }
     /**
      * Accesses the specified comparison's time. If there's none for this
@@ -6522,16 +6548,27 @@ export class SplitsComponentStateRef {
         return result;
     }
     /**
-     * The segment's icon encoded as a Data URL of the icon change with the
-     * specified index. The String itself may be empty. This indicates that there
-     * is no icon. You may not provide an out of bounds index.
+     * The icon data of the segment of the icon change with the specified index.
+     * The buffer may be empty. This indicates that there is no icon. You may not
+     * provide an out of bounds index.
      */
-    iconChangeIcon(iconChangeIndex: number): string {
+    iconChangeIconPtr(iconChangeIndex: number): number {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        const result = instance().exports.SplitsComponentState_icon_change_icon(this.ptr, iconChangeIndex);
-        return decodeString(result);
+        const result = instance().exports.SplitsComponentState_icon_change_icon_ptr(this.ptr, iconChangeIndex);
+        return result;
+    }
+    /**
+     * The length of the icon data of the segment of the icon change with the
+     * specified index.
+     */
+    iconChangeIconLen(iconChangeIndex: number): number {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = instance().exports.SplitsComponentState_icon_change_icon_len(this.ptr, iconChangeIndex);
+        return result;
     }
     /**
      * The name of the segment with the specified index. You may not provide an out
@@ -8193,20 +8230,27 @@ export class TitleComponent extends TitleComponentRefMut {
 export class TitleComponentStateRef {
     ptr: number;
     /**
-     * The game's icon encoded as a Data URL. This value is only specified whenever
-     * the icon changes. If you explicitly want to query this value, remount the
-     * component. The String itself may be empty. This indicates that there is no
-     * icon. If no change occurred, null is returned instead.
+     * The data of the game's icon. This value is only specified whenever the icon
+     * changes. If you explicitly want to query this value, remount the component.
+     * The buffer may be empty. This indicates that there is no icon. If no change
+     * occurred, null is returned instead.
      */
-    iconChange(): string | null {
+    iconChangePtr(): number {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        const result = instance().exports.TitleComponentState_icon_change(this.ptr);
-        if (result == 0) {
-            return null;
+        const result = instance().exports.TitleComponentState_icon_change_ptr(this.ptr);
+        return result;
+    }
+    /**
+     * The length of the game's icon data.
+     */
+    iconChangeLen(): number {
+        if (this.ptr == 0) {
+            throw "this is disposed";
         }
-        return decodeString(result);
+        const result = instance().exports.TitleComponentState_icon_change_len(this.ptr);
+        return result;
     }
     /**
      * The first title line to show. This is either the game's name, or a
