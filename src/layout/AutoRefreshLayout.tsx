@@ -14,7 +14,7 @@ export interface State {
 }
 
 export default class AutoRefreshLayout extends React.Component<Props, State> {
-    private intervalID: any;
+    private reqId: any;
 
     constructor(props: Props) {
         super(props);
@@ -25,18 +25,18 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
     }
 
     public componentWillMount() {
-        this.intervalID = setInterval(
-            () => {
-                this.setState({
-                    layoutState: this.props.getState(),
-                });
-            },
-            1000 / 30,
-        );
+        let tick = () => {
+            this.setState({
+                layoutState: this.props.getState(),
+            });
+            this.reqId = requestAnimationFrame(tick)
+        }
+
+        this.reqId = requestAnimationFrame(tick)
     }
 
     public componentWillUnmount() {
-        clearInterval(this.intervalID);
+        cancelAnimationFrame(this.reqId);
     }
 
     public render() {

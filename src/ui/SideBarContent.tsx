@@ -47,7 +47,7 @@ export interface State {
 }
 
 export class SideBarContent extends React.Component<Props, State> {
-    private intervalID: any;
+    private reqId: any;
 
     constructor(props: Props) {
         super(props);
@@ -59,14 +59,16 @@ export class SideBarContent extends React.Component<Props, State> {
     }
 
     public componentWillMount() {
-        this.intervalID = setInterval(
-            () => this.update(),
-            1000 / 30,
-        );
+        let tick = () => {
+            this.update();
+            this.reqId = requestAnimationFrame(tick)
+        }
+
+        this.reqId = requestAnimationFrame(tick)
     }
 
     public componentWillUnmount() {
-        clearInterval(this.intervalID);
+        cancelAnimationFrame(this.reqId);
     }
 
     public render() {
