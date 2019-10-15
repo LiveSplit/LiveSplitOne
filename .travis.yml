@@ -1,7 +1,6 @@
-dist: trusty
 language: node_js
 services: docker
-# sudo: required
+
 env:
   global:
   - CRATE_NAME=LiveSplitOne
@@ -29,4 +28,4 @@ notifications:
     on_success: never
 
 node_js:
-  - "10"
+  - "12"

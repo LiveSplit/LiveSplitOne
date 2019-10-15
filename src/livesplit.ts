@@ -236,21 +236,14 @@ function dealloc(slice: Slice) {
 /** The state object for one of the components available. */
 export type ComponentStateJson =
     { BlankSpace: BlankSpaceComponentStateJson } |
-    { CurrentComparison: CurrentComparisonComponentStateJson } |
-    { CurrentPace: CurrentPaceComponentStateJson } |
-    { Delta: DeltaComponentStateJson } |
     { DetailedTimer: DetailedTimerComponentStateJson } |
     { Graph: GraphComponentStateJson } |
-    { PbChance: PbChanceComponentStateJson } |
-    { PossibleTimeSave: PossibleTimeSaveComponentStateJson } |
-    { PreviousSegment: PreviousSegmentComponentStateJson } |
+    { KeyValue: KeyValueComponentStateJson } |
     { Separator: null } |
     { Splits: SplitsComponentStateJson } |
-    { SumOfBest: SumOfBestComponentStateJson } |
     { Text: TextComponentStateJson } |
     { Timer: TimerComponentStateJson } |
-    { Title: TitleComponentStateJson } |
-    { TotalPlaytime: TotalPlaytimeComponentStateJson };
+    { Title: TitleComponentStateJson };
 
 /**
  * Colors can be used to describe what color to use for visualizing backgrounds,
@@ -499,98 +492,34 @@ export interface SplitColumnState {
     visual_color: Color,
 }
 
-/** The state object describes the information to visualize for this component. */
-export interface PreviousSegmentComponentStateJson {
+/**
+ * The state object describes the information to visualize for a key value based
+ * component.
+ */
+export interface KeyValueComponentStateJson {
     /** The background shown behind the component. */
     background: Gradient,
     /**
-     * The color of the label. If `null` is specified, the color is taken from
-     * the layout.
+     * The color of the key. If `null` is specified, the color is taken from the
+     * layout.
      */
-    label_color: Color | null,
-    /** The label's text. */
-    text: string,
-    /** The delta (and possibly the possible time save). */
-    time: string,
-    /** The semantic coloring information the delta time carries. */
+    key_color: Color | null,
+    /**
+     * The color of the key. If `null` is specified, the color is taken from the
+     * layout.
+     */
+    value_color: Color | null,
+    /** The semantic coloring information the value carries. */
     semantic_color: SemanticColor,
-    /** The visual color of the delta time. */
-    visual_color: Color,
+    /** The key to visualize. */
+    key: string,
+    /** The value to visualize. */
+    value: string,
     /**
-     * Specifies whether to display the name of the component and its value in
-     * two separate rows.
+     * Specifies additional abbreviations for the key that can be used instead
+     * of the key, if there is not enough space to show the whole key.
      */
-    display_two_rows: boolean,
-}
-
-/** The state object describes the information to visualize for this component. */
-export interface SumOfBestComponentStateJson {
-    /** The background shown behind the component. */
-    background: Gradient,
-    /**
-     * The color of the label. If `null` is specified, the color is taken from
-     * the layout.
-     */
-    label_color: Color | null,
-    /**
-     * The color of the value. If `null` is specified, the color is taken from
-     * the layout.
-     */
-    value_color: Color | null,
-    /** The label's text. */
-    text: string,
-    /** The sum of best segments. */
-    time: string,
-    /**
-     * Specifies whether to display the name of the component and its value in
-     * two separate rows.
-     */
-    display_two_rows: boolean,
-}
-
-/** The state object describes the information to visualize for this component. */
-export interface PbChanceComponentStateJson {
-    /** The background shown behind the component. */
-    background: Gradient,
-    /**
-     * The color of the label. If `null` is specified, the color is taken from
-     * the layout.
-     */
-    label_color: Color | null,
-    /**
-     * The color of the value. If `null` is specified, the color is taken from
-     * the layout.
-     */
-    value_color: Color | null,
-    /** The label's text. */
-    text: string,
-    /** The current PB Chance. */
-    pb_chance: string,
-    /**
-     * Specifies whether to display the name of the component and its value in
-     * two separate rows.
-     */
-    display_two_rows: boolean,
-}
-
-/** The state object describes the information to visualize for this component. */
-export interface PossibleTimeSaveComponentStateJson {
-    /** The background shown behind the component. */
-    background: Gradient,
-    /**
-     * The color of the label. If `null` is specified, the color is taken from
-     * the layout.
-     */
-    label_color: Color | null,
-    /**
-     * The color of the value. If `null` is specified, the color is taken from
-     * the layout.
-     */
-    value_color: Color | null,
-    /** The label's text. */
-    text: string,
-    /** The current possible time save. */
-    time: string,
+    key_abbreviations: string[],
     /**
      * Specifies whether to display the name of the component and its value in
      * two separate rows.
@@ -703,108 +632,6 @@ export interface TextComponentStateJson {
 export type TextComponentStateText =
     { Center: string } |
     { Split: string[] };
-
-/** The state object describes the information to visualize for this component. */
-export interface TotalPlaytimeComponentStateJson {
-    /** The background shown behind the component. */
-    background: Gradient,
-    /**
-     * The color of the label. If `null` is specified, the color is taken from
-     * the layout.
-     */
-    label_color: Color | null,
-    /**
-     * The color of the value. If `null` is specified, the color is taken from
-     * the layout.
-     */
-    value_color: Color | null,
-    /** The label's text. */
-    text: string,
-    /** The total playtime. */
-    time: string,
-    /**
-     * Specifies whether to display the name of the component and its value in
-     * two separate rows.
-     */
-    display_two_rows: boolean,
-}
-
-/** The state object describes the information to visualize for this component. */
-export interface CurrentPaceComponentStateJson {
-    /** The background shown behind the component. */
-    background: Gradient,
-    /**
-     * The color of the label. If `null` is specified, the color is taken from
-     * the layout.
-     */
-    label_color: Color | null,
-    /**
-     * The color of the value. If `null` is specified, the color is taken from
-     * the layout.
-     */
-    value_color: Color | null,
-    /** The label's text. */
-    text: string,
-    /** The current pace. */
-    time: string,
-    /**
-     * Specifies whether to display the name of the component and its value in
-     * two separate rows.
-     */
-    display_two_rows: boolean,
-}
-
-/** The state object describes the information to visualize for this component. */
-export interface DeltaComponentStateJson {
-    /** The background shown behind the component. */
-    background: Gradient,
-    /**
-     * The color of the label. If `null` is specified, the color is taken from
-     * the layout.
-     */
-    label_color: Color | null,
-    /** The label's text. */
-    text: string,
-    /** The delta. */
-    time: string,
-    /** The semantic coloring information the delta time carries. */
-    semantic_color: SemanticColor,
-    /** The visual color of the delta time. */
-    visual_color: Color,
-    /**
-     * Specifies whether to display the name of the component and its value in
-     * two separate rows.
-     */
-    display_two_rows: boolean,
-}
-
-/** The state object describes the information to visualize for this component. */
-export interface CurrentComparisonComponentStateJson {
-    /** The background shown behind the component. */
-    background: Gradient,
-    /**
-     * The color of the label. If `null` is specified, the color is taken from
-     * the layout.
-     */
-    label_color: Color | null,
-    /**
-     * The color of the value. If `null` is specified, the color is taken from
-     * the layout.
-     */
-    value_color: Color | null,
-    /** The label's text. */
-    text: string,
-    /**
-     * The name of the comparison that is currently selected to be compared
-     * against.
-     */
-    comparison: string,
-    /**
-     * Specifies whether to display the name of the component and its value in
-     * two separate rows.
-     */
-    display_two_rows: boolean,
-}
 
 /** The state object describes the information to visualize for this component. */
 export interface DetailedTimerComponentStateJson {
@@ -1683,14 +1510,14 @@ export class CurrentComparisonComponentRefMut extends CurrentComparisonComponent
     /**
      * Calculates the component's state based on the timer provided.
      */
-    state(timer: TimerRef): CurrentComparisonComponentState {
+    state(timer: TimerRef): KeyValueComponentState {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        const result = new CurrentComparisonComponentState(instance().exports.CurrentComparisonComponent_state(this.ptr, timer.ptr));
+        const result = new KeyValueComponentState(instance().exports.CurrentComparisonComponent_state(this.ptr, timer.ptr));
         return result;
     }
 }
@@ -1746,76 +1573,6 @@ export class CurrentComparisonComponent extends CurrentComparisonComponentRefMut
 }
 
 /**
- * The state object describes the information to visualize for this component.
- */
-export class CurrentComparisonComponentStateRef {
-    ptr: number;
-    /**
-     * The label's text.
-     */
-    text(): string {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        const result = instance().exports.CurrentComparisonComponentState_text(this.ptr);
-        return decodeString(result);
-    }
-    /**
-     * The name of the comparison that is currently selected to be compared
-     * against.
-     */
-    comparison(): string {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        const result = instance().exports.CurrentComparisonComponentState_comparison(this.ptr);
-        return decodeString(result);
-    }
-    /**
-     * This constructor is an implementation detail. Do not use this.
-     */
-    constructor(ptr: number) {
-        this.ptr = ptr;
-    }
-}
-
-/**
- * The state object describes the information to visualize for this component.
- */
-export class CurrentComparisonComponentStateRefMut extends CurrentComparisonComponentStateRef {
-}
-
-/**
- * The state object describes the information to visualize for this component.
- */
-export class CurrentComparisonComponentState extends CurrentComparisonComponentStateRefMut {
-    /**
-     * Allows for scoped usage of the object. The object is guaranteed to get
-     * disposed once this function returns. You are free to dispose the object
-     * early yourself anywhere within the scope. The scope's return value gets
-     * carried to the outside of this function.
-     */
-    with<T>(closure: (obj: CurrentComparisonComponentState) => T): T {
-        try {
-            return closure(this);
-        } finally {
-            this.dispose();
-        }
-    }
-    /**
-     * Disposes the object, allowing it to clean up all of its memory. You need
-     * to call this for every object that you don't use anymore and hasn't
-     * already been disposed.
-     */
-    dispose() {
-        if (this.ptr != 0) {
-            instance().exports.CurrentComparisonComponentState_drop(this.ptr);
-            this.ptr = 0;
-        }
-    }
-}
-
-/**
  * The Current Pace Component is a component that shows a prediction of the
  * current attempt's final time, if the current attempt's pace matches the
  * chosen comparison for the remainder of the run.
@@ -1852,14 +1609,14 @@ export class CurrentPaceComponentRefMut extends CurrentPaceComponentRef {
     /**
      * Calculates the component's state based on the timer provided.
      */
-    state(timer: TimerRef): CurrentPaceComponentState {
+    state(timer: TimerRef): KeyValueComponentState {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        const result = new CurrentPaceComponentState(instance().exports.CurrentPaceComponent_state(this.ptr, timer.ptr));
+        const result = new KeyValueComponentState(instance().exports.CurrentPaceComponent_state(this.ptr, timer.ptr));
         return result;
     }
 }
@@ -1916,75 +1673,6 @@ export class CurrentPaceComponent extends CurrentPaceComponentRefMut {
 }
 
 /**
- * The state object describes the information to visualize for this component.
- */
-export class CurrentPaceComponentStateRef {
-    ptr: number;
-    /**
-     * The label's text.
-     */
-    text(): string {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        const result = instance().exports.CurrentPaceComponentState_text(this.ptr);
-        return decodeString(result);
-    }
-    /**
-     * The current pace.
-     */
-    time(): string {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        const result = instance().exports.CurrentPaceComponentState_time(this.ptr);
-        return decodeString(result);
-    }
-    /**
-     * This constructor is an implementation detail. Do not use this.
-     */
-    constructor(ptr: number) {
-        this.ptr = ptr;
-    }
-}
-
-/**
- * The state object describes the information to visualize for this component.
- */
-export class CurrentPaceComponentStateRefMut extends CurrentPaceComponentStateRef {
-}
-
-/**
- * The state object describes the information to visualize for this component.
- */
-export class CurrentPaceComponentState extends CurrentPaceComponentStateRefMut {
-    /**
-     * Allows for scoped usage of the object. The object is guaranteed to get
-     * disposed once this function returns. You are free to dispose the object
-     * early yourself anywhere within the scope. The scope's return value gets
-     * carried to the outside of this function.
-     */
-    with<T>(closure: (obj: CurrentPaceComponentState) => T): T {
-        try {
-            return closure(this);
-        } finally {
-            this.dispose();
-        }
-    }
-    /**
-     * Disposes the object, allowing it to clean up all of its memory. You need
-     * to call this for every object that you don't use anymore and hasn't
-     * already been disposed.
-     */
-    dispose() {
-        if (this.ptr != 0) {
-            instance().exports.CurrentPaceComponentState_drop(this.ptr);
-            this.ptr = 0;
-        }
-    }
-}
-
-/**
  * The Delta Component is a component that shows the how far ahead or behind
  * the current attempt is compared to the chosen comparison.
  */
@@ -2023,7 +1711,7 @@ export class DeltaComponentRefMut extends DeltaComponentRef {
      * Calculates the component's state based on the timer and the layout
      * settings provided.
      */
-    state(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): DeltaComponentState {
+    state(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): KeyValueComponentState {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
@@ -2033,7 +1721,7 @@ export class DeltaComponentRefMut extends DeltaComponentRef {
         if (layoutSettings.ptr == 0) {
             throw "layoutSettings is disposed";
         }
-        const result = new DeltaComponentState(instance().exports.DeltaComponent_state(this.ptr, timer.ptr, layoutSettings.ptr));
+        const result = new KeyValueComponentState(instance().exports.DeltaComponent_state(this.ptr, timer.ptr, layoutSettings.ptr));
         return result;
     }
 }
@@ -2085,85 +1773,6 @@ export class DeltaComponent extends DeltaComponentRefMut {
         const result = new Component(instance().exports.DeltaComponent_into_generic(this.ptr));
         this.ptr = 0;
         return result;
-    }
-}
-
-/**
- * The state object describes the information to visualize for this component.
- */
-export class DeltaComponentStateRef {
-    ptr: number;
-    /**
-     * The label's text.
-     */
-    text(): string {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        const result = instance().exports.DeltaComponentState_text(this.ptr);
-        return decodeString(result);
-    }
-    /**
-     * The delta.
-     */
-    time(): string {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        const result = instance().exports.DeltaComponentState_time(this.ptr);
-        return decodeString(result);
-    }
-    /**
-     * The semantic coloring information the delta time carries.
-     */
-    semanticColor(): string {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        const result = instance().exports.DeltaComponentState_semantic_color(this.ptr);
-        return decodeString(result);
-    }
-    /**
-     * This constructor is an implementation detail. Do not use this.
-     */
-    constructor(ptr: number) {
-        this.ptr = ptr;
-    }
-}
-
-/**
- * The state object describes the information to visualize for this component.
- */
-export class DeltaComponentStateRefMut extends DeltaComponentStateRef {
-}
-
-/**
- * The state object describes the information to visualize for this component.
- */
-export class DeltaComponentState extends DeltaComponentStateRefMut {
-    /**
-     * Allows for scoped usage of the object. The object is guaranteed to get
-     * disposed once this function returns. You are free to dispose the object
-     * early yourself anywhere within the scope. The scope's return value gets
-     * carried to the outside of this function.
-     */
-    with<T>(closure: (obj: DeltaComponentState) => T): T {
-        try {
-            return closure(this);
-        } finally {
-            this.dispose();
-        }
-    }
-    /**
-     * Disposes the object, allowing it to clean up all of its memory. You need
-     * to call this for every object that you don't use anymore and hasn't
-     * already been disposed.
-     */
-    dispose() {
-        if (this.ptr != 0) {
-            instance().exports.DeltaComponentState_drop(this.ptr);
-            this.ptr = 0;
-        }
     }
 }
 
@@ -2949,9 +2558,9 @@ export class HotkeyConfigRef {
 export class HotkeyConfigRefMut extends HotkeyConfigRef {
     /**
      * Sets a setting's value by its index to the given value.
-     * 
+     *
      * false is returned if a hotkey is already in use by a different action.
-     * 
+     *
      * This panics if the type of the value to be set is not compatible with the
      * type of the setting's value. A panic can also occur if the index of the
      * setting provided is out of bounds.
@@ -3151,6 +2760,75 @@ export class HotkeySystem extends HotkeySystemRefMut {
             return null;
         }
         return result;
+    }
+}
+
+/**
+ * The state object describes the information to visualize for a key value based component.
+ */
+export class KeyValueComponentStateRef {
+    ptr: number;
+    /**
+     * The key to visualize.
+     */
+    key(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = instance().exports.KeyValueComponentState_key(this.ptr);
+        return decodeString(result);
+    }
+    /**
+     * The value to visualize.
+     */
+    value(): string {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = instance().exports.KeyValueComponentState_value(this.ptr);
+        return decodeString(result);
+    }
+    /**
+     * This constructor is an implementation detail. Do not use this.
+     */
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+/**
+ * The state object describes the information to visualize for a key value based component.
+ */
+export class KeyValueComponentStateRefMut extends KeyValueComponentStateRef {
+}
+
+/**
+ * The state object describes the information to visualize for a key value based component.
+ */
+export class KeyValueComponentState extends KeyValueComponentStateRefMut {
+    /**
+     * Allows for scoped usage of the object. The object is guaranteed to get
+     * disposed once this function returns. You are free to dispose the object
+     * early yourself anywhere within the scope. The scope's return value gets
+     * carried to the outside of this function.
+     */
+    with<T>(closure: (obj: KeyValueComponentState) => T): T {
+        try {
+            return closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    /**
+     * Disposes the object, allowing it to clean up all of its memory. You need
+     * to call this for every object that you don't use anymore and hasn't
+     * already been disposed.
+     */
+    dispose() {
+        if (this.ptr != 0) {
+            instance().exports.KeyValueComponentState_drop(this.ptr);
+            this.ptr = 0;
+        }
     }
 }
 
@@ -3464,7 +3142,7 @@ export class LayoutEditorRefMut extends LayoutEditorRef {
     /**
      * Sets a setting's value of the selected component by its setting index
      * to the given value.
-     * 
+     *
      * This panics if the type of the value to be set is not compatible with
      * the type of the setting's value. A panic can also occur if the index of
      * the setting provided is out of bounds.
@@ -3482,7 +3160,7 @@ export class LayoutEditorRefMut extends LayoutEditorRef {
     /**
      * Sets a setting's value of the general settings by its setting index to
      * the given value.
-     * 
+     *
      * This panics if the type of the value to be set is not compatible with
      * the type of the setting's value. A panic can also occur if the index of
      * the setting provided is out of bounds.
@@ -3682,14 +3360,14 @@ export class PbChanceComponentRef {
     /**
      * Calculates the component's state based on the timer provided.
      */
-    state(timer: TimerRef): PbChanceComponentState {
+    state(timer: TimerRef): KeyValueComponentState {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        const result = new PbChanceComponentState(instance().exports.PbChanceComponent_state(this.ptr, timer.ptr));
+        const result = new KeyValueComponentState(instance().exports.PbChanceComponent_state(this.ptr, timer.ptr));
         return result;
     }
     /**
@@ -3762,75 +3440,6 @@ export class PbChanceComponent extends PbChanceComponentRefMut {
 }
 
 /**
- * The state object describes the information to visualize for this component.
- */
-export class PbChanceComponentStateRef {
-    ptr: number;
-    /**
-     * The label's text.
-     */
-    text(): string {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        const result = instance().exports.PbChanceComponentState_text(this.ptr);
-        return decodeString(result);
-    }
-    /**
-     * The current PB Chance.
-     */
-    pbChance(): string {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        const result = instance().exports.PbChanceComponentState_pb_chance(this.ptr);
-        return decodeString(result);
-    }
-    /**
-     * This constructor is an implementation detail. Do not use this.
-     */
-    constructor(ptr: number) {
-        this.ptr = ptr;
-    }
-}
-
-/**
- * The state object describes the information to visualize for this component.
- */
-export class PbChanceComponentStateRefMut extends PbChanceComponentStateRef {
-}
-
-/**
- * The state object describes the information to visualize for this component.
- */
-export class PbChanceComponentState extends PbChanceComponentStateRefMut {
-    /**
-     * Allows for scoped usage of the object. The object is guaranteed to get
-     * disposed once this function returns. You are free to dispose the object
-     * early yourself anywhere within the scope. The scope's return value gets
-     * carried to the outside of this function.
-     */
-    with<T>(closure: (obj: PbChanceComponentState) => T): T {
-        try {
-            return closure(this);
-        } finally {
-            this.dispose();
-        }
-    }
-    /**
-     * Disposes the object, allowing it to clean up all of its memory. You need
-     * to call this for every object that you don't use anymore and hasn't
-     * already been disposed.
-     */
-    dispose() {
-        if (this.ptr != 0) {
-            instance().exports.PbChanceComponentState_drop(this.ptr);
-            this.ptr = 0;
-        }
-    }
-}
-
-/**
  * The Possible Time Save Component is a component that shows how much time the
  * chosen comparison could've saved for the current segment, based on the Best
  * Segments. This component also allows showing the Total Possible Time Save
@@ -3854,14 +3463,14 @@ export class PossibleTimeSaveComponentRef {
     /**
      * Calculates the component's state based on the timer provided.
      */
-    state(timer: TimerRef): PossibleTimeSaveComponentState {
+    state(timer: TimerRef): KeyValueComponentState {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        const result = new PossibleTimeSaveComponentState(instance().exports.PossibleTimeSaveComponent_state(this.ptr, timer.ptr));
+        const result = new KeyValueComponentState(instance().exports.PossibleTimeSaveComponent_state(this.ptr, timer.ptr));
         return result;
     }
     /**
@@ -3930,75 +3539,6 @@ export class PossibleTimeSaveComponent extends PossibleTimeSaveComponentRefMut {
         const result = new Component(instance().exports.PossibleTimeSaveComponent_into_generic(this.ptr));
         this.ptr = 0;
         return result;
-    }
-}
-
-/**
- * The state object describes the information to visualize for this component.
- */
-export class PossibleTimeSaveComponentStateRef {
-    ptr: number;
-    /**
-     * The label's text.
-     */
-    text(): string {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        const result = instance().exports.PossibleTimeSaveComponentState_text(this.ptr);
-        return decodeString(result);
-    }
-    /**
-     * The current possible time save.
-     */
-    time(): string {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        const result = instance().exports.PossibleTimeSaveComponentState_time(this.ptr);
-        return decodeString(result);
-    }
-    /**
-     * This constructor is an implementation detail. Do not use this.
-     */
-    constructor(ptr: number) {
-        this.ptr = ptr;
-    }
-}
-
-/**
- * The state object describes the information to visualize for this component.
- */
-export class PossibleTimeSaveComponentStateRefMut extends PossibleTimeSaveComponentStateRef {
-}
-
-/**
- * The state object describes the information to visualize for this component.
- */
-export class PossibleTimeSaveComponentState extends PossibleTimeSaveComponentStateRefMut {
-    /**
-     * Allows for scoped usage of the object. The object is guaranteed to get
-     * disposed once this function returns. You are free to dispose the object
-     * early yourself anywhere within the scope. The scope's return value gets
-     * carried to the outside of this function.
-     */
-    with<T>(closure: (obj: PossibleTimeSaveComponentState) => T): T {
-        try {
-            return closure(this);
-        } finally {
-            this.dispose();
-        }
-    }
-    /**
-     * Disposes the object, allowing it to clean up all of its memory. You need
-     * to call this for every object that you don't use anymore and hasn't
-     * already been disposed.
-     */
-    dispose() {
-        if (this.ptr != 0) {
-            instance().exports.PossibleTimeSaveComponentState_drop(this.ptr);
-            this.ptr = 0;
-        }
     }
 }
 
@@ -4100,7 +3640,7 @@ export class PreviousSegmentComponentRef {
      * Calculates the component's state based on the timer and the layout
      * settings provided.
      */
-    state(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): PreviousSegmentComponentState {
+    state(timer: TimerRef, layoutSettings: GeneralLayoutSettingsRef): KeyValueComponentState {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
@@ -4110,7 +3650,7 @@ export class PreviousSegmentComponentRef {
         if (layoutSettings.ptr == 0) {
             throw "layoutSettings is disposed";
         }
-        const result = new PreviousSegmentComponentState(instance().exports.PreviousSegmentComponent_state(this.ptr, timer.ptr, layoutSettings.ptr));
+        const result = new KeyValueComponentState(instance().exports.PreviousSegmentComponent_state(this.ptr, timer.ptr, layoutSettings.ptr));
         return result;
     }
     /**
@@ -4185,85 +3725,6 @@ export class PreviousSegmentComponent extends PreviousSegmentComponentRefMut {
 }
 
 /**
- * The state object describes the information to visualize for this component.
- */
-export class PreviousSegmentComponentStateRef {
-    ptr: number;
-    /**
-     * The label's text.
-     */
-    text(): string {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        const result = instance().exports.PreviousSegmentComponentState_text(this.ptr);
-        return decodeString(result);
-    }
-    /**
-     * The delta (and possibly the possible time save).
-     */
-    time(): string {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        const result = instance().exports.PreviousSegmentComponentState_time(this.ptr);
-        return decodeString(result);
-    }
-    /**
-     * The semantic coloring information the delta time carries.
-     */
-    semanticColor(): string {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        const result = instance().exports.PreviousSegmentComponentState_semantic_color(this.ptr);
-        return decodeString(result);
-    }
-    /**
-     * This constructor is an implementation detail. Do not use this.
-     */
-    constructor(ptr: number) {
-        this.ptr = ptr;
-    }
-}
-
-/**
- * The state object describes the information to visualize for this component.
- */
-export class PreviousSegmentComponentStateRefMut extends PreviousSegmentComponentStateRef {
-}
-
-/**
- * The state object describes the information to visualize for this component.
- */
-export class PreviousSegmentComponentState extends PreviousSegmentComponentStateRefMut {
-    /**
-     * Allows for scoped usage of the object. The object is guaranteed to get
-     * disposed once this function returns. You are free to dispose the object
-     * early yourself anywhere within the scope. The scope's return value gets
-     * carried to the outside of this function.
-     */
-    with<T>(closure: (obj: PreviousSegmentComponentState) => T): T {
-        try {
-            return closure(this);
-        } finally {
-            this.dispose();
-        }
-    }
-    /**
-     * Disposes the object, allowing it to clean up all of its memory. You need
-     * to call this for every object that you don't use anymore and hasn't
-     * already been disposed.
-     */
-    dispose() {
-        if (this.ptr != 0) {
-            instance().exports.PreviousSegmentComponentState_drop(this.ptr);
-            this.ptr = 0;
-        }
-    }
-}
-
-/**
  * A Run stores the split times for a specific game and category of a runner.
  */
 export class RunRef {
@@ -4322,9 +3783,9 @@ export class RunRef {
     /**
      * Returns a file name (without the extension) suitable for this Run that
      * is built the following way:
-     * 
+     *
      * Game Name - Category Name
-     * 
+     *
      * If either is empty, the dash is omitted. Special characters that cause
      * problems in file names are also omitted. If an extended category name is
      * used, the variables of the category are appended in a parenthesis.
@@ -4338,9 +3799,9 @@ export class RunRef {
     }
     /**
      * Returns a name suitable for this Run that is built the following way:
-     * 
+     *
      * Game Name - Category Name
-     * 
+     *
      * If either is empty, the dash is omitted. If an extended category name is
      * used, the variables of the category are appended in a parenthesis.
      */
@@ -4355,7 +3816,7 @@ export class RunRef {
      * Returns an extended category name that possibly includes the region,
      * platform and variables, depending on the arguments provided. An extended
      * category name may look like this:
-     * 
+     *
      * Any% (No Tuner, JPN, Wii Emulator)
      */
     extendedCategoryName(showRegion: boolean, showPlatform: boolean, showVariables: boolean): string {
@@ -4693,7 +4154,7 @@ export class RunEditorRefMut extends RunEditorRef {
      * In addition to the segments that are already selected, the segment with
      * the given index is being selected. The segment chosen also becomes the
      * active segment.
-     * 
+     *
      * This panics if the index of the segment provided is out of bounds.
      */
     selectAdditionally(index: number) {
@@ -4705,7 +4166,7 @@ export class RunEditorRefMut extends RunEditorRef {
     /**
      * Selects the segment with the given index. All other segments are
      * unselected. The segment chosen also becomes the active segment.
-     * 
+     *
      * This panics if the index of the segment provided is out of bounds.
      */
     selectOnly(index: number) {
@@ -6778,14 +6239,14 @@ export class SumOfBestComponentRef {
     /**
      * Calculates the component's state based on the timer provided.
      */
-    state(timer: TimerRef): SumOfBestComponentState {
+    state(timer: TimerRef): KeyValueComponentState {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        const result = new SumOfBestComponentState(instance().exports.SumOfBestComponent_state(this.ptr, timer.ptr));
+        const result = new KeyValueComponentState(instance().exports.SumOfBestComponent_state(this.ptr, timer.ptr));
         return result;
     }
     /**
@@ -6860,75 +6321,6 @@ export class SumOfBestComponent extends SumOfBestComponentRefMut {
         const result = new Component(instance().exports.SumOfBestComponent_into_generic(this.ptr));
         this.ptr = 0;
         return result;
-    }
-}
-
-/**
- * The state object describes the information to visualize for this component.
- */
-export class SumOfBestComponentStateRef {
-    ptr: number;
-    /**
-     * The label's text.
-     */
-    text(): string {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        const result = instance().exports.SumOfBestComponentState_text(this.ptr);
-        return decodeString(result);
-    }
-    /**
-     * The sum of best segments.
-     */
-    time(): string {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        const result = instance().exports.SumOfBestComponentState_time(this.ptr);
-        return decodeString(result);
-    }
-    /**
-     * This constructor is an implementation detail. Do not use this.
-     */
-    constructor(ptr: number) {
-        this.ptr = ptr;
-    }
-}
-
-/**
- * The state object describes the information to visualize for this component.
- */
-export class SumOfBestComponentStateRefMut extends SumOfBestComponentStateRef {
-}
-
-/**
- * The state object describes the information to visualize for this component.
- */
-export class SumOfBestComponentState extends SumOfBestComponentStateRefMut {
-    /**
-     * Allows for scoped usage of the object. The object is guaranteed to get
-     * disposed once this function returns. You are free to dispose the object
-     * early yourself anywhere within the scope. The scope's return value gets
-     * carried to the outside of this function.
-     */
-    with<T>(closure: (obj: SumOfBestComponentState) => T): T {
-        try {
-            return closure(this);
-        } finally {
-            this.dispose();
-        }
-    }
-    /**
-     * Disposes the object, allowing it to clean up all of its memory. You need
-     * to call this for every object that you don't use anymore and hasn't
-     * already been disposed.
-     */
-    dispose() {
-        if (this.ptr != 0) {
-            instance().exports.SumOfBestComponentState_drop(this.ptr);
-            this.ptr = 0;
-        }
     }
 }
 
@@ -7621,9 +7013,9 @@ export class TimerRefMut extends TimerRef {
      * attempt is paused, it also resumes that attempt. Additionally, if the
      * attempt is finished, the final split time is adjusted to not include the
      * pause times as well.
-     * 
+     *
      * # Warning
-     * 
+     *
      * This behavior is not entirely optimal, as generally only the final split
      * time is modified, while all other split times are left unmodified, which
      * may not be what actually happened during the run.
@@ -8409,14 +7801,14 @@ export class TotalPlaytimeComponentRefMut extends TotalPlaytimeComponentRef {
     /**
      * Calculates the component's state based on the timer provided.
      */
-    state(timer: TimerRef): TotalPlaytimeComponentState {
+    state(timer: TimerRef): KeyValueComponentState {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
         if (timer.ptr == 0) {
             throw "timer is disposed";
         }
-        const result = new TotalPlaytimeComponentState(instance().exports.TotalPlaytimeComponent_state(this.ptr, timer.ptr));
+        const result = new KeyValueComponentState(instance().exports.TotalPlaytimeComponent_state(this.ptr, timer.ptr));
         return result;
     }
 }
@@ -8468,74 +7860,5 @@ export class TotalPlaytimeComponent extends TotalPlaytimeComponentRefMut {
         const result = new Component(instance().exports.TotalPlaytimeComponent_into_generic(this.ptr));
         this.ptr = 0;
         return result;
-    }
-}
-
-/**
- * The state object describes the information to visualize for this component.
- */
-export class TotalPlaytimeComponentStateRef {
-    ptr: number;
-    /**
-     * The label's text.
-     */
-    text(): string {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        const result = instance().exports.TotalPlaytimeComponentState_text(this.ptr);
-        return decodeString(result);
-    }
-    /**
-     * The total playtime.
-     */
-    time(): string {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        const result = instance().exports.TotalPlaytimeComponentState_time(this.ptr);
-        return decodeString(result);
-    }
-    /**
-     * This constructor is an implementation detail. Do not use this.
-     */
-    constructor(ptr: number) {
-        this.ptr = ptr;
-    }
-}
-
-/**
- * The state object describes the information to visualize for this component.
- */
-export class TotalPlaytimeComponentStateRefMut extends TotalPlaytimeComponentStateRef {
-}
-
-/**
- * The state object describes the information to visualize for this component.
- */
-export class TotalPlaytimeComponentState extends TotalPlaytimeComponentStateRefMut {
-    /**
-     * Allows for scoped usage of the object. The object is guaranteed to get
-     * disposed once this function returns. You are free to dispose the object
-     * early yourself anywhere within the scope. The scope's return value gets
-     * carried to the outside of this function.
-     */
-    with<T>(closure: (obj: TotalPlaytimeComponentState) => T): T {
-        try {
-            return closure(this);
-        } finally {
-            this.dispose();
-        }
-    }
-    /**
-     * Disposes the object, allowing it to clean up all of its memory. You need
-     * to call this for every object that you don't use anymore and hasn't
-     * already been disposed.
-     */
-    dispose() {
-        if (this.ptr != 0) {
-            instance().exports.TotalPlaytimeComponentState_drop(this.ptr);
-            this.ptr = 0;
-        }
     }
 }

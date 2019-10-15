@@ -2,14 +2,13 @@ module.exports = (env, argv) => {
     const HtmlWebpackPlugin = require("html-webpack-plugin");
     const CopyWebpackPlugin = require("copy-webpack-plugin");
     const WebpackPwaManifest = require("webpack-pwa-manifest");
-    const CleanWebpackPlugin = require("clean-webpack-plugin");
+    const { CleanWebpackPlugin } = require("clean-webpack-plugin");
     const path = require("path");
 
     const basePath = __dirname;
 
     const isProduction = argv.mode === "production";
-    const isElectron = argv.electron != null;
-    const distPath = path.join(basePath, isElectron ? "dist/electron" : "dist/web");
+    const distPath = path.join(basePath, "dist");
 
     return {
         entry: {
@@ -34,7 +33,7 @@ module.exports = (env, argv) => {
         },
 
         plugins: [
-            ...(isProduction ? [new CleanWebpackPlugin([distPath])] : []),
+            ...(isProduction ? [new CleanWebpackPlugin()] : []),
             new HtmlWebpackPlugin({
                 template: "./src/index.html",
             }),
@@ -54,11 +53,6 @@ module.exports = (env, argv) => {
             })] : []),
             new CopyWebpackPlugin([
                 { from: "src/livesplit_core.wasm", to: "livesplit_core.wasm" },
-                ...(
-                    isElectron
-                        ? [{ from: "src/electronMain.js", to: "index.js" }]
-                        : []
-                ),
             ], {}),
         ],
 

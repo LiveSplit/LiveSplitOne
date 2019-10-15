@@ -118,7 +118,7 @@ export class LiveSplit extends React.Component<{}, State> {
         window.addEventListener("wheel", this.scrollEvent);
         this.rightClickEvent = { handleEvent: (e: any) => this.onRightClick(e) };
         window.addEventListener("contextmenu", this.rightClickEvent, false);
-        window.onbeforeunload = (e) => {
+        window.onbeforeunload = (e: BeforeUnloadEvent) => {
             const hasBeenModified = this.state.timer.readWith((t) => t.getRun().hasBeenModified());
             if (hasBeenModified) {
                 e.returnValue = "There are unsaved changes. Do you really want to close LiveSplit One?";

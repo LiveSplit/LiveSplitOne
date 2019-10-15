@@ -3,13 +3,13 @@ import * as LiveSplit from "../livesplit";
 import { colorToCss, gradientToCss } from "../util/ColorUtil";
 import { map } from "../util/OptionUtil";
 
-export interface Props { state: LiveSplit.DeltaComponentStateJson }
+export interface Props { state: LiveSplit.KeyValueComponentStateJson }
 
-export default class Delta extends React.Component<Props> {
+export default class CurrentComparison extends React.Component<Props> {
     public render() {
         return (
             <div
-                className="delta-component"
+                className="key-value"
                 style={{
                     background: gradientToCss(this.props.state.background),
                 }}
@@ -18,20 +18,20 @@ export default class Delta extends React.Component<Props> {
                     <tbody>
                         <tr>
                             <td
-                                className="delta-component-text"
+                                className="key-value-key"
                                 style={{
-                                    color: map(this.props.state.label_color, colorToCss),
+                                    color: map(this.props.state.key_color, colorToCss),
                                 }}
                             >
-                                {this.props.state.text}
+                                {this.props.state.key}
                             </td>
                             <td
-                                className="delta-component-time time"
+                                className="key-value-value time"
                                 style={{
-                                    color: colorToCss(this.props.state.visual_color),
+                                    color: map(this.props.state.value_color, colorToCss),
                                 }}
                             >
-                                {this.props.state.time}
+                                {this.props.state.value}
                             </td>
                         </tr>
                     </tbody>

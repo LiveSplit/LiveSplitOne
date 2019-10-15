@@ -180,39 +180,18 @@ button.toggle-middle {
     user-select: none;
 }
 
-.previous-segment,
-.sum-of-best,
-.pb-chance,
-.possible-time-save,
-.total-playtime,
-.current-pace,
-.delta-component,
-.current-comparison,
+.key-value,
 .text-component {
     height: 24px;
     line-height: 20px;
     padding: 0px 6px;
 }
 
-.previous-segment-text,
-.sum-of-best-text,
-.pb-chance-text,
-.possible-time-save-text,
-.total-playtime-text,
-.current-pace-text,
-.delta-component-text,
-.current-comparison-text {
+.key-value-key {
     width: 100%;
 }
 
-.previous-segment-time,
-.sum-of-best-time,
-.pb-chance-value,
-.possible-time-save-time,
-.total-playtime-time,
-.current-pace-time,
-.delta-component-time,
-.current-comparison-comparison {
+.key-value-value {
     text-align: right;
     white-space: nowrap;
 }
