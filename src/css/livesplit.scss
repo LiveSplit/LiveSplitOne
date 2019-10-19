@@ -2,6 +2,7 @@
 @use 'LayoutEditor';
 @use 'RunEditor';
 @use 'SettingsEditor';
+@use 'Sidebar';
 
 @import url('https://fonts.googleapis.com/css?family=Roboto');
 
@@ -85,30 +86,6 @@ body {
 
 #wrapper {
     transition: all 0.5s ease;
-}
-
-.sidebar {
-    background: hsl(0, 0%, 10%);
-    padding: 10px;
-    padding-top: 15px;
-    width: 250px;
-    z-index: 4 !important;
-}
-
-.sidebar > div > hr {
-    border-color: hsla(0, 0%, 30%, 1);
-}
-
-.sidebar > div > h2 {
-    font-size: 1.5em;
-    text-align: center;
-    height: 20px;
-}
-
-.sidebar > div > div.small > button {
-    width: 50%;
-    height: 40px;
-    font-size: 18px;
 }
 
 .choose-comparison > button {
@@ -415,11 +392,6 @@ button {
     border-radius: 5px;
     font-weight: bold;
     font-family: 'fira', sans-serif;
-}
-
-.sidebar-buttons > button {
-    width: 100%;
-    height: 40px;
 }
 
 .buttons > div > button {
