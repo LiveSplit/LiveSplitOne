@@ -1,8 +1,6 @@
 import * as React from "react";
 import { Option, map } from "../util/OptionUtil";
 
-import "./HotkeyButton.css";
-
 export interface Props {
     value: Option<string>,
     setValue: (value: Option<string>) => void,
