@@ -1,4 +1,5 @@
 @use 'HotkeyButton';
+@use 'Settings';
 @use 'SettingsEditor';
 
 @import url('https://fonts.googleapis.com/css?family=Roboto');
@@ -782,24 +783,6 @@ svg.graph {
 
 .react-contextmenu-item--selected {
     background: linear-gradient(rgb(51, 115, 244) 0%, rgb(21, 53, 116) 100%);
-}
-
-.settings-table {
-    width: 500px;
-}
-
-.settings-table > tbody > tr {
-    height: 30px;
-}
-
-.settings-table > tbody > tr > td:nth-child(1) {
-    width: 250px;
-}
-
-.settings-table > tbody > tr > td:nth-child(2) > input,
-.settings-table > tbody > tr > td:nth-child(2) > span,
-.settings-table > tbody > tr > td:nth-child(2) > select {
-    width: 100%;
 }
 
 select {
