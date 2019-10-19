@@ -69,7 +69,13 @@ module.exports = (env, argv) => {
                 },
                 {
                     test: /\.(s*)css$/,
-                    use: ["style-loader", "css-loader", "sass-loader"],
+                    use: ["style-loader", "css-loader", {
+                        loader: 'sass-loader',
+                        options: {
+                            // Prefer `dart-sass`
+                            implementation: require('sass'),
+                        },
+                    },],
                 },
                 {
                     test: /\.(png|jpg|gif|woff|ico)$/,
