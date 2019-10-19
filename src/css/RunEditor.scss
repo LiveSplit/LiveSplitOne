@@ -1,0 +1,48 @@
+.run-editor {
+  padding: 10px 10px 10px 10px;
+
+  .run-editor-additional-info {
+    width: 650px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    border: 1px solid hsl(0, 0%, 25%);
+    border-collapse: collapse;
+    margin-left: 5px;
+    background-color: hsla(0, 0%, 100%, 0.03);
+  }
+
+  .run-editor-rules {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .run-editor-tab {
+    margin-left: 5px;
+  }
+
+  .run-editor-info {
+    display: inline-flex;
+    margin-bottom: 10px;
+  }
+
+  .run-editor-info-table {
+    padding-top: 10px;
+    margin-left: 15px;
+  }
+
+  table.run-editor-info-table > tbody > tr > td {
+    padding: 0px 10px 0px 10px;
+  }
+
+  table.run-editor-table > tbody > tr > td > input:not(.name) {
+    text-align: right;
+  }
+
+  table.run-editor-table td {
+    overflow: hidden;
+  }
+
+  table.run-editor-table td > input {
+    width: 100%;
+    text-overflow: ellipsis;
+  }
+}
