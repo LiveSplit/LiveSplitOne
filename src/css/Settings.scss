@@ -1,17 +1,17 @@
 .settings-table {
   width: 500px;
 
-  tbody > tr {
+  > tbody > tr {
     height: 30px;
   }
   
-  tbody > tr > td:nth-child(1) {
+  > tbody > tr > td:nth-child(1) {
     width: 250px;
   }
   
-  tbody > tr > td:nth-child(2) > input,
-  tbody > tr > td:nth-child(2) > span,
-  tbody > tr > td:nth-child(2) > select {
+  > tbody > tr > td:nth-child(2) > input,
+  > tbody > tr > td:nth-child(2) > span,
+  > tbody > tr > td:nth-child(2) > select {
     width: 100%;
   }
 }
