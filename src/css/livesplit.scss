@@ -1,4 +1,5 @@
 @use 'HotkeyButton';
+@use 'LayoutEditor';
 @use 'Settings';
 @use 'SettingsEditor';
 
@@ -689,10 +690,6 @@ table.run-editor-table td>input {
     border-bottom: 0px;
 }
 
-.layout-editor-tabs {
-    margin-left: 20px;
-}
-
 .selected {
     background: linear-gradient(rgb(51, 115, 244) 0%, rgb(21, 53, 116) 100%) !important;
 }
@@ -713,20 +710,6 @@ input[Type="text"] {
 
 svg.graph {
     display: block;
-}
-
-.layout-editor-inner {
-    margin: 20px;
-    width: 445px;
-    display: inline-flex;
-}
-
-.layout-editor-outer {
-    display: inline-flex;
-}
-
-.layout-editor-inner table {
-    width: 100%;
 }
 
 .react-contextmenu {
@@ -758,19 +741,6 @@ svg.graph {
     white-space: nowrap;
     background: 0 0;
     border: 0;
-    cursor: pointer;
-}
-
-.layout-editor-inner .btn-group button {
-    width: 40px;
-    height: 40px;
-}
-
-.layout-editor-component-list {
-    margin-left: 10px;
-}
-
-.layout-editor-component {
     cursor: pointer;
 }
 
