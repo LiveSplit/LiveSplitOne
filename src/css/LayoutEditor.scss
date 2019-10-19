@@ -13,6 +13,13 @@
     .btn-group button {
       width: 40px;
       height: 40px;
+      font-size: 15px;
+      margin-right: 5px;
+      display: block;
+    }
+
+    .btn-group button:nth-child(1) {
+      margin-top: 0;
     }
 
     margin: 20px;
