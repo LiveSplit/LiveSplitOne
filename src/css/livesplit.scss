@@ -38,37 +38,6 @@ img.flag {
     display: inline;
 }
 
-table.filter-table td {
-    padding: 5px;
-}
-
-.filter-table {
-    margin-top: 10px;
-    width: 100%;
-}
-
-table.filter-table > tbody.table-body > tr {
-    background-color: hsla(0, 0%, 100%, 0.04);
-}
-
-table.filter-table > thead.table-header > tr {
-    background-color: hsla(0, 0%, 0%, 0.1);
-}
-
-.subcategory-table > tbody > tr {
-    border: 1px solid hsl(0, 0%, 25%);
-    text-align: center;
-    cursor: pointer;
-}
-
-table.filter-table.subcategory-table > tbody.table-body > tr > td:hover {
-    background: rgba(255, 255, 255, 0.15);
-}
-
-table.filter-table.subcategory-table > tbody.table-body > tr > td.selected:hover {
-    background: linear-gradient(hsl(220, 90%, 70%) 0%, hsl(220, 69%, 40%) 100%) !important;
-}
-
 /* Markdown */
 .markdown img {
     vertical-align: middle;
