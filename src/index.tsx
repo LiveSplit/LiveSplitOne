@@ -7,7 +7,7 @@ import { LiveSplit } from "./ui/LiveSplit";
 
 import "react-toastify/dist/ReactToastify.css";
 import "./css/font-awesome.css";
-import "./css/livesplit.css";
+import "./css/livesplit.scss";
 
 async function run() {
     try {

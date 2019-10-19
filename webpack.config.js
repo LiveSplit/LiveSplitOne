@@ -68,8 +68,8 @@ module.exports = (env, argv) => {
                     exclude: "/node_modules",
                 },
                 {
-                    test: /\.css$/,
-                    use: ["style-loader", "css-loader"],
+                    test: /\.(s*)css$/,
+                    use: ["style-loader", "css-loader", "sass-loader"],
                 },
                 {
                     test: /\.(png|jpg|gif|woff|ico)$/,
