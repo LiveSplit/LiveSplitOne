@@ -60,6 +60,28 @@
     border-bottom: 0px;
   }
 
+  tr > td > input {
+    margin-right: -40px;
+  }
+  
+  input {
+    font-size: 15px;
+    border: none;
+    border-bottom: 1px solid hsla(0, 0%, 100%, 0.25);
+    background: transparent;
+    color: white;
+    text-overflow: ellipsis;
+    font-family: "fira", sans-serif;
+  }
+  
+  input[Type="text"] {
+    font-family: inherit;
+  }
+
+  tr > td > input:focus {
+    outline: 0;
+  }
+
   .settings-table {
     width: 500px;
 

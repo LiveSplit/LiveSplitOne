@@ -103,8 +103,7 @@ button:active:hover {
 }
 
 button:focus,
-div:focus,
-tr > td > input:focus {
+div:focus {
   outline: 0;
 }
 
@@ -139,24 +138,6 @@ a {
 
 a:hover {
   text-decoration: underline;
-}
-
-tr > td > input {
-  margin-right: -40px;
-}
-
-input {
-  font-size: 15px;
-  border: none;
-  border-bottom: 1px solid hsla(0, 0%, 100%, 0.25);
-  background: transparent;
-  color: white;
-  text-overflow: ellipsis;
-  font-family: "fira", sans-serif;
-}
-
-input[Type="text"] {
-  font-family: inherit;
 }
 
 .react-contextmenu {
