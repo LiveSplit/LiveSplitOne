@@ -1,6 +1,26 @@
 .layout-editor-outer {
   display: inline-flex;
 
+  .table {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    display: table;
+    border: 1px solid hsl(0, 0%, 25%);
+    border-collapse: collapse;
+
+    select {
+      border: 1px solid hsl(0, 0%, 35%);
+    }
+
+    .table-row-even {
+      display: table-row;
+      background: rgba(0, 0, 0, 0.5) !important;
+    }
+    .table-row-odd {
+      display: table-row;
+      background: rgba(0, 0, 0, 0.2) !important;
+    }
+  }
+
   .table-body {
     display: table-row-group;
   }

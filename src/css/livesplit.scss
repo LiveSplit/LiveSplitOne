@@ -23,10 +23,6 @@
   overflow-y: auto !important;
 }
 
-.table select {
-  border: 1px solid hsl(0, 0%, 35%);
-}
-
 img.emoji {
   height: 28px;
 }
@@ -271,22 +267,6 @@ a:hover {
 
 .best-segment-time {
   color: hsla(50, 100%, 50%, 1);
-}
-
-.table {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  display: table;
-  border: 1px solid hsl(0, 0%, 25%);
-  border-collapse: collapse;
-}
-
-.table-row-even {
-  display: table-row;
-  background: rgba(0, 0, 0, 0.5) !important;
-}
-.table-row-odd {
-  display: table-row;
-  background: rgba(0, 0, 0, 0.2) !important;
 }
 
 tr > td > input {
