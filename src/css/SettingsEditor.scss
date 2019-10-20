@@ -1,6 +1,28 @@
 .settings-editor {
   padding: 10px 10px 10px 10px;
 
+  .table-body {
+    display: table-row-group;
+  }
+
+  .table-body > * {
+    display: table-row;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .table-body > *:nth-of-type(odd) {
+    background: rgba(0, 0, 0, 0.2);
+  }
+
+  .table-body > * > * {
+    padding: 3px 12px;
+    display: table-cell;
+  }
+
+  .table-body > * > *:nth-child(2) {
+    padding: 3px 12px 3px 5px;
+  }
+
   .settings-table {
     width: 500px;
 

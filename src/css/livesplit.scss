@@ -279,17 +279,6 @@ a:hover {
   border: 1px solid hsl(0, 0%, 25%);
   border-collapse: collapse;
 }
-.table-body {
-  display: table-row-group;
-}
-.table > .table-header > tr,
-.table-body > * {
-  display: table-row;
-  background: rgba(0, 0, 0, 0.5);
-}
-.table-body > *:nth-of-type(odd) {
-  background: rgba(0, 0, 0, 0.2);
-}
 
 .table-row-even {
   display: table-row;
@@ -298,16 +287,6 @@ a:hover {
 .table-row-odd {
   display: table-row;
   background: rgba(0, 0, 0, 0.2) !important;
-}
-
-.table > .table-header > tr > *,
-.table-body > * > * {
-  padding: 3px 12px;
-  display: table-cell;
-}
-.table > .table-header > tr > *:nth-child(2),
-.table-body > * > *:nth-child(2) {
-  padding: 3px 12px 3px 5px;
 }
 
 tr > td > input {
