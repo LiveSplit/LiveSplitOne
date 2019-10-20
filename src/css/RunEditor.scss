@@ -42,27 +42,16 @@
     }
   }
 
-  .table-body {
-    display: table-row-group;
-  }
-
-  .table > .table-header > tr,
-  .table-body > * {
+  .table > .table-header > tr {
     display: table-row;
     background: rgba(0, 0, 0, 0.5);
   }
 
-  .table-body > *:nth-of-type(odd) {
-    background: rgba(0, 0, 0, 0.2);
-  }
-
-  .table > .table-header > tr > *,
-  .table-body > * > * {
+  .table > .table-header > tr > * {
     padding: 3px 12px;
     display: table-cell;
   }
-  .table > .table-header > tr > *:nth-child(2),
-  .table-body > * > *:nth-child(2) {
+  .table > .table-header > tr > *:nth-child(2) {
     padding: 3px 12px 3px 5px;
   }
 
