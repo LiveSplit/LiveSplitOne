@@ -21,24 +21,24 @@
 
   .table-body {
     display: table-row-group;
-  }
 
-  .table-body > * {
-    display: table-row;
-    background: rgba(0, 0, 0, 0.5);
-  }
+    > * {
+      display: table-row;
+      background: rgba(0, 0, 0, 0.5);
 
-  .table-body > *:nth-of-type(odd) {
-    background: rgba(0, 0, 0, 0.2);
-  }
+      > * {
+        padding: 3px 12px;
+        display: table-cell;
+      }
 
-  .table-body > * > * {
-    padding: 3px 12px;
-    display: table-cell;
-  }
+      > *:nth-child(2) {
+        padding: 3px 12px 3px 5px;
+      }
+    }
 
-  .table-body > * > *:nth-child(2) {
-    padding: 3px 12px 3px 5px;
+    > *:nth-of-type(odd) {
+      background: rgba(0, 0, 0, 0.2);
+    }
   }
 
   .number {

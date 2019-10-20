@@ -1,7 +1,7 @@
-@import 'ContextMenu';
-@import 'Markdown';
-@import 'Table';
-@import 'Toggle';
+@import "ContextMenu";
+@import "Markdown";
+@import "Table";
+@import "Toggle";
 
 .run-editor {
   padding: 10px 10px 10px 10px;
@@ -31,14 +31,15 @@
   .table > .table-header > tr {
     display: table-row;
     background: rgba(0, 0, 0, 0.5);
-  }
 
-  .table > .table-header > tr > * {
-    padding: 3px 12px;
-    display: table-cell;
-  }
-  .table > .table-header > tr > *:nth-child(2) {
-    padding: 3px 12px 3px 5px;
+    > * {
+      padding: 3px 12px;
+      display: table-cell;
+    }
+
+    > *:nth-child(2) {
+      padding: 3px 12px 3px 5px;
+    }
   }
 
   .run-editor-additional-info {
@@ -73,29 +74,33 @@
     padding: 0px 10px 0px 10px;
   }
 
-  table.run-editor-table .number {
-    font-family: inherit;
+  table.run-editor-table {
+    .number {
+      font-family: inherit;
+    }
+  
+    td {
+      overflow: hidden;
+
+      > input {
+        width: 100%;
+        text-overflow: ellipsis;
+      }
+    }
   }
 
-  table.run-editor-table td {
-    overflow: hidden;
-  }
+  .btn-group {
+    button {
+      font-size: 15px;
+      width: 160px;
+      height: 30px;
+      margin-right: 5px;
+      display: block;
+    }
 
-  table.run-editor-table td > input {
-    width: 100%;
-    text-overflow: ellipsis;
-  }
-
-  .btn-group button {
-    font-size: 15px;
-    width: 160px;
-    height: 30px;
-    margin-right: 5px;
-    display: block;
-  }
-
-  .btn-group button:nth-child(1) {
-    margin-top: 0;
+    button:nth-child(1) {
+      margin-top: 0;
+    }
   }
 
   .best-segment-time {
@@ -222,12 +227,14 @@
           cursor: pointer;
         }
 
-        > tbody.table-body > tr > td:hover {
-          background: rgba(255, 255, 255, 0.15);
-        }
+        > tbody.table-body > tr {
+          > td:hover {
+            background: rgba(255, 255, 255, 0.15);
+          }
 
-        > tbody.table-body > tr > td.selected:hover {
-          background: linear-gradient(hsl(220, 90%, 70%) 0%, hsl(220, 69%, 40%) 100%) !important;
+          > td.selected:hover {
+            background: linear-gradient(hsl(220, 90%, 70%) 0%, hsl(220, 69%, 40%) 100%) !important;
+          }
         }
       }
     }
