@@ -96,6 +96,11 @@
     color: hsla(50, 100%, 50%, 1);
   }
 
+  .timing-selection > button {
+    position: relative;
+    left: 170px;
+  }
+
   .editor-group {
     display: inline-flex;
   }
