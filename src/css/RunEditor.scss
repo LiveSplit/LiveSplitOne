@@ -1,6 +1,7 @@
 @import 'ContextMenu';
 @import 'Markdown';
 @import 'Table';
+@import 'Toggle';
 
 .run-editor {
   padding: 10px 10px 10px 10px;
@@ -8,6 +9,7 @@
   @include context-menu;
   @include markdown;
   @include table;
+  @include toggle;
 
   thead.table-header {
     border-bottom: solid 1px hsla(0, 0%, 100%, 0.2);

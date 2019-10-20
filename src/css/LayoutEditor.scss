@@ -1,11 +1,13 @@
 @import 'ContextMenu';
 @import 'Table';
+@import 'Toggle';
 
 .layout-editor-outer {
   display: inline-flex;
 
   @include context-menu;
   @include table;
+  @include toggle;
 
   .layout-editor-tabs {
     margin-left: 20px;

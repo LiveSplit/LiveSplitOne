@@ -1,0 +1,15 @@
+@mixin toggle {
+  .toggle-left {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+  }
+  
+  .toggle-right {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+  }
+  
+  .toggle-middle {
+    border-radius: 0px;
+  }
+}

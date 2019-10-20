@@ -1,9 +1,13 @@
+@import 'Toggle';
+
 .sidebar {
   background: hsl(0, 0%, 10%);
   padding: 10px;
   padding-top: 15px;
   width: 250px;
   z-index: 4 !important;
+
+  @include toggle;
 
   > div > hr {
     border-color: hsla(0, 0%, 30%, 1);

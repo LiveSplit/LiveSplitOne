@@ -54,20 +54,6 @@ body {
   transition: all 0.5s ease;
 }
 
-button.toggle-left {
-  border-top-right-radius: 0px;
-  border-bottom-right-radius: 0px;
-}
-
-button.toggle-right {
-  border-top-left-radius: 0px;
-  border-bottom-left-radius: 0px;
-}
-
-button.toggle-middle {
-  border-radius: 0px;
-}
-
 td#dif {
   border-right: 10px solid transparent;
   text-align: right;
