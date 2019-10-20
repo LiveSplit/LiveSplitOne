@@ -98,6 +98,10 @@
     color: hsla(50, 100%, 50%, 1);
   }
 
+  .leaderboard-row:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+  }
+
   .timing-selection > button {
     position: relative;
     left: 170px;
