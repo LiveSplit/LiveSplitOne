@@ -4,6 +4,7 @@
 @use 'RunEditor';
 @use 'SettingsEditor';
 @use 'Sidebar';
+@use 'Splits';
 @use 'Text';
 @use 'Title';
 
@@ -128,27 +129,6 @@ button.toggle-middle {
   font-size: 11px;
 }
 
-.splits {
-  display: table;
-  width: 100%;
-}
-
-div.splits span.split.split-separator div {
-  line-height: 18px;
-}
-
-.split {
-  display: table-row;
-  height: 24px;
-  line-height: 20px;
-}
-
-.split div {
-  display: table-cell;
-  text-align: right;
-  padding: 1px 6px 0px 6px;
-}
-
 td#dif {
   border-right: 10px solid transparent;
   text-align: right;
@@ -156,31 +136,6 @@ td#dif {
 
 table {
   border-spacing: 0px 2px;
-}
-
-.split-name {
-  text-overflow: ellipsis;
-  width: 100%;
-  padding-left: 0px !important;
-  text-align: left !important;
-  max-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-}
-
-.split-icon-container {
-  padding-right: 6px !important;
-}
-
-.split-icon-container-empty {
-  padding-right: 0px !important;
-}
-
-.split-icon {
-  max-width: 18px;
-  height: 18px;
-  vertical-align: middle;
-  filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.3));
 }
 
 .time {
