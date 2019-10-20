@@ -1,5 +1,9 @@
+@import 'Table';
+
 .run-editor {
   padding: 10px 10px 10px 10px;
+
+  @include table;
 
   .table {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
@@ -203,24 +207,6 @@
     > input:focus ~ .bar:before,
     > input:focus ~ .bar:after {
       width: 50%;
-    }
-  }
-
-  .settings-table {
-    width: 500px;
-
-    > tbody > tr {
-      height: 30px;
-    }
-
-    > tbody > tr > td:nth-child(1) {
-      width: 250px;
-    }
-
-    > tbody > tr > td:nth-child(2) > input,
-    > tbody > tr > td:nth-child(2) > span,
-    > tbody > tr > td:nth-child(2) > select {
-      width: 100%;
     }
   }
 
