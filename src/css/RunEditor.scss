@@ -1,6 +1,23 @@
 .run-editor {
   padding: 10px 10px 10px 10px;
 
+  .table-header {
+    > tr > th {
+      font-weight: bold;
+      text-align: center;
+    }
+
+    &thead {
+      border-bottom: solid 1px hsla(0, 0%, 100%, 0.2);
+    }
+
+    > tr > th:nth-child(1):after {
+      margin: 0;
+      margin-left: -4px;
+      margin-right: 7px;
+    }
+  }
+
   .run-editor-additional-info {
     width: 650px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
