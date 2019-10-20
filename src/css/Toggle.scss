@@ -3,13 +3,24 @@
     border-top-right-radius: 0px;
     border-bottom-right-radius: 0px;
   }
-  
+
   .toggle-right {
     border-top-left-radius: 0px;
     border-bottom-left-radius: 0px;
   }
-  
+
   .toggle-middle {
     border-radius: 0px;
+  }
+
+  .button-pressed,
+  .button-pressed:hover {
+    background: linear-gradient(hsl(0, 0%, 7%) 0%, hsl(0, 0%, 14%) 100%);
+  }
+
+  .button-pressed.disabled {
+    background: #222;
+    color: #666;
+    cursor: default;
   }
 }

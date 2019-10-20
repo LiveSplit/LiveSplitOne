@@ -60,8 +60,6 @@ table {
   border-spacing: 0px 2px;
 }
 
-button.button-pressed,
-button.button-pressed:hover,
 button:active,
 button:active:hover {
   background: linear-gradient(hsl(0, 0%, 7%) 0%, hsl(0, 0%, 14%) 100%);
@@ -102,7 +100,6 @@ a:hover {
 }
 
 button.disabled,
-button.button-pressed.disabled,
 button.disabled:active {
   background: #222;
   color: #666;
