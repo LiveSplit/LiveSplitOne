@@ -1,0 +1,44 @@
+@mixin context-menu {
+  .react-contextmenu {
+    min-width: 160px;
+    padding: 5px 0;
+    margin: 2px 0 0;
+    font-size: 16px;
+    text-align: left;
+    background-color: #191919;
+    background-clip: padding-box;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0.25rem;
+    outline: none;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 250ms ease !important;
+    z-index: 3;
+
+    &.react-contextmenu--visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .react-contextmenu-item {
+      padding: 3px 10px;
+      font-weight: 400;
+      text-align: inherit;
+      white-space: nowrap;
+      background: 0 0;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .react-contextmenu-item--divider {
+      margin-bottom: 3px;
+      padding: 2px 0;
+      border-bottom: 1px solid rgba(165, 165, 165, 0.15);
+      cursor: inherit;
+    }
+
+    .react-contextmenu-item--selected {
+      background: linear-gradient(rgb(51, 115, 244) 0%, rgb(21, 53, 116) 100%);
+    }
+  }
+}

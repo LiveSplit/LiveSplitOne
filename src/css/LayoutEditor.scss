@@ -1,8 +1,10 @@
+@import 'ContextMenu';
 @import 'Table';
 
 .layout-editor-outer {
   display: inline-flex;
 
+  @include context-menu;
   @include table;
 
   .layout-editor-tabs {
