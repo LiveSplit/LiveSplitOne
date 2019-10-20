@@ -14,6 +14,10 @@
   }
 
   .layout-editor-inner {
+    margin: 20px;
+    width: 445px;
+    display: inline-flex;
+
     table {
       width: 100%;
     }
@@ -31,10 +35,6 @@
         margin-top: 0;
       }
     }
-
-    margin: 20px;
-    width: 445px;
-    display: inline-flex;
   }
 
   .layout-editor-component-list {

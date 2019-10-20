@@ -78,7 +78,7 @@
     .number {
       font-family: inherit;
     }
-  
+
     td {
       overflow: hidden;
 
@@ -173,6 +173,7 @@
       display: block;
       width: 300px;
     }
+
     > .bar:before,
     > .bar:after {
       content: "";
@@ -185,9 +186,11 @@
       -moz-transition: 0.2s ease all;
       -webkit-transition: 0.2s ease all;
     }
+
     > .bar:before {
       left: 50%;
     }
+
     > .bar:after {
       right: 50%;
     }
