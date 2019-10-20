@@ -1,4 +1,5 @@
 @use 'DetailedTimer';
+@use 'Graph';
 @use 'HotkeyButton';
 @use 'KeyValue';
 @use 'LayoutEditor';
@@ -238,10 +239,6 @@ input {
 
 input[Type="text"] {
   font-family: inherit;
-}
-
-svg.graph {
-  display: block;
 }
 
 .react-contextmenu {
