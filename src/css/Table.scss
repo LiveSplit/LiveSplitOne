@@ -78,6 +78,15 @@
     font-family: inherit;
   }
 
+  select {
+    background: hsla(0, 0%, 9%, 1);
+    font-size: 15px;
+    border: none;
+    color: white;
+    text-overflow: ellipsis;
+    font-family: "fira", sans-serif;
+  }
+
   tr > td > input:focus {
     outline: 0;
   }

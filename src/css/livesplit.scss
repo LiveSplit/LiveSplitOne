@@ -183,15 +183,6 @@ a:hover {
   background: linear-gradient(rgb(51, 115, 244) 0%, rgb(21, 53, 116) 100%);
 }
 
-select {
-  background: hsla(0, 0%, 9%, 1);
-  font-size: 15px;
-  border: none;
-  color: white;
-  text-overflow: ellipsis;
-  font-family: "fira", sans-serif;
-}
-
 button.disabled,
 button.button-pressed.disabled,
 button.disabled:active {
