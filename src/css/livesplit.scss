@@ -2,6 +2,7 @@
 @use 'KeyValue';
 @use 'LayoutEditor';
 @use 'RunEditor';
+@use 'Separator';
 @use 'SettingsEditor';
 @use 'Sidebar';
 @use 'Splits';
@@ -324,11 +325,6 @@ select {
   color: white;
   text-overflow: ellipsis;
   font-family: "fira", sans-serif;
-}
-
-.separator {
-  background-color: hsla(0, 0%, 43%, 1);
-  height: 2px;
 }
 
 button.disabled,
