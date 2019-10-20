@@ -1,7 +1,11 @@
+@import 'Time';
+
 .key-value {
   height: 24px;
   line-height: 20px;
   padding: 0px 6px;
+
+  @include time;
 
   .key-value-key {
     width: 100%;

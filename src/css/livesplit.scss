@@ -1,3 +1,4 @@
+@use 'DetailedTimer';
 @use 'HotkeyButton';
 @use 'KeyValue';
 @use 'LayoutEditor';
@@ -120,17 +121,6 @@ button.toggle-middle {
   user-select: none;
 }
 
-.detailed-timer {
-  position: relative;
-}
-
-.detailed-timer-left-side {
-  position: absolute;
-  left: 6px;
-  bottom: 2px;
-  font-size: 11px;
-}
-
 td#dif {
   border-right: 10px solid transparent;
   text-align: right;
@@ -138,11 +128,6 @@ td#dif {
 
 table {
   border-spacing: 0px 2px;
-}
-
-.time {
-  font-weight: bold;
-  font-family: "Roboto", sans-serif;
 }
 
 .buttons {

@@ -1,3 +1,5 @@
+@import 'Time';
+
 .splits {
   display: table;
   width: 100%;
@@ -10,6 +12,8 @@
     display: table-row;
     height: 24px;
     line-height: 20px;
+
+    @include time;
   }
   
   .split div {
