@@ -1,8 +1,10 @@
+@import 'Markdown';
 @import 'Table';
 
 .run-editor {
   padding: 10px 10px 10px 10px;
 
+  @include markdown;
   @include table;
 
   thead.table-header {

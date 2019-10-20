@@ -1,0 +1,41 @@
+@mixin markdown {
+  img.emoji {
+    height: 28px;
+  }
+  
+  img.flag {
+    height: 15px;
+    top: 2px;
+    position: relative;
+    padding-right: 4px;
+  }
+  
+  .inline-div {
+    display: inline;
+  }
+  
+  .markdown img {
+    vertical-align: middle;
+  }
+  
+  code {
+    padding: 2px 4px;
+    font-size: 90%;
+    color: hsla(50, 100%, 75%, 1);
+  }
+  
+  pre {
+    border-radius: 4px;
+    border-color: #444444;
+    border-style: solid;
+    border-width: 2px;
+    padding: 10px;
+  }
+  
+  code,
+  kbd,
+  pre,
+  samp {
+    font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  }
+}
