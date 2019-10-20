@@ -47,6 +47,15 @@
     font-family: "Roboto", sans-serif;
   }
 
+  .tab-bar > button {
+    font-size: 15px;
+    height: 30px;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    margin-bottom: 0px;
+    border-bottom: 0px;
+  }
+
   .settings-table {
     width: 500px;
 
