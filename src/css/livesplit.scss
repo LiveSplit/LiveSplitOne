@@ -7,6 +7,7 @@
 @use 'Sidebar';
 @use 'Splits';
 @use 'Text';
+@use 'Timer';
 @use 'Title';
 
 @import url("https://fonts.googleapis.com/css?family=Roboto");
@@ -142,19 +143,6 @@ table {
 .time {
   font-weight: bold;
   font-family: "Roboto", sans-serif;
-}
-
-div.timer-time {
-  font-size: 60px;
-  text-align: right;
-  padding-left: 6px;
-  padding-right: 6px;
-  font-family: timer, sans-serif;
-  margin-top: -10px;
-}
-
-.timer-fraction {
-  font-size: 45px;
 }
 
 .buttons {
