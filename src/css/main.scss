@@ -4,6 +4,7 @@
 @use 'KeyValue';
 @use 'Layout';
 @use 'LayoutEditor';
+@use 'LiveSplit';
 @use 'RunEditor';
 @use 'Separator';
 @use 'SettingsEditor';
@@ -23,10 +24,6 @@
 @font-face {
   font-family: fira;
   src: url(FiraSans-Regular.woff);
-}
-
-.livesplit-container {
-  overflow-y: auto !important;
 }
 
 body {
@@ -63,24 +60,6 @@ table {
   border-spacing: 0px 2px;
 }
 
-.buttons {
-  margin-top: 5px;
-  width: 300px;
-}
-
-.buttons > button {
-  width: 98%;
-  height: 40px !important;
-  font-size: 25px;
-}
-
-.buttons > button,
-.buttons > div > button {
-  height: 30px;
-  margin-right: 1%;
-  margin-left: 1%;
-}
-
 button.button-pressed,
 button.button-pressed:hover,
 button:active,
@@ -111,10 +90,6 @@ button {
   border-radius: 5px;
   font-weight: bold;
   font-family: "fira", sans-serif;
-}
-
-.buttons > div > button {
-  width: 48%;
 }
 
 a {
