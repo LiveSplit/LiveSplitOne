@@ -2,6 +2,8 @@ import * as React from "react";
 import * as LiveSplit from "../livesplit";
 import { colorToCss } from "../util/ColorUtil";
 
+import "../css/Separator.scss";
+
 export interface Props {
     layoutState: LiveSplit.LayoutStateJson,
 }

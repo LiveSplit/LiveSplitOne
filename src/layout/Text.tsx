@@ -3,6 +3,8 @@ import * as LiveSplit from "../livesplit";
 import { gradientToCss, colorToCss } from "../util/ColorUtil";
 import { map } from "../util/OptionUtil";
 
+import "../css/Text.scss";
+
 export interface Props { state: LiveSplit.TextComponentStateJson }
 
 export default class Text extends React.Component<Props> {

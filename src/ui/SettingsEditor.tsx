@@ -4,6 +4,8 @@ import { SettingsComponent } from "./Settings";
 import { SettingsDescriptionJson, SettingValue, HotkeyConfig } from "../livesplit";
 import { toast } from "react-toastify";
 
+import "../css/SettingsEditor.scss";
+
 export interface Props {
     hotkeyConfig: HotkeyConfig,
 }

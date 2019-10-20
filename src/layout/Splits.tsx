@@ -5,6 +5,8 @@ import { gradientToCss, colorToCss } from "../util/ColorUtil";
 import { Option, map } from "../util/OptionUtil";
 import SplitLabels from "./SplitLabels";
 
+import "../css/Splits.scss";
+
 export interface Props {
     state: LiveSplit.SplitsComponentStateJson,
     layoutState: LiveSplit.LayoutStateJson,
