@@ -1,8 +1,10 @@
 @use 'HotkeyButton';
+@use 'KeyValue';
 @use 'LayoutEditor';
 @use 'RunEditor';
 @use 'SettingsEditor';
 @use 'Sidebar';
+@use 'Text';
 
 @import url("https://fonts.googleapis.com/css?family=Roboto");
 
@@ -132,22 +134,6 @@ button.toggle-middle {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-}
-
-.key-value,
-.text-component {
-  height: 24px;
-  line-height: 20px;
-  padding: 0px 6px;
-}
-
-.key-value-key {
-  width: 100%;
-}
-
-.key-value-value {
-  text-align: right;
-  white-space: nowrap;
 }
 
 .title {
@@ -591,23 +577,6 @@ button.disabled:active {
   font-family: inherit !important;
   margin-top: 5px;
   margin-left: -50%;
-}
-
-.text-component {
-  overflow: hidden;
-}
-
-.text-component > table {
-  width: 100%;
-}
-.center-text {
-  text-align: -webkit-center;
-  text-align: center;
-}
-.text-component-text {
-  width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
 }
 
 /* WebKit Scrollbars */

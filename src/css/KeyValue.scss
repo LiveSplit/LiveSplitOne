@@ -1,0 +1,14 @@
+.key-value {
+  height: 24px;
+  line-height: 20px;
+  padding: 0px 6px;
+
+  .key-value-key {
+    width: 100%;
+  }
+  
+  .key-value-value {
+    text-align: right;
+    white-space: nowrap;
+  }
+}
