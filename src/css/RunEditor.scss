@@ -58,6 +58,89 @@
     margin-top: 0;
   }
 
+  .group {
+    position: relative;
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+    > input {
+      font-size: 18px;
+      padding: 10px 10px 10px 5px;
+      display: block;
+      width: 285px;
+      border: none;
+      border-bottom: 1px solid #aaa;
+      background: transparent;
+      color: white;
+      font-family: "fira", sans-serif;
+    }
+
+    > input:focus {
+      outline: none;
+    }
+
+    > label {
+      color: hsla(50, 0%, 75%, 1);
+      font-size: 18px;
+      font-weight: normal;
+      position: absolute;
+      pointer-events: none;
+      left: 5px;
+      top: 10px;
+      transition: 0.2s ease all;
+      -moz-transition: 0.2s ease all;
+      -webkit-transition: 0.2s ease all;
+    }
+
+    > input:focus ~ label,
+    > input:valid ~ label {
+      top: -13px;
+      font-size: 14px;
+    }
+
+    > input:focus ~ label {
+      color: hsla(50, 100%, 50%, 1);
+    }
+
+    &.invalid > input:focus ~ label {
+      color: hsla(0, 100%, 50%, 1);
+    }
+
+    > .bar {
+      position: relative;
+      display: block;
+      width: 300px;
+    }
+    > .bar:before,
+    > .bar:after {
+      content: "";
+      height: 2px;
+      width: 0;
+      bottom: 0px;
+      position: absolute;
+      background: hsla(50, 100%, 50%, 1);
+      transition: 0.2s ease all;
+      -moz-transition: 0.2s ease all;
+      -webkit-transition: 0.2s ease all;
+    }
+    > .bar:before {
+      left: 50%;
+    }
+    > .bar:after {
+      right: 50%;
+    }
+
+    &.invalid > .bar:before,
+    &.invalid > .bar:after {
+      background: hsla(0, 100%, 50%, 1);
+    }
+
+    > input:focus ~ .bar:before,
+    > input:focus ~ .bar:after {
+      width: 50%;
+    }
+  }
+
   .settings-table {
     width: 500px;
 
