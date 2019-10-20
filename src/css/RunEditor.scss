@@ -67,8 +67,8 @@
     padding: 0px 10px 0px 10px;
   }
 
-  table.run-editor-table > tbody > tr > td > input:not(.name) {
-    text-align: right;
+  table.run-editor-table .number {
+    font-family: inherit;
   }
 
   table.run-editor-table td {
