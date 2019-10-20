@@ -7,7 +7,7 @@ import "../css/KeyValue.scss";
 
 export interface Props { state: LiveSplit.KeyValueComponentStateJson }
 
-export default class CurrentComparison extends React.Component<Props> {
+export default class KeyValue extends React.Component<Props> {
     public render() {
         return (
             <div
