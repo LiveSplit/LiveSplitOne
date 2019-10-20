@@ -47,6 +47,10 @@
     font-family: "Roboto", sans-serif;
   }
 
+  .selected {
+    background: linear-gradient(rgb(51, 115, 244) 0%, rgb(21, 53, 116) 100%) !important;
+  }
+
   .tab-bar > button {
     font-size: 15px;
     height: 30px;
