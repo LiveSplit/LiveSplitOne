@@ -2,6 +2,8 @@ import * as React from "react";
 import * as LiveSplit from "../livesplit";
 import { colorToCss } from "../util/ColorUtil";
 
+import "../css/Graph.scss";
+
 export interface Props { state: LiveSplit.GraphComponentStateJson }
 
 export default class Graph extends React.Component<Props> {

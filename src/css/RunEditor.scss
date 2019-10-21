@@ -1,0 +1,245 @@
+@import "ContextMenu";
+@import "Markdown";
+@import "Table";
+@import "Toggle";
+
+.run-editor {
+  padding: 10px 10px 10px 10px;
+
+  @include context-menu;
+  @include markdown;
+  @include table;
+  @include toggle;
+
+  thead.table-header {
+    border-bottom: solid 1px hsla(0, 0%, 100%, 0.2);
+  }
+
+  .table-header {
+    > tr > th {
+      font-weight: bold;
+      text-align: center;
+    }
+
+    > tr > th:nth-child(1):after {
+      margin: 0;
+      margin-left: -4px;
+      margin-right: 7px;
+    }
+  }
+
+  .table > .table-header > tr {
+    display: table-row;
+    background: rgba(0, 0, 0, 0.5);
+
+    > * {
+      padding: 3px 12px;
+      display: table-cell;
+    }
+
+    > *:nth-child(2) {
+      padding: 3px 12px 3px 5px;
+    }
+  }
+
+  .run-editor-additional-info {
+    width: 650px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    border: 1px solid hsl(0, 0%, 25%);
+    border-collapse: collapse;
+    margin-left: 5px;
+    background-color: hsla(0, 0%, 100%, 0.03);
+  }
+
+  .run-editor-rules {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .run-editor-tab {
+    margin-left: 5px;
+  }
+
+  .run-editor-info {
+    display: inline-flex;
+    margin-bottom: 10px;
+  }
+
+  .run-editor-info-table {
+    padding-top: 10px;
+    margin-left: 15px;
+  }
+
+  table.run-editor-info-table > tbody > tr > td {
+    padding: 0px 10px 0px 10px;
+  }
+
+  table.run-editor-table {
+    .number {
+      font-family: inherit;
+    }
+
+    td {
+      overflow: hidden;
+
+      > input {
+        width: 100%;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+
+  .btn-group {
+    button {
+      font-size: 15px;
+      width: 160px;
+      height: 30px;
+      margin-right: 5px;
+      display: block;
+    }
+
+    button:nth-child(1) {
+      margin-top: 0;
+    }
+  }
+
+  .best-segment-time {
+    color: hsla(50, 100%, 50%, 1);
+  }
+
+  .leaderboard-row:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  .timing-selection > button {
+    position: relative;
+    left: 170px;
+  }
+
+  .editor-group {
+    display: inline-flex;
+  }
+
+  .group {
+    position: relative;
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+    > input {
+      font-size: 18px;
+      padding: 10px 10px 10px 5px;
+      display: block;
+      width: 285px;
+      border: none;
+      border-bottom: 1px solid #aaa;
+      background: transparent;
+      color: white;
+      font-family: "fira", sans-serif;
+    }
+
+    > input:focus {
+      outline: none;
+    }
+
+    > label {
+      color: hsla(50, 0%, 75%, 1);
+      font-size: 18px;
+      font-weight: normal;
+      position: absolute;
+      pointer-events: none;
+      left: 5px;
+      top: 10px;
+      transition: 0.2s ease all;
+      -moz-transition: 0.2s ease all;
+      -webkit-transition: 0.2s ease all;
+    }
+
+    > input:focus ~ label,
+    > input:valid ~ label {
+      top: -13px;
+      font-size: 14px;
+    }
+
+    > input:focus ~ label {
+      color: hsla(50, 100%, 50%, 1);
+    }
+
+    &.invalid > input:focus ~ label {
+      color: hsla(0, 100%, 50%, 1);
+    }
+
+    > .bar {
+      position: relative;
+      display: block;
+      width: 300px;
+    }
+
+    > .bar:before,
+    > .bar:after {
+      content: "";
+      height: 2px;
+      width: 0;
+      bottom: 0px;
+      position: absolute;
+      background: hsla(50, 100%, 50%, 1);
+      transition: 0.2s ease all;
+      -moz-transition: 0.2s ease all;
+      -webkit-transition: 0.2s ease all;
+    }
+
+    > .bar:before {
+      left: 50%;
+    }
+
+    > .bar:after {
+      right: 50%;
+    }
+
+    &.invalid > .bar:before,
+    &.invalid > .bar:after {
+      background: hsla(0, 100%, 50%, 1);
+    }
+
+    > input:focus ~ .bar:before,
+    > input:focus ~ .bar:after {
+      width: 50%;
+    }
+  }
+
+  .filter-table {
+    margin-top: 10px;
+    width: 100%;
+
+    &.table {
+      td {
+        padding: 5px;
+      }
+
+      > tbody.table-body > tr {
+        background-color: hsla(0, 0%, 100%, 0.04);
+      }
+
+      > thead.table-header > tr {
+        background-color: hsla(0, 0%, 0%, 0.1);
+      }
+
+      &.subcategory-table {
+        > tbody > tr {
+          border: 1px solid hsl(0, 0%, 25%);
+          text-align: center;
+          cursor: pointer;
+        }
+
+        > tbody.table-body > tr {
+          > td:hover {
+            background: rgba(255, 255, 255, 0.15);
+          }
+
+          > td.selected:hover {
+            background: linear-gradient(hsl(220, 90%, 70%) 0%, hsl(220, 69%, 40%) 100%) !important;
+          }
+        }
+      }
+    }
+  }
+}

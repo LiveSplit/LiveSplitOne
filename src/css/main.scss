@@ -1,0 +1,113 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto");
+
+@font-face {
+  font-family: timer;
+  src: url(timer.woff);
+}
+
+@font-face {
+  font-family: fira;
+  src: url(FiraSans-Regular.woff);
+}
+
+body {
+  font-family: "fira", sans-serif;
+  color: #eee;
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+  background: hsla(0, 0%, 9%, 1);
+}
+
+.toast-class {
+  border-radius: 2px !important;
+  min-height: 48px !important;
+}
+
+.toast-body {
+  margin: 10px 5px 10px 5px !important;
+}
+
+.toast-class > button {
+  margin-bottom: initial;
+  margin-top: initial;
+}
+
+#wrapper {
+  transition: all 0.5s ease;
+}
+
+td#dif {
+  border-right: 10px solid transparent;
+  text-align: right;
+}
+
+table {
+  border-spacing: 0px 2px;
+}
+
+button:active,
+button:active:hover {
+  background: linear-gradient(hsl(0, 0%, 7%) 0%, hsl(0, 0%, 14%) 100%);
+}
+
+button:focus,
+div:focus {
+  outline: 0;
+}
+
+button:hover {
+  background: linear-gradient(hsl(0, 0%, 14%) 0%, hsl(0, 0%, 9%) 100%);
+}
+
+button {
+  margin-bottom: 4px;
+  margin-top: 4px;
+  background: linear-gradient(hsl(0, 0%, 11%) 0%, hsl(0, 0%, 7%) 100%);
+  color: #eee;
+  cursor: pointer;
+  font-size: 20px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: hsl(0, 0%, 25%);
+  border-image: initial;
+  border-radius: 5px;
+  font-weight: bold;
+  font-family: "fira", sans-serif;
+}
+
+a {
+  color: hsla(50, 100%, 50%, 1);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button.disabled,
+button.disabled:active {
+  background: #222;
+  color: #666;
+  cursor: default;
+}
+
+.chrome-picker {
+  font-family: inherit !important;
+  margin-top: 5px;
+  margin-left: -50%;
+}
+
+/* WebKit Scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-clip: padding-box;
+  background-color: #303030;
+  border: 0px solid #0000;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-track-piece {
+  background-color: #0000;
+}

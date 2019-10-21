@@ -1,0 +1,50 @@
+@import 'Toggle';
+
+.sidebar {
+  background: hsl(0, 0%, 10%);
+  padding: 10px;
+  padding-top: 15px;
+  width: 250px;
+  z-index: 4 !important;
+
+  @include toggle;
+
+  > div > hr {
+    border-color: hsla(0, 0%, 30%, 1);
+  }
+
+  > div > h2 {
+    font-size: 1.5em;
+    text-align: center;
+    height: 20px;
+  }
+
+  > div > div.small > button {
+    width: 50%;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .sidebar-buttons > button {
+    width: 100%;
+    height: 40px;
+  }
+
+  .choose-comparison {
+    > button {
+      width: 30px;
+      height: 40px;
+      font-size: 28px;
+    }
+
+    > span {
+      width: calc(100% - 60px);
+      text-align: center;
+      display: inline-block;
+      font-size: 20px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}

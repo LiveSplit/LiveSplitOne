@@ -3,6 +3,8 @@ import { LayoutStateJson } from "../livesplit";
 import { colorToCss, gradientToCss } from "../util/ColorUtil";
 import Component from "./Component";
 
+import "../css/Layout.scss";
+
 export interface Props {
     state: LayoutStateJson,
 }

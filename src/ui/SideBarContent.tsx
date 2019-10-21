@@ -2,6 +2,8 @@ import * as React from "react";
 import { SharedTimerRef, TimingMethod } from "../livesplit";
 import { Option } from "../util/OptionUtil";
 
+import "../css/SideBarContent.scss";
+
 export type Route = "main" | "run-editor" | "layout-editor" | "settings-editor";
 
 export interface SidebarCallbacks {

@@ -1,0 +1,47 @@
+@import 'ContextMenu';
+@import 'Table';
+@import 'Toggle';
+
+.layout-editor-outer {
+  display: inline-flex;
+
+  @include context-menu;
+  @include table;
+  @include toggle;
+
+  .layout-editor-tabs {
+    margin-left: 20px;
+  }
+
+  .layout-editor-inner {
+    margin: 20px;
+    width: 445px;
+    display: inline-flex;
+
+    table {
+      width: 100%;
+    }
+
+    .btn-group {
+      button {
+        width: 40px;
+        height: 40px;
+        font-size: 15px;
+        margin-right: 5px;
+        display: block;
+      }
+
+      button:nth-child(1) {
+        margin-top: 0;
+      }
+    }
+  }
+
+  .layout-editor-component-list {
+    margin-left: 10px;
+  }
+
+  .layout-editor-component {
+    cursor: pointer;
+  }
+}

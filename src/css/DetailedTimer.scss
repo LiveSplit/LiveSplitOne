@@ -1,0 +1,14 @@
+@import 'Time';
+
+.detailed-timer {
+  position: relative;
+
+  @include time;
+
+  .detailed-timer-left-side {
+    position: absolute;
+    left: 6px;
+    bottom: 2px;
+    font-size: 11px;
+  }
+}

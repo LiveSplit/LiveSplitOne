@@ -17,6 +17,8 @@ import { resolveEmbed } from "./Embed";
 import { SettingsComponent, JsonSettingValueFactory } from "./Settings";
 import { renderMarkdown, replaceFlag } from "../util/Markdown";
 
+import "../css/RunEditor.scss";
+
 export interface Props { editor: LiveSplit.RunEditor }
 export interface State {
     editor: LiveSplit.RunEditorStateJson,

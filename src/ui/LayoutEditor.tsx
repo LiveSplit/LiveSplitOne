@@ -4,6 +4,8 @@ import DragAutoRefreshLayout from "../layout/DragAutoRefreshLayout";
 import * as LiveSplit from "../livesplit";
 import { SettingsComponent } from "./Settings";
 
+import "../css/LayoutEditor.scss";
+
 export interface Props {
     editor: LiveSplit.LayoutEditor,
     timer: LiveSplit.SharedTimerRef,

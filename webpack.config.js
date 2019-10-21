@@ -68,8 +68,14 @@ module.exports = (env, argv) => {
                     exclude: "/node_modules",
                 },
                 {
-                    test: /\.css$/,
-                    use: ["style-loader", "css-loader"],
+                    test: /\.(s*)css$/,
+                    use: ["style-loader", "css-loader", {
+                        loader: 'sass-loader',
+                        options: {
+                            // Prefer `dart-sass`
+                            implementation: require('sass'),
+                        },
+                    },],
                 },
                 {
                     test: /\.(png|jpg|gif|woff|ico)$/,

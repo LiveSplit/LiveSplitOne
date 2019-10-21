@@ -1,0 +1,21 @@
+.text-component {
+  height: 24px;
+  line-height: 20px;
+  padding: 0px 6px;
+  overflow: hidden;
+
+  .text-component-text {
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .center-text {
+    text-align: -webkit-center;
+    text-align: center;
+  }
+  
+  > table {
+    width: 100%;
+  }
+}

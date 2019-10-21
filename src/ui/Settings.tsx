@@ -3,7 +3,6 @@ import { Color, SettingsDescriptionJson, SettingsDescriptionValueJson } from "..
 import { assertNever, expect, Option } from "../util/OptionUtil";
 import ColorPicker from "./ColorPicker";
 
-import "./Settings.css";
 import { HotkeyButton } from "./HotkeyButton";
 
 export interface Props<T> {
