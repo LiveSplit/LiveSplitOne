@@ -8,6 +8,7 @@ export interface Props {
     evenOdd: [Option<string>, Option<string>],
     split: LiveSplit.SplitStateJson,
     icon: string,
+    maxColumns: number,
     separatorInFrontOfSplit: boolean,
     layoutState: LiveSplit.LayoutStateJson,
 }
@@ -84,6 +85,11 @@ export default class Split extends React.Component<Props> {
                             {column.value}
                         </div>,
                     ).reverse()
+                }
+                {
+                    Array(this.props.maxColumns - this.props.split.columns.length).fill(
+                        <div style={innerStyle}></div>
+                    )
                 }
             </span>
         );

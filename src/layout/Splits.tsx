@@ -39,6 +39,8 @@ export default class Splits extends React.Component<Props> {
         } else {
             style.background = gradientToCss(background.Same);
         }
+        
+        const maxColumns = Math.max.apply(Math, this.props.state.splits.map((split) => split.columns.length));
 
         return (
             <div className="splits" style={style}>
@@ -57,6 +59,7 @@ export default class Splits extends React.Component<Props> {
                             layoutState={this.props.layoutState}
                             icon={this.iconUrls[s.index]}
                             key={s.index.toString()}
+                            maxColumns={maxColumns}
                             separatorInFrontOfSplit={
                                 (this.props.state.show_final_separator &&
                                     i + 1 === this.props.state.splits.length)
