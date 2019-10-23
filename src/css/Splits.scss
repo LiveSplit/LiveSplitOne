@@ -14,14 +14,26 @@
     line-height: 20px;
 
     @include time;
+
+    .split-icon {
+      max-width: 18px;
+      height: 18px;
+      vertical-align: middle;
+      filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.3));
+    }
+
+    .split-icon-empty {
+      height: 18px;
+      padding: 0 9px;
+    }
+
+    div {
+      display: table-cell;
+      text-align: right;
+      padding: 1px 6px 0px 6px;
+    }
   }
-  
-  .split div {
-    display: table-cell;
-    text-align: right;
-    padding: 1px 6px 0px 6px;
-  }
-  
+
   .split-name {
     text-overflow: ellipsis;
     width: 100%;
@@ -38,12 +50,5 @@
   
   .split-icon-container-empty {
     padding-right: 0px !important;
-  }
-  
-  .split-icon {
-    max-width: 18px;
-    height: 18px;
-    vertical-align: middle;
-    filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.3));
   }
 }
