@@ -21,6 +21,7 @@ export default class Split extends React.Component<Props> {
         const currentSplit = this.props.split.is_current_split ? "current-split" : "";
         const separator = this.props.separatorInFrontOfSplit ? "split-separator" : "";
 
+        const splitsHaveIcons = this.props.splitsState.has_icons;
         const hasIcon = this.props.icon !== "";
 
         const innerStyle: any = {};
@@ -51,12 +52,13 @@ export default class Split extends React.Component<Props> {
             >
                 <div
                     key="split-icon"
-                    className={hasIcon ? "split-icon-container" : "split-icon-container-empty"}
+                    className={splitsHaveIcons ? "split-icon-container" : "split-icon-container-empty"}
                     style={innerStyle}
                 >
                     {
-                        hasIcon &&
-                        <img className="split-icon" src={this.props.icon} />
+                        splitsHaveIcons && (hasIcon
+                            ? <img className="split-icon" src={this.props.icon} />
+                            : <div className="split-icon-empty"></div>)
                     }
                 </div>
                 <div
