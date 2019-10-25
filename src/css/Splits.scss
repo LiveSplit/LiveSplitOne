@@ -33,6 +33,7 @@
       .split-icon {
         max-width: 18px;
         height: 18px;
+        object-fit: contain;
         vertical-align: middle;
         filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.3));
       }
