@@ -32,11 +32,9 @@ export default class Split extends React.Component<Props> {
             innerStyle.borderBottom = this.props.splitsState.show_thin_separators
                 ? `1px solid ${colorToCss(this.props.layoutState.thin_separators_color)}`
                 : "1px solid transparent";
-            innerStyle.backgroundColor = this.props.evenOdd[1];
             outerStyle.backgroundColor = this.props.evenOdd[1];
         } else {
             innerStyle.borderBottom = "1px solid transparent";
-            innerStyle.backgroundColor = this.props.evenOdd[0];
             outerStyle.backgroundColor = this.props.evenOdd[0];
         }
         innerStyle.borderTop = innerStyle.borderBottom;
