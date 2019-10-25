@@ -15,13 +15,6 @@
 
     @include time;
 
-    .split-icon {
-      max-width: 18px;
-      height: 18px;
-      vertical-align: middle;
-      filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.3));
-    }
-
     .split-icon-empty {
       height: 18px;
       padding: 0 9px;
@@ -31,6 +24,22 @@
       display: table-cell;
       text-align: right;
       padding: 1px 6px 0px 6px;
+    }
+
+    .split-icon-container {
+      padding-right: 6px;
+      text-align: center;
+
+      .split-icon {
+        max-width: 18px;
+        height: 18px;
+        vertical-align: middle;
+        filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.3));
+      }
+    }
+    
+    .split-icon-container-empty {
+      padding-right: 0px;
     }
   }
 
@@ -42,13 +51,5 @@
     max-width: 0;
     white-space: nowrap;
     overflow: hidden;
-  }
-  
-  .split-icon-container {
-    padding-right: 6px !important;
-  }
-  
-  .split-icon-container-empty {
-    padding-right: 0px !important;
   }
 }
