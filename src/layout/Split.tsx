@@ -43,8 +43,9 @@ export default class Split extends React.Component<Props> {
             innerStyle.borderTop = `2px solid ${colorToCss(this.props.layoutState.separators_color)}`;
         }
 
+        const currentSplitBackgroundStyle: any = {};
         if (this.props.split.is_current_split) {
-            innerStyle.background = gradientToCss(this.props.splitsState.current_split_gradient);
+            currentSplitBackgroundStyle.background = gradientToCss(this.props.splitsState.current_split_gradient);
         }
 
         return (
@@ -52,6 +53,7 @@ export default class Split extends React.Component<Props> {
                 className={["split", currentSplit, separator].filter((s) => s.length > 0).join(" ")}
                 style={outerStyle}
             >
+                <div className="current-split-background" style={currentSplitBackgroundStyle}></div>
                 <div
                     key="split-icon"
                     className={splitsHaveIcons ? "split-icon-container" : "split-icon-container-empty"}
