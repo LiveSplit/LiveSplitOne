@@ -62,7 +62,12 @@ module.exports = (env, argv) => {
                 {
                     test: /\.tsx?$/,
                     use: [
-                        "babel-loader",
+                        {
+                            loader: 'babel-loader',
+                            options: {
+                                presets: ['@babel/preset-env']
+                            }
+                        },
                         "ts-loader",
                     ],
                     exclude: "/node_modules",
