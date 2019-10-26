@@ -8,49 +8,64 @@ import "../css/DetailedTimer.scss";
 export interface Props { state: LiveSplit.DetailedTimerComponentStateJson }
 
 export default class DetailedTimer extends React.Component<Props> {
+    private icon: string;
+
+    constructor(props: Props) {
+        super(props);
+        this.icon = '';
+    }
+
     public render() {
-        const children = [];
-
-        children.push(renderToSVG(
-            this.props.state.timer,
-            "timer",
-        ));
-
-        children.push(renderToSVG(
-            this.props.state.segment_timer,
-            "segment-timer",
-        ));
-
-        const leftSide = [];
-
-        const table = [];
-
-        if (this.props.state.comparison1 != null) {
-            table.push(formatComparison(this.props.state.comparison1));
+        const iconChange = this.props.state.icon_change;
+        if (iconChange != null) {
+            this.icon = iconChange;
         }
 
-        if (this.props.state.comparison2 != null) {
-            table.push(formatComparison(this.props.state.comparison2));
-        }
-
-        leftSide.push(
-            <table className="detailed-timer-left-side">
-                <tbody>
-                    {table}
-                </tbody>
-            </table>,
-        );
-
-        children.push(<div>{leftSide}</div>);
+        const totalHeight = this.props.state.timer.height + this.props.state.segment_timer.height;
 
         return (
             <div
                 className="detailed-timer"
                 style={{
                     background: gradientToCss(this.props.state.background),
+                    height: totalHeight
                 }}
             >
-                {children}
+                <>{
+                    renderToSVG(
+                        this.props.state.timer,
+                        "timer",
+                    )
+                }</>
+                <>{
+                    renderToSVG(
+                        this.props.state.segment_timer,
+                        "segment-timer",
+                    )
+                }</>
+                <div className="detailed-timer-left-side">
+                    <>
+                        {
+                            this.icon && <div className="detailed-timer-icon-container">
+                                <div className="detailed-timer-icon-inner-container">
+                                    <img className="detailed-timer-icon" src={this.icon} />
+                                </div>
+                            </div>
+                        }
+                    </>
+                    <div className="detailed-timer-left-side-text">
+                        <>{
+                            this.props.state.segment_name !== null &&
+                            <div className="detailed-timer-segment-name">{this.props.state.segment_name}</div>
+                        }</>
+                        <table className="detailed-timer-comparisons">
+                            <tbody>
+                                <>{this.props.state.comparison1 !== null && formatComparison(this.props.state.comparison1)}</>
+                                <>{this.props.state.comparison2 !== null && formatComparison(this.props.state.comparison2)}</>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         );
     }

@@ -1,5 +1,11 @@
 @import 'Time';
 
+$icon-size: 35px;
+$padding: 6px;
+$table-padding: 2px;
+$segment-name-font-size: 15px;
+$comparison-font-size: 11px;
+
 .detailed-timer {
   position: relative;
 
@@ -7,8 +13,54 @@
 
   .detailed-timer-left-side {
     position: absolute;
-    left: 6px;
-    bottom: 2px;
-    font-size: 11px;
+    display: flex;
+    top: 0;
+    left: $padding;
+    height: 100%;
+    width: 50%;
+
+    .detailed-timer-icon-container {
+      width: $icon-size;
+      height: 100%;
+      padding: $padding 0;
+      margin-right: $padding;
+      box-sizing: border-box;
+
+      .detailed-timer-icon-inner-container {
+        width: $icon-size;
+        height: 100%;
+        text-align: center;
+        vertical-align: center;
+
+        .detailed-timer-icon {
+          max-width: $icon-size;
+          height: 100%;
+          object-fit: contain;
+        }
+      }
+    }
+
+    .detailed-timer-left-side-text {
+      position: relative;
+      width: 100%;
+
+      .detailed-timer-segment-name {
+        position: absolute;
+        top: $padding;
+        left: 0;
+        width: 100%;
+        font-size: $segment-name-font-size;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+  
+      .detailed-timer-comparisons {
+        position: absolute;
+        left: 0;
+        bottom: $table-padding;
+        font-size: $comparison-font-size;
+      }
+    }
   }
 }
