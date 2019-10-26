@@ -25,11 +25,18 @@ $comparison-font-size: 11px;
       padding: $padding 0;
       margin-right: $padding;
       box-sizing: border-box;
-      
-      img {
-        max-width: $icon-size;
+
+      .detailed-timer-icon-inner-container {
+        width: $icon-size;
         height: 100%;
-        object-fit: contain;
+        text-align: center;
+        vertical-align: center;
+
+        .detailed-timer-icon {
+          max-width: $icon-size;
+          height: 100%;
+          object-fit: contain;
+        }
       }
     }
 

@@ -47,7 +47,9 @@ export default class DetailedTimer extends React.Component<Props> {
                     <>
                         {
                             this.icon && <div className="detailed-timer-icon-container">
-                                <img className="detailed-timer-icon" src={this.icon} />
+                                <div className="detailed-timer-icon-inner-container">
+                                    <img className="detailed-timer-icon" src={this.icon} />
+                                </div>
                             </div>
                         }
                     </>
