@@ -13,8 +13,9 @@ export default class SplitLabels extends React.Component<Props> {
                     height: 22,
                 }}
             >
-                <div key="split-icon" />
-                <div key="split-name" />
+                <div className="current-split-background" />
+                <div className="split-icon-container-empty" />
+                <div className="split-name" />
                 {
                     this.props.labels.map((label, i) =>
                         <div
