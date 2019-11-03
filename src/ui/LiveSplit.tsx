@@ -168,43 +168,45 @@ export class LiveSplit extends React.Component<{}, State> {
             } else {
                 return [
                     "main",
-                    <div
-                        style={{
-                            margin: "10px",
-                            marginBottom: "5px",
-                        }}
-                    >
+                    <DragUpload importSplits={this.importSplitsFromFile.bind(this)}>
                         <div
-                            onClick={(_) => this.splitOrStart()}
                             style={{
-                                display: "inline-block",
-                                cursor: "pointer",
+                                margin: "10px",
+                                marginBottom: "5px",
                             }}
                         >
-                            <AutoRefreshLayout
-                                getState={() => this.state.timer.readWith(
-                                    (t) => this.state.layout.stateAsJson(t),
-                                )}
-                            />
-                        </div>
-                        <div className="buttons">
-                            <div className="small">
-                                <button onClick={(_) => this.undoSplit()}>
-                                    <i className="fa fa-arrow-up" aria-hidden="true" /></button>
-                                <button onClick={(_) => this.togglePauseOrStart()}>
-                                    <i className="fa fa-pause" aria-hidden="true" />
-                                </button>
+                            <div
+                                onClick={(_) => this.splitOrStart()}
+                                style={{
+                                    display: "inline-block",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                <AutoRefreshLayout
+                                    getState={() => this.state.timer.readWith(
+                                        (t) => this.state.layout.stateAsJson(t),
+                                    )}
+                                />
                             </div>
-                            <div className="small">
-                                <button onClick={(_) => this.skipSplit()}>
-                                    <i className="fa fa-arrow-down" aria-hidden="true" />
-                                </button>
-                                <button onClick={(_) => this.reset()}>
-                                    <i className="fa fa-times" aria-hidden="true" />
-                                </button>
+                            <div className="buttons">
+                                <div className="small">
+                                    <button onClick={(_) => this.undoSplit()}>
+                                        <i className="fa fa-arrow-up" aria-hidden="true" /></button>
+                                    <button onClick={(_) => this.togglePauseOrStart()}>
+                                        <i className="fa fa-pause" aria-hidden="true" />
+                                    </button>
+                                </div>
+                                <div className="small">
+                                    <button onClick={(_) => this.skipSplit()}>
+                                        <i className="fa fa-arrow-down" aria-hidden="true" />
+                                    </button>
+                                    <button onClick={(_) => this.reset()}>
+                                        <i className="fa fa-times" aria-hidden="true" />
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>,
+                    </DragUpload>,
                 ];
             }
         })();
@@ -220,17 +222,15 @@ export class LiveSplit extends React.Component<{}, State> {
         );
 
         return (
-            <DragUpload importSplits={this.importSplitsFromFile.bind(this)}>
-                <Sidebar
-                    sidebar={sidebarContent}
-                    open={this.state.sidebarOpen}
-                    onSetOpen={((e: boolean) => this.onSetSidebarOpen(e)) as any}
-                    sidebarClassName="sidebar"
-                    contentClassName="livesplit-container"
-                >
-                    {content}
-                </Sidebar>
-            </DragUpload>
+            <Sidebar
+                sidebar={sidebarContent}
+                open={this.state.sidebarOpen}
+                onSetOpen={((e: boolean) => this.onSetSidebarOpen(e)) as any}
+                sidebarClassName="sidebar"
+                contentClassName="livesplit-container"
+            >
+                {content}
+            </Sidebar>
         );
     }
 
