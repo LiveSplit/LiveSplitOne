@@ -35,6 +35,7 @@ export function renderToSVG(
             style={{
                 display: "block",
                 background: gradientToCss(state.background),
+                filter: "drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5))"
             }}
         >
             <defs>
