@@ -1,12 +1,13 @@
 import * as React from "react";
 import Sidebar from "react-sidebar";
+import DragUpload from "./DragUpload";
 import AutoRefreshLayout from "../layout/AutoRefreshLayout";
 import {
     HotkeySystem, Layout, LayoutEditor, Run, RunEditor,
     Segment, SharedTimer, Timer, TimerPhase, TimingMethod,
     TimeSpan, TimerRef, TimerRefMut, HotkeyConfig,
 } from "../livesplit";
-import { exportFile, openFileAsArrayBuffer, openFileAsString } from "../util/FileUtil";
+import { convertFileToArrayBuffer, exportFile, openFileAsArrayBuffer, openFileAsString } from "../util/FileUtil";
 import { Option, assertNull, expect, maybeDispose, maybeDisposeAndThen, map, panic } from "../util/OptionUtil";
 import * as SplitsIO from "../util/SplitsIO";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
@@ -167,43 +168,45 @@ export class LiveSplit extends React.Component<{}, State> {
             } else {
                 return [
                     "main",
-                    <div
-                        style={{
-                            margin: "10px",
-                            marginBottom: "5px",
-                        }}
-                    >
+                    <DragUpload importSplits={this.importSplitsFromFile.bind(this)}>
                         <div
-                            onClick={(_) => this.splitOrStart()}
                             style={{
-                                display: "inline-block",
-                                cursor: "pointer",
+                                margin: "10px",
+                                marginBottom: "5px",
                             }}
                         >
-                            <AutoRefreshLayout
-                                getState={() => this.state.timer.readWith(
-                                    (t) => this.state.layout.stateAsJson(t),
-                                )}
-                            />
-                        </div>
-                        <div className="buttons">
-                            <div className="small">
-                                <button onClick={(_) => this.undoSplit()}>
-                                    <i className="fa fa-arrow-up" aria-hidden="true" /></button>
-                                <button onClick={(_) => this.togglePauseOrStart()}>
-                                    <i className="fa fa-pause" aria-hidden="true" />
-                                </button>
+                            <div
+                                onClick={(_) => this.splitOrStart()}
+                                style={{
+                                    display: "inline-block",
+                                    cursor: "pointer",
+                                }}
+                            >
+                                <AutoRefreshLayout
+                                    getState={() => this.state.timer.readWith(
+                                        (t) => this.state.layout.stateAsJson(t),
+                                    )}
+                                />
                             </div>
-                            <div className="small">
-                                <button onClick={(_) => this.skipSplit()}>
-                                    <i className="fa fa-arrow-down" aria-hidden="true" />
-                                </button>
-                                <button onClick={(_) => this.reset()}>
-                                    <i className="fa fa-times" aria-hidden="true" />
-                                </button>
+                            <div className="buttons">
+                                <div className="small">
+                                    <button onClick={(_) => this.undoSplit()}>
+                                        <i className="fa fa-arrow-up" aria-hidden="true" /></button>
+                                    <button onClick={(_) => this.togglePauseOrStart()}>
+                                        <i className="fa fa-pause" aria-hidden="true" />
+                                    </button>
+                                </div>
+                                <div className="small">
+                                    <button onClick={(_) => this.skipSplit()}>
+                                        <i className="fa fa-arrow-down" aria-hidden="true" />
+                                    </button>
+                                    <button onClick={(_) => this.reset()}>
+                                        <i className="fa fa-times" aria-hidden="true" />
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>,
+                    </DragUpload>,
                 ];
             }
         })();
@@ -231,8 +234,8 @@ export class LiveSplit extends React.Component<{}, State> {
         );
     }
 
-    public async importSplits() {
-        const [file] = await openFileAsArrayBuffer();
+    private importSplitsFromArrayBuffer(buffer: [ArrayBuffer, File]) {
+        const [file] = buffer;
         const timer = this.state.timer;
         const result = Run.parseArray(new Int8Array(file), "", false);
         if (result.parsedSuccessfully()) {
@@ -244,6 +247,16 @@ export class LiveSplit extends React.Component<{}, State> {
         } else {
             toast.error("Couldn't parse the splits.");
         }
+    }
+
+    public async importSplits() {
+        const splits = await openFileAsArrayBuffer();
+        this.importSplitsFromArrayBuffer(splits);
+    }
+
+    public async importSplitsFromFile(file: File) {
+        const splits = await convertFileToArrayBuffer(file);
+        this.importSplitsFromArrayBuffer(splits);
     }
 
     public setCurrentTimingMethod(timingMethod: TimingMethod) {
