@@ -65,6 +65,7 @@ export default class Splits extends React.Component<Props> {
                                     i + 1 === this.props.state.splits.length)
                                 || (i === 0 && this.props.state.column_labels != null)
                             }
+                            visualSplitIndex={i}
                         />,
                     )
                 }
