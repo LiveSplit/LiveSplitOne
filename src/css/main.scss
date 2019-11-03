@@ -99,6 +99,7 @@ button.disabled:active {
 /* WebKit Scrollbars */
 ::-webkit-scrollbar {
   width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -110,4 +111,8 @@ button.disabled:active {
 
 ::-webkit-scrollbar-track-piece {
   background-color: #0000;
+}
+
+::-webkit-scrollbar-corner {
+  background-color: hsla(0, 0%, 9%, 1);
 }
