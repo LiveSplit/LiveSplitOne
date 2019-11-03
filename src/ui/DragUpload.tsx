@@ -1,16 +1,19 @@
 import * as React from "react";
+import { toast } from "react-toastify";
 
 import "../css/DragUpload.scss";
 
 export interface Props {
   children: any,
-  importSplits(file: File): void,
+  importLayout(file: File): Promise<void>,
+  importSplits(file: File): Promise<void>,
 }
 
 export default class DragUpload extends React.Component<Props> {
   public componentDidMount() {
     const dropZone = document.getElementById('upload-drop-zone');
     const dropZoneOverlay = document.getElementById('upload-drop-zone-overlay');
+    const importLayout = this.props.importLayout;
     const importSplits = this.props.importSplits;
 
     if (dropZone === null) {
@@ -55,9 +58,14 @@ export default class DragUpload extends React.Component<Props> {
         const files = dataTransfer.files;
         const file = files[0];
         if (file) {
-          return importSplits(file);
+          return importSplits(file).catch(() => {
+            return importLayout(file).catch(() => {
+              toast.error('The file could not be parsed.');
+            });
+          });
         }
       }
+      return null;
     });
   }
 

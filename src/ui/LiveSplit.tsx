@@ -7,7 +7,7 @@ import {
     Segment, SharedTimer, Timer, TimerPhase, TimingMethod,
     TimeSpan, TimerRef, TimerRefMut, HotkeyConfig,
 } from "../livesplit";
-import { convertFileToArrayBuffer, exportFile, openFileAsArrayBuffer, openFileAsString } from "../util/FileUtil";
+import { convertFileToArrayBuffer, convertFileToString, exportFile, openFileAsArrayBuffer, openFileAsString } from "../util/FileUtil";
 import { Option, assertNull, expect, maybeDisposeAndThen, panic } from "../util/OptionUtil";
 import * as SplitsIO from "../util/SplitsIO";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
@@ -166,7 +166,10 @@ export class LiveSplit extends React.Component<{}, State> {
             } else {
                 return [
                     "main",
-                    <DragUpload importSplits={this.importSplitsFromFile.bind(this)}>
+                    <DragUpload
+                        importLayout={this.importLayoutFromFile.bind(this)}
+                        importSplits={this.importSplitsFromFile.bind(this)}
+                    >
                         <div
                             style={{
                                 margin: "10px",
@@ -234,7 +237,11 @@ export class LiveSplit extends React.Component<{}, State> {
 
     public async importSplits() {
         const splits = await openFileAsArrayBuffer();
-        this.importSplitsFromArrayBuffer(splits);
+        try {
+            this.importSplitsFromArrayBuffer(splits);
+        } catch (err) {
+            toast.error(err.message);
+        }
     }
 
     public async importSplitsFromFile(file: File) {
@@ -315,23 +322,16 @@ export class LiveSplit extends React.Component<{}, State> {
 
     public async importLayout() {
         const [file] = await openFileAsString();
-        let layout = null;
         try {
-            layout = Layout.parseJson(JSON.parse(file));
-        } catch (_) { /* Failed to load the layout */ }
-        if (layout == null) {
-            layout = Layout.parseOriginalLivesplitString(file);
+            this.importLayoutFromString(file);
+        } catch (err) {
+            toast.error(err.message);
         }
-        if (layout != null) {
-            this.state.layout.dispose();
-            this.setState({
-                ...this.state,
-                layout,
-            });
-            layout.remount();
-            return;
-        }
-        toast.error("The layout could not be loaded. This may not be a valid LiveSplit or LiveSplit One Layout.");
+    }
+
+    public async importLayoutFromFile(file: File) {
+        const [fileString] = await convertFileToString(file);
+        this.importLayoutFromString(fileString);
     }
 
     public exportLayout() {
@@ -537,6 +537,26 @@ export class LiveSplit extends React.Component<{}, State> {
         };
     }
 
+    private importLayoutFromString(file: string) {
+        let layout = null;
+        try {
+            layout = Layout.parseJson(JSON.parse(file));
+        } catch (_) { /* Failed to load the layout */ }
+        if (layout == null) {
+            layout = Layout.parseOriginalLivesplitString(file);
+        }
+        if (layout != null) {
+            this.state.layout.dispose();
+            this.setState({
+                ...this.state,
+                layout,
+            });
+            layout.remount();
+            return;
+        }
+        throw Error("The layout could not be loaded. This may not be a valid LiveSplit or LiveSplit One Layout.");
+    }
+
     private importSplitsFromArrayBuffer(buffer: [ArrayBuffer, File]) {
         const [file] = buffer;
         const timer = this.state.timer;
@@ -545,10 +565,10 @@ export class LiveSplit extends React.Component<{}, State> {
             const run = result.unwrap();
             maybeDisposeAndThen(
                 timer.writeWith((t) => t.setRun(run)),
-                () => toast.error("Empty Splits are not supported."),
+                () => { throw Error("Empty Splits are not supported."); },
             );
         } else {
-            toast.error("Couldn't parse the splits.");
+            throw Error("Couldn't parse the splits.");
         }
     }
 

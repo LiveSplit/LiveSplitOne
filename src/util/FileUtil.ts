@@ -40,8 +40,7 @@ export async function openFileAsArrayBuffer(): Promise<[ArrayBuffer, File]> {
     return convertFileToArrayBuffer(file);
 }
 
-export async function openFileAsString(): Promise<[string, File]> {
-    const file = await openFile();
+export async function convertFileToString(file: File): Promise<[string, File]> {
     return new Promise((resolve: (_: [string, File]) => void) => {
         const reader = new FileReader();
         reader.onload = () => {
@@ -52,6 +51,11 @@ export async function openFileAsString(): Promise<[string, File]> {
         };
         reader.readAsText(file);
     });
+}
+
+export async function openFileAsString(): Promise<[string, File]> {
+    const file = await openFile();
+    return convertFileToString(file);
 }
 
 export function exportFile(filename: string, data: any) {
