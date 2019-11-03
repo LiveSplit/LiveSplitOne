@@ -1,12 +1,13 @@
 import * as React from "react";
 import Sidebar from "react-sidebar";
+import DragUpload from "./DragUpload";
 import AutoRefreshLayout from "../layout/AutoRefreshLayout";
 import {
     HotkeySystem, Layout, LayoutEditor, Run, RunEditor,
     Segment, SharedTimer, Timer, TimerPhase, TimingMethod,
     TimeSpan, TimerRef, TimerRefMut, HotkeyConfig,
 } from "../livesplit";
-import { exportFile, openFileAsArrayBuffer, openFileAsString } from "../util/FileUtil";
+import { convertFileToArrayBuffer, exportFile, openFileAsArrayBuffer, openFileAsString } from "../util/FileUtil";
 import { Option, assertNull, expect, maybeDispose, maybeDisposeAndThen, map, panic } from "../util/OptionUtil";
 import * as SplitsIO from "../util/SplitsIO";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
@@ -219,20 +220,22 @@ export class LiveSplit extends React.Component<{}, State> {
         );
 
         return (
-            <Sidebar
-                sidebar={sidebarContent}
-                open={this.state.sidebarOpen}
-                onSetOpen={((e: boolean) => this.onSetSidebarOpen(e)) as any}
-                sidebarClassName="sidebar"
-                contentClassName="livesplit-container"
-            >
-                {content}
-            </Sidebar>
+            <DragUpload importSplits={this.importSplitsFromFile.bind(this)}>
+                <Sidebar
+                    sidebar={sidebarContent}
+                    open={this.state.sidebarOpen}
+                    onSetOpen={((e: boolean) => this.onSetSidebarOpen(e)) as any}
+                    sidebarClassName="sidebar"
+                    contentClassName="livesplit-container"
+                >
+                    {content}
+                </Sidebar>
+            </DragUpload>
         );
     }
 
-    public async importSplits() {
-        const [file] = await openFileAsArrayBuffer();
+    private importSplitsFromArrayBuffer(buffer: [ArrayBuffer, File]) {
+        const [file] = buffer;
         const timer = this.state.timer;
         const result = Run.parseArray(new Int8Array(file), "", false);
         if (result.parsedSuccessfully()) {
@@ -244,6 +247,16 @@ export class LiveSplit extends React.Component<{}, State> {
         } else {
             toast.error("Couldn't parse the splits.");
         }
+    }
+
+    public async importSplits() {
+        const splits = await openFileAsArrayBuffer();
+        this.importSplitsFromArrayBuffer(splits);
+    }
+
+    public async importSplitsFromFile(file: File) {
+        const splits = await convertFileToArrayBuffer(file);
+        this.importSplitsFromArrayBuffer(splits);
     }
 
     public setCurrentTimingMethod(timingMethod: TimingMethod) {
