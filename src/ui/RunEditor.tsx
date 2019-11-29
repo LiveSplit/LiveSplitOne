@@ -10,7 +10,7 @@ import {
     downloadRegionList, getRegions, downloadGameInfo, getGameInfo, downloadGameInfoByGameId, downloadCategoriesByGameId,
 } from "../api/GameList";
 import { Category, Run, getRun } from "../api/SpeedrunCom";
-import { Option, expect, map, assert, unwrapOr } from "../util/OptionUtil";
+import { Option, expect, map, assert } from "../util/OptionUtil";
 import { downloadById } from "../util/SplitsIO";
 import { formatLeaderboardTime } from "../util/TimeUtil";
 import { resolveEmbed } from "./Embed";
@@ -408,7 +408,7 @@ export class RunEditor extends React.Component<Props, State> {
                 <tr>
                     <td>
                         <select
-                            value={unwrapOr<string>(this.filters.region, "")}
+                            value={this.filters.region ?? ""}
                             style={{
                                 width: "100%",
                             }}
@@ -430,7 +430,7 @@ export class RunEditor extends React.Component<Props, State> {
                 <tr>
                     <td>
                         <select
-                            value={unwrapOr<string>(this.filters.platform, "")}
+                            value={this.filters.platform ?? ""}
                             style={{
                                 width: "100%",
                             }}
@@ -535,7 +535,7 @@ export class RunEditor extends React.Component<Props, State> {
                         <tr>
                             <td>
                                 <select
-                                    value={unwrapOr<string>(this.filters.variables.get(variable.name), "")}
+                                    value={this.filters.variables.get(variable.name) ?? ""}
                                     style={{
                                         width: "100%",
                                     }}
@@ -809,7 +809,7 @@ export class RunEditor extends React.Component<Props, State> {
 
                         const renderedVariables = [];
 
-                        const variables = map(gameInfo, (g) => g.variables);
+                        const variables = gameInfo?.variables;
                         if (variables != null) {
                             for (const [keyId, valueId] of Object.entries(run.values)) {
                                 const variable = variables.data.find((v) => v.id === keyId);
@@ -831,13 +831,13 @@ export class RunEditor extends React.Component<Props, State> {
 
                             for (const variable of variables.data) {
                                 if (
-                                    (variable.category == null || (variable.category === map(category, (c) => c.id)))
+                                    (variable.category == null || (variable.category === category?.id))
                                     && (variable.scope.type === "full-game" || variable.scope.type === "global")
                                 ) {
                                     const variableValueId = run.values[variable.id];
                                     const variableValue = map(variableValueId, (i) => variable.values.values[i]);
                                     const filterValue = this.filters.variables.get(variable.name);
-                                    if (isFiltered(map(variableValue, (v) => v.label), filterValue)) {
+                                    if (isFiltered(variableValue?.label, filterValue)) {
                                         return null;
                                     }
                                 }
@@ -865,7 +865,7 @@ export class RunEditor extends React.Component<Props, State> {
                                 const videoUri = run.videos.links[run.videos.links.length - 1].uri;
                                 embed = resolveEmbed(videoUri);
                             }
-                            const comment = unwrapOr(run.comment, "");
+                            const comment = run.comment ?? "";
                             const renderedComment = renderMarkdown(comment);
 
                             expandedRow =
@@ -883,7 +883,7 @@ export class RunEditor extends React.Component<Props, State> {
                                             <tbody>
                                                 <tr>
                                                     <td>Date:</td>
-                                                    <td>{unwrapOr(run.date, "").split("-").join("/")}</td>
+                                                    <td>{run.date?.split("-").join("/") ?? ""}</td>
                                                 </tr>
                                                 {map(
                                                     region,
@@ -920,7 +920,7 @@ export class RunEditor extends React.Component<Props, State> {
                         return [
                             <tr
                                 key={run.id}
-                                title={unwrapOr(run.comment, "")}
+                                title={run.comment ?? ""}
                                 className={`leaderboard-row ${evenOdd}`}
                                 onClick={(_) => this.toggleExpandLeaderboardRow(rowIndex)}
                                 style={{
@@ -1023,7 +1023,7 @@ export class RunEditor extends React.Component<Props, State> {
             const variables = expect(gameInfo.variables, "We need the variables to be embedded");
             for (const variable of variables.data) {
                 if (
-                    (variable.category == null || (variable.category === map(category, (c) => c.id)))
+                    (variable.category == null || (variable.category === category?.id))
                     && (variable.scope.type === "full-game" || variable.scope.type === "global")
                     && variable["is-subcategory"]
                 ) {
@@ -1810,7 +1810,7 @@ export class RunEditor extends React.Component<Props, State> {
                 const variables = expect(gameInfo.variables, "We need the variables to be embedded");
                 for (const variable of variables.data) {
                     if (
-                        variable.category === map(category, (c) => c.id)
+                        variable.category === category?.id
                         && (variable.scope.type === "full-game" || variable.scope.type === "global")
                     ) {
                         this.props.editor.removeVariable(variable.name);
@@ -1880,7 +1880,7 @@ function associateRun<T>(
         editor.setRegionName(region);
     }
     editor.setEmulatorUsage(apiRun.system.emulated);
-    const variables = map(getGameInfo(gameName), (g) => g.variables);
+    const variables = getGameInfo(gameName)?.variables;
     if (variables != null) {
         for (const [keyId, valueId] of Object.entries(apiRun.values)) {
             const variable = variables.data.find((v) => v.id === keyId);

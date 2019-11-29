@@ -8,7 +8,7 @@ import {
     TimeSpan, TimerRef, TimerRefMut, HotkeyConfig,
 } from "../livesplit";
 import { convertFileToArrayBuffer, exportFile, openFileAsArrayBuffer, openFileAsString } from "../util/FileUtil";
-import { Option, assertNull, expect, maybeDispose, maybeDisposeAndThen, map, panic } from "../util/OptionUtil";
+import { Option, assertNull, expect, maybeDisposeAndThen, panic } from "../util/OptionUtil";
 import * as SplitsIO from "../util/SplitsIO";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
@@ -89,9 +89,7 @@ export class LiveSplit extends React.Component<{}, State> {
             if (lss != null) {
                 const result = Run.parseString(lss, "", false);
                 if (result.parsedSuccessfully()) {
-                    maybeDispose(result.unwrap().with(
-                        (r) => timer.writeWith((t) => t.setRun(r)),
-                    ));
+                    result.unwrap().with((r) => timer.writeWith((t) => t.setRun(r)))?.dispose();
                 }
             }
         }
@@ -142,7 +140,7 @@ export class LiveSplit extends React.Component<{}, State> {
         );
         this.state.timer.dispose();
         this.state.layout.dispose();
-        maybeDispose(this.state.hotkeySystem);
+        this.state.hotkeySystem?.dispose();
     }
 
     public render() {
@@ -217,7 +215,7 @@ export class LiveSplit extends React.Component<{}, State> {
                 callbacks={this}
                 timer={this.state.timer}
                 sidebarOpen={this.state.sidebarOpen}
-                connectionState={map(this.connection, (s) => s.readyState) || WebSocket.CLOSED}
+                connectionState={this.connection?.readyState ?? WebSocket.CLOSED}
             />
         );
 
@@ -232,21 +230,6 @@ export class LiveSplit extends React.Component<{}, State> {
                 {content}
             </Sidebar>
         );
-    }
-
-    private importSplitsFromArrayBuffer(buffer: [ArrayBuffer, File]) {
-        const [file] = buffer;
-        const timer = this.state.timer;
-        const result = Run.parseArray(new Int8Array(file), "", false);
-        if (result.parsedSuccessfully()) {
-            const run = result.unwrap();
-            maybeDisposeAndThen(
-                timer.writeWith((t) => t.setRun(run)),
-                () => toast.error("Empty Splits are not supported."),
-            );
-        } else {
-            toast.error("Couldn't parse the splits.");
-        }
     }
 
     public async importSplits() {
@@ -552,6 +535,21 @@ export class LiveSplit extends React.Component<{}, State> {
             this.connection = null;
             this.forceUpdate();
         };
+    }
+
+    private importSplitsFromArrayBuffer(buffer: [ArrayBuffer, File]) {
+        const [file] = buffer;
+        const timer = this.state.timer;
+        const result = Run.parseArray(new Int8Array(file), "", false);
+        if (result.parsedSuccessfully()) {
+            const run = result.unwrap();
+            maybeDisposeAndThen(
+                timer.writeWith((t) => t.setRun(run)),
+                () => toast.error("Empty Splits are not supported."),
+            );
+        } else {
+            toast.error("Couldn't parse the splits.");
+        }
     }
 
     private async loadFromSplitsIO(id: string) {

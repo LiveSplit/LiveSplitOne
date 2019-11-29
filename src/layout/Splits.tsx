@@ -39,7 +39,7 @@ export default class Splits extends React.Component<Props> {
         } else {
             style.background = gradientToCss(background.Same);
         }
-        
+
         const maxColumns = Math.max.apply(Math, this.props.state.splits.map((split) => split.columns.length));
 
         return (

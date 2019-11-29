@@ -13,10 +13,6 @@ interface Disposable {
     dispose(): void,
 }
 
-interface MaybeDisposable {
-    dispose?(): void,
-}
-
 export function panic(message: string): never {
     toast.error(`Bug: ${message}`);
     throw new Error(message);
@@ -24,24 +20,16 @@ export function panic(message: string): never {
 
 export function assertNever(x: never): never { return x; }
 
-export function assert(condition: boolean, message: string) {
+export function assert(condition: boolean, message: string): asserts condition {
     if (!condition) {
         panic(message);
     }
 }
 
-export function assertNull(obj: Option<MaybeDisposable>, message: string) {
+export function assertNull<T>(obj: Option<T | Disposable>, message: string): asserts obj is null | undefined {
     if (obj != null) {
-        if (obj.dispose) {
-            obj.dispose();
-        }
+        (obj as any).dispose?.();
         panic(message);
-    }
-}
-
-export function maybeDispose(obj: Option<Disposable>) {
-    if (obj != null) {
-        obj.dispose();
     }
 }
 
@@ -57,13 +45,5 @@ export function map<T, R>(obj: Option<T>, f: (obj: T) => R): R | undefined {
         return f(obj);
     } else {
         return undefined;
-    }
-}
-
-export function unwrapOr<T>(obj: Option<T>, or: T): T {
-    if (obj != null) {
-        return obj;
-    } else {
-        return or;
     }
 }

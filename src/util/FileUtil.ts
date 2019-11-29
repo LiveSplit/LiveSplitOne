@@ -1,4 +1,4 @@
-import { Option, map } from "./OptionUtil";
+import { Option } from "./OptionUtil";
 
 // Workaround for Chrome sometimes garbage collecting the input element while it
 // is being used, preventing the onchange event from triggering.
@@ -10,7 +10,7 @@ function openFile(): Promise<File> {
         const input = document.createElement("input");
         input.setAttribute("type", "file");
         input.onchange = () => {
-            const file: Option<File> = map(input.files, (f) => f[0]);
+            const file: Option<File> = input.files?.[0];
             if (file == null) {
                 reject();
                 return;
@@ -22,7 +22,7 @@ function openFile(): Promise<File> {
     });
 }
 
-export async function convertFileToArrayBuffer(file: File) : Promise<[ArrayBuffer, File]> {
+export async function convertFileToArrayBuffer(file: File): Promise<[ArrayBuffer, File]> {
     return new Promise((resolve: (_: [ArrayBuffer, File]) => void) => {
         const reader = new FileReader();
         reader.onload = () => {
