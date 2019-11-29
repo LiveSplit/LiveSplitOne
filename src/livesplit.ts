@@ -5289,6 +5289,106 @@ export class SegmentHistoryIter extends SegmentHistoryIterRefMut {
 }
 
 /**
+ * The Segment Time Component is a component that shows the time for the current
+ * segment in a comparison of your choosing. If no comparison is specified it
+ * uses the timer's current comparison.
+ */
+export class SegmentTimeComponentRef {
+    ptr: number;
+    /**
+     * Encodes the component's state information as JSON.
+     */
+    stateAsJson(timer: TimerRef): any {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (timer.ptr == 0) {
+            throw "timer is disposed";
+        }
+        const result = instance().exports.SegmentTimeComponent_state_as_json(this.ptr, timer.ptr);
+        return JSON.parse(decodeString(result));
+    }
+    /**
+     * Calculates the component's state based on the timer provided.
+     */
+    state(timer: TimerRef): KeyValueComponentState {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        if (timer.ptr == 0) {
+            throw "timer is disposed";
+        }
+        const result = new KeyValueComponentState(instance().exports.SegmentTimeComponent_state(this.ptr, timer.ptr));
+        return result;
+    }
+    /**
+     * This constructor is an implementation detail. Do not use this.
+     */
+    constructor(ptr: number) {
+        this.ptr = ptr;
+    }
+}
+
+/**
+ * The Segment Time Component is a component that shows the time for the current
+ * segment in a comparison of your choosing. If no comparison is specified it
+ * uses the timer's current comparison.
+ */
+export class SegmentTimeComponentRefMut extends SegmentTimeComponentRef {
+}
+
+/**
+ * The Segment Time Component is a component that shows the time for the current
+ * segment in a comparison of your choosing. If no comparison is specified it
+ * uses the timer's current comparison.
+ */
+export class SegmentTimeComponent extends SegmentTimeComponentRefMut {
+    /**
+     * Allows for scoped usage of the object. The object is guaranteed to get
+     * disposed once this function returns. You are free to dispose the object
+     * early yourself anywhere within the scope. The scope's return value gets
+     * carried to the outside of this function.
+     */
+    with<T>(closure: (obj: SegmentTimeComponent) => T): T {
+        try {
+            return closure(this);
+        } finally {
+            this.dispose();
+        }
+    }
+    /**
+     * Disposes the object, allowing it to clean up all of its memory. You need
+     * to call this for every object that you don't use anymore and hasn't
+     * already been disposed.
+     */
+    dispose() {
+        if (this.ptr != 0) {
+            instance().exports.SegmentTimeComponent_drop(this.ptr);
+            this.ptr = 0;
+        }
+    }
+    /**
+     * Creates a new Segment Time Component.
+     */
+    static new(): SegmentTimeComponent {
+        const result = new SegmentTimeComponent(instance().exports.SegmentTimeComponent_new());
+        return result;
+    }
+    /**
+     * Converts the component into a generic component suitable for using with a
+     * layout.
+     */
+    intoGeneric(): Component {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const result = new Component(instance().exports.SegmentTimeComponent_into_generic(this.ptr));
+        this.ptr = 0;
+        return result;
+    }
+}
+
+/**
  * The Separator Component is a simple component that only serves to render
  * separators between components.
  */
