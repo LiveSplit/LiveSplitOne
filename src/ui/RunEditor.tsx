@@ -29,10 +29,14 @@ export interface State {
 }
 
 interface RowState {
-    splitTimeIsValid: boolean,
-    segmentTimeIsValid: boolean,
-    bestSegmentTimeIsValid: boolean,
-    comparisonIsValid: boolean[],
+    splitTime: string,
+    splitTimeChanged: boolean,
+    segmentTime: string,
+    segmentTimeChanged: boolean,
+    bestSegmentTime: string,
+    bestSegmentTimeChanged: boolean,
+    comparisonTimes: string[],
+    comparisonTimesChanged: boolean[],
     index: number,
 }
 
@@ -68,11 +72,15 @@ export class RunEditor extends React.Component<Props, State> {
             editor: state,
             offsetIsValid: true,
             rowState: {
-                bestSegmentTimeIsValid: true,
-                comparisonIsValid: [],
+                bestSegmentTime: '',
+                bestSegmentTimeChanged: false,
+                comparisonTimes: [],
+                comparisonTimesChanged: [],
                 index: 0,
-                segmentTimeIsValid: true,
-                splitTimeIsValid: true,
+                segmentTime: '',
+                segmentTimeChanged: false,
+                splitTime: '',
+                splitTimeChanged: false,
             },
             tab: state.timing_method === "RealTime" ? Tab.RealTime : Tab.GameTime,
         };
@@ -1195,14 +1203,11 @@ export class RunEditor extends React.Component<Props, State> {
                                     </td>
                                     <td>
                                         <input
-                                            className={
-                                                this.state.rowState.index !== segmentIndex ||
-                                                    this.state.rowState.splitTimeIsValid ?
-                                                    "number" :
-                                                    "number invalid"
-                                            }
+                                            className="number"
                                             type="text"
-                                            value={s.split_time}
+                                            value={segmentIndex === this.state.rowState.index && this.state.rowState.splitTimeChanged
+                                                ? this.state.rowState.splitTime
+                                                : s.split_time}
                                             onFocus={(_) => this.focusSegment(segmentIndex)}
                                             onChange={(e) => this.handleSplitTimeChange(e)}
                                             onBlur={(_) => this.handleSplitTimeBlur()}
@@ -1211,16 +1216,14 @@ export class RunEditor extends React.Component<Props, State> {
                                     <td>
                                         <input
                                             className={
-                                                this.state.rowState.index !== segmentIndex
-                                                    || this.state.rowState.segmentTimeIsValid
-                                                    ? (s.segment_time === s.best_segment_time
-                                                        ? "number best-segment-time"
-                                                        : "number"
-                                                    )
-                                                    : "number invalid"
+                                                (segmentIndex !== this.state.rowState.index || !this.state.rowState.segmentTimeChanged) && s.segment_time === s.best_segment_time
+                                                    ? "number best-segment-time"
+                                                    : "number"
                                             }
                                             type="text"
-                                            value={s.segment_time}
+                                            value={segmentIndex === this.state.rowState.index && this.state.rowState.segmentTimeChanged
+                                                ? this.state.rowState.segmentTime
+                                                : s.segment_time}
                                             onFocus={(_) => this.focusSegment(segmentIndex)}
                                             onChange={(e) => this.handleSegmentTimeChange(e)}
                                             onBlur={(_) => this.handleSegmentTimeBlur()}
@@ -1228,14 +1231,11 @@ export class RunEditor extends React.Component<Props, State> {
                                     </td>
                                     <td>
                                         <input
-                                            className={
-                                                this.state.rowState.index !== segmentIndex ||
-                                                    this.state.rowState.bestSegmentTimeIsValid ?
-                                                    "number" :
-                                                    "number invalid"
-                                            }
+                                            className="number"
                                             type="text"
-                                            value={s.best_segment_time}
+                                            value={segmentIndex === this.state.rowState.index && this.state.rowState.bestSegmentTimeChanged
+                                                ? this.state.rowState.bestSegmentTime
+                                                : s.best_segment_time}
                                             onFocus={(_) => this.focusSegment(segmentIndex)}
                                             onChange={(e) => this.handleBestSegmentTimeChange(e)}
                                             onBlur={(_) => this.handleBestSegmentTimeBlur()}
@@ -1250,14 +1250,11 @@ export class RunEditor extends React.Component<Props, State> {
                                             .map((comparisonTime, comparisonIndex) => (
                                                 <td>
                                                     <input
-                                                        className={
-                                                            this.state.rowState.index !== segmentIndex ||
-                                                                this.isComparisonValid(comparisonIndex) ?
-                                                                "number" :
-                                                                "number invalid"
-                                                        }
+                                                        className="number"
                                                         type="text"
-                                                        value={comparisonTime}
+                                                        value={segmentIndex === this.state.rowState.index && this.state.rowState.comparisonTimesChanged[comparisonIndex]
+                                                            ? this.state.rowState.comparisonTimes[comparisonIndex]
+                                                            : comparisonTime}
                                                         onFocus={(_) => this.focusSegment(segmentIndex)}
                                                         onChange={(e) =>
                                                             this.handleComparisonTimeChange(e, comparisonIndex)
@@ -1365,13 +1362,6 @@ export class RunEditor extends React.Component<Props, State> {
     private removeComparison(comparison: string) {
         this.props.editor.removeComparison(comparison);
         this.update();
-    }
-
-    private isComparisonValid(index: number): boolean {
-        while (index >= this.state.rowState.comparisonIsValid.length) {
-            this.state.rowState.comparisonIsValid.push(true);
-        }
-        return this.state.rowState.comparisonIsValid[index];
     }
 
     private async changeSegmentIcon(index: number) {
@@ -1494,13 +1484,23 @@ export class RunEditor extends React.Component<Props, State> {
 
     private focusSegment(i: number) {
         this.props.editor.selectOnly(i);
+
+        const editor: LiveSplit.RunEditorStateJson = this.props.editor.stateAsJson();
+        const comparisonTimes = editor.segments[i].comparison_times;
+        const rowState = {
+            ...this.state.rowState,
+            splitTimeChanged: false,
+            segmentTimeChanged: false,
+            bestSegmentTimeChanged: false,
+            comparisonTimes,
+            comparisonTimesChanged: comparisonTimes.map(() => false),
+            index: i,
+        };
+
         this.setState({
             ...this.state,
-            editor: this.props.editor.stateAsJson(),
-            rowState: {
-                ...this.state.rowState,
-                index: i,
-            },
+            editor,
+            rowState,
         });
     }
 
@@ -1510,116 +1510,116 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private handleSplitTimeChange(event: any) {
-        const valid = this.props.editor.activeParseAndSetSplitTime(event.target.value);
-        const editor = {
-            ...this.state.editor,
-        };
-        editor.segments[this.state.rowState.index].split_time = event.target.value;
         this.setState({
             ...this.state,
-            editor,
             rowState: {
                 ...this.state.rowState,
-                splitTimeIsValid: valid,
+                splitTime: event.target.value,
+                splitTimeChanged: true,
             },
         });
     }
 
     private handleSegmentTimeChange(event: any) {
-        const valid = this.props.editor.activeParseAndSetSegmentTime(event.target.value);
-        const editor = {
-            ...this.state.editor,
-        };
-        editor.segments[this.state.rowState.index].segment_time = event.target.value;
         this.setState({
             ...this.state,
-            editor,
             rowState: {
                 ...this.state.rowState,
-                segmentTimeIsValid: valid,
+                segmentTime: event.target.value,
+                segmentTimeChanged: true,
             },
         });
     }
 
     private handleBestSegmentTimeChange(event: any) {
-        const valid = this.props.editor.activeParseAndSetBestSegmentTime(event.target.value);
-        const editor = {
-            ...this.state.editor,
-        };
-        editor.segments[this.state.rowState.index].best_segment_time = event.target.value;
         this.setState({
             ...this.state,
-            editor,
             rowState: {
                 ...this.state.rowState,
-                bestSegmentTimeIsValid: valid,
+                bestSegmentTime: event.target.value,
+                bestSegmentTimeChanged: true,
             },
         });
     }
 
     private handleComparisonTimeChange(event: any, comparisonIndex: number) {
-        const comparisonName = this.state.editor.comparison_names[comparisonIndex];
-        const valid = this.props.editor.activeParseAndSetComparisonTime(comparisonName, event.target.value);
-        const editor = {
-            ...this.state.editor,
-        };
-        editor.segments[this.state.rowState.index].comparison_times[comparisonIndex] = event.target.value;
-        const comparisonIsValid = { ...this.state.rowState.comparisonIsValid };
-        comparisonIsValid[comparisonIndex] = valid;
+        const comparisonTimes = { ...this.state.rowState.comparisonTimes };
+        comparisonTimes[comparisonIndex] = event.target.value;
+
+        const comparisonTimesChanged = { ...this.state.rowState.comparisonTimesChanged };
+        comparisonTimesChanged[comparisonIndex] = true;
+
         this.setState({
             ...this.state,
-            editor,
             rowState: {
                 ...this.state.rowState,
-                comparisonIsValid,
+                comparisonTimes,
+                comparisonTimesChanged,
             },
         });
     }
 
     private handleSplitTimeBlur() {
+        if (this.state.rowState.splitTimeChanged) {
+            this.props.editor.activeParseAndSetSplitTime(this.state.rowState.splitTime);
+        }
+
         this.setState({
             ...this.state,
             editor: this.props.editor.stateAsJson(),
             rowState: {
                 ...this.state.rowState,
-                splitTimeIsValid: true,
-            },
+                splitTimeChanged: false,
+            }
         });
     }
 
     private handleSegmentTimeBlur() {
+        if (this.state.rowState.segmentTimeChanged) {
+            this.props.editor.activeParseAndSetSegmentTime(this.state.rowState.segmentTime);
+        }
+        
         this.setState({
             ...this.state,
             editor: this.props.editor.stateAsJson(),
             rowState: {
                 ...this.state.rowState,
-                segmentTimeIsValid: true,
-            },
+                segmentTimeChanged: false,
+            }
         });
     }
 
     private handleBestSegmentTimeBlur() {
+        if (this.state.rowState.bestSegmentTimeChanged) {
+            this.props.editor.activeParseAndSetBestSegmentTime(this.state.rowState.bestSegmentTime);
+        }
+
         this.setState({
             ...this.state,
             editor: this.props.editor.stateAsJson(),
             rowState: {
                 ...this.state.rowState,
-                bestSegmentTimeIsValid: true,
-            },
+                bestSegmentTimeChanged: false,
+            }
         });
     }
 
     private handleComparisonTimeBlur(comparisonIndex: number) {
-        const comparisonIsValid = { ...this.state.rowState.comparisonIsValid };
-        comparisonIsValid[comparisonIndex] = true;
+        const comparisonTimesChanged = { ...this.state.rowState.comparisonTimesChanged };
+        if (comparisonTimesChanged[comparisonIndex]) {
+            const comparisonName = this.state.editor.comparison_names[comparisonIndex];
+            const comparisonTime = this.state.rowState.comparisonTimes[comparisonIndex];
+            this.props.editor.activeParseAndSetComparisonTime(comparisonName, comparisonTime);
+        }
+        comparisonTimesChanged[comparisonIndex] = false;
 
         this.setState({
             ...this.state,
             editor: this.props.editor.stateAsJson(),
             rowState: {
                 ...this.state.rowState,
-                comparisonIsValid,
-            },
+                comparisonTimesChanged,
+            }
         });
     }
 
