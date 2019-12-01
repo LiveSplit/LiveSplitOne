@@ -29,42 +29,48 @@ export function renderToSVG(
     const y = `${0.82 * height}px`;
 
     return (
-        <svg
+        <div
             className={className}
-            height={`${height}px`}
             style={{
-                display: "block",
-                background: gradientToCss(state.background),
-                filter: "drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5))"
+                background: gradientToCss(state.background)
             }}
         >
-            <defs>
-                <linearGradient id={`${className}-text-gradient`} x1="0%" x2="0%" y1="0%" y2="100%">
-                    <stop
-                        offset="0%"
-                        style={{
-                            stopColor: colorToCss(state.top_color),
-                        }}
-                    />
-                    <stop
-                        offset="100%"
-                        style={{
-                            stopColor: colorToCss(state.bottom_color),
-                        }}
-                    />
-                </linearGradient>
-            </defs>
-            <text className="timer-time" style={{
-                fill: `url(#${className}-text-gradient)`,
-                fontFamily: "timer, sans-serif",
-                fontSize: `${0.9 * height}px`,
-            }} x={x} y={y} textAnchor="end">{time}</text>
-            <text className="timer-time" style={{
-                fill: `url(#${className}-text-gradient)`,
-                fontFamily: "timer, sans-serif",
-                fontSize: `${0.6 * height}px`,
-            }} x="294px" y={y} textAnchor="end">{fraction}</text>
-        </svg>
+            <svg
+                className={className}
+                height={`${height}px`}
+                style={{
+                    display: "block",
+                    filter: "drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5))"
+                }}
+            >
+                <defs>
+                    <linearGradient id={`${className}-text-gradient`} x1="0%" x2="0%" y1="0%" y2="100%">
+                        <stop
+                            offset="0%"
+                            style={{
+                                stopColor: colorToCss(state.top_color),
+                            }}
+                        />
+                        <stop
+                            offset="100%"
+                            style={{
+                                stopColor: colorToCss(state.bottom_color),
+                            }}
+                        />
+                    </linearGradient>
+                </defs>
+                <text className="timer-time" style={{
+                    fill: `url(#${className}-text-gradient)`,
+                    fontFamily: "timer, sans-serif",
+                    fontSize: `${0.9 * height}px`,
+                }} x={x} y={y} textAnchor="end">{time}</text>
+                <text className="timer-time" style={{
+                    fill: `url(#${className}-text-gradient)`,
+                    fontFamily: "timer, sans-serif",
+                    fontSize: `${0.6 * height}px`,
+                }} x="294px" y={y} textAnchor="end">{fraction}</text>
+            </svg>
+        </div>
     );
 }
 
