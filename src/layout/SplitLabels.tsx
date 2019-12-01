@@ -4,13 +4,15 @@ export interface Props {
     labels: string[],
 }
 
+export const splitLabelHeight = 22;
+
 export default class SplitLabels extends React.Component<Props> {
     public render() {
         return (
             <span
                 className="split"
                 style={{
-                    height: 22,
+                    height: splitLabelHeight,
                 }}
             >
                 <div className="current-split-background" />

@@ -2,6 +2,7 @@ import * as React from "react";
 import * as LiveSplit from "../livesplit";
 import { colorToCss, gradientToCss } from "../util/ColorUtil";
 import { Option } from "../util/OptionUtil";
+import { splitLabelHeight } from "./SplitLabels";
 
 export interface Props {
     splitsState: LiveSplit.SplitsComponentStateJson,
@@ -11,6 +12,8 @@ export interface Props {
     maxColumns: number,
     separatorInFrontOfSplit: boolean,
     layoutState: LiveSplit.LayoutStateJson,
+    visualSplitIndex: number,
+    showingLabels: boolean
 }
 
 export default class Split extends React.Component<Props> {
@@ -25,8 +28,10 @@ export default class Split extends React.Component<Props> {
         const splitsHaveIcons = this.props.splitsState.has_icons;
         const hasIcon = this.props.icon !== "";
 
+        const splitHeight = 24;
+
         const innerStyle: any = {};
-        const outerStyle: any = {};
+        const outerStyle: any = { height: splitHeight };
 
         if (this.props.split.index % 2 === 1) {
             innerStyle.borderBottom = this.props.splitsState.show_thin_separators
@@ -46,6 +51,8 @@ export default class Split extends React.Component<Props> {
         const currentSplitBackgroundStyle: any = {};
         if (this.props.split.is_current_split) {
             currentSplitBackgroundStyle.background = gradientToCss(this.props.splitsState.current_split_gradient);
+            currentSplitBackgroundStyle.top = this.props.visualSplitIndex * splitHeight + (this.props.showingLabels ? splitLabelHeight : 0);
+            currentSplitBackgroundStyle.height = splitHeight;
         }
 
         return (
