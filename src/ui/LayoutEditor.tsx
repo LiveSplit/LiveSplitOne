@@ -123,9 +123,6 @@ export class LayoutEditor extends React.Component<Props, State> {
                                 <MenuItem onClick={(_) => this.addComponent(LiveSplit.PreviousSegmentComponent)}>
                                     Previous Segment
                                 </MenuItem>
-                                <MenuItem onClick={(_) => this.addComponent(LiveSplit.SegmentTimeComponent)}>
-                                    Segment Time
-                                </MenuItem>
                                 <MenuItem onClick={(_) => this.addComponent(LiveSplit.SplitsComponent)}>
                                     Splits
                                 </MenuItem>

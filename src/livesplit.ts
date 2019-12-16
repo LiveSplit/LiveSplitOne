@@ -515,6 +515,8 @@ export interface KeyValueComponentStateJson {
     key: string,
     /** The value to visualize. */
     value: string,
+    /** The visual color of the delta time. */
+    visual_color: Color,
     /**
      * Specifies additional abbreviations for the key that can be used instead
      * of the key, if there is not enough space to show the whole key.
@@ -764,7 +766,7 @@ export type LayoutDirection = "Vertical" | "Horizontal";
  * values.
  */
 export interface CustomCombobox {
-    value: string,
+    value: string | undefined,
     list: string[],
     mandatory: boolean,
 }
@@ -893,11 +895,22 @@ export interface RunMetadataJson {
      */
     region_name: string,
     /**
-     * Stores all the variables. A variable is an arbitrary key value pair
-     * storing additional information about the category. An example of this
-     * may be whether Amiibos are used in this category.
+     * Stores all the speedrun.com variables. A variable is an arbitrary key
+     * value pair storing additional information about the category. An example
+     * of this may be whether Amiibos are used in this category.
      */
-    variables: { [key: string]: string },
+    speedrun_com_variables: { [key: string]: string | undefined },
+    custom_variables: { [key: string]: CustomVariableJson | undefined },
+}
+
+export interface CustomVariableJson {
+    // TODO:
+    value: string,
+    /**
+     * States whether the variable is permanent. Temporary variables don't get
+     * stored in splits files. They also don't get shown in the run editor.
+     */
+    is_permanent: boolean,
 }
 
 /**
@@ -2620,18 +2633,6 @@ export class HotkeyConfig extends HotkeyConfigRefMut {
         }
         return result;
     }
-    /**
-     * Attempts to parse a hotkey configuration from a given file. null is
-     * returned it couldn't be parsed. This will not close the file descriptor /
-     * handle.
-     */
-    static parseFileHandle(handle: number): HotkeyConfig | null {
-        const result = new HotkeyConfig(instance().exports.HotkeyConfig_parse_file_handle(handle));
-        if (result.ptr == 0) {
-            return null;
-        }
-        return result;
-    }
 }
 
 /**
@@ -2996,17 +2997,6 @@ export class Layout extends LayoutRefMut {
         const settings_allocated = allocString(JSON.stringify(settings));
         const result = new Layout(instance().exports.Layout_parse_json(settings_allocated.ptr));
         dealloc(settings_allocated);
-        if (result.ptr == 0) {
-            return null;
-        }
-        return result;
-    }
-    /**
-     * Attempts to parse a layout from a given file. null is returned it couldn't
-     * be parsed. This will not close the file descriptor / handle.
-     */
-    static parseFileHandle(handle: number): Layout | null {
-        const result = new Layout(instance().exports.Layout_parse_file_handle(handle));
         if (result.ptr == 0) {
             return null;
         }
@@ -4320,26 +4310,44 @@ export class RunEditorRefMut extends RunEditorRef {
      * in this category. If the variable doesn't exist yet, it is being
      * inserted.
      */
-    setVariable(name: string, value: string) {
+    setSpeedrunComVariable(name: string, value: string) {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
         const name_allocated = allocString(name);
         const value_allocated = allocString(value);
-        instance().exports.RunEditor_set_variable(this.ptr, name_allocated.ptr, value_allocated.ptr);
+        instance().exports.RunEditor_set_speedrun_com_variable(this.ptr, name_allocated.ptr, value_allocated.ptr);
         dealloc(name_allocated);
         dealloc(value_allocated);
     }
     /**
      * Removes the variable with the name specified.
      */
-    removeVariable(name: string) {
+    removeSpeedrunComVariable(name: string) {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
         const name_allocated = allocString(name);
-        instance().exports.RunEditor_remove_variable(this.ptr, name_allocated.ptr);
+        instance().exports.RunEditor_remove_speedrun_com_variable(this.ptr, name_allocated.ptr);
         dealloc(name_allocated);
+    }
+    addCustomVariable(name: string) {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const name_allocated = allocString(name);
+        instance().exports.RunEditor_add_custom_variable(this.ptr, name_allocated.ptr);
+        dealloc(name_allocated);
+    }
+    setCustomVariable(name: string, value: string) {
+        if (this.ptr == 0) {
+            throw "this is disposed";
+        }
+        const name_allocated = allocString(name);
+        const value_allocated = allocString(value);
+        instance().exports.RunEditor_set_custom_variable(this.ptr, name_allocated.ptr, value_allocated.ptr);
+        dealloc(name_allocated);
+        dealloc(value_allocated);
     }
     /**
      * Resets all the Metadata Information.
@@ -4748,11 +4756,11 @@ export class RunMetadataRef {
      * Returns an iterator iterating over all the variables and their values
      * that have been specified.
      */
-    variables(): RunMetadataVariablesIter {
+    speedrunComVariables(): RunMetadataSpeedrunComVariablesIter {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        const result = new RunMetadataVariablesIter(instance().exports.RunMetadata_variables(this.ptr));
+        const result = new RunMetadataSpeedrunComVariablesIter(instance().exports.RunMetadata_speedrun_com_variables(this.ptr));
         return result;
     }
     /**
@@ -4805,7 +4813,7 @@ export class RunMetadata extends RunMetadataRefMut {
  * information about the category. An example of this may be whether Amiibos
  * are used in the category.
  */
-export class RunMetadataVariableRef {
+export class RunMetadataSpeedrunComVariableRef {
     ptr: number;
     /**
      * Accesses the name of this Run Metadata variable.
@@ -4814,7 +4822,7 @@ export class RunMetadataVariableRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        const result = instance().exports.RunMetadataVariable_name(this.ptr);
+        const result = instance().exports.RunMetadataSpeedrunComVariable_name(this.ptr);
         return decodeString(result);
     }
     /**
@@ -4824,7 +4832,7 @@ export class RunMetadataVariableRef {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        const result = instance().exports.RunMetadataVariable_value(this.ptr);
+        const result = instance().exports.RunMetadataSpeedrunComVariable_value(this.ptr);
         return decodeString(result);
     }
     /**
@@ -4840,7 +4848,7 @@ export class RunMetadataVariableRef {
  * information about the category. An example of this may be whether Amiibos
  * are used in the category.
  */
-export class RunMetadataVariableRefMut extends RunMetadataVariableRef {
+export class RunMetadataSpeedrunComVariableRefMut extends RunMetadataSpeedrunComVariableRef {
 }
 
 /**
@@ -4848,14 +4856,14 @@ export class RunMetadataVariableRefMut extends RunMetadataVariableRef {
  * information about the category. An example of this may be whether Amiibos
  * are used in the category.
  */
-export class RunMetadataVariable extends RunMetadataVariableRefMut {
+export class RunMetadataSpeedrunComVariable extends RunMetadataSpeedrunComVariableRefMut {
     /**
      * Allows for scoped usage of the object. The object is guaranteed to get
      * disposed once this function returns. You are free to dispose the object
      * early yourself anywhere within the scope. The scope's return value gets
      * carried to the outside of this function.
      */
-    with<T>(closure: (obj: RunMetadataVariable) => T): T {
+    with<T>(closure: (obj: RunMetadataSpeedrunComVariable) => T): T {
         try {
             return closure(this);
         } finally {
@@ -4869,7 +4877,7 @@ export class RunMetadataVariable extends RunMetadataVariableRefMut {
      */
     dispose() {
         if (this.ptr != 0) {
-            instance().exports.RunMetadataVariable_drop(this.ptr);
+            instance().exports.RunMetadataSpeedrunComVariable_drop(this.ptr);
             this.ptr = 0;
         }
     }
@@ -4879,7 +4887,7 @@ export class RunMetadataVariable extends RunMetadataVariableRefMut {
  * An iterator iterating over all the Run Metadata variables and their values
  * that have been specified.
  */
-export class RunMetadataVariablesIterRef {
+export class RunMetadataSpeedrunComVariablesIterRef {
     ptr: number;
     /**
      * This constructor is an implementation detail. Do not use this.
@@ -4893,16 +4901,16 @@ export class RunMetadataVariablesIterRef {
  * An iterator iterating over all the Run Metadata variables and their values
  * that have been specified.
  */
-export class RunMetadataVariablesIterRefMut extends RunMetadataVariablesIterRef {
+export class RunMetadataSpeedrunComVariablesIterRefMut extends RunMetadataSpeedrunComVariablesIterRef {
     /**
      * Accesses the next Run Metadata variable. Returns null if there are no more
      * variables.
      */
-    next(): RunMetadataVariableRef | null {
+    next(): RunMetadataSpeedrunComVariableRef | null {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        const result = new RunMetadataVariableRef(instance().exports.RunMetadataVariablesIter_next(this.ptr));
+        const result = new RunMetadataSpeedrunComVariableRef(instance().exports.RunMetadataSpeedrunComVariablesIter_next(this.ptr));
         if (result.ptr == 0) {
             return null;
         }
@@ -4914,14 +4922,14 @@ export class RunMetadataVariablesIterRefMut extends RunMetadataVariablesIterRef 
  * An iterator iterating over all the Run Metadata variables and their values
  * that have been specified.
  */
-export class RunMetadataVariablesIter extends RunMetadataVariablesIterRefMut {
+export class RunMetadataSpeedrunComVariablesIter extends RunMetadataSpeedrunComVariablesIterRefMut {
     /**
      * Allows for scoped usage of the object. The object is guaranteed to get
      * disposed once this function returns. You are free to dispose the object
      * early yourself anywhere within the scope. The scope's return value gets
      * carried to the outside of this function.
      */
-    with<T>(closure: (obj: RunMetadataVariablesIter) => T): T {
+    with<T>(closure: (obj: RunMetadataSpeedrunComVariablesIter) => T): T {
         try {
             return closure(this);
         } finally {
@@ -4935,7 +4943,7 @@ export class RunMetadataVariablesIter extends RunMetadataVariablesIterRefMut {
      */
     dispose() {
         if (this.ptr != 0) {
-            instance().exports.RunMetadataVariablesIter_drop(this.ptr);
+            instance().exports.RunMetadataSpeedrunComVariablesIter_drop(this.ptr);
             this.ptr = 0;
         }
     }
@@ -5285,106 +5293,6 @@ export class SegmentHistoryIter extends SegmentHistoryIterRefMut {
             instance().exports.SegmentHistoryIter_drop(this.ptr);
             this.ptr = 0;
         }
-    }
-}
-
-/**
- * The Segment Time Component is a component that shows the time for the current
- * segment in a comparison of your choosing. If no comparison is specified it
- * uses the timer's current comparison.
- */
-export class SegmentTimeComponentRef {
-    ptr: number;
-    /**
-     * Encodes the component's state information as JSON.
-     */
-    stateAsJson(timer: TimerRef): any {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        if (timer.ptr == 0) {
-            throw "timer is disposed";
-        }
-        const result = instance().exports.SegmentTimeComponent_state_as_json(this.ptr, timer.ptr);
-        return JSON.parse(decodeString(result));
-    }
-    /**
-     * Calculates the component's state based on the timer provided.
-     */
-    state(timer: TimerRef): KeyValueComponentState {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        if (timer.ptr == 0) {
-            throw "timer is disposed";
-        }
-        const result = new KeyValueComponentState(instance().exports.SegmentTimeComponent_state(this.ptr, timer.ptr));
-        return result;
-    }
-    /**
-     * This constructor is an implementation detail. Do not use this.
-     */
-    constructor(ptr: number) {
-        this.ptr = ptr;
-    }
-}
-
-/**
- * The Segment Time Component is a component that shows the time for the current
- * segment in a comparison of your choosing. If no comparison is specified it
- * uses the timer's current comparison.
- */
-export class SegmentTimeComponentRefMut extends SegmentTimeComponentRef {
-}
-
-/**
- * The Segment Time Component is a component that shows the time for the current
- * segment in a comparison of your choosing. If no comparison is specified it
- * uses the timer's current comparison.
- */
-export class SegmentTimeComponent extends SegmentTimeComponentRefMut {
-    /**
-     * Allows for scoped usage of the object. The object is guaranteed to get
-     * disposed once this function returns. You are free to dispose the object
-     * early yourself anywhere within the scope. The scope's return value gets
-     * carried to the outside of this function.
-     */
-    with<T>(closure: (obj: SegmentTimeComponent) => T): T {
-        try {
-            return closure(this);
-        } finally {
-            this.dispose();
-        }
-    }
-    /**
-     * Disposes the object, allowing it to clean up all of its memory. You need
-     * to call this for every object that you don't use anymore and hasn't
-     * already been disposed.
-     */
-    dispose() {
-        if (this.ptr != 0) {
-            instance().exports.SegmentTimeComponent_drop(this.ptr);
-            this.ptr = 0;
-        }
-    }
-    /**
-     * Creates a new Segment Time Component.
-     */
-    static new(): SegmentTimeComponent {
-        const result = new SegmentTimeComponent(instance().exports.SegmentTimeComponent_new());
-        return result;
-    }
-    /**
-     * Converts the component into a generic component suitable for using with a
-     * layout.
-     */
-    intoGeneric(): Component {
-        if (this.ptr == 0) {
-            throw "this is disposed";
-        }
-        const result = new Component(instance().exports.SegmentTimeComponent_into_generic(this.ptr));
-        this.ptr = 0;
-        return result;
     }
 }
 
@@ -6457,21 +6365,27 @@ export class TextComponentRef {
     /**
      * Encodes the component's state information as JSON.
      */
-    stateAsJson(): any {
+    stateAsJson(timer: TimerRef): any {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        const result = instance().exports.TextComponent_state_as_json(this.ptr);
+        if (timer.ptr == 0) {
+            throw "timer is disposed";
+        }
+        const result = instance().exports.TextComponent_state_as_json(this.ptr, timer.ptr);
         return JSON.parse(decodeString(result));
     }
     /**
      * Calculates the component's state.
      */
-    state(): TextComponentState {
+    state(timer: TimerRef): TextComponentState {
         if (this.ptr == 0) {
             throw "this is disposed";
         }
-        const result = new TextComponentState(instance().exports.TextComponent_state(this.ptr));
+        if (timer.ptr == 0) {
+            throw "timer is disposed";
+        }
+        const result = new TextComponentState(instance().exports.TextComponent_state(this.ptr, timer.ptr));
         return result;
     }
     /**

@@ -697,7 +697,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                 </select>;
             } else if ("CustomCombobox" in value) {
                 const isError = value.CustomCombobox.mandatory
-                    && value.CustomCombobox.value.length === 0;
+                    && !value.CustomCombobox.value;
                 component = <select
                     value={value.CustomCombobox.value}
                     onChange={(e) => {

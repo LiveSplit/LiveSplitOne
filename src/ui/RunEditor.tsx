@@ -490,7 +490,7 @@ export class RunEditor extends React.Component<Props, State> {
                 if (variable["is-subcategory"]) {
                     let currentFilterValue = this.filters.variables.get(variable.name);
                     if (currentFilterValue === undefined) {
-                        const runValue = this.state.editor.metadata.variables[variable.name];
+                        const runValue = this.state.editor.metadata.speedrun_com_variables[variable.name];
                         if (runValue != null) {
                             currentFilterValue = runValue;
                             this.filters.variables.set(variable.name, currentFilterValue);
@@ -654,8 +654,8 @@ export class RunEditor extends React.Component<Props, State> {
                         text: variable.name,
                         value: {
                             CustomCombobox: {
-                                value: Object.keys(metadata.variables).indexOf(variable.name) >= 0
-                                    ? metadata.variables[variable.name]
+                                value: Object.keys(metadata.speedrun_com_variables).indexOf(variable.name) >= 0
+                                    ? metadata.speedrun_com_variables[variable.name]
                                     : "",
                                 list: ["", ...Object.values(variable.values.values).map((v) => v.label)],
                                 mandatory: variable.mandatory,
@@ -738,9 +738,9 @@ export class RunEditor extends React.Component<Props, State> {
                             const stringValue = unwrapString(value);
                             const key = additionalVariables[index - customVariablesOffset].text;
                             if (stringValue !== "") {
-                                this.props.editor.setVariable(key, stringValue);
+                                this.props.editor.setSpeedrunComVariable(key, stringValue);
                             } else {
-                                this.props.editor.removeVariable(key);
+                                this.props.editor.removeSpeedrunComVariable(key);
                             }
                         }
                         this.update();
@@ -1027,7 +1027,7 @@ export class RunEditor extends React.Component<Props, State> {
                     && (variable.scope.type === "full-game" || variable.scope.type === "global")
                     && variable["is-subcategory"]
                 ) {
-                    const currentValue = this.state.editor.metadata.variables[variable.name];
+                    const currentValue = this.state.editor.metadata.speedrun_com_variables[variable.name];
                     const foundValue = Object.values(variable.values.values).find((v) => v.label === currentValue);
                     if (foundValue != null && foundValue.rules != null) {
                         subcategoryRules.push(renderMarkdown(`## ${foundValue.label} Rules\n${foundValue.rules}`));
@@ -1813,7 +1813,7 @@ export class RunEditor extends React.Component<Props, State> {
                         variable.category === category?.id
                         && (variable.scope.type === "full-game" || variable.scope.type === "global")
                     ) {
-                        this.props.editor.removeVariable(variable.name);
+                        this.props.editor.removeSpeedrunComVariable(variable.name);
                     }
                 }
                 break;
@@ -1890,7 +1890,7 @@ function associateRun<T>(
                 );
                 if (value != null) {
                     const valueName = value[1].label;
-                    editor.setVariable(variable.name, valueName);
+                    editor.setSpeedrunComVariable(variable.name, valueName);
                 }
             }
         }
