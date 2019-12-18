@@ -346,14 +346,39 @@ export class RunEditor extends React.Component<Props, State> {
         );
     }
 
-    private renderGeneralButtons(): JSX.Element {
+    private renderAssociateRunButton(): JSX.Element {
+        return (
+            <button onClick={(_) => this.interactiveAssociateRunOrOpenPage()}>
+                {this.state.editor.metadata.run_id !== "" ? "Open PB Page" : "Associate Run"}
+            </button>
+        );
+    }
+
+    private renderRulesButtons(): JSX.Element {
         return (
             <div className="btn-group" style={{ width: 160, marginRight: 5 }}>
-                <button onClick={(_) => this.interactiveAssociateRunOrOpenPage()}>
-                    {this.state.editor.metadata.run_id !== "" ? "Open PB Page" : "Associate Run"}
+                { this.renderAssociateRunButton() }
+            </div>
+        );
+    }
+
+    private renderVariablesButtons(): JSX.Element {
+        return (
+            <div className="btn-group" style={{ width: 160, marginRight: 5 }}>
+                { this.renderAssociateRunButton() }
+                <button onClick={(_) => this.addCustomVariable()}>
+                    Add Variable
                 </button>
             </div>
         );
+    }
+
+    private addCustomVariable() {
+        const variableName = prompt("Variable Name:");
+        if (variableName) {
+            this.props.editor.addCustomVariable(variableName);
+            this.update();
+        }
     }
 
     private renderTab(tab: Tab, category: Option<Category>): JSX.Element[] {
@@ -362,9 +387,9 @@ export class RunEditor extends React.Component<Props, State> {
             case Tab.GameTime:
                 return [this.renderSegmentListButtons(), this.renderSegmentsTable()];
             case Tab.Variables:
-                return [this.renderGeneralButtons(), this.renderVariablesTab(category)];
+                return [this.renderVariablesButtons(), this.renderVariablesTab(category)];
             case Tab.Rules:
-                return [this.renderGeneralButtons(), this.renderRulesTab(category)];
+                return [this.renderRulesButtons(), this.renderRulesTab(category)];
             case Tab.Leaderboard:
                 return [this.renderLeaderboardButtons(category), this.renderLeaderboard(category)];
         }
@@ -373,7 +398,7 @@ export class RunEditor extends React.Component<Props, State> {
     private renderLeaderboardButtons(category: Option<Category>): JSX.Element {
         const gameInfo = getGameInfo(this.state.editor.game);
         if (gameInfo == null) {
-            return this.renderGeneralButtons();
+            return this.renderRulesButtons();
         }
 
         const regionList = [""];
@@ -619,7 +644,8 @@ export class RunEditor extends React.Component<Props, State> {
         const metadata = this.state.editor.metadata;
         const gameInfo = getGameInfo(this.state.editor.game);
         const fields: LiveSplit.SettingsDescriptionFieldJson[] = [];
-        const additionalVariables: LiveSplit.SettingsDescriptionFieldJson[] = [];
+        const speedrunComVariables: LiveSplit.SettingsDescriptionFieldJson[] = [];
+        const customVariables: LiveSplit.SettingsDescriptionFieldJson[] = [];
         let regionOffset = -1;
         let platformOffset = -1;
         let emulatorOffset = -1;
@@ -650,7 +676,7 @@ export class RunEditor extends React.Component<Props, State> {
                     (variable.category == null || (variable.category === map(category, (c) => c.id)))
                     && (variable.scope.type === "full-game" || variable.scope.type === "global")
                 ) {
-                    additionalVariables.push({
+                    speedrunComVariables.push({
                         text: variable.name,
                         value: {
                             CustomCombobox: {
@@ -661,6 +687,18 @@ export class RunEditor extends React.Component<Props, State> {
                                 mandatory: variable.mandatory,
                             },
                         },
+                    });
+                }
+            }
+
+            for (const customVariableName of Object.keys(metadata.custom_variables)) {
+                const customVariableValue = metadata.custom_variables[customVariableName];
+                if (customVariableValue && customVariableValue.is_permanent) {
+                    customVariables.push({
+                        text: customVariableName,
+                        value: {
+                            String: customVariableValue.value,
+                        }
                     });
                 }
             }
@@ -702,9 +740,12 @@ export class RunEditor extends React.Component<Props, State> {
             }
         }
 
-        const customVariablesOffset = fields.length;
+        const speedrunComVariablesOffset = fields.length;
+        fields.push(...speedrunComVariables);
 
-        fields.push(...additionalVariables);
+        const customVariablesOffset = fields.length;
+        fields.push(...customVariables);
+
         return (
             <div className="run-editor-tab">
                 <SettingsComponent
@@ -734,14 +775,18 @@ export class RunEditor extends React.Component<Props, State> {
                         } else if (index === emulatorOffset) {
                             const emulatorUsage = unwrapBool(value);
                             this.props.editor.setEmulatorUsage(emulatorUsage);
-                        } else {
+                        } else if (index < customVariablesOffset) {
                             const stringValue = unwrapString(value);
-                            const key = additionalVariables[index - customVariablesOffset].text;
+                            const key = speedrunComVariables[index - speedrunComVariablesOffset].text;
                             if (stringValue !== "") {
                                 this.props.editor.setSpeedrunComVariable(key, stringValue);
                             } else {
                                 this.props.editor.removeSpeedrunComVariable(key);
                             }
+                        } else {
+                            const stringValue = unwrapString(value);
+                            const key = customVariables[index - customVariablesOffset].text;
+                            this.props.editor.setCustomVariable(key, stringValue);
                         }
                         this.update();
                     }}
