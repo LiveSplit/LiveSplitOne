@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Color, SettingsDescriptionJson, SettingsDescriptionValueJson } from "../livesplit";
+import { Color, SettingsDescriptionJson, SettingsDescriptionValueJson } from "../livesplit-core";
 import { assertNever, expect, Option } from "../util/OptionUtil";
 import ColorPicker from "./ColorPicker";
 

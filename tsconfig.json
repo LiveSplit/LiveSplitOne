@@ -1,10 +1,9 @@
 {
     "compilerOptions": {
-        "outDir": "./dist/",
         "sourceMap": true,
         "noImplicitAny": true,
-        "module": "commonjs",
-        "target": "es2018",
+        "module": "ESNext",
+        "target": "ES5",
         "jsx": "react",
         "strictNullChecks": true,
         "noImplicitReturns": true,
@@ -14,7 +13,13 @@
         "noFallthroughCasesInSwitch": true,
         "alwaysStrict": true,
         "strictFunctionTypes": true,
-        "strict": true
+        "strict": true,
+        "allowSyntheticDefaultImports": true,
+        "moduleResolution": "Node",
+        "lib": [
+            "ES2015",
+            "DOM"
+        ]
     },
     "include": [
         "./src/**/*"

@@ -29,7 +29,7 @@ module.exports = (env, argv) => {
         },
 
         resolve: {
-            extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".json"],
+            extensions: [".webpack.js", ".web.js", ".ts", ".tsx", ".js", ".json", ".wasm"],
         },
 
         plugins: [
@@ -51,9 +51,6 @@ module.exports = (env, argv) => {
                     },
                 ],
             })] : []),
-            new CopyWebpackPlugin([
-                { from: "src/livesplit_core.wasm", to: "livesplit_core.wasm" },
-            ], {}),
         ],
 
         module: {
@@ -62,12 +59,6 @@ module.exports = (env, argv) => {
                 {
                     test: /\.tsx?$/,
                     use: [
-                        {
-                            loader: 'babel-loader',
-                            options: {
-                                presets: ['@babel/preset-env']
-                            }
-                        },
                         "ts-loader",
                     ],
                     exclude: "/node_modules",
@@ -75,12 +66,12 @@ module.exports = (env, argv) => {
                 {
                     test: /\.(s*)css$/,
                     use: ["style-loader", "css-loader", {
-                        loader: 'sass-loader',
+                        loader: "sass-loader",
                         options: {
                             // Prefer `dart-sass`
-                            implementation: require('sass'),
+                            implementation: require("sass"),
                         },
-                    },],
+                    }],
                 },
                 {
                     test: /\.(png|jpg|gif|woff|ico)$/,

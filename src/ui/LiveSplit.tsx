@@ -6,7 +6,7 @@ import {
     HotkeySystem, Layout, LayoutEditor, Run, RunEditor,
     Segment, SharedTimer, Timer, TimerPhase, TimingMethod,
     TimeSpan, TimerRef, TimerRefMut, HotkeyConfig,
-} from "../livesplit";
+} from "../livesplit-core";
 import { convertFileToArrayBuffer, convertFileToString, exportFile, openFileAsArrayBuffer, openFileAsString } from "../util/FileUtil";
 import { Option, assertNull, expect, maybeDisposeAndThen, panic } from "../util/OptionUtil";
 import * as SplitsIO from "../util/SplitsIO";

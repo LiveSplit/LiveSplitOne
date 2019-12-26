@@ -1,6 +1,6 @@
 import * as React from "react";
 import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
-import * as LiveSplit from "../livesplit";
+import * as LiveSplit from "../livesplit-core";
 import { openFileAsArrayBuffer } from "../util/FileUtil";
 import { TextBox } from "./TextBox";
 import { toast } from "react-toastify";

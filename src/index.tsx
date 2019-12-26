@@ -2,8 +2,6 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 
 import { toast, ToastContainer } from "react-toastify";
-import { load } from "./livesplit";
-import { LiveSplit } from "./ui/LiveSplit";
 
 import "react-toastify/dist/ReactToastify.css";
 import "./css/font-awesome.css";
@@ -11,7 +9,7 @@ import "./css/main.scss";
 
 async function run() {
     try {
-        await load("livesplit_core.wasm");
+        const { LiveSplit } = await import("./ui/LiveSplit");
 
         ReactDOM.render(
             <div>

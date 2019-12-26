@@ -1,4 +1,4 @@
-import { Run } from "../livesplit";
+import { Run } from "../livesplit-core";
 import { PostRunResponse } from "./json/PostRunResponse";
 
 function mapPromiseErr<T, E>(promise: Promise<T>, err: E): Promise<T> {

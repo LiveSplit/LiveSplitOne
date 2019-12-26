@@ -8,7 +8,7 @@ import {
     PlayersEmbedded,
 } from "./SpeedrunCom";
 import { Option } from "../util/OptionUtil";
-import { FuzzyList } from "../livesplit";
+import { FuzzyList } from "../livesplit-core";
 
 const gameList: string[] = [];
 let fuzzyList: Option<FuzzyList> = null;

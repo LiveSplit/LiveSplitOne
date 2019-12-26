@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ComponentStateJson, LayoutStateJson } from "../livesplit";
+import { ComponentStateJson, LayoutStateJson } from "../livesplit-core";
 import { assertNever } from "../util/OptionUtil";
 import BlankSpace from "./BlankSpace";
 import KeyValue from "./KeyValue";

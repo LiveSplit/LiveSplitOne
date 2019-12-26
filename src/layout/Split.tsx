@@ -1,5 +1,5 @@
 import * as React from "react";
-import * as LiveSplit from "../livesplit";
+import * as LiveSplit from "../livesplit-core";
 import { colorToCss, gradientToCss } from "../util/ColorUtil";
 import { Option } from "../util/OptionUtil";
 import { splitLabelHeight } from "./SplitLabels";

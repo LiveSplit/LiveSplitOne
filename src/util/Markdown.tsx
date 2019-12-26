@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Parser as CommonMarkParser } from "commonmark";
-import CommonMarkRenderer = require("commonmark-react-renderer");
+import CommonMarkRenderer from "commonmark-react-renderer";
 import * as emojilib from "emojilib";
 import { emoteList } from "../api/EmoteList";
 import Twemoji from "react-twemoji";

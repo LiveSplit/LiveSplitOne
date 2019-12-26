@@ -6,15 +6,13 @@ SOURCE_BRANCH="master"
 TARGET_BRANCH="gh-pages"
 
 doCompile() {
-    (cd livesplit-core && cargo build -p cdylib --target wasm32-unknown-unknown --release)
-    (cd livesplit-core/capi/bind_gen && cargo run)
-
-    $HOME/binaryen/bin/wasm-opt -O4 livesplit-core/target/wasm32-unknown-unknown/release/livesplit_core.wasm -o src/livesplit_core.wasm
-    wasm-gc src/livesplit_core.wasm
-    cp livesplit-core/capi/bindings/wasm/livesplit_core.ts src/livesplit.ts
-
     npm install
+    npm run build:core
     npm run publish
+
+    WASM_FILE=$(ls dist/*.wasm)
+    $HOME/binaryen/bin/wasm-opt -O4 "$WASM_FILE" -o "$WASM_FILE"
+    wasm-gc "$WASM_FILE"
 }
 
 if [ "$TRAVIS_PULL_REQUEST" != "false" -o "$TRAVIS_BRANCH" != "$SOURCE_BRANCH" ]; then

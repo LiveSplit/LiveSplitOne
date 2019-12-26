@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
 import DragAutoRefreshLayout from "../layout/DragAutoRefreshLayout";
-import * as LiveSplit from "../livesplit";
+import * as LiveSplit from "../livesplit-core";
 import { SettingsComponent } from "./Settings";
 
 import "../css/LayoutEditor.scss";
