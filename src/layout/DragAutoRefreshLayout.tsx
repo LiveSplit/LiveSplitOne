@@ -1,5 +1,5 @@
 import * as React from "react";
-import { LayoutStateJson } from "../livesplit";
+import { LayoutStateJson } from "../livesplit-core";
 import { colorToCss, gradientToCss } from "../util/ColorUtil";
 import { Option } from "../util/OptionUtil";
 import Component from "./Component";

@@ -19,6 +19,7 @@ main() {
     rustup target install $TARGET
 
     cargo install -f wasm-gc
+    cargo install -f wasm-bindgen-cli
 
     # This fetches latest stable release
     local tag=$(git ls-remote --tags --refs --exit-code https://github.com/japaric/cross \

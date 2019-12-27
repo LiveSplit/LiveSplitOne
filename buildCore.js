@@ -15,6 +15,7 @@ spawnSync(
     [
         "build",
         "-p", "cdylib",
+        "--features", "wasm-web",
         "--target", "wasm32-unknown-unknown",
         "--release",
     ],
@@ -24,9 +25,17 @@ spawnSync(
     },
 );
 
+spawnSync(
+    "wasm-bindgen",
+    [
+        "livesplit-core/target/wasm32-unknown-unknown/release/livesplit_core.wasm",
+        "--out-dir", "src/livesplit-core",
+    ],
+    {
+        stdio: "inherit",
+    },
+);
+
 fs
-    .createReadStream("livesplit-core/target/wasm32-unknown-unknown/release/livesplit_core.wasm")
-    .pipe(fs.createWriteStream("src/livesplit_core.wasm"));
-fs
-    .createReadStream("livesplit-core/capi/bindings/wasm/livesplit_core.ts")
-    .pipe(fs.createWriteStream("src/livesplit.ts"));
+    .createReadStream("livesplit-core/capi/bindings/wasm_bindgen/index.ts")
+    .pipe(fs.createWriteStream("src/livesplit-core/index.ts"));

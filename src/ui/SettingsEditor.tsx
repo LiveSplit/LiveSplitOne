@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { SettingsComponent } from "./Settings";
-import { SettingsDescriptionJson, SettingValue, HotkeyConfig } from "../livesplit";
+import { SettingsDescriptionJson, SettingValue, HotkeyConfig } from "../livesplit-core";
 import { toast } from "react-toastify";
 
 import "../css/SettingsEditor.scss";

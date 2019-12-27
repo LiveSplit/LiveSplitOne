@@ -1,5 +1,5 @@
 import * as React from "react";
-import { SharedTimerRef, TimingMethod } from "../livesplit";
+import { SharedTimerRef, TimingMethod } from "../livesplit-core";
 import { Option } from "../util/OptionUtil";
 
 import "../css/SideBarContent.scss";

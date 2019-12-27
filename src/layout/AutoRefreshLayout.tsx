@@ -1,5 +1,5 @@
 import * as React from "react";
-import { LayoutStateJson } from "../livesplit";
+import { LayoutStateJson } from "../livesplit-core";
 import Layout from "./Layout";
 
 export interface Props {
