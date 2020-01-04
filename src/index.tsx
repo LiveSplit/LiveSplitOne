@@ -34,8 +34,9 @@ Those are known to block WebAssembly.`);
 }
 
 ReactDOM.render(
-    <div>
-        Loading...
+    <div className="initial-load">
+        <div className="fa fa-spinner fa-spin"></div>
+        <div className="initial-load-text">Loading...</div>
     </div>,
     document.getElementById("base"),
 );
