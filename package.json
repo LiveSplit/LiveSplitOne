@@ -6,7 +6,7 @@
   "scripts": {
     "build:core": "node buildCore.js",
     "start": "webpack-dev-server --open",
-    "start:electron": "webpack --electron && electron dist/electron",
+    "start:electron": "webpack --electron && electron dist/index.html",
     "serve": "webpack-dev-server",
     "build": "webpack",
     "publish": "webpack -p"
