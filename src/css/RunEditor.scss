@@ -242,4 +242,20 @@
       }
     }
   }
+
+  .removable-string-box {
+    display: grid;
+    grid-template-columns: 1fr 30px;
+    column-gap: 5px;
+
+    button {
+      margin: 0px;
+      font-size: 16px;
+      height: 22px;
+    }
+
+    input:focus {
+      outline: 0;
+    }
+  }
 }

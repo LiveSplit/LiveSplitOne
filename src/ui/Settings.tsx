@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Color, SettingsDescriptionJson, SettingsDescriptionValueJson } from "../livesplit-core";
+import { Color, SettingsDescriptionValueJson } from "../livesplit-core";
 import { assertNever, expect, Option } from "../util/OptionUtil";
 import ColorPicker from "./ColorPicker";
 
@@ -7,9 +7,22 @@ import { HotkeyButton } from "./HotkeyButton";
 
 export interface Props<T> {
     setValue: (index: number, value: T) => void,
-    state: SettingsDescriptionJson,
+    state: ExtendedSettingsDescriptionJson,
     factory: SettingValueFactory<T>,
 }
+
+export interface ExtendedSettingsDescriptionJson {
+    fields: ExtendedSettingsDescriptionFieldJson[],
+}
+
+export interface ExtendedSettingsDescriptionFieldJson {
+    text: string,
+    value: ExtendedSettingsDescriptionValueJson,
+}
+
+export type ExtendedSettingsDescriptionValueJson =
+    SettingsDescriptionValueJson |
+    { RemovableString: string | null };
 
 export interface SettingValueFactory<T> {
     fromBool(v: boolean): T;
@@ -18,6 +31,8 @@ export interface SettingValueFactory<T> {
     fromString(value: string): T;
     fromOptionalString(value: string): T;
     fromOptionalEmptyString(): T;
+    fromRemovableString?(value: string): T;
+    fromRemovableEmptyString?(): T;
     fromFloat(value: number): T;
     fromAccuracy(value: string): T | null;
     fromDigitsFormat(value: string): T | null;
@@ -47,73 +62,79 @@ export interface SettingValueFactory<T> {
 }
 
 export class JsonSettingValueFactory {
-    public fromBool(v: boolean): SettingsDescriptionValueJson {
+    public fromBool(v: boolean): ExtendedSettingsDescriptionValueJson {
         return { Bool: v };
     }
-    public fromUint(_: number): SettingsDescriptionValueJson {
+    public fromUint(_: number): ExtendedSettingsDescriptionValueJson {
         throw new Error("Not implemented");
     }
-    public fromInt(_: number): SettingsDescriptionValueJson {
+    public fromInt(_: number): ExtendedSettingsDescriptionValueJson {
         throw new Error("Not implemented");
     }
-    public fromString(v: string): SettingsDescriptionValueJson {
+    public fromString(v: string): ExtendedSettingsDescriptionValueJson {
         return { String: v };
     }
-    public fromOptionalString(_: string): SettingsDescriptionValueJson {
+    public fromOptionalString(_: string): ExtendedSettingsDescriptionValueJson {
         throw new Error("Not implemented");
     }
-    public fromOptionalEmptyString(): SettingsDescriptionValueJson {
+    public fromOptionalEmptyString(): ExtendedSettingsDescriptionValueJson {
         throw new Error("Not implemented");
     }
-    public fromFloat(_: number): SettingsDescriptionValueJson {
+    public fromRemovableString(v: string): ExtendedSettingsDescriptionValueJson {
+        return { RemovableString: v };
+    }
+    public fromRemovableEmptyString(): ExtendedSettingsDescriptionValueJson {
+        return { RemovableString: null };
+    }
+    public fromFloat(_: number): ExtendedSettingsDescriptionValueJson {
         throw new Error("Not implemented");
     }
-    public fromAccuracy(_: string): SettingsDescriptionValueJson | null {
+    public fromAccuracy(_: string): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
-    public fromDigitsFormat(_: string): SettingsDescriptionValueJson | null {
+    public fromDigitsFormat(_: string): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
-    public fromOptionalTimingMethod(_: string): SettingsDescriptionValueJson | null {
+    public fromOptionalTimingMethod(_: string): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
-    public fromOptionalEmptyTimingMethod(): SettingsDescriptionValueJson {
+    public fromOptionalEmptyTimingMethod(): ExtendedSettingsDescriptionValueJson {
         throw new Error("Not implemented");
     }
-    public fromColor(): SettingsDescriptionValueJson {
+    public fromColor(): ExtendedSettingsDescriptionValueJson {
         throw new Error("Not implemented");
     }
-    public fromOptionalColor(): SettingsDescriptionValueJson {
+    public fromOptionalColor(): ExtendedSettingsDescriptionValueJson {
         throw new Error("Not implemented");
     }
-    public fromOptionalEmptyColor(): SettingsDescriptionValueJson {
+    public fromOptionalEmptyColor(): ExtendedSettingsDescriptionValueJson {
         throw new Error("Not implemented");
     }
-    public fromTransparentGradient(): SettingsDescriptionValueJson {
+    public fromTransparentGradient(): ExtendedSettingsDescriptionValueJson {
         throw new Error("Not implemented");
     }
-    public fromVerticalGradient(): SettingsDescriptionValueJson {
+    public fromVerticalGradient(): ExtendedSettingsDescriptionValueJson {
         throw new Error("Not implemented");
     }
-    public fromHorizontalGradient(): SettingsDescriptionValueJson {
+    public fromHorizontalGradient(): ExtendedSettingsDescriptionValueJson {
         throw new Error("Not implemented");
     }
-    public fromAlternatingGradient(): SettingsDescriptionValueJson {
+    public fromAlternatingGradient(): ExtendedSettingsDescriptionValueJson {
         throw new Error("Not implemented");
     }
-    public fromAlignment(_: string): SettingsDescriptionValueJson | null {
+    public fromAlignment(_: string): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
-    public fromColumnStartWith(_: string): SettingsDescriptionValueJson | null {
+    public fromColumnStartWith(_: string): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
-    public fromColumnUpdateWith(_: string): SettingsDescriptionValueJson | null {
+    public fromColumnUpdateWith(_: string): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
-    public fromColumnUpdateTrigger(_: string): SettingsDescriptionValueJson | null {
+    public fromColumnUpdateTrigger(_: string): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
-    public fromLayoutDirection(_: string): SettingsDescriptionValueJson | null {
+    public fromLayoutDirection(_: string): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
 }
@@ -216,6 +237,37 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     <span>
                         {children}
                     </span>;
+            } else if ("RemovableString" in value) {
+                component =
+                    <div className="removable-string-box">
+                        <input
+                            value={value.RemovableString || ""}
+                            onChange={(e) => {
+                                if (factory.fromRemovableString) {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        factory.fromRemovableString(e.target.value),
+                                    );
+                                } else {
+                                    throw Error("Method is not implemented");
+                                }
+                            }}
+                        />
+                        <button
+                            onClick={() => {
+                                if (factory.fromRemovableEmptyString) {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        factory.fromRemovableEmptyString(),
+                                    );
+                                } else {
+                                    throw Error("Method is not implemented");
+                                }
+                            }}
+                        >
+                            <i className="fa fa-trash" aria-hidden="true" />
+                        </button>
+                    </div>;
             } else if ("Float" in value) {
                 component =
                     <input
@@ -697,7 +749,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                 </select>;
             } else if ("CustomCombobox" in value) {
                 const isError = value.CustomCombobox.mandatory
-                    && value.CustomCombobox.value.length === 0;
+                    && !value.CustomCombobox.value;
                 component = <select
                     value={value.CustomCombobox.value}
                     onChange={(e) => {
