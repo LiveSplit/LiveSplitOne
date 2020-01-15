@@ -1,7 +1,6 @@
 module.exports = (env, argv) => {
     const HtmlWebpackPlugin = require("html-webpack-plugin");
-    const CopyWebpackPlugin = require("copy-webpack-plugin");
-    const WebpackPwaManifest = require("webpack-pwa-manifest");
+    const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
     const { CleanWebpackPlugin } = require("clean-webpack-plugin");
     const path = require("path");
 
@@ -12,14 +11,13 @@ module.exports = (env, argv) => {
 
     return {
         entry: {
-            "bundle": ["babel-polyfill", "whatwg-fetch", "./src/index.tsx"],
+            "bundle": ["./src/index.tsx"],
         },
         output: {
             filename: "[name].js",
             path: distPath,
         },
 
-        // Enable sourcemaps for debugging webpack's output.
         devtool: isProduction ? undefined : "source-map",
 
         devServer: {
@@ -34,28 +32,29 @@ module.exports = (env, argv) => {
 
         plugins: [
             ...(isProduction ? [new CleanWebpackPlugin()] : []),
+            new FaviconsWebpackPlugin({
+                logo: path.resolve("src/assets/icon.png"),
+                inject: true,
+                favicons: {
+                    appName: "LiveSplit One",
+                    appDescription: "A version of LiveSplit that works on a lot of platforms.",
+                    developerName: "CryZe",
+                    developerURL: "https://livesplit.org",
+                    background: "#171717",
+                    theme_color: "#232323",
+                    icons: {
+                        coast: false,
+                        yandex: false,
+                    },
+                },
+            }),
             new HtmlWebpackPlugin({
                 template: "./src/index.html",
             }),
-            ...(isProduction ? [new WebpackPwaManifest({
-                name: "LiveSplit One",
-                short_name: "LiveSplit One",
-                start_url: ".",
-                display: "standalone",
-                background_color: "#171717",
-                description: "A version of LiveSplit that works on a lot of platforms.",
-                icons: [
-                    {
-                        src: path.resolve("src/assets/icon.png"),
-                        sizes: [96, 128, 192, 256, 384, 512],
-                    },
-                ],
-            })] : []),
         ],
 
         module: {
             rules: [
-                // All files with a '.ts' or '.tsx' extension will be handled by 'awesome-typescript-loader'.
                 {
                     test: /\.tsx?$/,
                     use: [
@@ -85,11 +84,6 @@ module.exports = (env, argv) => {
                     ],
                 },
             ],
-
-            // preLoaders: [
-            //     // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
-            //     { test: /\.js$/, loader: "source-map-loader" }
-            // ],
         },
 
         node: {

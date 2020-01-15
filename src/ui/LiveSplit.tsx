@@ -16,6 +16,7 @@ import { SettingsEditor as SettingsEditorComponent } from "./SettingsEditor";
 import { Route, SideBarContent } from "./SideBarContent";
 import { toast } from "react-toastify";
 
+import "react-toastify/dist/ReactToastify.css";
 import "../css/LiveSplit.scss";
 
 enum MenuKind {

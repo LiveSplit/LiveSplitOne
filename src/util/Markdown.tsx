@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Parser as CommonMarkParser } from "commonmark";
 import CommonMarkRenderer from "commonmark-react-renderer";
-import * as emojilib from "emojilib";
 import { emoteList } from "../api/EmoteList";
 import Twemoji from "react-twemoji";
 import Linkifier from "react-linkifier";
@@ -22,40 +21,24 @@ export function replaceFlag(text: string): JSX.Element {
     return (
         <Twemoji className="inline-div" options={{ className: "flag" }}>
             {
-                text.replace(/\[([A-Za-z/]{2,})\]/g, (_, emojiName: string) => {
-                    emojiName = emojiName.substr(0, 2).toLowerCase();
-                    if (emojiName === "gb") {
-                        emojiName = "uk";
-                    }
-                    const emoji = emojilib.lib[emojiName];
-                    if (emoji == null || emoji.keywords.indexOf("flag") < 0) {
-                        const emoji = Object.values(emojilib.lib)
-                            .find((e) => e.keywords.indexOf(emojiName) >= 0 && e.keywords.indexOf("flag") >= 0);
-                        if (emoji != null) {
-                            return emoji.char;
-                        }
-                        return "";
-                    }
-                    return emoji.char;
+                text.replace(/\[([a-z]{2})[a-z/]*\]/g, (_, countryCode: string) => {
+                    // We don't do any additional bounds checks, because we
+                    // already ensured that there's exactly two lowercase
+                    // codepoints in the range a - z via the regex, which moves
+                    // them exactly in the correct regional indicator range in
+                    // Unicode.
+                    return String.fromCodePoint(
+                        countryCode.codePointAt(0) as number + 127365,
+                        countryCode.codePointAt(1) as number + 127365,
+                    );
                 })
             }
         </Twemoji>
     );
 }
 
-export function replaceEmojis(text: string): string {
-    return text.replace(/:([A-Za-z0-9_]+):/g, (matched, emojiName) => {
-        const emoji = emojilib.lib[emojiName];
-        if (emoji == null) {
-            return matched;
-        }
-        return emoji.char;
-    });
-}
-
 export function renderMarkdown(markdown: string): JSX.Element {
-    const markdownWithEmoji = replaceEmojis(markdown);
-    const markdownWithEmotes = replaceTwitchEmotes(markdownWithEmoji);
+    const markdownWithEmotes = replaceTwitchEmotes(markdown);
     const parsed = new CommonMarkParser().parse(markdownWithEmotes);
     const renderedMarkdown = new CommonMarkRenderer({
         escapeHtml: true,

@@ -1,15 +1,16 @@
+const UI = import("./ui/LiveSplit");
+const Toastify = import("react-toastify");
+
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import { toast, ToastContainer } from "react-toastify";
-
-import "react-toastify/dist/ReactToastify.css";
 import "./css/font-awesome.css";
 import "./css/main.scss";
 
 async function run() {
     try {
-        const { LiveSplit } = await import("./ui/LiveSplit");
+        const { LiveSplit } = await UI;
+        const { toast, ToastContainer } = await Toastify;
 
         ReactDOM.render(
             <div>
