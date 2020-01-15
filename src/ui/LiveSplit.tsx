@@ -34,6 +34,7 @@ type Menu =
 
 export interface State {
     hotkeySystem: HotkeySystem,
+    isDesktop: boolean,
     timer: SharedTimer,
     layout: Layout,
     sidebarOpen: boolean,
@@ -41,6 +42,7 @@ export interface State {
 }
 
 export class LiveSplit extends React.Component<{}, State> {
+    private isDesktopQuery = window.matchMedia("(min-width: 1200px)");
     private scrollEvent: Option<EventListenerObject>;
     private rightClickEvent: Option<EventListenerObject>;
     private connection: Option<WebSocket>;
@@ -107,12 +109,15 @@ export class LiveSplit extends React.Component<{}, State> {
         }
 
         this.state = {
+            isDesktop: this.isDesktopQuery.matches,
             layout,
             menu: { kind: MenuKind.Timer },
             sidebarOpen: false,
             timer,
             hotkeySystem,
         };
+
+        this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
     }
 
     public componentWillMount() {
@@ -128,6 +133,7 @@ export class LiveSplit extends React.Component<{}, State> {
             }
             return null;
         };
+        this.isDesktopQuery.addListener(this.mediaQueryChanged);
     }
 
     public componentWillUnmount() {
@@ -142,6 +148,11 @@ export class LiveSplit extends React.Component<{}, State> {
         this.state.timer.dispose();
         this.state.layout.dispose();
         this.state.hotkeySystem?.dispose();
+        this.isDesktopQuery.removeListener(this.mediaQueryChanged);
+    }
+
+    private mediaQueryChanged() {
+        this.setState({ isDesktop: this.isDesktopQuery.matches });
     }
 
     public render() {
@@ -218,7 +229,7 @@ export class LiveSplit extends React.Component<{}, State> {
                 route={route}
                 callbacks={this}
                 timer={this.state.timer}
-                sidebarOpen={this.state.sidebarOpen}
+                sidebarOpen={this.state.sidebarOpen || this.state.isDesktop}
                 connectionState={this.connection?.readyState ?? WebSocket.CLOSED}
             />
         );
@@ -226,7 +237,10 @@ export class LiveSplit extends React.Component<{}, State> {
         return (
             <Sidebar
                 sidebar={sidebarContent}
+                docked={this.state.isDesktop}
                 open={this.state.sidebarOpen}
+                pullRight={this.state.isDesktop}
+                transitions={!this.state.isDesktop}
                 onSetOpen={((e: boolean) => this.onSetSidebarOpen(e)) as any}
                 sidebarClassName="sidebar"
                 contentClassName="livesplit-container"
@@ -595,10 +609,12 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     private onSetSidebarOpen(open: boolean) {
-        this.setState({
-            ...this.state,
-            sidebarOpen: open,
-        });
+        if (!this.state.isDesktop) {
+            this.setState({
+                ...this.state,
+                sidebarOpen: open,
+            });
+        }
     }
 
     private onRightClick(e: any) {
