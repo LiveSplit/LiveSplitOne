@@ -245,6 +245,11 @@ export class LiveSplit extends React.Component<{}, State> {
                 sidebarClassName="sidebar"
                 contentClassName="livesplit-container"
             >
+                {
+                    !this.state.isDesktop &&
+                    !this.state.sidebarOpen &&
+                    <button className="sidebar-button fa fa-bars" onClick={((e: boolean) => this.onSetSidebarOpen(e)) as any} />
+                }
                 {content}
             </Sidebar>
         );

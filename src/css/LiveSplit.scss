@@ -1,6 +1,15 @@
 .livesplit-container {
   overflow-y: auto !important;
 
+  .sidebar-button {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    z-index: 10;
+    font-size: 24px;
+    padding: 8px;
+  }
+
   .buttons {
     margin-top: 5px;
     width: 300px;
