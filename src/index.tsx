@@ -1,17 +1,18 @@
 const UI = import("./ui/LiveSplit");
+const ReactImport = import("react");
+const ReactDOMImport = import("react-dom");
 const Toastify = import("react-toastify");
-
-import * as React from "react";
-import * as ReactDOM from "react-dom";
 
 import "./css/font-awesome.css";
 import "./css/main.scss";
 
 async function run() {
-    try {
-        const { LiveSplit } = await UI;
-        const { toast, ToastContainer } = await Toastify;
+    const { LiveSplit } = await UI;
+    const React = await ReactImport;
+    const ReactDOM = await ReactDOMImport;
+    const { toast, ToastContainer } = await Toastify;
 
+    try {
         ReactDOM.render(
             <div>
                 <LiveSplit />
@@ -33,13 +34,5 @@ Alternatively, you may be using an Adblocker like uBlock Origin. \
 Those are known to block WebAssembly.`);
     }
 }
-
-ReactDOM.render(
-    <div className="initial-load">
-        <div className="fa fa-spinner fa-spin"></div>
-        <div className="initial-load-text">Loading...</div>
-    </div>,
-    document.getElementById("base"),
-);
 
 run();
