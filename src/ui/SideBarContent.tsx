@@ -1,10 +1,9 @@
 import * as React from "react";
 import { SharedTimerRef, TimingMethod } from "../livesplit-core";
 import { Option } from "../util/OptionUtil";
+import { MenuKind } from "./LiveSplit";
 
 import "../css/SideBarContent.scss";
-
-export type Route = "main" | "run-editor" | "layout-editor" | "settings-editor";
 
 export interface SidebarCallbacks {
     closeRunEditor(save: boolean): void,
@@ -28,7 +27,7 @@ export interface SidebarCallbacks {
 }
 
 export interface Props {
-    route: Route,
+    menu: MenuKind,
     callbacks: SidebarCallbacks,
     timer: SharedTimerRef,
     sidebarOpen: boolean,
@@ -64,8 +63,8 @@ export class SideBarContent extends React.Component<Props, State> {
     }
 
     public render() {
-        switch (this.props.route) {
-            case "run-editor": {
+        switch (this.props.menu) {
+            case MenuKind.RunEditor: {
                 return (
                     <div className="sidebar-buttons">
                         <div className="small">
@@ -85,7 +84,7 @@ export class SideBarContent extends React.Component<Props, State> {
                     </div>
                 );
             }
-            case "layout-editor": {
+            case MenuKind.LayoutEditor: {
                 return (
                     <div className="sidebar-buttons">
                         <div className="small">
@@ -105,7 +104,7 @@ export class SideBarContent extends React.Component<Props, State> {
                     </div>
                 );
             }
-            case "settings-editor": {
+            case MenuKind.SettingsEditor: {
                 return (
                     <div className="sidebar-buttons">
                         <div className="small">
@@ -125,7 +124,7 @@ export class SideBarContent extends React.Component<Props, State> {
                     </div>
                 );
             }
-            case "main": {
+            case MenuKind.Timer: {
                 return (
                     <div className="sidebar-buttons">
                         <button onClick={(_) => this.props.callbacks.openRunEditor()}>
@@ -229,7 +228,7 @@ export class SideBarContent extends React.Component<Props, State> {
     }
 
     private update() {
-        if (this.props.route === "main" && this.props.sidebarOpen) {
+        if (this.props.menu === MenuKind.Timer && this.props.sidebarOpen) {
             const [comparison, timingMethod] = this.props.timer.readWith((t): [string, number] => {
                 return [
                     t.currentComparison(),

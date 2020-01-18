@@ -13,13 +13,13 @@ import * as SplitsIO from "../util/SplitsIO";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
 import { SettingsEditor as SettingsEditorComponent } from "./SettingsEditor";
-import { Route, SideBarContent } from "./SideBarContent";
+import { SideBarContent } from "./SideBarContent";
 import { toast } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
 import "../css/LiveSplit.scss";
 
-enum MenuKind {
+export enum MenuKind {
     Timer,
     RunEditor,
     LayoutEditor,
@@ -156,72 +156,60 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     public render() {
-        const [route, content] = ((): [Route, JSX.Element] => {
+        const content = ((): JSX.Element => {
             if (this.state.menu.kind === MenuKind.RunEditor) {
-                return [
-                    "run-editor",
-                    <RunEditorComponent editor={this.state.menu.editor} />,
-                ];
+                return <RunEditorComponent editor={this.state.menu.editor} />;
             } else if (this.state.menu.kind === MenuKind.LayoutEditor) {
-                return [
-                    "layout-editor",
-                    <LayoutEditorComponent
-                        editor={this.state.menu.editor}
-                        timer={this.state.timer}
-                    />,
-                ];
+                return <LayoutEditorComponent
+                    editor={this.state.menu.editor}
+                    timer={this.state.timer}
+                />;
             } else if (this.state.menu.kind === MenuKind.SettingsEditor) {
-                return [
-                    "settings-editor",
-                    <SettingsEditorComponent hotkeyConfig={this.state.menu.config} />,
-                ];
+                return <SettingsEditorComponent hotkeyConfig={this.state.menu.config} />;
             } else {
-                return [
-                    "main",
-                    <DragUpload
-                        importLayout={this.importLayoutFromFile.bind(this)}
-                        importSplits={this.importSplitsFromFile.bind(this)}
-                    >
-                        <div>
-                            <div
-                                onClick={(_) => this.splitOrStart()}
-                                style={{
-                                    display: "inline-block",
-                                    cursor: "pointer",
-                                }}
-                            >
-                                <AutoRefreshLayout
-                                    getState={() => this.state.timer.readWith(
-                                        (t) => this.state.layout.stateAsJson(t),
-                                    )}
-                                />
+                return <DragUpload
+                    importLayout={this.importLayoutFromFile.bind(this)}
+                    importSplits={this.importSplitsFromFile.bind(this)}
+                >
+                    <div>
+                        <div
+                            onClick={(_) => this.splitOrStart()}
+                            style={{
+                                display: "inline-block",
+                                cursor: "pointer",
+                            }}
+                        >
+                            <AutoRefreshLayout
+                                getState={() => this.state.timer.readWith(
+                                    (t) => this.state.layout.stateAsJson(t),
+                                )}
+                            />
+                        </div>
+                        <div className="buttons">
+                            <div className="small">
+                                <button onClick={(_) => this.undoSplit()}>
+                                    <i className="fa fa-arrow-up" aria-hidden="true" /></button>
+                                <button onClick={(_) => this.togglePauseOrStart()}>
+                                    <i className="fa fa-pause" aria-hidden="true" />
+                                </button>
                             </div>
-                            <div className="buttons">
-                                <div className="small">
-                                    <button onClick={(_) => this.undoSplit()}>
-                                        <i className="fa fa-arrow-up" aria-hidden="true" /></button>
-                                    <button onClick={(_) => this.togglePauseOrStart()}>
-                                        <i className="fa fa-pause" aria-hidden="true" />
-                                    </button>
-                                </div>
-                                <div className="small">
-                                    <button onClick={(_) => this.skipSplit()}>
-                                        <i className="fa fa-arrow-down" aria-hidden="true" />
-                                    </button>
-                                    <button onClick={(_) => this.reset()}>
-                                        <i className="fa fa-times" aria-hidden="true" />
-                                    </button>
-                                </div>
+                            <div className="small">
+                                <button onClick={(_) => this.skipSplit()}>
+                                    <i className="fa fa-arrow-down" aria-hidden="true" />
+                                </button>
+                                <button onClick={(_) => this.reset()}>
+                                    <i className="fa fa-times" aria-hidden="true" />
+                                </button>
                             </div>
                         </div>
-                    </DragUpload>,
-                ];
+                    </div>
+                </DragUpload>;
             }
         })();
 
         const sidebarContent = (
             <SideBarContent
-                route={route}
+                menu={this.state.menu.kind}
                 callbacks={this}
                 timer={this.state.timer}
                 sidebarOpen={this.state.sidebarOpen || this.state.isDesktop}
