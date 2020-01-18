@@ -25,9 +25,18 @@
     font-size: 18px;
   }
 
-  .sidebar-buttons > button {
-    width: 100%;
-    height: 40px;
+  .sidebar-buttons {
+    > button {
+      width: 100%;
+      height: 40px;
+    }
+
+    .livesplit-title {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+    }
   }
 
   .choose-comparison {

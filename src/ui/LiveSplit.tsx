@@ -21,14 +21,18 @@ import "../css/LiveSplit.scss";
 
 export enum MenuKind {
     Timer,
+    Splits,
     RunEditor,
+    Layout,
     LayoutEditor,
     SettingsEditor,
 }
 
 type Menu =
     { kind: MenuKind.Timer } |
+    { kind: MenuKind.Splits } |
     { kind: MenuKind.RunEditor, editor: RunEditor } |
+    { kind: MenuKind.Layout } |
     { kind: MenuKind.LayoutEditor, editor: LayoutEditor } |
     { kind: MenuKind.SettingsEditor, config: HotkeyConfig };
 
@@ -237,6 +241,27 @@ export class LiveSplit extends React.Component<{}, State> {
                 </div>
             </Sidebar>
         );
+    }
+
+    public openTimerView() {
+        this.setState({
+            ...this.state,
+            menu: { kind: MenuKind.Timer },
+        });
+    }
+
+    public openSplitsView() {
+        this.setState({
+            ...this.state,
+            menu: { kind: MenuKind.Splits },
+        });
+    }
+
+    public openLayoutView() {
+        this.setState({
+            ...this.state,
+            menu: { kind: MenuKind.Layout },
+        });
     }
 
     public async importSplits() {
