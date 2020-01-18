@@ -214,14 +214,11 @@ export class LayoutEditor extends React.Component<Props, State> {
                             Component
                         </button>
                     </div>
-                    <div style={{ marginLeft: 20 }}>
+                    <div>
                         {settings}
                     </div>
                 </div>
-                <div style={{
-                    margin: 20,
-                    marginLeft: 15,
-                }}>
+                <div style={{ marginLeft: 10 }}>
                     <DragAutoRefreshLayout
                         getState={() => this.props.timer.readWith(
                             (t) => this.props.editor.layoutStateAsJson(t),

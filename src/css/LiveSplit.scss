@@ -1,25 +1,41 @@
 .livesplit-container {
   overflow-y: auto !important;
 
-  .buttons {
-    margin-top: 5px;
-    width: 300px;
+  .sidebar-button {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    z-index: 10;
+    font-size: 24px;
+    padding: 8px;
+  }
 
-    > button {
-      width: 98%;
-      height: 40px !important;
-      font-size: 25px;
-    }
+  .view-container {
+    position: relative;
+    width: calc(100% - 40px);
+    height: calc(100% - 40px);
+    margin: 20px;
 
-    > button,
-    > div > button {
-      height: 30px;
-      margin-right: 1%;
-      margin-left: 1%;
-    }
-
-    > div > button {
-      width: 48%;
+    .buttons {
+      margin-top: 5px;
+      width: 300px;
+  
+      > button {
+        width: 98%;
+        height: 40px !important;
+        font-size: 25px;
+      }
+  
+      > button,
+      > div > button {
+        height: 30px;
+        margin-right: 1%;
+        margin-left: 1%;
+      }
+  
+      > div > button {
+        width: 48%;
+      }
     }
   }
 }

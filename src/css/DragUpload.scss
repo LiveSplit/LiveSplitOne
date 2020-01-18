@@ -7,8 +7,9 @@
 
   #upload-drop-zone-overlay {
     position: absolute;
-    width: 100%;
-    height: 100%;
+    width: calc(100% + 40px);
+    height: calc(100% + 40px);
+    margin: -20px;
     visibility: hidden;
     pointer-events: none;
     background-color: rgba(50, 50, 50, 0.7);
