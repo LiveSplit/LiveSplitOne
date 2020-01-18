@@ -115,16 +115,7 @@ export class RunEditor extends React.Component<Props, State> {
 
         const tab = this.getTab();
 
-        let categoryNames = ["Any%", "Low%", "100%"];
-        let category = null;
-        const categoryList = getCategories(this.state.editor.game);
-        if (categoryList != null) {
-            categoryNames = categoryList.map((c) => c.name);
-            const categoryIndex = categoryNames.indexOf(this.state.editor.category);
-            if (categoryIndex >= 0) {
-                category = categoryList[categoryIndex];
-            }
-        }
+        const { category, categoryNames } = this.getCurrentCategoriesInfo();
 
         return (
             <div className="run-editor">
@@ -232,62 +223,42 @@ export class RunEditor extends React.Component<Props, State> {
                     </table>
                 </div>
                 <div className="timing-selection tab-bar">
-                    <button
-                        className={"toggle-left" + (
-                            tab === Tab.RealTime
-                                ? " button-pressed"
-                                : ""
-                        )}
-                        onClick={(_) => this.switchTab(Tab.RealTime)}
-                    >
-                        Real Time
-                    </button>
-                    <button
-                        className={"toggle-middle" + (
-                            tab === Tab.GameTime
-                                ? " button-pressed"
-                                : ""
-                        )}
-                        onClick={(_) => this.switchTab(Tab.GameTime)}
-                    >
-                        Game Time
-                    </button>
-                    <button
-                        className={"toggle-middle" + (
-                            tab === Tab.Variables
-                                ? " button-pressed"
-                                : ""
-                        )}
-                        onClick={(_) => this.switchTab(Tab.Variables)}
-                    >
-                        Variables
-                    </button>
-                    <button
-                        className={"toggle-middle" + (
-                            tab === Tab.Rules
-                                ? " button-pressed"
-                                : ""
-                        )}
-                        onClick={(_) => this.switchTab(Tab.Rules)}
-                    >
-                        Rules
-                    </button>
-                    <button
-                        className={"toggle-right" + (
-                            tab === Tab.Leaderboard
-                                ? " button-pressed"
-                                : ""
-                        )}
-                        onClick={(_) => this.switchTab(Tab.Leaderboard)}
-                    >
-                        Leaderboard
-                    </button>
+                    {this.getTabButtons(tab)}
                 </div>
                 <div className="editor-group">
                     {this.renderTab(tab, category)}
                 </div>
             </div >
         );
+    }
+
+    private getTabButtons(currentTab: Tab) {
+        const tabNames = {
+            [Tab.RealTime]: "Real Time",
+            [Tab.GameTime]: "Game Time",
+            [Tab.Variables]: "Variables",
+            [Tab.Rules]: "Rules",
+            [Tab.Leaderboard]: "Leaderboard",
+        };
+
+        const visibleTabs = Object.values(Tab).filter((tab) => this.shouldShowTab(tab as Tab));
+        return visibleTabs.map((tab, index) => {
+            let toggleClassName = "toggle-middle";
+            if (index === 0) {
+                toggleClassName = "toggle-left";
+            } else if (index === visibleTabs.length - 1) {
+                toggleClassName = "toggle-right";
+            }
+
+            const buttonClassName = currentTab === tab ? " button-pressed" : "";
+
+            return (<button
+                className={toggleClassName + buttonClassName}
+                onClick={(_) => this.switchTab(tab as Tab)}
+            >
+                {tabNames[tab as Tab]}
+            </button>);
+        });
     }
 
     private renderSegmentListButtons(): JSX.Element {
@@ -1331,6 +1302,23 @@ export class RunEditor extends React.Component<Props, State> {
         );
     }
 
+    private getCurrentCategoriesInfo() {
+        let categoryNames = ["Any%", "Low%", "100%"];
+        let category = null;
+        const categoryList = getCategories(this.state.editor.game);
+        if (categoryList != null) {
+            categoryNames = categoryList.map((c) => c.name);
+            const categoryIndex = categoryNames.indexOf(this.state.editor.category);
+            if (categoryIndex >= 0) {
+                category = categoryList[categoryIndex];
+            }
+        }
+        return {
+            category,
+            categoryNames,
+        };
+    }
+
     private generateGoalComparison() {
         const goalTime = prompt("Goal Time:");
         if (goalTime) {
@@ -1469,14 +1457,18 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private update(switchTab?: Tab) {
+        const intendedTab = switchTab === undefined
+            ? this.state.tab
+            : switchTab;
+        const shouldShowTab = this.shouldShowTab(intendedTab);
+        const newActiveTab = shouldShowTab ? intendedTab : Tab.RealTime;
+
         const state = this.props.editor.stateAsJson();
         this.processIconChanges(state);
         this.setState({
             ...this.state,
             editor: state,
-            tab: switchTab === undefined
-                ? this.state.tab
-                : switchTab,
+            tab: newActiveTab,
         });
     }
 
@@ -1634,7 +1626,7 @@ export class RunEditor extends React.Component<Props, State> {
         if (this.state.rowState.segmentTimeChanged) {
             this.props.editor.activeParseAndSetSegmentTime(this.state.rowState.segmentTime);
         }
-        
+
         this.setState({
             ...this.state,
             editor: this.props.editor.stateAsJson(),
@@ -1726,6 +1718,29 @@ export class RunEditor extends React.Component<Props, State> {
         }
         this.resetTotalLeaderboardState();
         this.update(tab);
+    }
+
+    private shouldShowTab(tab: Tab) {
+        if (tab === Tab.RealTime || tab === Tab.GameTime || tab === Tab.Variables) {
+            return true;
+        }
+
+        const gameInfo = getGameInfo(this.state.editor.game);
+        if (gameInfo == null) {
+            return false;
+        }
+        if (tab === Tab.Rules) {
+            return true;
+        }
+
+        if (tab === Tab.Leaderboard) {
+            const { category } = this.getCurrentCategoriesInfo();
+            if (category != null) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private resetTotalLeaderboardState() {
