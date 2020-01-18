@@ -9,12 +9,9 @@
   @include table;
   @include toggle;
 
-  .layout-editor-tabs {
-    margin-left: 20px;
-  }
-
   .layout-editor-inner {
-    margin: 20px;
+    margin-right: 10px;
+    margin-bottom: 10px;
     width: 445px;
     display: inline-flex;
 

@@ -135,7 +135,6 @@ export class RunEditor extends React.Component<Props, State> {
                             border: "1px solid hsl(0, 0%, 25%)",
                             cursor: "pointer",
                             height: gameIconSize,
-                            marginTop: 5,
                             padding: 10,
                             width: gameIconSize,
                         }}

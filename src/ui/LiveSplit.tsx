@@ -182,12 +182,7 @@ export class LiveSplit extends React.Component<{}, State> {
                         importLayout={this.importLayoutFromFile.bind(this)}
                         importSplits={this.importSplitsFromFile.bind(this)}
                     >
-                        <div
-                            style={{
-                                margin: "10px",
-                                marginBottom: "5px",
-                            }}
-                        >
+                        <div>
                             <div
                                 onClick={(_) => this.splitOrStart()}
                                 style={{
@@ -239,7 +234,6 @@ export class LiveSplit extends React.Component<{}, State> {
                 sidebar={sidebarContent}
                 docked={this.state.isDesktop}
                 open={this.state.sidebarOpen}
-                pullRight={this.state.isDesktop}
                 transitions={!this.state.isDesktop}
                 onSetOpen={((e: boolean) => this.onSetSidebarOpen(e)) as any}
                 sidebarClassName="sidebar"
@@ -250,7 +244,9 @@ export class LiveSplit extends React.Component<{}, State> {
                     !this.state.sidebarOpen &&
                     <button className="sidebar-button fa fa-bars" onClick={((e: boolean) => this.onSetSidebarOpen(e)) as any} />
                 }
-                {content}
+                <div className="view-container">
+                    {content}
+                </div>
             </Sidebar>
         );
     }

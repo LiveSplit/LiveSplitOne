@@ -4,8 +4,6 @@
 @import "Toggle";
 
 .run-editor {
-  padding: 10px 10px 10px 10px;
-
   @include context-menu;
   @include markdown;
   @include table;
@@ -66,7 +64,6 @@
   }
 
   .run-editor-info-table {
-    padding-top: 10px;
     margin-left: 15px;
   }
 
