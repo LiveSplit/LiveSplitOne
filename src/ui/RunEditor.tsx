@@ -727,6 +727,14 @@ export class RunEditor extends React.Component<Props, State> {
 
         return (
             <div className="run-editor-tab">
+                {
+                    fields.length === 0 &&
+                    <table className="table">
+                        <tbody className="table-body">
+                            <tr><td><p>There are currently no Speedrun.com variables or custom variables for this game.</p></td></tr>
+                        </tbody>
+                    </table>
+                }
                 <SettingsComponent
                     factory={new JsonSettingValueFactory()}
                     state={{ fields }}
