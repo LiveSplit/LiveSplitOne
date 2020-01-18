@@ -36,6 +36,14 @@
       justify-content: center;
       align-items: center;
 
+      .livesplit-icon {
+        height: 40px;
+        margin-right: 10px;
+
+        img {
+          height: 100%;
+        }
+      }
     }
   }
 

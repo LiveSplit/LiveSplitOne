@@ -3,6 +3,8 @@ import { SharedTimerRef, TimingMethod } from "../livesplit-core";
 import { Option } from "../util/OptionUtil";
 import { MenuKind } from "./LiveSplit";
 
+import LiveSplitIcon from "../assets/icon_small.png";
+
 import "../css/SideBarContent.scss";
 
 export interface SidebarCallbacks {
@@ -191,6 +193,7 @@ export class SideBarContent extends React.Component<Props, State> {
                 return (
                     <div className="sidebar-buttons">
                         <div className="livesplit-title">
+                            <span className="livesplit-icon"><img src={LiveSplitIcon} /></span>
                             <h2> LiveSplit One</h2>
                         </div>
                         <hr />
