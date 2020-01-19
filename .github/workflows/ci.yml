@@ -1,0 +1,76 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - 'master'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout commit
+      uses: actions/checkout@v1
+
+    - name: Checkout submodules
+      run: git submodule update --init --recursive
+
+    - name: Cache Cargo
+      uses: actions/cache@v1
+      with:
+        path: ~/.cargo
+        key: ${{ runner.os }}-cargo
+    
+    - name: Cache binaryen
+      uses: actions/cache@v1
+      with:
+        path: ~/binaryen
+        key: ${{ runner.os }}-binaryen
+    
+    - name: Cache target
+      uses: actions/cache@v1
+      with:
+        path: livesplit-core/target
+        key: ${{ runner.os }}-target
+
+    - name: Install Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.x' # FIXME: https://github.com/actions/setup-node/issues/26
+
+    - name: Install Rust
+      uses: hecrj/setup-rust-action@v1
+      with:
+        rust-version: 'nightly'
+
+    - name: Install target
+      run: rustup target add wasm32-unknown-unknown
+
+    - name: Install dependencies
+      run: |
+        set -e
+        sh .github/workflows/install.sh
+        source ~/.cargo/env || true
+
+    - name: Build application
+      run: bash .github/workflows/build.sh
+
+    - name: Commit deployment files
+      if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
+      run: |
+        git config --global user.email "action@github.com"
+        git config --global user.name "GitHub Action"
+        git checkout -b gh-pages
+        mv dist/* .
+        git add :/
+        git commit -m "GitHub Pages build"
+    
+    - name: Deploy application
+      if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
+      uses: ad-m/github-push-action@master
+      with:
+        branch: 'gh-pages'
+        force: true
+        github_token: ${{ secrets.GITHUB_TOKEN }}
