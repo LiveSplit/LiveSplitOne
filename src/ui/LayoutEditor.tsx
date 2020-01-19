@@ -161,7 +161,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                             <button
                                 onClick={(_) => this.duplicateComponent()}
                             >
-                                <i className="fa fa-files-o" aria-hidden="true"></i>
+                                <i className="fa fa-clone" aria-hidden="true"></i>
                             </button>
                             <button
                                 onClick={(_) => this.moveComponentUp()}
