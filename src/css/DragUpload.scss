@@ -1,3 +1,5 @@
+@import 'variables';
+
 #upload-drop-zone {
   position: absolute;
   top: 0;
@@ -7,9 +9,9 @@
 
   #upload-drop-zone-overlay {
     position: absolute;
-    width: calc(100% + 40px);
-    height: calc(100% + 40px);
-    margin: -20px;
+    width: calc(100% + 2 * #{$view-margin});
+    height: calc(100% + 2 * #{$view-margin});
+    margin: -$view-margin;
     visibility: hidden;
     pointer-events: none;
     background-color: rgba(50, 50, 50, 0.7);

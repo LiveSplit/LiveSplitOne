@@ -1,3 +1,5 @@
+@import 'variables';
+
 @mixin toggle {
   .toggle-left {
     border-top-right-radius: 0px;
@@ -15,12 +17,12 @@
 
   .button-pressed,
   .button-pressed:hover {
-    background: linear-gradient(hsl(0, 0%, 7%) 0%, hsl(0, 0%, 14%) 100%);
+    background: $button-active-color;
   }
 
   .button-pressed.disabled {
-    background: #222;
-    color: #666;
+    background: $button-disabled-color;
+    color: $button-disabled-text-color;
     cursor: default;
   }
 }

@@ -1,4 +1,5 @@
 @import url("https://fonts.googleapis.com/css?family=Roboto");
+@import 'variables';
 
 @font-face {
   font-family: timer;
@@ -14,7 +15,7 @@ body {
   font-family: "fira", sans-serif;
   color: #eee;
   text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
-  background: hsla(0, 0%, 9%, 1);
+  background: $main-background-color;
 }
 
 .toast-class {
@@ -46,7 +47,7 @@ table {
 
 button:active,
 button:active:hover {
-  background: linear-gradient(hsl(0, 0%, 7%) 0%, hsl(0, 0%, 14%) 100%);
+  background: $button-active-color;
 }
 
 button:focus,
@@ -55,19 +56,19 @@ div:focus {
 }
 
 button:hover {
-  background: linear-gradient(hsl(0, 0%, 14%) 0%, hsl(0, 0%, 9%) 100%);
+  background: $button-hover-color;
 }
 
 button {
   margin-bottom: 4px;
   margin-top: 4px;
-  background: linear-gradient(hsl(0, 0%, 11%) 0%, hsl(0, 0%, 7%) 100%);
-  color: #eee;
+  background: $button-color;
+  color: $button-text-color;
   cursor: pointer;
   font-size: 20px;
   border-width: 1px;
   border-style: solid;
-  border-color: hsl(0, 0%, 25%);
+  border-color: $border-color;
   border-image: initial;
   border-radius: 5px;
   font-weight: bold;
@@ -85,8 +86,8 @@ a:hover {
 
 button.disabled,
 button.disabled:active {
-  background: #222;
-  color: #666;
+  background: $button-disabled-color;
+  color: $button-disabled-text-color;
   cursor: default;
 }
 

@@ -1,3 +1,5 @@
+@import 'variables';
+
 @mixin markdown {
   img.emoji {
     height: 28px;
@@ -26,7 +28,7 @@
   
   pre {
     border-radius: 4px;
-    border-color: #444444;
+    border-color: $border-color;
     border-style: solid;
     border-width: 2px;
     padding: 10px;

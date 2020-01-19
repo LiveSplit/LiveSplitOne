@@ -1,3 +1,5 @@
+@import 'variables';
+
 @mixin context-menu {
   .react-contextmenu {
     min-width: 160px;
@@ -5,9 +7,9 @@
     margin: 2px 0 0;
     font-size: 16px;
     text-align: left;
-    background-color: #191919;
+    background-color: $dark-row-color;
     background-clip: padding-box;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid $border-color;
     border-radius: 0.25rem;
     outline: none;
     opacity: 0;
@@ -33,12 +35,12 @@
     .react-contextmenu-item--divider {
       margin-bottom: 3px;
       padding: 2px 0;
-      border-bottom: 1px solid rgba(165, 165, 165, 0.15);
+      border-bottom: 1px solid $border-color;
       cursor: inherit;
     }
 
     .react-contextmenu-item--selected {
-      background: linear-gradient(rgb(51, 115, 244) 0%, rgb(21, 53, 116) 100%);
+      background: $selected-row-color;
     }
   }
 }
