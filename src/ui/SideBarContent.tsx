@@ -1,12 +1,16 @@
 import * as React from "react";
 import { SharedTimerRef, TimingMethod } from "../livesplit-core";
 import { Option } from "../util/OptionUtil";
+import { MenuKind } from "./LiveSplit";
+
+import LiveSplitIcon from "../assets/icon_small.png";
 
 import "../css/SideBarContent.scss";
 
-export type Route = "main" | "run-editor" | "layout-editor" | "settings-editor";
-
 export interface SidebarCallbacks {
+    openTimerView(): void,
+    openSplitsView(): void,
+    openLayoutView(): void,
     closeRunEditor(save: boolean): void,
     closeLayoutEditor(save: boolean): void,
     openRunEditor(): void,
@@ -28,7 +32,7 @@ export interface SidebarCallbacks {
 }
 
 export interface Props {
-    route: Route,
+    menu: MenuKind,
     callbacks: SidebarCallbacks,
     timer: SharedTimerRef,
     sidebarOpen: boolean,
@@ -64,10 +68,42 @@ export class SideBarContent extends React.Component<Props, State> {
     }
 
     public render() {
-        switch (this.props.route) {
-            case "run-editor": {
+        switch (this.props.menu) {
+            case MenuKind.Splits: {
                 return (
                     <div className="sidebar-buttons">
+                        <h2>Splits</h2>
+                        <hr />
+                        <button onClick={(_) => this.props.callbacks.openRunEditor()}>
+                            <i className="fa fa-pencil-square-o" aria-hidden="true" /> Edit
+                        </button>
+                        <button onClick={(_) => this.props.callbacks.saveSplits()}>
+                            <i className="fa fa-floppy-o" aria-hidden="true" /> Save
+                        </button>
+                        <button onClick={(_) => this.props.callbacks.importSplits()}>
+                            <i className="fa fa-download" aria-hidden="true" /> Import
+                        </button>
+                        <button onClick={(_) => this.props.callbacks.exportSplits()}>
+                            <i className="fa fa-upload" aria-hidden="true" /> Export
+                        </button>
+                        <button onClick={(_) => this.props.callbacks.openFromSplitsIO()}>
+                            <i className="fa fa-cloud-download" aria-hidden="true" /> From splits i/o
+                        </button>
+                        <button onClick={(_) => this.props.callbacks.uploadToSplitsIO()}>
+                            <i className="fa fa-cloud-upload" aria-hidden="true" /> Upload to splits i/o
+                        </button>
+                        <hr />
+                        <button onClick={(_) => this.props.callbacks.openTimerView()}>
+                            <i className="fa fa-caret-left" aria-hidden="true" /> Back
+                        </button>
+                    </div>
+                );
+            }
+            case MenuKind.RunEditor: {
+                return (
+                    <div className="sidebar-buttons">
+                        <h2>Splits Editor</h2>
+                        <hr />
                         <div className="small">
                             <button
                                 className="toggle-left"
@@ -85,9 +121,35 @@ export class SideBarContent extends React.Component<Props, State> {
                     </div>
                 );
             }
-            case "layout-editor": {
+            case MenuKind.Layout: {
                 return (
                     <div className="sidebar-buttons">
+                        <h2>Layout</h2>
+                        <hr />
+                        <button onClick={(_) => this.props.callbacks.openLayoutEditor()}>
+                            <i className="fa fa-pencil-square-o" aria-hidden="true" /> Edit
+                        </button>
+                        <button onClick={(_) => this.props.callbacks.saveLayout()}>
+                            <i className="fa fa-floppy-o" aria-hidden="true" /> Save
+                        </button>
+                        <button onClick={(_) => this.props.callbacks.importLayout()}>
+                            <i className="fa fa-download" aria-hidden="true" /> Import
+                        </button>
+                        <button onClick={(_) => this.props.callbacks.exportLayout()}>
+                            <i className="fa fa-upload" aria-hidden="true" /> Export
+                        </button>
+                        <hr />
+                        <button onClick={(_) => this.props.callbacks.openTimerView()}>
+                            <i className="fa fa-caret-left" aria-hidden="true" /> Back
+                        </button>
+                    </div>
+                );
+            }
+            case MenuKind.LayoutEditor: {
+                return (
+                    <div className="sidebar-buttons">
+                        <h2>Layout Editor</h2>
+                        <hr />
                         <div className="small">
                             <button
                                 className="toggle-left"
@@ -105,9 +167,11 @@ export class SideBarContent extends React.Component<Props, State> {
                     </div>
                 );
             }
-            case "settings-editor": {
+            case MenuKind.SettingsEditor: {
                 return (
                     <div className="sidebar-buttons">
+                        <h2>Settings</h2>
+                        <hr />
                         <div className="small">
                             <button
                                 className="toggle-left"
@@ -125,40 +189,19 @@ export class SideBarContent extends React.Component<Props, State> {
                     </div>
                 );
             }
-            case "main": {
+            case MenuKind.Timer: {
                 return (
                     <div className="sidebar-buttons">
-                        <button onClick={(_) => this.props.callbacks.openRunEditor()}>
-                            <i className="fa fa-pencil-square-o" aria-hidden="true" /> Edit Splits
-                        </button>
+                        <div className="livesplit-title">
+                            <span className="livesplit-icon"><img src={LiveSplitIcon} /></span>
+                            <h2> LiveSplit One</h2>
+                        </div>
                         <hr />
-                        <button onClick={(_) => this.props.callbacks.saveSplits()}>
-                            <i className="fa fa-floppy-o" aria-hidden="true" /> Save
+                        <button onClick={(_) => this.props.callbacks.openSplitsView()}>
+                            <i className="fa fa-pencil-square-o" aria-hidden="true" /> Splits
                         </button>
-                        <button onClick={(_) => this.props.callbacks.importSplits()}>
-                            <i className="fa fa-download" aria-hidden="true" /> Import
-                        </button>
-                        <button onClick={(_) => this.props.callbacks.exportSplits()}>
-                            <i className="fa fa-upload" aria-hidden="true" /> Export
-                        </button>
-                        <button onClick={(_) => this.props.callbacks.openFromSplitsIO()}>
-                            <i className="fa fa-cloud-download" aria-hidden="true" /> From splits i/o
-                        </button>
-                        <button onClick={(_) => this.props.callbacks.uploadToSplitsIO()}>
-                            <i className="fa fa-cloud-upload" aria-hidden="true" /> Upload to splits i/o
-                        </button>
-                        <hr />
-                        <button onClick={(_) => this.props.callbacks.openLayoutEditor()}>
-                            <i className="fa fa-pencil-square-o" aria-hidden="true" /> Edit Layout
-                        </button>
-                        <button onClick={(_) => this.props.callbacks.saveLayout()}>
-                            <i className="fa fa-floppy-o" aria-hidden="true" /> Save Layout
-                        </button>
-                        <button onClick={(_) => this.props.callbacks.importLayout()}>
-                            <i className="fa fa-download" aria-hidden="true" /> Import Layout
-                        </button>
-                        <button onClick={(_) => this.props.callbacks.exportLayout()}>
-                            <i className="fa fa-upload" aria-hidden="true" /> Export Layout
+                        <button onClick={(_) => this.props.callbacks.openLayoutView()}>
+                            <i className="fa fa-pencil-square-o" aria-hidden="true" /> Layout
                         </button>
                         <hr />
                         <h2>Compare Against</h2>
@@ -229,7 +272,7 @@ export class SideBarContent extends React.Component<Props, State> {
     }
 
     private update() {
-        if (this.props.route === "main" && this.props.sidebarOpen) {
+        if (this.props.menu === MenuKind.Timer && this.props.sidebarOpen) {
             const [comparison, timingMethod] = this.props.timer.readWith((t): [string, number] => {
                 return [
                     t.currentComparison(),
