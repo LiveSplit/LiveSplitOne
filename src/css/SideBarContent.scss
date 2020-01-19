@@ -1,7 +1,8 @@
 @import 'Toggle';
+@import 'variables';
 
 .sidebar {
-  background: hsl(0, 0%, 10%);
+  background: $sidebar-background-color;
   padding: 10px;
   padding-top: 15px;
   width: 250px;
@@ -10,7 +11,7 @@
   @include toggle;
 
   > div > hr {
-    border-color: hsla(0, 0%, 30%, 1);
+    border-color: $border-color;
   }
 
   > div > h2 {

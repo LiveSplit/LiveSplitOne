@@ -1,21 +1,23 @@
+@import 'variables';
+
 @mixin table {
   .table {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     display: table;
-    border: 1px solid hsl(0, 0%, 25%);
+    border: 1px solid $border-color;
     border-collapse: collapse;
 
     select {
-      border: 1px solid hsl(0, 0%, 35%);
+      border: 1px solid $border-color;
     }
 
     .table-row-even {
       display: table-row;
-      background: rgba(0, 0, 0, 0.5) !important;
+      background: $dark-row-color !important;
     }
     .table-row-odd {
       display: table-row;
-      background: rgba(0, 0, 0, 0.2) !important;
+      background: $light-row-color !important;
     }
   }
 
@@ -24,7 +26,7 @@
 
     > * {
       display: table-row;
-      background: rgba(0, 0, 0, 0.5);
+      background: $dark-row-color;
 
       > * {
         padding: 3px 12px;
@@ -37,7 +39,7 @@
     }
 
     > *:nth-of-type(odd) {
-      background: rgba(0, 0, 0, 0.2);
+      background: $light-row-color;
     }
   }
 
@@ -48,7 +50,7 @@
   }
 
   .selected {
-    background: linear-gradient(rgb(51, 115, 244) 0%, rgb(21, 53, 116) 100%) !important;
+    background: $selected-row-color !important;
   }
 
   .tab-bar > button {
@@ -79,7 +81,7 @@
   }
 
   select {
-    background: hsla(0, 0%, 9%, 1);
+    background: $dark-row-color;
     font-size: 15px;
     border: none;
     color: white;

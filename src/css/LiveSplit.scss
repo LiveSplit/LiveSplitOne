@@ -1,3 +1,5 @@
+@import 'variables';
+
 .livesplit-container {
   overflow-y: auto !important;
 
@@ -14,7 +16,7 @@
     position: relative;
     width: calc(100% - 40px);
     height: calc(100% - 40px);
-    margin: 20px;
+    margin: $view-margin;
 
     .buttons {
       margin-top: 5px;
