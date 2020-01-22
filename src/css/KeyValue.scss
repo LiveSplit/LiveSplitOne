@@ -7,8 +7,21 @@
 
   @include time;
 
+  &.key-value-two-rows {
+    height: 40px;
+    line-height: 15px;
+  }
+
+  table {
+    width: 100%;
+  }
+
   .key-value-key {
     width: 100%;
+    max-width: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
   
   .key-value-value {
