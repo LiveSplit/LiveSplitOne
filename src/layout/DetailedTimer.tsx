@@ -31,20 +31,19 @@ export default class DetailedTimer extends React.Component<Props> {
                     height: totalHeight
                 }}
             >
-                <>{
+                {
                     renderToSVG(
                         this.props.state.timer,
                         "timer",
                     )
-                }</>
-                <>{
+                }
+                {
                     renderToSVG(
                         this.props.state.segment_timer,
                         "segment-timer",
                     )
-                }</>
+                }
                 <div className="detailed-timer-left-side">
-                    <>
                         {
                             this.icon && <div className="detailed-timer-icon-container">
                                 <div className="detailed-timer-icon-inner-container">
@@ -52,16 +51,15 @@ export default class DetailedTimer extends React.Component<Props> {
                                 </div>
                             </div>
                         }
-                    </>
                     <div className="detailed-timer-left-side-text">
-                        <>{
+                        {
                             this.props.state.segment_name !== null &&
                             <div className="detailed-timer-segment-name">{this.props.state.segment_name}</div>
-                        }</>
+                        }
                         <table className="detailed-timer-comparisons">
                             <tbody>
-                                <>{this.props.state.comparison1 !== null && formatComparison(this.props.state.comparison1)}</>
-                                <>{this.props.state.comparison2 !== null && formatComparison(this.props.state.comparison2)}</>
+                                {this.props.state.comparison1 !== null && formatComparison(this.props.state.comparison1)}
+                                {this.props.state.comparison2 !== null && formatComparison(this.props.state.comparison2)}
                             </tbody>
                         </table>
                     </div>

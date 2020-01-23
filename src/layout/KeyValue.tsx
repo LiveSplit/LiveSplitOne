@@ -38,12 +38,10 @@ export default class KeyValue extends React.Component<Props> {
                 </tr>
             </>;
         } else {
-            keyValueRows = <>
-                <tr>
-                    {keyCell}
-                    {valueCell}
-                </tr>
-            </>;
+            keyValueRows = <tr>
+                {keyCell}
+                {valueCell}
+            </tr>;
         }
 
         return (
