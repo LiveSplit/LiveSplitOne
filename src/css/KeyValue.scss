@@ -13,6 +13,10 @@
     line-height: $two-row-line-height;
   }
 
+  &.key-value-center .key-value-key {
+    text-align: center;
+  }
+
   table {
     width: 100%;
   }
