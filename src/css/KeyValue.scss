@@ -1,15 +1,16 @@
 @import 'Time';
+@import 'variables';
 
 .key-value {
-  height: 24px;
-  line-height: 20px;
+  height: $default-component-height;
+  line-height: $default-component-line-height;
   padding: 0px 6px;
 
   @include time;
 
   &.key-value-two-rows {
-    height: 40px;
-    line-height: 15px;
+    height: $two-row-height;
+    line-height: $two-row-line-height;
   }
 
   table {

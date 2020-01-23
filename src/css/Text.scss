@@ -1,6 +1,8 @@
+@import 'variables';
+
 .text-component {
-  height: 24px;
-  line-height: 20px;
+  height: $default-component-height;
+  line-height: $default-component-line-height;
   padding: 0px 6px;
   overflow: hidden;
 
