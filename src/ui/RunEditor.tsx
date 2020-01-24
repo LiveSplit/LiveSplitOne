@@ -9,7 +9,7 @@ import {
     downloadLeaderboard, getLeaderboard, downloadPlatformList, getPlatforms,
     downloadRegionList, getRegions, downloadGameInfo, getGameInfo, downloadGameInfoByGameId, downloadCategoriesByGameId,
 } from "../api/GameList";
-import { Category, Run, getRun } from "../api/SpeedrunCom";
+import { Category, Run, Variable, getRun } from "../api/SpeedrunCom";
 import { Option, expect, map, assert } from "../util/OptionUtil";
 import { downloadById } from "../util/SplitsIO";
 import { formatLeaderboardTime } from "../util/TimeUtil";
@@ -489,10 +489,7 @@ export class RunEditor extends React.Component<Props, State> {
 
         const variables = expect(gameInfo.variables, "We need the variables to be embedded");
         for (const variable of variables.data) {
-            if (
-                (variable.category == null || (variable.category === map(category, (c) => c.id)))
-                && (variable.scope.type === "full-game" || variable.scope.type === "global")
-            ) {
+            if (this.variableIsValidForCategory(variable, category)) {
                 if (variable["is-subcategory"]) {
                     let currentFilterValue = this.filters.variables.get(variable.name);
                     if (currentFilterValue === undefined) {
@@ -616,6 +613,11 @@ export class RunEditor extends React.Component<Props, State> {
         );
     }
 
+    private variableIsValidForCategory(variable: Variable, category: Option<Category>) {
+        return (variable.category == null || variable.category === map(category, (c) => c.id)) &&
+            (variable.scope.type === "full-game" || variable.scope.type === "global");
+    }
+
     private updateFilters() {
         this.resetIndividualLeaderboardState();
         this.update();
@@ -653,10 +655,7 @@ export class RunEditor extends React.Component<Props, State> {
             }
             const variables = expect(gameInfo.variables, "We need the variables to be embedded");
             for (const variable of variables.data) {
-                if (
-                    (variable.category == null || (variable.category === map(category, (c) => c.id)))
-                    && (variable.scope.type === "full-game" || variable.scope.type === "global")
-                ) {
+                if (this.variableIsValidForCategory(variable, category)) {
                     speedrunComVariables.push({
                         text: variable.name,
                         value: {
@@ -826,13 +825,19 @@ export class RunEditor extends React.Component<Props, State> {
 
         const uniquenessSet = new Set();
 
+        const allVariables = gameInfo?.variables;
+        const variables = allVariables
+            ? allVariables.data.filter((variable) => this.variableIsValidForCategory(variable, category))
+            : null;
+
         return (
-            <table className="table run-editor-tab" style={{ width: 450 }}>
+            <table className="table run-editor-tab">
                 <thead className="table-header">
                     <tr>
                         <th>Rank</th>
                         <th>Player</th>
                         <th>Time</th>
+                        {variables && variables.map((variable) => <th>{variable.name}</th>)}
                         <th>Splits</th>
                     </tr>
                 </thead>
@@ -852,19 +857,20 @@ export class RunEditor extends React.Component<Props, State> {
                             return null;
                         }
 
-                        const renderedVariables = [];
+                        const renderedVariableColumns = [];
+                        const renderedVariablesInExpandedRow = [];
 
-                        const variables = gameInfo?.variables;
-                        if (variables !== undefined) {
-                            for (const [keyId, valueId] of Object.entries(run.values)) {
-                                const variable = variables.data.find((v) => v.id === keyId);
-                                if (variable !== undefined) {
+                        if (variables !== null) {
+                            for (const variable of variables) {
+                                const valueId = run.values[variable.id];
+                                let valueName;
+                                if (valueId) {
                                     const value = Object.entries(variable.values.values).find(
                                         ([listValueId]) => listValueId === valueId,
                                     );
-                                    const valueName = map(value, (v) => v[1].label);
+                                    valueName = map(value, (v) => v[1].label);
                                     if (valueName !== undefined) {
-                                        renderedVariables.push(
+                                        renderedVariablesInExpandedRow.push(
                                             <tr>
                                                 <td>{variable.name}:</td>
                                                 <td>{valueName}</td>
@@ -872,13 +878,13 @@ export class RunEditor extends React.Component<Props, State> {
                                         );
                                     }
                                 }
+                                renderedVariableColumns.push(
+                                    <td className="variable-column">{valueName || ""}</td>
+                                );
                             }
 
-                            for (const variable of variables.data) {
-                                if (
-                                    (variable.category == null || (variable.category === category?.id))
-                                    && (variable.scope.type === "full-game" || variable.scope.type === "global")
-                                ) {
+                            for (const variable of variables) {
+                                if (this.variableIsValidForCategory(variable, category)) {
                                     const variableValueId = run.values[variable.id];
                                     const variableValue = map(variableValueId, (i) => variable.values.values[i]);
                                     const filterValue = this.filters.variables.get(variable.name);
@@ -915,7 +921,7 @@ export class RunEditor extends React.Component<Props, State> {
 
                             expandedRow =
                                 <tr key={`${run.id}_expanded`} className={evenOdd}>
-                                    <td colSpan={4}>
+                                    <td colSpan={4 + (variables?.length || 0)}>
                                         {embed}
                                         <div className="markdown" style={{
                                             minHeight: 5,
@@ -946,7 +952,7 @@ export class RunEditor extends React.Component<Props, State> {
                                                             <td>{p}{run.system.emulated ? " Emulator" : null}</td>
                                                         </tr>,
                                                 )}
-                                                {renderedVariables}
+                                                {renderedVariablesInExpandedRow}
                                             </tbody>
                                         </table>
                                     </td>
@@ -1006,7 +1012,7 @@ export class RunEditor extends React.Component<Props, State> {
                                         })
                                     }
                                 </td>
-                                <td style={{ width: 120 }} className="number">
+                                <td className="leaderboard-time-column number">
                                     <a
                                         href={run.weblink}
                                         target="_blank"
@@ -1016,7 +1022,8 @@ export class RunEditor extends React.Component<Props, State> {
                                         {formatLeaderboardTime(run.times.primary_t, hideMilliseconds)}
                                     </a>
                                 </td>
-                                <td style={{ textAlign: "center" }}>
+                                {renderedVariableColumns}
+                                <td className="splits-download-column">
                                     {
                                         map(run.splits, (s) => <i
                                             onClick={(e) => {
@@ -1067,11 +1074,7 @@ export class RunEditor extends React.Component<Props, State> {
             }
             const variables = expect(gameInfo.variables, "We need the variables to be embedded");
             for (const variable of variables.data) {
-                if (
-                    (variable.category == null || (variable.category === category?.id))
-                    && (variable.scope.type === "full-game" || variable.scope.type === "global")
-                    && variable["is-subcategory"]
-                ) {
+                if (this.variableIsValidForCategory(variable, category) && variable["is-subcategory"]) {
                     const currentValue = this.state.editor.metadata.speedrun_com_variables[variable.name];
                     const foundValue = Object.values(variable.values.values).find((v) => v.label === currentValue);
                     if (foundValue !== undefined && foundValue.rules !== undefined) {
@@ -1082,7 +1085,7 @@ export class RunEditor extends React.Component<Props, State> {
         }
 
         return (
-            <div className="run-editor-additional-info">
+            <div className="run-editor-tab run-editor-additional-info">
                 <div className="run-editor-rules markdown">{gameRules}{rules}{subcategoryRules}</div>
             </div>
         );

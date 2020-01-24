@@ -42,21 +42,24 @@
   }
 
   .run-editor-additional-info {
-    width: 650px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    border: 1px solid $border-color;
-    border-collapse: collapse;
-    margin-left: 5px;
     background-color: $light-row-color;
-  }
 
-  .run-editor-rules {
-    padding-left: 10px;
-    padding-right: 10px;
+    .run-editor-rules {
+      padding-left: 10px;
+      padding-right: 10px;
+      border: 1px solid $border-color;
+      border-collapse: collapse;
+    }
   }
 
   .run-editor-tab {
     margin-left: 5px;
+    width: 650px;
+
+    .settings-table {
+      width: 100%;
+    }
   }
 
   .run-editor-info {
@@ -107,6 +110,16 @@
 
   .leaderboard-row:hover {
     background: $hover-row-color !important;
+  }
+
+  .leaderboard-time-column,
+  .variable-column {
+    width: 120px;
+  }
+
+  .variable-column,
+  .splits-download-column {
+    text-align: center;
   }
 
   .timing-selection > button {
