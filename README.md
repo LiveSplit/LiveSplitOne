@@ -3,31 +3,30 @@
 [![Build Status](https://github.com/LiveSplit/LiveSplitOne/workflows/CI/badge.svg)](https://github.com/LiveSplit/LiveSplitOne/actions) [![Greenkeeper badge](https://badges.greenkeeper.io/LiveSplit/LiveSplitOne.svg)](https://greenkeeper.io/)
 
 LiveSplit One is a version of LiveSplit that uses the multiplatform
-[livesplit-core](https://github.com/LiveSplit/livesplit-core) Library and Web
-Technologies like React to create a new LiveSplit experience that
+[livesplit-core](https://github.com/LiveSplit/livesplit-core) library and web
+technologies like React to create a new LiveSplit experience that
 works on a lot of different platforms.
 
-The Web Version is available [here](https://one.livesplit.org/).
+The web version of LiveSplit One is available [here](https://one.livesplit.org/).
 
 ## Build Instructions
 
-In order to build LiveSplit One you need to install
+In order to build LiveSplit One, you need to install
 [npm](https://www.npmjs.com/get-npm) and the [Rust
-Compiler](https://www.rust-lang.org/). Make sure to recursively clone the
+compiler](https://www.rust-lang.org/). Make sure to recursively clone the
 repository so that all git submodules are cloned as well:
 
 ```bash
 git clone --recursive
 ```
 
-Once you have cloned the repository and both the Rust compiler and npm are set
-up, you need to install the WebAssembly target like so:
+Once you have cloned the repository and set up both npm and the Rust compiler, you need to install the WebAssembly target:
 
 ```bash
 rustup target add wasm32-unknown-unknown
 ```
 
-You also need wasm-bindgen. You can build it like so:
+You also need to build wasm-bindgen:
 
 ```bash
 cargo install wasm-bindgen-cli
@@ -51,7 +50,7 @@ Now you can build and host LiveSplit One:
 npm run start
 ```
 
-A browser tab with LiveSplit One should now open. Alternatively you can use `npm
+A browser tab with LiveSplit One should now open. Alternatively, you can use `npm
 run serve` to just host it without opening a browser tab.
 
 ## Browser Support
