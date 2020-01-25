@@ -614,7 +614,7 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private variableIsValidForCategory(variable: Variable, category: Option<Category>) {
-        return (variable.category == null || variable.category === map(category, (c) => c.id)) &&
+        return (variable.category == null || variable.category === category?.id) &&
             (variable.scope.type === "full-game" || variable.scope.type === "global");
     }
 
@@ -826,9 +826,8 @@ export class RunEditor extends React.Component<Props, State> {
         const uniquenessSet = new Set();
 
         const allVariables = gameInfo?.variables;
-        const variables = allVariables
-            ? allVariables.data.filter((variable) => this.variableIsValidForCategory(variable, category))
-            : null;
+        const variables = allVariables?.data.filter((variable) => this.variableIsValidForCategory(variable, category));
+        const variableColumns = variables?.filter((variable) => !this.filters.variables.get(variable.name));
 
         return (
             <table className="table run-editor-tab">
@@ -837,7 +836,7 @@ export class RunEditor extends React.Component<Props, State> {
                         <th>Rank</th>
                         <th>Player</th>
                         <th>Time</th>
-                        {variables && variables.map((variable) => <th>{variable.name}</th>)}
+                        {variableColumns && variableColumns.map((variable) => <th>{variable.name}</th>)}
                         <th>Splits</th>
                     </tr>
                 </thead>
@@ -857,32 +856,9 @@ export class RunEditor extends React.Component<Props, State> {
                             return null;
                         }
 
-                        const renderedVariableColumns = [];
-                        const renderedVariablesInExpandedRow = [];
+                        const renderedVariables = [];
 
-                        if (variables !== null) {
-                            for (const variable of variables) {
-                                const valueId = run.values[variable.id];
-                                let valueName;
-                                if (valueId) {
-                                    const value = Object.entries(variable.values.values).find(
-                                        ([listValueId]) => listValueId === valueId,
-                                    );
-                                    valueName = map(value, (v) => v[1].label);
-                                    if (valueName !== undefined) {
-                                        renderedVariablesInExpandedRow.push(
-                                            <tr>
-                                                <td>{variable.name}:</td>
-                                                <td>{valueName}</td>
-                                            </tr>,
-                                        );
-                                    }
-                                }
-                                renderedVariableColumns.push(
-                                    <td className="variable-column">{valueName || ""}</td>
-                                );
-                            }
-
+                        if (variables !== undefined) {
                             for (const variable of variables) {
                                 if (this.variableIsValidForCategory(variable, category)) {
                                     const variableValueId = run.values[variable.id];
@@ -892,6 +868,22 @@ export class RunEditor extends React.Component<Props, State> {
                                         return null;
                                     }
                                 }
+                            }
+                        }
+
+                        if (variableColumns !== undefined) {
+                            for (const variable of variableColumns) {
+                                const valueId = run.values[variable.id];
+                                let valueName;
+                                if (valueId) {
+                                    const value = Object.entries(variable.values.values).find(
+                                        ([listValueId]) => listValueId === valueId,
+                                    );
+                                    valueName = map(value, (v) => v[1].label);
+                                }
+                                renderedVariables.push(
+                                    <td className="variable-column">{valueName || ""}</td>,
+                                );
                             }
                         }
 
@@ -921,7 +913,7 @@ export class RunEditor extends React.Component<Props, State> {
 
                             expandedRow =
                                 <tr key={`${run.id}_expanded`} className={evenOdd}>
-                                    <td colSpan={4 + (variables?.length || 0)}>
+                                    <td colSpan={4 + (variableColumns?.length ?? 0)}>
                                         {embed}
                                         <div className="markdown" style={{
                                             minHeight: 5,
@@ -952,7 +944,6 @@ export class RunEditor extends React.Component<Props, State> {
                                                             <td>{p}{run.system.emulated ? " Emulator" : null}</td>
                                                         </tr>,
                                                 )}
-                                                {renderedVariablesInExpandedRow}
                                             </tbody>
                                         </table>
                                     </td>
@@ -1022,7 +1013,7 @@ export class RunEditor extends React.Component<Props, State> {
                                         {formatLeaderboardTime(run.times.primary_t, hideMilliseconds)}
                                     </a>
                                 </td>
-                                {renderedVariableColumns}
+                                {renderedVariables}
                                 <td className="splits-download-column">
                                     {
                                         map(run.splits, (s) => <i
