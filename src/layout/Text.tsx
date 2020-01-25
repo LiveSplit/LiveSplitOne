@@ -1,9 +1,7 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit-core";
-import { gradientToCss, colorToCss } from "../util/ColorUtil";
-import { map } from "../util/OptionUtil";
+import KeyValueGeneric, { KeyValueDisplay } from "./KeyValueGeneric";
 
-import "../css/Text.scss";
 import "../css/KeyValue.scss";
 
 export interface Props { state: LiveSplit.TextComponentStateJson }
@@ -14,53 +12,29 @@ export default class Text extends React.Component<Props> {
     }
 
     public render() {
-        const { background, text } = this.props.state;
+        const { text } = this.props.state;
 
-        const rendered = "Center" in text ? (
-            <tr>
-                <td
-                    className="text-component-text center-text"
-                    style={{
-                        color: map(this.props.state.left_center_color, colorToCss),
-                    }}
-                >
-                    {text.Center}
-                </td>
-            </tr>
-        ) : (
-                <tr>
-                    <td
-                        className="key-value-key"
-                        style={{
-                            color: map(this.props.state.left_center_color, colorToCss),
-                        }}
-                    >
-                        {text.Split[0]}
-                    </td>
-                    <td
-                        className="key-value-value time"
-                        style={{
-                            color: map(this.props.state.right_color, colorToCss),
-                        }}
-                    >
-                        {text.Split[1]}
-                    </td>
-                </tr>
-            );
+        if ("Center" in text) {
+            return <KeyValueGeneric
+                display={KeyValueDisplay.Center}
+                keyColor={this.props.state.left_center_color}
+                keyText={text.Center}
+                valueColor={null}
+                valueText={null}
+                wrapperBackground={this.props.state.background}
+            />;
+        }
 
-        return (
-            <div
-                className={"Center" in text ? "text-component" : "key-value"}
-                style={{
-                    background: gradientToCss(background),
-                }}
-            >
-                <table>
-                    <tbody>
-                        {rendered}
-                    </tbody>
-                </table>
-            </div>
-        );
+        return <KeyValueGeneric
+            display={this.props.state.display_two_rows ?
+                KeyValueDisplay.SplitTwoRows :
+                KeyValueDisplay.SplitOneRow
+            }
+            keyColor={this.props.state.left_center_color}
+            keyText={text.Split[0]}
+            valueColor={this.props.state.right_color}
+            valueText={text.Split[1]}
+            wrapperBackground={this.props.state.background}
+        />;
     }
 }

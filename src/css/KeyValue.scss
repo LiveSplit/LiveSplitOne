@@ -1,14 +1,34 @@
 @import 'Time';
+@import 'variables';
 
 .key-value {
-  height: 24px;
-  line-height: 20px;
+  height: $default-component-height;
+  line-height: $default-component-line-height;
   padding: 0px 6px;
 
   @include time;
 
+  &.key-value-two-rows {
+    height: $two-row-height;
+    line-height: $two-row-line-height;
+    padding-top: $two-row-extra-padding;
+    padding-bottom: $two-row-extra-padding;
+  }
+
+  &.key-value-center .key-value-key {
+    text-align: center;
+  }
+
+  table {
+    width: 100%;
+  }
+
   .key-value-key {
     width: 100%;
+    max-width: 0;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
   }
   
   .key-value-value {

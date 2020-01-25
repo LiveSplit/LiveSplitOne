@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit-core";
-import { colorToCss, gradientToCss } from "../util/ColorUtil";
-import { map } from "../util/OptionUtil";
+import KeyValueGeneric, { KeyValueDisplay } from "./KeyValueGeneric";
 
 import "../css/KeyValue.scss";
 
@@ -9,36 +8,16 @@ export interface Props { state: LiveSplit.KeyValueComponentStateJson }
 
 export default class KeyValue extends React.Component<Props> {
     public render() {
-        return (
-            <div
-                className="key-value"
-                style={{
-                    background: gradientToCss(this.props.state.background),
-                }}
-            >
-                <table>
-                    <tbody>
-                        <tr>
-                            <td
-                                className="key-value-key"
-                                style={{
-                                    color: map(this.props.state.key_color, colorToCss),
-                                }}
-                            >
-                                {this.props.state.key}
-                            </td>
-                            <td
-                                className="key-value-value time"
-                                style={{
-                                    color: map(this.props.state.value_color, colorToCss),
-                                }}
-                            >
-                                {this.props.state.value}
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        );
+        return <KeyValueGeneric
+            display={this.props.state.display_two_rows ?
+                KeyValueDisplay.SplitTwoRows :
+                KeyValueDisplay.SplitOneRow
+            }
+            keyText={this.props.state.key}
+            keyColor={this.props.state.key_color}
+            valueText={this.props.state.value}
+            valueColor={this.props.state.value_color}
+            wrapperBackground={this.props.state.background}
+        />;
     }
 }
