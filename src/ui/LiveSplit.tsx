@@ -614,7 +614,7 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     private onScroll(e: WheelEvent) {
-        const delta = Math.max(-1, Math.min(1, -e.deltaY));
+        const delta = Math.sign(-e.deltaY);
         if (delta === 1) {
             this.state.layout.scrollUp();
         } else if (delta === -1) {
