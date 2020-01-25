@@ -69,12 +69,12 @@ export class LiveSplit extends React.Component<{}, State> {
         try {
             if (settings) {
                 const config = HotkeyConfig.parseJson(JSON.parse(settings).hotkeys);
-                if (config != null) {
+                if (config !== null) {
                     hotkeySystem = HotkeySystem.withConfig(timer.share(), config);
                 }
             }
         } catch (_) { /* Looks like local storage has no valid data */ }
-        if (hotkeySystem == null) {
+        if (hotkeySystem === null) {
             hotkeySystem = expect(
                 HotkeySystem.new(timer.share()),
                 "Couldn't initialize the hotkeys",
@@ -93,7 +93,7 @@ export class LiveSplit extends React.Component<{}, State> {
             this.loadFromSplitsIO(window.location.hash.substr("#/splits-io/".length));
         } else {
             const lss = localStorage.getItem("splits");
-            if (lss != null) {
+            if (lss !== null) {
                 const result = Run.parseString(lss, "", false);
                 if (result.parsedSuccessfully()) {
                     result.unwrap().with((r) => timer.writeWith((t) => t.setRun(r)))?.dispose();
@@ -108,7 +108,7 @@ export class LiveSplit extends React.Component<{}, State> {
                 layout = Layout.parseJson(JSON.parse(data));
             }
         } catch (_) { /* Looks like local storage has no valid data */ }
-        if (layout == null) {
+        if (layout === null) {
             layout = Layout.defaultLayout();
         }
 
@@ -153,10 +153,6 @@ export class LiveSplit extends React.Component<{}, State> {
         this.state.layout.dispose();
         this.state.hotkeySystem?.dispose();
         this.isDesktopQuery.removeListener(this.mediaQueryChanged);
-    }
-
-    private mediaQueryChanged() {
-        this.setState({ isDesktop: this.isDesktopQuery.matches });
     }
 
     public render() {
@@ -234,7 +230,10 @@ export class LiveSplit extends React.Component<{}, State> {
                 {
                     !this.state.isDesktop &&
                     !this.state.sidebarOpen &&
-                    <button className="sidebar-button fa fa-bars" onClick={((e: boolean) => this.onSetSidebarOpen(e)) as any} />
+                    <button
+                        className="sidebar-button fa fa-bars"
+                        onClick={((e: boolean) => this.onSetSidebarOpen(e)) as any}
+                    />
                 }
                 <div className="view-container">
                     {content}
@@ -377,7 +376,7 @@ export class LiveSplit extends React.Component<{}, State> {
             }
         });
 
-        if (run != null) {
+        if (run !== null) {
             this.state.hotkeySystem.deactivate();
             const editor = expect(
                 RunEditor.new(run),
@@ -566,15 +565,19 @@ export class LiveSplit extends React.Component<{}, State> {
         };
     }
 
+    private mediaQueryChanged() {
+        this.setState({ isDesktop: this.isDesktopQuery.matches });
+    }
+
     private importLayoutFromString(file: string) {
         let layout = null;
         try {
             layout = Layout.parseJson(JSON.parse(file));
         } catch (_) { /* Failed to load the layout */ }
-        if (layout == null) {
+        if (layout === null) {
             layout = Layout.parseOriginalLivesplitString(file);
         }
-        if (layout != null) {
+        if (layout !== null) {
             this.state.layout.dispose();
             this.setState({
                 ...this.state,
@@ -678,7 +681,7 @@ export class LiveSplit extends React.Component<{}, State> {
 
     private setGameTime(gameTime: string) {
         const time = TimeSpan.parse(gameTime);
-        if (time != null) {
+        if (time !== null) {
             time.with((time) => {
                 this.writeWith((t) => t.setGameTime(time));
             });
@@ -687,7 +690,7 @@ export class LiveSplit extends React.Component<{}, State> {
 
     private setLoadingTimes(loadingTimes: string) {
         const time = TimeSpan.parse(loadingTimes);
-        if (time != null) {
+        if (time !== null) {
             time.with((time) => {
                 this.writeWith((t) => t.setLoadingTimes(time));
             });

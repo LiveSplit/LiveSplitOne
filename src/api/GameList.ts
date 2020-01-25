@@ -39,7 +39,7 @@ export function getGameId(gameName: string): string | undefined {
 
 export function getCategories(gameName: string): Category[] | undefined {
     const gameId = getGameId(gameName);
-    if (gameId == null) {
+    if (gameId === undefined) {
         return undefined;
     }
     return gameIdToCategoriesMap.get(gameId);
@@ -47,7 +47,7 @@ export function getCategories(gameName: string): Category[] | undefined {
 
 export function getGameInfo(gameName: string): Game | undefined {
     const gameId = getGameId(gameName);
-    if (gameId == null) {
+    if (gameId === undefined) {
         return undefined;
     }
     return gameIdToGameInfoMap.get(gameId);
@@ -68,7 +68,7 @@ export function getLeaderboard(gameName: string, categoryName: string): Array<Ru
 
 export function downloadCategoriesByGameId(gameId: string): Promise<Category[]> {
     let categoryPromise = gameIdToCategoriesPromises.get(gameId);
-    if (categoryPromise == null) {
+    if (categoryPromise === undefined) {
         categoryPromise = (async () => {
             const categories = await apiGetCategories(gameId);
             const categoryNames = categories.filter((c) => c.type === "per-game");
@@ -83,7 +83,7 @@ export function downloadCategoriesByGameId(gameId: string): Promise<Category[]> 
 export async function downloadCategories(gameName: string): Promise<Option<string>> {
     await downloadGameList();
     const gameId = getGameId(gameName);
-    if (gameId != null) {
+    if (gameId !== undefined) {
         await downloadCategoriesByGameId(gameId);
     }
     return gameId;
@@ -91,7 +91,7 @@ export async function downloadCategories(gameName: string): Promise<Option<strin
 
 export function downloadGameInfoByGameId(gameId: string): Promise<Game> {
     let gameInfoPromise = gameIdToGameInfoPromises.get(gameId);
-    if (gameInfoPromise == null) {
+    if (gameInfoPromise === undefined) {
         gameInfoPromise = (async () => {
             const gameInfo = await apiGetGame(gameId, ["variables"]);
             gameIdToGameInfoMap.set(gameId, gameInfo);
@@ -105,7 +105,7 @@ export function downloadGameInfoByGameId(gameId: string): Promise<Game> {
 export async function downloadGameInfo(gameName: string): Promise<void> {
     await downloadGameList();
     const gameId = getGameId(gameName);
-    if (gameId != null) {
+    if (gameId !== undefined) {
         await downloadGameInfoByGameId(gameId);
     }
 }
@@ -154,14 +154,14 @@ export function downloadRegionList(): Promise<void> {
 export async function downloadLeaderboard(gameName: string, categoryName: string): Promise<void> {
     const key = JSON.stringify({ gameName, categoryName });
     let promise = gameAndCategoryToLeaderboardPromises.get(key);
-    if (promise == null) {
+    if (promise === undefined) {
         promise = (async () => {
             const gameId = await downloadCategories(gameName);
             if (gameId == null) {
                 return;
             }
             const categories = getCategories(gameName);
-            if (categories == null) {
+            if (categories === undefined) {
                 return;
             }
             const index = categories.map((c) => c.name).indexOf(categoryName);

@@ -75,14 +75,14 @@ export class RunEditor extends React.Component<Props, State> {
             editor: state,
             offsetIsValid: true,
             rowState: {
-                bestSegmentTime: '',
+                bestSegmentTime: "",
                 bestSegmentTimeChanged: false,
                 comparisonTimes: [],
                 comparisonTimesChanged: [],
                 index: 0,
-                segmentTime: '',
+                segmentTime: "",
                 segmentTimeChanged: false,
-                splitTime: '',
+                splitTime: "",
                 splitTimeChanged: false,
             },
             tab: state.timing_method === "RealTime" ? Tab.RealTime : Tab.GameTime,
@@ -378,7 +378,7 @@ export class RunEditor extends React.Component<Props, State> {
 
     private renderLeaderboardButtons(category: Option<Category>): JSX.Element {
         const gameInfo = getGameInfo(this.state.editor.game);
-        if (gameInfo == null) {
+        if (gameInfo === undefined) {
             return this.renderRulesButtons();
         }
 
@@ -393,7 +393,7 @@ export class RunEditor extends React.Component<Props, State> {
         if (allRegions.size !== 0) {
             for (const regionId of gameInfo.regions) {
                 const regionName = allRegions.get(regionId);
-                if (regionName != null) {
+                if (regionName !== undefined) {
                     regionList.push(regionName);
                 }
             }
@@ -402,7 +402,7 @@ export class RunEditor extends React.Component<Props, State> {
         if (allPlatforms.size !== 0) {
             for (const platformId of gameInfo.platforms) {
                 const platformName = allPlatforms.get(platformId);
-                if (platformName != null) {
+                if (platformName !== undefined) {
                     platformList.push(platformName);
                 }
             }
@@ -497,7 +497,7 @@ export class RunEditor extends React.Component<Props, State> {
                     let currentFilterValue = this.filters.variables.get(variable.name);
                     if (currentFilterValue === undefined) {
                         const runValue = this.state.editor.metadata.speedrun_com_variables[variable.name];
-                        if (runValue != null) {
+                        if (runValue !== undefined) {
                             currentFilterValue = runValue;
                             this.filters.variables.set(variable.name, currentFilterValue);
                         } else {
@@ -630,7 +630,7 @@ export class RunEditor extends React.Component<Props, State> {
         let regionOffset = -1;
         let platformOffset = -1;
         let emulatorOffset = -1;
-        if (gameInfo != null) {
+        if (gameInfo !== undefined) {
             const regionList = [""];
             const platformList = [""];
             const allRegions = getRegions();
@@ -638,7 +638,7 @@ export class RunEditor extends React.Component<Props, State> {
             if (allRegions.size !== 0) {
                 for (const regionId of gameInfo.regions) {
                     const regionName = allRegions.get(regionId);
-                    if (regionName != null) {
+                    if (regionName !== undefined) {
                         regionList.push(regionName);
                     }
                 }
@@ -646,7 +646,7 @@ export class RunEditor extends React.Component<Props, State> {
             if (allPlatforms.size !== 0) {
                 for (const platformId of gameInfo.platforms) {
                     const platformName = allPlatforms.get(platformId);
-                    if (platformName != null) {
+                    if (platformName !== undefined) {
                         platformList.push(platformName);
                     }
                 }
@@ -731,7 +731,9 @@ export class RunEditor extends React.Component<Props, State> {
                     fields.length === 0 &&
                     <table className="table">
                         <tbody className="table-body">
-                            <tr><td><p>There are currently no Speedrun.com variables or custom variables for this game.</p></td></tr>
+                            <tr><td><p>
+                                There are currently no Speedrun.com variables or custom variables for this game.
+                            </p></td></tr>
                         </tbody>
                     </table>
                 }
@@ -795,7 +797,7 @@ export class RunEditor extends React.Component<Props, State> {
 
     private renderLeaderboard(category: Option<Category>): JSX.Element {
         const leaderboard = getLeaderboard(this.state.editor.game, this.state.editor.category);
-        if (leaderboard == null) {
+        if (leaderboard === undefined) {
             return <div />;
         }
         const gameInfo = getGameInfo(this.state.editor.game);
@@ -803,7 +805,7 @@ export class RunEditor extends React.Component<Props, State> {
         const regionList = getRegions();
 
         let hideMilliseconds: boolean;
-        if (gameInfo != null) {
+        if (gameInfo !== undefined) {
             hideMilliseconds = !gameInfo.ruleset["show-milliseconds"];
         } else {
             hideMilliseconds = leaderboard.every((r) => {
@@ -846,22 +848,22 @@ export class RunEditor extends React.Component<Props, State> {
                             return null;
                         }
 
-                        if (this.filters.isEmulated != null && run.system.emulated !== this.filters.isEmulated) {
+                        if (this.filters.isEmulated !== undefined && run.system.emulated !== this.filters.isEmulated) {
                             return null;
                         }
 
                         const renderedVariables = [];
 
                         const variables = gameInfo?.variables;
-                        if (variables != null) {
+                        if (variables !== undefined) {
                             for (const [keyId, valueId] of Object.entries(run.values)) {
                                 const variable = variables.data.find((v) => v.id === keyId);
-                                if (variable != null) {
+                                if (variable !== undefined) {
                                     const value = Object.entries(variable.values.values).find(
                                         ([listValueId]) => listValueId === valueId,
                                     );
                                     const valueName = map(value, (v) => v[1].label);
-                                    if (valueName != null) {
+                                    if (valueName !== undefined) {
                                         renderedVariables.push(
                                             <tr>
                                                 <td>{variable.name}:</td>
@@ -1044,7 +1046,7 @@ export class RunEditor extends React.Component<Props, State> {
         const gameInfo = getGameInfo(this.state.editor.game);
         let gameRules = null;
         const subcategoryRules = [];
-        if (gameInfo != null) {
+        if (gameInfo !== undefined) {
             const additionalRules = [];
             const ruleset = gameInfo.ruleset;
             if (ruleset["default-time"] !== "realtime") {
@@ -1072,7 +1074,7 @@ export class RunEditor extends React.Component<Props, State> {
                 ) {
                     const currentValue = this.state.editor.metadata.speedrun_com_variables[variable.name];
                     const foundValue = Object.values(variable.values.values).find((v) => v.label === currentValue);
-                    if (foundValue != null && foundValue.rules != null) {
+                    if (foundValue !== undefined && foundValue.rules !== undefined) {
                         subcategoryRules.push(renderMarkdown(`## ${foundValue.label} Rules\n${foundValue.rules}`));
                     }
                 }
@@ -1240,7 +1242,8 @@ export class RunEditor extends React.Component<Props, State> {
                                         <input
                                             className="number"
                                             type="text"
-                                            value={segmentIndex === this.state.rowState.index && this.state.rowState.splitTimeChanged
+                                            value={segmentIndex === this.state.rowState.index &&
+                                                this.state.rowState.splitTimeChanged
                                                 ? this.state.rowState.splitTime
                                                 : s.split_time}
                                             onFocus={(_) => this.focusSegment(segmentIndex)}
@@ -1251,12 +1254,15 @@ export class RunEditor extends React.Component<Props, State> {
                                     <td>
                                         <input
                                             className={
-                                                (segmentIndex !== this.state.rowState.index || !this.state.rowState.segmentTimeChanged) && s.segment_time === s.best_segment_time
+                                                ((segmentIndex !== this.state.rowState.index ||
+                                                    !this.state.rowState.segmentTimeChanged) &&
+                                                    s.segment_time === s.best_segment_time)
                                                     ? "number best-segment-time"
                                                     : "number"
                                             }
                                             type="text"
-                                            value={segmentIndex === this.state.rowState.index && this.state.rowState.segmentTimeChanged
+                                            value={segmentIndex === this.state.rowState.index &&
+                                                this.state.rowState.segmentTimeChanged
                                                 ? this.state.rowState.segmentTime
                                                 : s.segment_time}
                                             onFocus={(_) => this.focusSegment(segmentIndex)}
@@ -1268,7 +1274,8 @@ export class RunEditor extends React.Component<Props, State> {
                                         <input
                                             className="number"
                                             type="text"
-                                            value={segmentIndex === this.state.rowState.index && this.state.rowState.bestSegmentTimeChanged
+                                            value={segmentIndex === this.state.rowState.index &&
+                                                this.state.rowState.bestSegmentTimeChanged
                                                 ? this.state.rowState.bestSegmentTime
                                                 : s.best_segment_time}
                                             onFocus={(_) => this.focusSegment(segmentIndex)}
@@ -1287,7 +1294,8 @@ export class RunEditor extends React.Component<Props, State> {
                                                     <input
                                                         className="number"
                                                         type="text"
-                                                        value={segmentIndex === this.state.rowState.index && this.state.rowState.comparisonTimesChanged[comparisonIndex]
+                                                        value={segmentIndex === this.state.rowState.index &&
+                                                            this.state.rowState.comparisonTimesChanged[comparisonIndex]
                                                             ? this.state.rowState.comparisonTimes[comparisonIndex]
                                                             : comparisonTime}
                                                         onFocus={(_) => this.focusSegment(segmentIndex)}
@@ -1314,7 +1322,7 @@ export class RunEditor extends React.Component<Props, State> {
         let categoryNames = ["Any%", "Low%", "100%"];
         let category = null;
         const categoryList = getCategories(this.state.editor.game);
-        if (categoryList != null) {
+        if (categoryList !== undefined) {
             categoryNames = categoryList.map((c) => c.name);
             const categoryIndex = categoryNames.indexOf(this.state.editor.category);
             if (categoryIndex >= 0) {
@@ -1435,12 +1443,12 @@ export class RunEditor extends React.Component<Props, State> {
                 this.segmentIconUrls.push("");
             }
             const iconChange = segment.icon_change;
-            if (iconChange != null) {
+            if (iconChange !== null) {
                 this.segmentIconUrls[index] = iconChange;
             }
             index += 1;
         }
-        if (state.icon_change != null) {
+        if (state.icon_change !== null) {
             this.gameIcon = state.icon_change;
         }
     }
@@ -1626,7 +1634,7 @@ export class RunEditor extends React.Component<Props, State> {
             rowState: {
                 ...this.state.rowState,
                 splitTimeChanged: false,
-            }
+            },
         });
     }
 
@@ -1641,7 +1649,7 @@ export class RunEditor extends React.Component<Props, State> {
             rowState: {
                 ...this.state.rowState,
                 segmentTimeChanged: false,
-            }
+            },
         });
     }
 
@@ -1656,7 +1664,7 @@ export class RunEditor extends React.Component<Props, State> {
             rowState: {
                 ...this.state.rowState,
                 bestSegmentTimeChanged: false,
-            }
+            },
         });
     }
 
@@ -1675,7 +1683,7 @@ export class RunEditor extends React.Component<Props, State> {
             rowState: {
                 ...this.state.rowState,
                 comparisonTimesChanged,
-            }
+            },
         });
     }
 
@@ -1734,7 +1742,7 @@ export class RunEditor extends React.Component<Props, State> {
         }
 
         const gameInfo = getGameInfo(this.state.editor.game);
-        if (gameInfo == null) {
+        if (gameInfo === undefined) {
             return false;
         }
         if (tab === Tab.Rules) {
@@ -1743,7 +1751,7 @@ export class RunEditor extends React.Component<Props, State> {
 
         if (tab === Tab.Leaderboard) {
             const { category } = this.getCurrentCategoriesInfo();
-            if (category != null) {
+            if (category !== null) {
                 return true;
             }
         }
@@ -1764,7 +1772,7 @@ export class RunEditor extends React.Component<Props, State> {
         const gameName = this.state.editor.game;
         await downloadGameInfo(gameName);
         const game = getGameInfo(gameName);
-        if (game != null) {
+        if (game !== undefined) {
             const uri = game.assets["cover-medium"].uri;
             if (uri.startsWith("https://")) {
                 const response = await fetch(uri);
@@ -1780,7 +1788,7 @@ export class RunEditor extends React.Component<Props, State> {
         const gameName = this.state.editor.game;
         await downloadGameInfo(gameName);
         const game = getGameInfo(gameName);
-        if (game != null) {
+        if (game !== undefined) {
             const uri = game.assets.icon.uri;
             if (uri.startsWith("https://")) {
                 const response = await fetch(uri);
@@ -1844,7 +1852,7 @@ export class RunEditor extends React.Component<Props, State> {
             // TODO Race Condition with the Run Editor closing (and probably others)
             run.with((run) => {
                 const newEditor = LiveSplit.RunEditor.new(run);
-                if (newEditor != null) {
+                if (newEditor !== null) {
                     associateRun(
                         newEditor,
                         gameName,
@@ -1877,13 +1885,13 @@ export class RunEditor extends React.Component<Props, State> {
 
     private clearCategorySpecificVariables() {
         const categoryList = getCategories(this.state.editor.game);
-        if (categoryList != null) {
+        if (categoryList !== undefined) {
             for (const category of categoryList) {
                 if (category.name !== this.state.editor.category) {
                     continue;
                 }
                 const gameInfo = getGameInfo(this.state.editor.game);
-                if (gameInfo == null) {
+                if (gameInfo === undefined) {
                     continue;
                 }
                 const variables = expect(gameInfo.variables, "We need the variables to be embedded");
@@ -1908,12 +1916,12 @@ export class RunEditor extends React.Component<Props, State> {
         }
 
         const idOrUrl = prompt("Specify the speedrun.com ID or URL of the run:");
-        if (idOrUrl == null) {
+        if (idOrUrl === null) {
             return;
         }
         const pattern = /^(?:(?:https?:\/\/)?(?:www\.)?speedrun\.com\/(?:\w+\/)?run\/)?(\w+)$/;
         const matches = pattern.exec(idOrUrl);
-        if (matches == null) {
+        if (matches === null) {
             toast.error("Invalid speedrun.com ID or URL.");
             return;
         }
@@ -1951,11 +1959,11 @@ function associateRun<T>(
     editor.setGameName(gameName);
     editor.setCategoryName(categoryName);
     const platform = getPlatforms().get(apiRun.system.platform);
-    if (platform != null) {
+    if (platform !== undefined) {
         editor.setPlatformName(platform);
     }
     const region = map(apiRun.system.region, (r) => getRegions().get(r));
-    if (region != null) {
+    if (region !== undefined) {
         editor.setRegionName(region);
     }
     editor.setEmulatorUsage(apiRun.system.emulated);
@@ -1964,19 +1972,19 @@ function associateRun<T>(
         editor.setCustomVariable("Comment", apiRun.comment);
     }
     const videoUrl = apiRun?.videos?.links?.[0]?.uri;
-    if (videoUrl != null) {
+    if (videoUrl !== undefined) {
         editor.addCustomVariable("Video URL");
         editor.setCustomVariable("Video URL", videoUrl);
     }
     const variables = getGameInfo(gameName)?.variables;
-    if (variables != null) {
+    if (variables !== undefined) {
         for (const [keyId, valueId] of Object.entries(apiRun.values)) {
             const variable = variables.data.find((v) => v.id === keyId);
-            if (variable != null) {
+            if (variable !== undefined) {
                 const value = Object.entries(variable.values.values).find(
                     ([listValueId]) => listValueId === valueId,
                 );
-                if (value != null) {
+                if (value !== undefined) {
                     const valueName = value[1].label;
                     editor.setSpeedrunComVariable(variable.name, valueName);
                 }

@@ -316,7 +316,7 @@ async function executePaginatedRequest<T>(uri: string): Promise<Page<T>> {
 
 export async function getGame(gameId: string, embeds?: Array<"variables">): Promise<Game> {
     const parameters = [];
-    if (embeds != null) {
+    if (embeds !== undefined) {
         parameters.push(`embed=${embeds.join(",")}`);
     }
     const uri = getGamesUri(`/${gameId}${evaluateParameters(parameters)}`);
@@ -325,7 +325,7 @@ export async function getGame(gameId: string, embeds?: Array<"variables">): Prom
 
 export async function getGames(name?: string): Promise<Page<Game>> {
     const parameters = [];
-    if (name != null && name !== "") {
+    if (name !== undefined && name !== "") {
         parameters.push(`name=${encodeURIComponent(name)}`);
     }
     // TODO Remaining parameters
@@ -352,7 +352,7 @@ export async function getLeaderboard(
     embeds?: Array<"players">,
 ): Promise<Leaderboard> {
     const parameters = [];
-    if (embeds != null) {
+    if (embeds !== undefined) {
         parameters.push(`embed=${embeds.join(",")}`);
     }
     const uri = getLeaderboardsUri(`/${gameId}/category/${categoryId}${evaluateParameters(parameters)}`);
@@ -361,7 +361,7 @@ export async function getLeaderboard(
 
 export async function getPlatforms(elementsPerPage?: number): Promise<Page<Platform>> {
     const parameters = [];
-    if (elementsPerPage != null) {
+    if (elementsPerPage !== undefined) {
         parameters.push(`max=${elementsPerPage}`);
     }
     const uri = getPlatformsUri(evaluateParameters(parameters));
@@ -370,7 +370,7 @@ export async function getPlatforms(elementsPerPage?: number): Promise<Page<Platf
 
 export async function getRegions(elementsPerPage?: number): Promise<Page<Region>> {
     const parameters = [];
-    if (elementsPerPage != null) {
+    if (elementsPerPage !== undefined) {
         parameters.push(`max=${elementsPerPage}`);
     }
     const uri = getRegionsUri(evaluateParameters(parameters));
@@ -398,16 +398,16 @@ export async function getRuns(
     status?: RunStatus,
 ): Promise<Page<Run<PlayersEmbedded | PlayersNotEmbedded>>> {
     const parameters = [];
-    if (categoryId != null) {
+    if (categoryId !== undefined) {
         parameters.push(`category=${categoryId}`);
     }
-    if (elementsPerPage != null) {
+    if (elementsPerPage !== undefined) {
         parameters.push(`max=${elementsPerPage}`);
     }
     if (embedPlayers) {
         parameters.push(`embed=${["players"].join(",")}`);
     }
-    if (status != null) {
+    if (status !== undefined) {
         parameters.push(`status=${status}`);
     }
     const uri = getRunsUri(evaluateParameters(parameters));
@@ -416,7 +416,7 @@ export async function getRuns(
 
 export async function getRun(runId: string, embeds?: never[]): Promise<Run> {
     const parameters = [];
-    if (embeds != null) {
+    if (embeds !== undefined) {
         parameters.push(`embed=${embeds.join(",")}`);
     }
     const uri = getRunsUri(`/${runId}${evaluateParameters(parameters)}`);

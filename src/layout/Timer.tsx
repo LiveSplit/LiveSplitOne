@@ -32,7 +32,7 @@ export function renderToSVG(
         <div
             className={className}
             style={{
-                background: gradientToCss(state.background)
+                background: gradientToCss(state.background),
             }}
         >
             <svg
@@ -40,7 +40,7 @@ export function renderToSVG(
                 height={`${height}px`}
                 style={{
                     display: "block",
-                    filter: "drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5))"
+                    filter: "drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5))",
                 }}
             >
                 <defs>

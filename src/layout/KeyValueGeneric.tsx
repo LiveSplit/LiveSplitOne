@@ -13,12 +13,12 @@ export enum KeyValueDisplay {
 }
 
 export interface Props {
-  display: KeyValueDisplay,
-  keyColor: LiveSplit.Color | null,
-  keyText: string,
-  valueColor: LiveSplit.Color | null,
-  valueText: string | null,
-  wrapperBackground: LiveSplit.Gradient,
+    display: KeyValueDisplay,
+    keyColor: LiveSplit.Color | null,
+    keyText: string,
+    valueColor: LiveSplit.Color | null,
+    valueText: string | null,
+    wrapperBackground: LiveSplit.Gradient,
 }
 
 export default class KeyValueGeneric extends React.Component<Props> {
@@ -41,12 +41,12 @@ export default class KeyValueGeneric extends React.Component<Props> {
             {this.props.valueText}
         </td>;
 
-        let keyValueRows, wrapperClassName;
-        if (this.props.display == KeyValueDisplay.Center) {
+        let keyValueRows: JSX.Element;
+        let wrapperClassName: string;
+        if (this.props.display === KeyValueDisplay.Center) {
             keyValueRows = <tr>{keyCell}</tr>;
             wrapperClassName = "key-value-center";
-        }
-        else if (this.props.display == KeyValueDisplay.SplitTwoRows) {
+        } else if (this.props.display === KeyValueDisplay.SplitTwoRows) {
             keyValueRows = <>
                 <tr>
                     {keyCell}

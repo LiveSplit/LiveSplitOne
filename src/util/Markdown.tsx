@@ -8,7 +8,7 @@ import Linkifier from "react-linkifier";
 export function replaceTwitchEmotes(text: string): string {
     return text.replace(/[A-Za-z0-9<):(\\;_>#/\]|]+/g, (matched) => {
         const emoteId = emoteList[matched];
-        if (emoteId == null) {
+        if (emoteId === undefined) {
             return matched;
         }
 

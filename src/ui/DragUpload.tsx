@@ -11,46 +11,46 @@ export interface Props {
 
 export default class DragUpload extends React.Component<Props> {
   public componentDidMount() {
-    const dropZone = document.getElementById('upload-drop-zone');
-    const dropZoneOverlay = document.getElementById('upload-drop-zone-overlay');
+    const dropZone = document.getElementById("upload-drop-zone");
+    const dropZoneOverlay = document.getElementById("upload-drop-zone-overlay");
     const importLayout = this.props.importLayout;
     const importSplits = this.props.importSplits;
 
     if (dropZone === null) {
-      return
+      return;
     }
 
-    dropZone.addEventListener('dragenter', function (event) {
+    dropZone.addEventListener("dragenter", (event) => {
       event.preventDefault();
       event.stopPropagation();
 
       if (dropZoneOverlay) {
-        dropZoneOverlay.style.visibility = 'visible';
+        dropZoneOverlay.style.visibility = "visible";
       }
     });
 
-    dropZone.addEventListener('dragleave', function (event) {
+    dropZone.addEventListener("dragleave", (event) => {
       if (dropZoneOverlay &&
         (event.pageX < 10 ||
           event.pageY < 10 ||
           window.innerWidth - event.pageX < 10 ||
           window.innerHeight - event.pageY < 10)
       ) {
-        dropZoneOverlay.style.visibility = 'hidden'
+        dropZoneOverlay.style.visibility = "hidden";
       }
     });
 
-    dropZone.addEventListener('dragover', function (event) {
+    dropZone.addEventListener("dragover", (event) => {
       event.preventDefault();
       event.stopPropagation();
     });
 
-    dropZone.addEventListener('drop', function (event) {
+    dropZone.addEventListener("drop", (event) => {
       event.preventDefault();
       event.stopPropagation();
 
       if (dropZoneOverlay) {
-        dropZoneOverlay.style.visibility = 'hidden';
+        dropZoneOverlay.style.visibility = "hidden";
       }
 
       const dataTransfer = event.dataTransfer;
@@ -60,7 +60,7 @@ export default class DragUpload extends React.Component<Props> {
         if (file) {
           return importSplits(file).catch(() => {
             return importLayout(file).catch(() => {
-              toast.error('The file could not be parsed.');
+              toast.error("The file could not be parsed.");
             });
           });
         }

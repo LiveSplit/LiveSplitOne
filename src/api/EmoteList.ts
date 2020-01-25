@@ -1,4 +1,4 @@
-export const emoteList: { [key: string]: number } = {
+export const emoteList: { [key: string]: number | undefined } = {
     ":)": 1,
     ":-)": 1,
     ":(": 2,

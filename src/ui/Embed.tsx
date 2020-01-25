@@ -16,11 +16,11 @@ export function resolveEmbed(uri: string): Option<JSX.Element> {
 function tryYoutubeFromUri(uri: string): Option<JSX.Element> {
     const youtubeBase = /https?:\/\/www\.youtube\.com\/watch\?v=([A-z0-9-]+)&?/;
     let result = youtubeBase.exec(uri);
-    if (result == null) {
+    if (result === null) {
         const youtubeBase2 = /https?:\/\/youtu\.be\/([A-z0-9-]+)/;
         result = youtubeBase2.exec(uri);
     }
-    if (result != null) {
+    if (result !== null) {
         return resolveYoutube(result[1]);
     }
     return null;
@@ -30,10 +30,10 @@ function tryTwitchFromUri(uri: string): Option<JSX.Element> {
     const twitchBase = /https?:\/\/(www\.)?(go\.)?twitch\.tv\/.*\/v\/(\w+)&?/;
     const twitchBase2 = /https?:\/\/(www\.)?(go\.)?twitch\.tv\/videos\/(\w+)&?/;
     let result = twitchBase.exec(uri);
-    if (result == null) {
+    if (result === null) {
         result = twitchBase2.exec(uri);
     }
-    if (result != null) {
+    if (result !== null) {
         return resolveTwitch(result[3]);
     }
     return null;

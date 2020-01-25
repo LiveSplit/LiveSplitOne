@@ -12,12 +12,12 @@ export default class DetailedTimer extends React.Component<Props> {
 
     constructor(props: Props) {
         super(props);
-        this.icon = '';
+        this.icon = "";
     }
 
     public render() {
         const iconChange = this.props.state.icon_change;
-        if (iconChange != null) {
+        if (iconChange !== null) {
             this.icon = iconChange;
         }
 
@@ -28,7 +28,7 @@ export default class DetailedTimer extends React.Component<Props> {
                 className="detailed-timer"
                 style={{
                     background: gradientToCss(this.props.state.background),
-                    height: totalHeight
+                    height: totalHeight,
                 }}
             >
                 {
@@ -44,22 +44,30 @@ export default class DetailedTimer extends React.Component<Props> {
                     )
                 }
                 <div className="detailed-timer-left-side">
-                        {
-                            this.icon && <div className="detailed-timer-icon-container">
-                                <div className="detailed-timer-icon-inner-container">
-                                    <img className="detailed-timer-icon" src={this.icon} />
-                                </div>
+                    {
+                        this.icon && <div className="detailed-timer-icon-container">
+                            <div className="detailed-timer-icon-inner-container">
+                                <img className="detailed-timer-icon" src={this.icon} />
                             </div>
-                        }
+                        </div>
+                    }
                     <div className="detailed-timer-left-side-text">
                         {
                             this.props.state.segment_name !== null &&
-                            <div className="detailed-timer-segment-name">{this.props.state.segment_name}</div>
+                            <div className="detailed-timer-segment-name">
+                                {this.props.state.segment_name}
+                            </div>
                         }
                         <table className="detailed-timer-comparisons">
                             <tbody>
-                                {this.props.state.comparison1 !== null && formatComparison(this.props.state.comparison1)}
-                                {this.props.state.comparison2 !== null && formatComparison(this.props.state.comparison2)}
+                                {
+                                    this.props.state.comparison1 !== null &&
+                                    formatComparison(this.props.state.comparison1)
+                                }
+                                {
+                                    this.props.state.comparison2 !== null &&
+                                    formatComparison(this.props.state.comparison2)
+                                }
                             </tbody>
                         </table>
                     </div>
