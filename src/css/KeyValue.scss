@@ -11,6 +11,8 @@
   &.key-value-two-rows {
     height: $two-row-height;
     line-height: $two-row-line-height;
+    padding-top: $two-row-extra-padding;
+    padding-bottom: $two-row-extra-padding;
   }
 
   &.key-value-center .key-value-key {
