@@ -912,7 +912,7 @@ export class RunEditor extends React.Component<Props, State> {
                             const renderedComment = renderMarkdown(comment);
 
                             expandedRow =
-                                <tr key={`${run.id}_expanded`} className={evenOdd}>
+                                <tr key={`${run.id}_expanded`} className={`leaderboard-expanded-row ${evenOdd}`}>
                                     <td colSpan={4 + (variableColumns?.length ?? 0)}>
                                         {embed}
                                         <div className="markdown" style={{
@@ -969,7 +969,7 @@ export class RunEditor extends React.Component<Props, State> {
                                     cursor: "pointer",
                                 }}
                             >
-                                <td className="number">{isUnique ? rank : "—"}</td>
+                                <td className="leaderboard-rank-column number">{isUnique ? rank : "—"}</td>
                                 <td>
                                     {
                                         run.players.data.map((p, i) => {
