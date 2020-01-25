@@ -25,7 +25,7 @@ export default class Title extends React.Component<Props> {
         }
         if (this.getIconUrl() !== ""
             && container.classList.contains("justify-center")
-            && container.parentElement != null
+            && container.parentElement !== null
             && container.offsetWidth > container.parentElement.offsetWidth - 100) {
             if (!container.classList.contains("game-title-center-fix")) {
                 container.classList.add("game-title-center-fix");
@@ -40,9 +40,9 @@ export default class Title extends React.Component<Props> {
     public render() {
         const iconUrl = this.getIconUrl();
 
-        const finishedRunsExist = this.props.state.finished_runs != null;
-        const attemptsExist = this.props.state.attempts != null;
-        const twoLines = this.props.state.line2 != null;
+        const finishedRunsExist = this.props.state.finished_runs !== null;
+        const attemptsExist = this.props.state.attempts !== null;
+        const twoLines = this.props.state.line2 !== null;
         let attemptsLabel = "";
 
         if (finishedRunsExist) {
@@ -103,7 +103,7 @@ export default class Title extends React.Component<Props> {
     }
 
     private getIconUrl(): string {
-        if (this.props.state.icon_change != null) {
+        if (this.props.state.icon_change !== null) {
             this.iconUrl = this.props.state.icon_change;
         }
         return this.iconUrl;

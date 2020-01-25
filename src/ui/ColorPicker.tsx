@@ -90,6 +90,6 @@ function toLSColor(color: RGBColor): number[] {
         color.r / 255,
         color.g / 255,
         color.b / 255,
-        color.a != null ? color.a : 1.0,
+        color.a !== undefined ? color.a : 1.0,
     ];
 }

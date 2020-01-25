@@ -11,7 +11,7 @@ function openFile(): Promise<File> {
         input.setAttribute("type", "file");
         input.onchange = () => {
             const file: Option<File> = input.files?.[0];
-            if (file == null) {
+            if (file === undefined) {
                 reject();
                 return;
             }

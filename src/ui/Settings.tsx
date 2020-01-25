@@ -201,7 +201,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                 const children = [
                     <input
                         type="checkbox"
-                        checked={value.OptionalString != null}
+                        checked={value.OptionalString !== null}
                         onChange={(e) => {
                             if (e.target.checked) {
                                 this.props.setValue(
@@ -218,11 +218,10 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     />,
                 ];
 
-                if (value.OptionalString != null) {
+                if (value.OptionalString !== null) {
                     children.push(
                         <input
                             value={value.OptionalString}
-                            disabled={value.OptionalString == null}
                             onChange={(e) => {
                                 this.props.setValue(
                                     valueIndex,
@@ -340,7 +339,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
             } else if ("OptionalColor" in value) {
                 const children = [];
 
-                if (value.OptionalColor != null) {
+                if (value.OptionalColor !== null) {
                     children.push(
                         <ColorPicker
                             color={value.OptionalColor}
@@ -363,7 +362,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     <span>
                         <input
                             type="checkbox"
-                            checked={value.OptionalColor != null}
+                            checked={value.OptionalColor !== null}
                             style={{
                                 float: "left",
                             }}
@@ -629,7 +628,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                 const children = [
                     <input
                         type="checkbox"
-                        checked={value.OptionalTimingMethod != null}
+                        checked={value.OptionalTimingMethod !== null}
                         onChange={(e) => {
                             if (e.target.checked) {
                                 this.props.setValue(
@@ -649,11 +648,10 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     />,
                 ];
 
-                if (value.OptionalTimingMethod != null) {
+                if (value.OptionalTimingMethod !== null) {
                     children.push(
                         <select
                             value={value.OptionalTimingMethod}
-                            disabled={value.OptionalTimingMethod == null}
                             onChange={(e) => {
                                 this.props.setValue(
                                     valueIndex,

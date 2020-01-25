@@ -22,7 +22,7 @@ export class TextBox extends React.Component<Props> {
         }
         let name;
         let list;
-        if (this.props.list != null) {
+        if (this.props.list !== undefined) {
             name = this.props.list[0];
             list = <datalist id={name}>
                 {this.props.list[1].map((n, i) => <option key={i} value={n} />)}

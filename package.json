@@ -5,6 +5,7 @@
   "main": "dist/bundle.js",
   "scripts": {
     "build:core": "node buildCore.js",
+    "lint": "tslint --project tsconfig.json",
     "start": "webpack-dev-server --open",
     "start:electron": "webpack --electron && electron dist/index.html",
     "serve": "webpack-dev-server",

@@ -1,10 +1,16 @@
 {
-    "defaultSeverity": "warning",
+    "defaultSeverity": "error",
     "extends": [
         "tslint:recommended"
     ],
     "jsRules": {
         "object-literal-sort-keys": false
+    },
+    "linterOptions": {
+        "exclude": [
+            "src/livesplit-core/**",
+            "src/type-definitions/**"
+        ]
     },
     "rules": {
         "semicolon": [
@@ -22,7 +28,6 @@
         "object-literal-sort-keys": [
             false
         ],
-        "strict-boolean-expressions": true,
         "no-invalid-this": [
             true
         ],

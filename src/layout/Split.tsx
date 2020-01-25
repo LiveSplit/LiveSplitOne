@@ -51,7 +51,8 @@ export default class Split extends React.Component<Props> {
         const currentSplitBackgroundStyle: any = {};
         if (this.props.split.is_current_split) {
             currentSplitBackgroundStyle.background = gradientToCss(this.props.splitsState.current_split_gradient);
-            currentSplitBackgroundStyle.top = this.props.visualSplitIndex * splitHeight + (this.props.showingLabels ? splitLabelHeight : 0);
+            currentSplitBackgroundStyle.top = this.props.visualSplitIndex * splitHeight +
+                (this.props.showingLabels ? splitLabelHeight : 0);
             currentSplitBackgroundStyle.height = splitHeight;
         }
 
@@ -95,7 +96,7 @@ export default class Split extends React.Component<Props> {
                 }
                 {
                     Array(this.props.maxColumns - this.props.split.columns.length).fill(
-                        <div style={innerStyle}></div>
+                        <div style={innerStyle}></div>,
                     )
                 }
             </span>
