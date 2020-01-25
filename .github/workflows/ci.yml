@@ -17,23 +17,26 @@ jobs:
     - name: Checkout submodules
       run: git submodule update --init --recursive
 
+    - name: Set CURRENT_TWO_WEEKS for use in cache keys
+      run: echo "::set-env name=CURRENT_TWO_WEEKS::$(($(date +%V) / 2))"
+
     - name: Cache Cargo
       uses: actions/cache@v1
       with:
         path: ~/.cargo
-        key: ${{ runner.os }}-cargo
+        key: ${{ runner.os }}-cargo-${{ env.CURRENT_TWO_WEEKS }}
 
     - name: Cache binaryen
       uses: actions/cache@v1
       with:
         path: ~/binaryen
-        key: ${{ runner.os }}-binaryen
+        key: ${{ runner.os }}-binaryen-${{ env.CURRENT_TWO_WEEKS }}
 
     - name: Cache target
       uses: actions/cache@v1
       with:
         path: livesplit-core/target
-        key: ${{ runner.os }}-target
+        key: ${{ runner.os }}-target-${{ env.CURRENT_TWO_WEEKS }}
 
     - name: Install Node
       uses: actions/setup-node@v1
