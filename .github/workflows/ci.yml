@@ -22,13 +22,13 @@ jobs:
       with:
         path: ~/.cargo
         key: ${{ runner.os }}-cargo
-    
+
     - name: Cache binaryen
       uses: actions/cache@v1
       with:
         path: ~/binaryen
         key: ${{ runner.os }}-binaryen
-    
+
     - name: Cache target
       uses: actions/cache@v1
       with:
@@ -66,7 +66,7 @@ jobs:
         mv dist/* .
         git add :/
         git commit -m "GitHub Pages build"
-    
+
     - name: Deploy application
       if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
       uses: ad-m/github-push-action@master
@@ -74,3 +74,21 @@ jobs:
         branch: 'gh-pages'
         force: true
         github_token: ${{ secrets.GITHUB_TOKEN }}
+
+  linter:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout commit
+      uses: actions/checkout@v1
+
+    - name: Install Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.x' # FIXME: https://github.com/actions/setup-node/issues/26
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run tslint
+      run: npm run lint
