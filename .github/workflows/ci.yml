@@ -90,5 +90,8 @@ jobs:
     - name: Install dependencies
       run: npm install
 
+    - name: Set up tslint matcher
+      run: echo "::add-matcher::.github/workflows/tslint.json"
+
     - name: Run tslint
       run: npm run lint
