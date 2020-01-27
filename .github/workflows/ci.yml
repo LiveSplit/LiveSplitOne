@@ -27,6 +27,7 @@ jobs:
         key: ${{ runner.os }}-cargo-${{ env.CURRENT_TWO_WEEKS }}
 
     - name: Cache binaryen
+      if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
       uses: actions/cache@v1
       with:
         path: ~/binaryen
@@ -51,32 +52,53 @@ jobs:
     - name: Install target
       run: rustup target add wasm32-unknown-unknown
 
-    - name: Install dependencies
+    - name: Install optimizers
+      if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
       run: |
         set -e
-        sh .github/workflows/install.sh
+        cd $HOME
+        git -C binaryen pull || git clone https://github.com/WebAssembly/binaryen binaryen
+        cd binaryen
+        cmake .
+        make wasm-opt
+
+        cargo install wasm-gc
+        cargo install wasm-bindgen-cli
         source ~/.cargo/env || true
 
-    - name: Build application
-      run: bash .github/workflows/build.sh
+    - name: Build Core
+      run: |
+        set -e
+        npm install
+        npm run build:core
 
-    - name: Commit deployment files
+    - name: Build Frontend
+      run: |
+        set -e
+        npm run publish
+
+    - name: Optimize
       if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
       run: |
-        git config --global user.email "action@github.com"
-        git config --global user.name "GitHub Action"
-        git checkout -b gh-pages
-        mv dist/* .
-        git add :/
-        git commit -m "GitHub Pages build"
+        set -e
+        WASM_FILE=$(ls dist/*.wasm)
+        ~/binaryen/bin/wasm-opt -O4 "$WASM_FILE" -o "$WASM_FILE"
+        wasm-gc "$WASM_FILE"
 
-    - name: Deploy application
+    - name: Add CNAME file
       if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
-      uses: ad-m/github-push-action@master
+      run: |
+        cp ./.github/workflows/CNAME ./dist/CNAME
+
+    - name: Deploy
+      if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
+      uses: peaceiris/actions-gh-pages@v2
+      env:
+        ACTIONS_DEPLOY_KEY: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+        PUBLISH_BRANCH: gh-pages
+        PUBLISH_DIR: ./dist
       with:
-        branch: 'gh-pages'
-        force: true
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        forceOrphan: true
 
   linter:
     runs-on: ubuntu-latest
