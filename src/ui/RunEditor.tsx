@@ -795,7 +795,7 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private renderLeaderboard(category: Option<Category>): JSX.Element {
-        const leaderboard = getLeaderboard(this.state.editor.game, this.state.editor.category);
+        const leaderboard = this.getCurrentLeaderboard(category);
         if (leaderboard === undefined) {
             return <div />;
         }
@@ -1312,6 +1312,14 @@ export class RunEditor extends React.Component<Props, State> {
         );
     }
 
+    private getCurrentLeaderboard(category: Option<Category>) {
+        const categoryName = category?.name;
+        if (categoryName) {
+            return getLeaderboard(this.state.editor.game, categoryName);
+        }
+        return undefined;
+    }
+
     private getCurrentCategoriesInfo() {
         let categoryNames = ["Any%", "Low%", "100%"];
         let category = null;
@@ -1745,7 +1753,8 @@ export class RunEditor extends React.Component<Props, State> {
 
         if (tab === Tab.Leaderboard) {
             const { category } = this.getCurrentCategoriesInfo();
-            if (category !== null) {
+            const leaderboard = this.getCurrentLeaderboard(category);
+            if (leaderboard !== undefined) {
                 return true;
             }
         }
