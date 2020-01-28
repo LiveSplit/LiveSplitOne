@@ -14,8 +14,8 @@
 
   .view-container {
     position: relative;
-    width: calc(100% - 40px);
-    height: calc(100% - 40px);
+    min-width: calc(100% - 40px);
+    min-height: calc(100% - 40px);
     margin: $view-margin;
 
     .buttons {

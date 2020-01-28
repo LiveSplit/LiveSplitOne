@@ -15,9 +15,13 @@
   .inline-div {
     display: inline;
   }
-  
-  .markdown img {
-    vertical-align: middle;
+
+  .markdown {
+    line-height: 1.2em;
+
+    img {
+      vertical-align: middle;
+    }
   }
   
   code {

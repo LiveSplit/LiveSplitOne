@@ -4,6 +4,8 @@
 @import "Toggle";
 @import 'variables';
 
+$tab-width: 600px;
+
 .run-editor {
   @include context-menu;
   @include markdown;
@@ -42,21 +44,44 @@
   }
 
   .run-editor-additional-info {
-    width: 650px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    border: 1px solid $border-color;
-    border-collapse: collapse;
-    margin-left: 5px;
     background-color: $light-row-color;
-  }
+    width: $tab-width;
 
-  .run-editor-rules {
-    padding-left: 10px;
-    padding-right: 10px;
+    .run-editor-rules {
+      padding-left: 10px;
+      padding-right: 10px;
+      border: 1px solid $border-color;
+      border-collapse: collapse;
+    }
   }
 
   .run-editor-tab {
     margin-left: 5px;
+    min-width: $tab-width;
+
+    .settings-table {
+      width: 100%;
+    }
+  }
+
+  .video-outer-container {
+    width: 100%;
+    padding-top: calc(100% * 9 / 16);
+    margin-top: 5px;
+    position: relative;
+
+    .video-inner-container {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+
+      iframe {
+        width: 100%;
+        height: 100%
+      }
+    }
   }
 
   .run-editor-info {
@@ -107,6 +132,25 @@
 
   .leaderboard-row:hover {
     background: $hover-row-color !important;
+  }
+
+  .leaderboard-rank-column,
+  .splits-download-column {
+    width: 36px;
+  }
+
+  .leaderboard-time-column,
+  .variable-column {
+    width: 100px;
+  }
+
+  .variable-column,
+  .splits-download-column {
+    text-align: center;
+  }
+
+  .leaderboard-expanded-row > td {
+    max-width: 0;
   }
 
   .timing-selection > button {

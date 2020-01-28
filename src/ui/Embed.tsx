@@ -39,39 +39,26 @@ function tryTwitchFromUri(uri: string): Option<JSX.Element> {
     return null;
 }
 
-function resolveYoutube(videoId: string): JSX.Element {
+function videoIframe(videoSource: string): JSX.Element {
     return (
-        <div style={{ paddingTop: 5 }}>
-            <iframe
-                id="ytplayer"
-                itemType="text/html"
-                src={`https://www.youtube.com/embed/${videoId}?wmode=transparent`
-                }
-                allowFullScreen
-                frameBorder="0"
-                style={{
-                    width: "100%",
-                    height: 240,
-                }}
-            />
+        <div className="video-outer-container">
+            <div className="video-inner-container">
+                <iframe
+                    id="ytplayer"
+                    itemType="text/html"
+                    src={videoSource}
+                    allowFullScreen
+                    frameBorder="0"
+                />
+            </div>
         </div>
     );
 }
 
+function resolveYoutube(videoId: string): JSX.Element {
+    return videoIframe(`https://www.youtube.com/embed/${videoId}?wmode=transparent`);
+}
+
 function resolveTwitch(videoId: string): JSX.Element {
-    return (
-        <div style={{ paddingTop: 5 }}>
-            <iframe
-                id="ytplayer"
-                itemType="text/html"
-                src={`https://player.twitch.tv/?video=${videoId}&autoplay=false`}
-                allowFullScreen
-                frameBorder="0"
-                style={{
-                    width: "100%",
-                    height: 240,
-                }}
-            />
-        </div>
-    );
+    return videoIframe(`https://player.twitch.tv/?video=${videoId}&autoplay=false`);
 }
