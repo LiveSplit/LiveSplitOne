@@ -61,15 +61,21 @@ jobs:
         cd binaryen
         cmake .
         make wasm-opt
-
         cargo install wasm-gc
+
+    - name: Install wasm-bindgen
+      run: |
+        set -e
         cargo install wasm-bindgen-cli
-        source ~/.cargo/env || true
+
+    - name: Install npm packages
+      run: |
+        set -e
+        npm install
 
     - name: Build Core
       run: |
         set -e
-        npm install
         npm run build:core
 
     - name: Build Frontend
