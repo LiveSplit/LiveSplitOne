@@ -170,7 +170,7 @@ export class LiveSplit extends React.Component<{}, State> {
                     importLayout={this.importLayoutFromFile.bind(this)}
                     importSplits={this.importSplitsFromFile.bind(this)}
                 >
-                    <div>
+                    <div style={{ width: "fit-content" }}>
                         <div
                             onClick={(_) => this.splitOrStart()}
                             style={{
