@@ -54,11 +54,7 @@ export class LiveSplit extends React.Component<{}, State> {
     constructor(props: {}) {
         super(props);
 
-        const run = Run.new();
-        run.setGameName("Game");
-        run.setCategoryName("Category");
-        run.pushSegment(Segment.new("Time"));
-
+        const run = this.getDefaultRun();
         const timer = expect(
             Timer.new(run),
             "The Default Run should be a valid Run",
@@ -130,7 +126,7 @@ export class LiveSplit extends React.Component<{}, State> {
         this.rightClickEvent = { handleEvent: (e: any) => this.onRightClick(e) };
         window.addEventListener("contextmenu", this.rightClickEvent, false);
         window.onbeforeunload = (e: BeforeUnloadEvent) => {
-            const hasBeenModified = this.state.timer.readWith((t) => t.getRun().hasBeenModified());
+            const hasBeenModified = this.readWith((t) => t.getRun().hasBeenModified());
             if (hasBeenModified) {
                 e.returnValue = "There are unsaved changes. Do you really want to close LiveSplit One?";
                 return e.returnValue;
@@ -180,7 +176,7 @@ export class LiveSplit extends React.Component<{}, State> {
                             }}
                         >
                             <AutoRefreshLayout
-                                getState={() => this.state.timer.readWith(
+                                getState={() => this.readWith(
                                     (t) => this.state.layout.stateAsJson(t),
                                 )}
                             />
@@ -365,6 +361,16 @@ export class LiveSplit extends React.Component<{}, State> {
     public exportLayout() {
         const layout = this.state.layout.settingsAsJson();
         exportFile("layout.ls1l", JSON.stringify(layout, null, 4));
+    }
+
+    public loadDefaultSplits() {
+        const run = this.getDefaultRun();
+        this.setRun(run, () => { throw Error("Could not set default run."); });
+    }
+
+    public loadDefaultLayout() {
+        const layout = Layout.defaultLayout();
+        this.setLayout(layout);
     }
 
     public openRunEditor() {
@@ -565,6 +571,14 @@ export class LiveSplit extends React.Component<{}, State> {
         };
     }
 
+    private getDefaultRun() {
+        const run = Run.new();
+        run.setGameName("Game");
+        run.setCategoryName("Category");
+        run.pushSegment(Segment.new("Time"));
+        return run;
+    }
+
     private mediaQueryChanged() {
         this.setState({ isDesktop: this.isDesktopQuery.matches });
     }
@@ -578,27 +592,34 @@ export class LiveSplit extends React.Component<{}, State> {
             layout = Layout.parseOriginalLivesplitString(file);
         }
         if (layout !== null) {
-            this.state.layout.dispose();
-            this.setState({
-                ...this.state,
-                layout,
-            });
-            layout.remount();
+            this.setLayout(layout);
             return;
         }
         throw Error("The layout could not be loaded. This may not be a valid LiveSplit or LiveSplit One Layout.");
     }
 
+    private setLayout(layout: Layout) {
+        this.state.layout.dispose();
+        this.setState({
+            ...this.state,
+            layout,
+        });
+        layout.remount();
+    }
+
+    private setRun(run: Run, callback: () => void) {
+        maybeDisposeAndThen(
+            this.writeWith((t) => t.setRun(run)),
+            callback,
+        );
+    }
+
     private importSplitsFromArrayBuffer(buffer: [ArrayBuffer, File]) {
         const [file] = buffer;
-        const timer = this.state.timer;
         const result = Run.parseArray(new Int8Array(file), "", false);
         if (result.parsedSuccessfully()) {
             const run = result.unwrap();
-            maybeDisposeAndThen(
-                timer.writeWith((t) => t.setRun(run)),
-                () => { throw Error("Empty Splits are not supported."); },
-            );
+            this.setRun(run, () => { throw Error("Empty Splits are not supported."); });
         } else {
             throw Error("Couldn't parse the splits.");
         }
@@ -607,10 +628,7 @@ export class LiveSplit extends React.Component<{}, State> {
     private async loadFromSplitsIO(id: string) {
         try {
             const run = await SplitsIO.downloadById(id);
-            maybeDisposeAndThen(
-                this.writeWith((t) => t.setRun(run)),
-                () => toast.error("The downloaded splits are not valid."),
-            );
+            this.setRun(run, () => toast.error("The downloaded splits are not valid."));
         } catch (_) {
             toast.error("Failed to download the splits.");
         }
