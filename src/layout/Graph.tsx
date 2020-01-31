@@ -4,11 +4,14 @@ import { colorToCss } from "../util/ColorUtil";
 
 import "../css/Graph.scss";
 
-export interface Props { state: LiveSplit.GraphComponentStateJson }
+export interface Props {
+    state: LiveSplit.GraphComponentStateJson,
+    layoutWidth: number,
+}
 
 export default class Graph extends React.Component<Props> {
     public render() {
-        const width = 300;
+        const width = this.props.layoutWidth;
         const height = this.props.state.height;
 
         const middle = height * this.props.state.middle;
@@ -135,6 +138,6 @@ export default class Graph extends React.Component<Props> {
 
         children.push(...childrenPoints);
 
-        return (<svg className="graph" height={height}>{children}</svg>);
+        return (<svg className="graph" width={width} height={height}>{children}</svg>);
     }
 }

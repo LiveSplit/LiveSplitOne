@@ -41,6 +41,7 @@ export interface State {
     isDesktop: boolean,
     timer: SharedTimer,
     layout: Layout,
+    layoutWidth: number,
     sidebarOpen: boolean,
     menu: Menu,
 }
@@ -111,6 +112,7 @@ export class LiveSplit extends React.Component<{}, State> {
         this.state = {
             isDesktop: this.isDesktopQuery.matches,
             layout,
+            layoutWidth: 400,
             menu: { kind: MenuKind.Timer },
             sidebarOpen: false,
             timer,
@@ -158,6 +160,7 @@ export class LiveSplit extends React.Component<{}, State> {
             } else if (this.state.menu.kind === MenuKind.LayoutEditor) {
                 return <LayoutEditorComponent
                     editor={this.state.menu.editor}
+                    layoutWidth={this.state.layoutWidth}
                     timer={this.state.timer}
                 />;
             } else if (this.state.menu.kind === MenuKind.SettingsEditor) {
@@ -179,6 +182,7 @@ export class LiveSplit extends React.Component<{}, State> {
                                 getState={() => this.readWith(
                                     (t) => this.state.layout.stateAsJson(t),
                                 )}
+                                width={this.state.layoutWidth}
                             />
                         </div>
                         <div className="buttons">

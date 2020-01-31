@@ -6,6 +6,7 @@ import Component from "./Component";
 
 export interface Props {
     getState: () => LayoutStateJson,
+    layoutWidth: number,
     onClick: (componentIndex: number) => void,
     onDrag: (componentIndex: number) => void,
     onDragEnd: (componentIndex: number) => void,
@@ -57,6 +58,7 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
                 style={{
                     background: gradientToCss(layoutState.background),
                     color: colorToCss(layoutState.text_color),
+                    width: this.props.layoutWidth,
                 }}
             >
                 {
@@ -115,7 +117,12 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
                             {
                                 getBorderDiv(i, this.state, this.props)
                             }
-                            <Component state={c} layoutState={layoutState} componentId={key} />
+                            <Component
+                                state={c}
+                                layoutState={layoutState}
+                                layoutWidth={this.props.layoutWidth}
+                                componentId={key}
+                            />
                         </div>;
                     })
                 }

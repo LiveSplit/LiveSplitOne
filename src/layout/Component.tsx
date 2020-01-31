@@ -14,6 +14,7 @@ import Title from "./Title";
 export interface Props {
     state: ComponentStateJson,
     layoutState: LayoutStateJson,
+    layoutWidth: number,
     componentId: string,
 }
 
@@ -23,9 +24,15 @@ export default class Component extends React.Component<Props> {
         if ("KeyValue" in state) {
             return <KeyValue state={state.KeyValue} />;
         } else if ("DetailedTimer" in state) {
-            return <DetailedTimer state={state.DetailedTimer} />;
+            return <DetailedTimer
+                state={state.DetailedTimer}
+                layoutWidth={this.props.layoutWidth}
+            />;
         } else if ("Graph" in state) {
-            return <Graph state={state.Graph} />;
+            return <Graph
+                state={state.Graph}
+                layoutWidth={this.props.layoutWidth}
+            />;
         } else if ("Splits" in state) {
             return <Splits
                 state={state.Splits}
@@ -34,7 +41,11 @@ export default class Component extends React.Component<Props> {
         } else if ("Text" in state) {
             return <Text state={state.Text} />;
         } else if ("Timer" in state) {
-            return <Timer state={state.Timer} componentId={this.props.componentId} />;
+            return <Timer
+                state={state.Timer}
+                layoutWidth={this.props.layoutWidth}
+                componentId={this.props.componentId}
+            />;
         } else if ("Title" in state) {
             return <Title state={state.Title} />;
         } else if ("Separator" in state) {

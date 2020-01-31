@@ -7,11 +7,13 @@ import "../css/Timer.scss";
 export interface Props {
     state: LiveSplit.TimerComponentStateJson,
     componentId: string,
+    layoutWidth: number,
 }
 
 export function renderToSVG(
     state: LiveSplit.TimerComponentStateJson,
     className: string,
+    componentWidth: number,
 ): JSX.Element {
     const time = state.time;
     const fraction = state.fraction;
@@ -25,7 +27,7 @@ export function renderToSVG(
         case 4: shiftX = height / 0.71; break;
         default: throw new Error("Unexpected Fraction Length");
     }
-    const x = `${294 - 0.85 * shiftX}px`;
+    const x = `${componentWidth - 6 - 0.85 * shiftX}px`;
     const y = `${0.82 * height}px`;
 
     return (
@@ -41,6 +43,7 @@ export function renderToSVG(
                 style={{
                     display: "block",
                     filter: "drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.5))",
+                    width: componentWidth,
                 }}
             >
                 <defs>
@@ -68,7 +71,7 @@ export function renderToSVG(
                     fill: `url(#${className}-text-gradient)`,
                     fontFamily: "timer, sans-serif",
                     fontSize: `${0.6 * height}px`,
-                }} x="294px" y={y} textAnchor="end">{fraction}</text>
+                }} x={`${componentWidth - 6}px`} y={y} textAnchor="end">{fraction}</text>
             </svg>
         </div>
     );
@@ -76,6 +79,6 @@ export function renderToSVG(
 
 export default class Timer extends React.Component<Props> {
     public render() {
-        return renderToSVG(this.props.state, this.props.componentId);
+        return renderToSVG(this.props.state, this.props.componentId, this.props.layoutWidth);
     }
 }

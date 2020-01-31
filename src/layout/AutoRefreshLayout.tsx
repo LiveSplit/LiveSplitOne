@@ -4,6 +4,7 @@ import Layout from "./Layout";
 
 export interface Props {
     getState: () => LayoutStateJson,
+    width: number,
 }
 
 export interface State {
@@ -38,7 +39,10 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
 
     public render() {
         return (
-            <Layout state={this.state.layoutState} />
+            <Layout
+                state={this.state.layoutState}
+                width={this.props.width}
+            />
         );
     }
 }

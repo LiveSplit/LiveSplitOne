@@ -7,6 +7,7 @@ import "../css/Layout.scss";
 
 export interface Props {
     state: LayoutStateJson,
+    width: number,
 }
 
 export default class Layout extends React.Component<Props> {
@@ -20,6 +21,7 @@ export default class Layout extends React.Component<Props> {
                 style={{
                     background: gradientToCss(layoutState.background),
                     color: colorToCss(layoutState.text_color),
+                    width: this.props.width,
                 }}
             >
                 {
@@ -35,6 +37,7 @@ export default class Layout extends React.Component<Props> {
                             state={c}
                             componentId={key}
                             layoutState={layoutState}
+                            layoutWidth={this.props.width}
                         />;
                     })
                 }

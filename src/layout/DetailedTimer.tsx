@@ -5,7 +5,10 @@ import { renderToSVG } from "./Timer";
 
 import "../css/DetailedTimer.scss";
 
-export interface Props { state: LiveSplit.DetailedTimerComponentStateJson }
+export interface Props {
+    state: LiveSplit.DetailedTimerComponentStateJson,
+    layoutWidth: number,
+}
 
 export default class DetailedTimer extends React.Component<Props> {
     private icon: string;
@@ -35,12 +38,14 @@ export default class DetailedTimer extends React.Component<Props> {
                     renderToSVG(
                         this.props.state.timer,
                         "timer",
+                        this.props.layoutWidth,
                     )
                 }
                 {
                     renderToSVG(
                         this.props.state.segment_timer,
                         "segment-timer",
+                        this.props.layoutWidth,
                     )
                 }
                 <div className="detailed-timer-left-side">
