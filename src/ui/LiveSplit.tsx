@@ -112,7 +112,7 @@ export class LiveSplit extends React.Component<{}, State> {
         this.state = {
             isDesktop: this.isDesktopQuery.matches,
             layout,
-            layoutWidth: 400,
+            layoutWidth: 300,
             menu: { kind: MenuKind.Timer },
             sidebarOpen: false,
             timer,
@@ -183,6 +183,7 @@ export class LiveSplit extends React.Component<{}, State> {
                                     (t) => this.state.layout.stateAsJson(t),
                                 )}
                                 width={this.state.layoutWidth}
+                                onResize={(width) => this.onResize(width)}
                             />
                         </div>
                         <div className="buttons">
@@ -581,6 +582,13 @@ export class LiveSplit extends React.Component<{}, State> {
         run.setCategoryName("Category");
         run.pushSegment(Segment.new("Time"));
         return run;
+    }
+
+    private onResize(width: number) {
+        this.setState({
+            ...this.state,
+            layoutWidth: width,
+        });
     }
 
     private mediaQueryChanged() {
