@@ -19,10 +19,12 @@ export interface SidebarCallbacks {
     exportSplits(): void,
     openFromSplitsIO(): void,
     uploadToSplitsIO(): void,
+    loadDefaultSplits(): void,
     openLayoutEditor(): void,
     saveLayout(): void,
     importLayout(): void,
     exportLayout(): void,
+    loadDefaultLayout(): void,
     switchToPreviousComparison(): void,
     switchToNextComparison(): void,
     setCurrentTimingMethod(timingMethod: TimingMethod): void,
@@ -92,6 +94,9 @@ export class SideBarContent extends React.Component<Props, State> {
                         <button onClick={(_) => this.props.callbacks.uploadToSplitsIO()}>
                             <i className="fa fa-upload" aria-hidden="true" /> Upload to splits i/o
                         </button>
+                        <button onClick={(_) => this.props.callbacks.loadDefaultSplits()}>
+                            <i className="fa fa-sync" aria-hidden="true" /> Default
+                        </button>
                         <hr />
                         <button onClick={(_) => this.props.callbacks.openTimerView()}>
                             <i className="fa fa-caret-left" aria-hidden="true" /> Back
@@ -137,6 +142,9 @@ export class SideBarContent extends React.Component<Props, State> {
                         </button>
                         <button onClick={(_) => this.props.callbacks.exportLayout()}>
                             <i className="fa fa-upload" aria-hidden="true" /> Export
+                        </button>
+                        <button onClick={(_) => this.props.callbacks.loadDefaultLayout()}>
+                            <i className="fa fa-sync" aria-hidden="true" /> Default
                         </button>
                         <hr />
                         <button onClick={(_) => this.props.callbacks.openTimerView()}>
