@@ -1,6 +1,10 @@
 @import 'Toggle';
 @import 'variables';
 
+.sidebar-overlay {
+  z-index: 3 !important;
+}
+
 .sidebar {
   background: $sidebar-background-color;
   padding: 10px;

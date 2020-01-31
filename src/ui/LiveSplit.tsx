@@ -227,6 +227,7 @@ export class LiveSplit extends React.Component<{}, State> {
                 onSetOpen={((e: boolean) => this.onSetSidebarOpen(e)) as any}
                 sidebarClassName="sidebar"
                 contentClassName="livesplit-container"
+                overlayClassName="sidebar-overlay"
             >
                 {
                     !this.state.isDesktop &&
