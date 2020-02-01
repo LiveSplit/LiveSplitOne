@@ -46,8 +46,6 @@ jobs:
 
     - name: Install Rust
       uses: hecrj/setup-rust-action@v1
-      with:
-        rust-version: 'nightly'
 
     - name: Install target
       run: rustup target add wasm32-unknown-unknown
