@@ -8,6 +8,7 @@ import "../css/LayoutEditor.scss";
 
 export interface Props {
     editor: LiveSplit.LayoutEditor,
+    layoutWidth: number,
     timer: LiveSplit.SharedTimerRef,
 }
 export interface State {
@@ -223,6 +224,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                         getState={() => this.props.timer.readWith(
                             (t) => this.props.editor.layoutStateAsJson(t),
                         )}
+                        layoutWidth={this.props.layoutWidth}
                         onClick={(i) => this.selectComponent(i)}
                         onDrag={(i) => {
                             this.props.editor.select(i);

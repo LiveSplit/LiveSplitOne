@@ -41,6 +41,7 @@ export interface State {
     isDesktop: boolean,
     timer: SharedTimer,
     layout: Layout,
+    layoutWidth: number,
     sidebarOpen: boolean,
     menu: Menu,
 }
@@ -111,6 +112,7 @@ export class LiveSplit extends React.Component<{}, State> {
         this.state = {
             isDesktop: this.isDesktopQuery.matches,
             layout,
+            layoutWidth: 300,
             menu: { kind: MenuKind.Timer },
             sidebarOpen: false,
             timer,
@@ -158,6 +160,7 @@ export class LiveSplit extends React.Component<{}, State> {
             } else if (this.state.menu.kind === MenuKind.LayoutEditor) {
                 return <LayoutEditorComponent
                     editor={this.state.menu.editor}
+                    layoutWidth={this.state.layoutWidth}
                     timer={this.state.timer}
                 />;
             } else if (this.state.menu.kind === MenuKind.SettingsEditor) {
@@ -167,7 +170,7 @@ export class LiveSplit extends React.Component<{}, State> {
                     importLayout={this.importLayoutFromFile.bind(this)}
                     importSplits={this.importSplitsFromFile.bind(this)}
                 >
-                    <div>
+                    <div style={{ width: "fit-content" }}>
                         <div
                             onClick={(_) => this.splitOrStart()}
                             style={{
@@ -179,6 +182,8 @@ export class LiveSplit extends React.Component<{}, State> {
                                 getState={() => this.readWith(
                                     (t) => this.state.layout.stateAsJson(t),
                                 )}
+                                width={this.state.layoutWidth}
+                                onResize={(width) => this.onResize(width)}
                             />
                         </div>
                         <div className="buttons">
@@ -222,6 +227,7 @@ export class LiveSplit extends React.Component<{}, State> {
                 onSetOpen={((e: boolean) => this.onSetSidebarOpen(e)) as any}
                 sidebarClassName="sidebar"
                 contentClassName="livesplit-container"
+                overlayClassName="sidebar-overlay"
             >
                 {
                     !this.state.isDesktop &&
@@ -577,6 +583,13 @@ export class LiveSplit extends React.Component<{}, State> {
         run.setCategoryName("Category");
         run.pushSegment(Segment.new("Time"));
         return run;
+    }
+
+    private onResize(width: number) {
+        this.setState({
+            ...this.state,
+            layoutWidth: width,
+        });
     }
 
     private mediaQueryChanged() {

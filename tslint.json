@@ -37,7 +37,8 @@
         "no-var-keyword": true,
         "prefer-object-spread": true,
         "strict-type-predicates": true,
-        "ordered-imports": false
+        "ordered-imports": false,
+        "variable-name": ["check-format", "allow-leading-underscores"]
     },
     "rulesDirectory": []
 }

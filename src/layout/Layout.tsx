@@ -2,11 +2,14 @@ import * as React from "react";
 import { LayoutStateJson } from "../livesplit-core";
 import { colorToCss, gradientToCss } from "../util/ColorUtil";
 import Component from "./Component";
+import { ResizableBox, ResizeCallbackData } from "react-resizable";
 
 import "../css/Layout.scss";
 
 export interface Props {
     state: LayoutStateJson,
+    width: number,
+    onResize(width: number): void,
 }
 
 export default class Layout extends React.Component<Props> {
@@ -20,8 +23,20 @@ export default class Layout extends React.Component<Props> {
                 style={{
                     background: gradientToCss(layoutState.background),
                     color: colorToCss(layoutState.text_color),
+                    width: this.props.width,
                 }}
             >
+                <ResizableBox
+                    className="resizable-layout"
+                    width={this.props.width}
+                    minConstraints={[200, 0]}
+                    height={0}
+                    handle={<span onClick={(event: React.SyntheticEvent) => { event.stopPropagation(); }} className="resizable-handle" />}
+                    onResize={
+                        (_event: React.SyntheticEvent, data: ResizeCallbackData) => this.props.onResize(data.size.width)
+                    }
+                    axis="x"
+                />
                 {
                     this.props.state.components.map((c) => {
                         const componentType = Object.keys(c)[0];
@@ -35,6 +50,7 @@ export default class Layout extends React.Component<Props> {
                             state={c}
                             componentId={key}
                             layoutState={layoutState}
+                            layoutWidth={this.props.width}
                         />;
                     })
                 }
