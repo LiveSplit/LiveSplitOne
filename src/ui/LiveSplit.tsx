@@ -46,6 +46,8 @@ export interface State {
     menu: Menu,
 }
 
+const DEFAULT_LAYOUT_WIDTH = 300;
+
 export class LiveSplit extends React.Component<{}, State> {
     private isDesktopQuery = window.matchMedia("(min-width: 1200px)");
     private scrollEvent: Option<EventListenerObject>;
@@ -109,10 +111,12 @@ export class LiveSplit extends React.Component<{}, State> {
             layout = Layout.defaultLayout();
         }
 
+        const layoutWidth = +(localStorage.getItem("layoutWidth") || DEFAULT_LAYOUT_WIDTH);
+
         this.state = {
             isDesktop: this.isDesktopQuery.matches,
             layout,
-            layoutWidth: 300,
+            layoutWidth,
             menu: { kind: MenuKind.Timer },
             sidebarOpen: false,
             timer,
@@ -586,6 +590,7 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     private onResize(width: number) {
+        localStorage.setItem("layoutWidth", `${width}`);
         this.setState({
             ...this.state,
             layoutWidth: width,
