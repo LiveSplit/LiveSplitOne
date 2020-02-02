@@ -2,18 +2,15 @@ import * as React from "react";
 import * as LiveSplit from "../livesplit-core";
 import { colorToCss, gradientToCss } from "../util/ColorUtil";
 import { Option } from "../util/OptionUtil";
-import { splitLabelHeight } from "./SplitLabels";
 
 export interface Props {
     splitsState: LiveSplit.SplitsComponentStateJson,
     evenOdd: [Option<string>, Option<string>],
     split: LiveSplit.SplitStateJson,
     icon: string,
-    maxColumns: number,
     separatorInFrontOfSplit: boolean,
     layoutState: LiveSplit.LayoutStateJson,
     visualSplitIndex: number,
-    showingLabels: boolean
 }
 
 export default class Split extends React.Component<Props> {
@@ -28,10 +25,8 @@ export default class Split extends React.Component<Props> {
         const splitsHaveIcons = this.props.splitsState.has_icons;
         const hasIcon = this.props.icon !== "";
 
-        const splitHeight = 24;
-
         const innerStyle: any = {};
-        const outerStyle: any = { height: splitHeight };
+        const outerStyle: any = {};
 
         if (this.props.split.index % 2 === 1) {
             innerStyle.borderBottom = this.props.splitsState.show_thin_separators
@@ -51,10 +46,17 @@ export default class Split extends React.Component<Props> {
         const currentSplitBackgroundStyle: any = {};
         if (this.props.split.is_current_split) {
             currentSplitBackgroundStyle.background = gradientToCss(this.props.splitsState.current_split_gradient);
-            currentSplitBackgroundStyle.top = this.props.visualSplitIndex * splitHeight +
-                (this.props.showingLabels ? splitLabelHeight : 0);
-            currentSplitBackgroundStyle.height = splitHeight;
         }
+
+        let lastEmptyColumnIndex = this.props.split.columns.length;
+        for (let i = this.props.split.columns.length - 1; i >= 0; i--) {
+            const column = this.props.split.columns[i];
+            if (!column.value) {
+                lastEmptyColumnIndex = i;
+            }
+        }
+
+        const columns = this.props.split.columns.slice(0, lastEmptyColumnIndex);
 
         return (
             <span
@@ -78,26 +80,25 @@ export default class Split extends React.Component<Props> {
                     className="split-name"
                     style={innerStyle}
                 >
-                    {this.props.split.name}
+                    <div className="split-name-inner">
+                        {this.props.split.name}
+                    </div>
                 </div>
                 {
-                    this.props.split.columns.map((column, i) =>
+                    columns.map((column, i) =>
                         <div
                             key={i}
-                            className="split-time time"
+                            className={`split-time time ${i < columns.length - 1 ? "split-time-full" : ""}`}
                             style={{
                                 ...innerStyle,
                                 color: colorToCss(column.visual_color),
                             }}
                         >
-                            {column.value}
+                            <div className="split-time-inner">
+                                {column.value}
+                            </div>
                         </div>,
                     ).reverse()
-                }
-                {
-                    Array(this.props.maxColumns - this.props.split.columns.length).fill(
-                        <div style={innerStyle}></div>,
-                    )
                 }
             </span>
         );
