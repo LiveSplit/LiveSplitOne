@@ -5,6 +5,7 @@
   height: $default-component-height;
   line-height: $default-component-line-height;
   padding: 0px 6px;
+  display: flex;
 
   @include time;
 
@@ -13,26 +14,48 @@
     line-height: $two-row-line-height;
     padding-top: $two-row-extra-padding;
     padding-bottom: $two-row-extra-padding;
+    flex-wrap: wrap;
+    align-items: stretch;
+
+    .key-value-value {
+      width: 100%;
+    }
   }
 
-  &.key-value-center .key-value-key {
-    text-align: center;
-  }
+  &.key-value-center {
+    justify-content: center;
 
-  table {
-    width: 100%;
+    .key-value-key {
+      justify-content: center;
+    }
   }
 
   .key-value-key {
-    width: 100%;
-    max-width: 0;
-    text-overflow: ellipsis;
+    display: flex;
+    flex-grow: 1;
+    padding-top: 1px;
+    justify-content: flex-start;
+    align-items: center;
     overflow: hidden;
-    white-space: nowrap;
+
+    .key-value-key-inner {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
   }
   
   .key-value-value {
-    text-align: right;
-    white-space: nowrap;
+    display: flex;
+    flex-shrink: 0;
+    justify-content: flex-end;
+    align-items: center;
+    overflow: hidden;
+
+    .key-value-value-inner {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
   }
 }

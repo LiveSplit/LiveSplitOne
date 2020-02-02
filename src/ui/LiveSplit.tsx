@@ -174,7 +174,7 @@ export class LiveSplit extends React.Component<{}, State> {
                     importLayout={this.importLayoutFromFile.bind(this)}
                     importSplits={this.importSplitsFromFile.bind(this)}
                 >
-                    <div style={{ width: "fit-content" }}>
+                    <div>
                         <div
                             onClick={(_) => this.splitOrStart()}
                             style={{
@@ -190,7 +190,7 @@ export class LiveSplit extends React.Component<{}, State> {
                                 onResize={(width) => this.onResize(width)}
                             />
                         </div>
-                        <div className="buttons">
+                        <div className="buttons" style={{ width: this.state.layoutWidth }}>
                             <div className="small">
                                 <button onClick={(_) => this.undoSplit()}>
                                     <i className="fa fa-arrow-up" aria-hidden="true" /></button>

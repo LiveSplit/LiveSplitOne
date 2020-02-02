@@ -4,16 +4,11 @@ export interface Props {
     labels: string[],
 }
 
-export const splitLabelHeight = 22;
-
 export default class SplitLabels extends React.Component<Props> {
     public render() {
         return (
             <span
-                className="split"
-                style={{
-                    height: splitLabelHeight,
-                }}
+                className="split split-label"
             >
                 <div className="current-split-background" />
                 <div className="split-icon-container-empty" />
@@ -22,7 +17,7 @@ export default class SplitLabels extends React.Component<Props> {
                     this.props.labels.map((label, i) =>
                         <div
                             key={i}
-                            className="split-time"
+                            className={`split-time split-label ${i < this.props.labels.length - 1 ? "split-time-full" : ""}`}
                         >
                             {label}
                         </div>,
