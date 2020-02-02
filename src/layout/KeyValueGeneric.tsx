@@ -23,45 +23,40 @@ export interface Props {
 
 export default class KeyValueGeneric extends React.Component<Props> {
     public render() {
-        const keyCell = <td
+        const keyCell = <div
             className="key-value-key"
             style={{
                 color: map(this.props.keyColor, colorToCss),
             }}
         >
-            {this.props.keyText}
-        </td>;
+            <div className="key-value-key-inner">{this.props.keyText}</div>
+        </div>;
 
-        const valueCell = <td
+        const valueCell = <div
             className="key-value-value time"
             style={{
                 color: map(this.props.valueColor, colorToCss),
             }}
         >
-            {this.props.valueText}
-        </td>;
+            <div className="key-value-value-inner">{this.props.valueText}</div>
+        </div>;
 
         let keyValueRows: JSX.Element;
         let wrapperClassName: string;
         if (this.props.display === KeyValueDisplay.Center) {
-            keyValueRows = <tr>{keyCell}</tr>;
+            keyValueRows = keyCell;
             wrapperClassName = "key-value-center";
-        } else if (this.props.display === KeyValueDisplay.SplitTwoRows) {
-            keyValueRows = <>
-                <tr>
-                    {keyCell}
-                </tr>
-                <tr>
-                    {valueCell}
-                </tr>
-            </>;
-            wrapperClassName = "key-value-two-rows";
         } else {
-            keyValueRows = <tr>
+            keyValueRows = <>
                 {keyCell}
                 {valueCell}
-            </tr>;
-            wrapperClassName = "";
+            </>;
+
+            if (this.props.display === KeyValueDisplay.SplitTwoRows) {
+                wrapperClassName = "key-value-two-rows";
+            } else {
+                wrapperClassName = "";
+            }
         }
 
         return (
@@ -71,11 +66,7 @@ export default class KeyValueGeneric extends React.Component<Props> {
                     background: gradientToCss(this.props.wrapperBackground),
                 }}
             >
-                <table>
-                    <tbody>
-                        {keyValueRows}
-                    </tbody>
-                </table>
+                {keyValueRows}
             </div>
         );
     }
