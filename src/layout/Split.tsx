@@ -7,7 +7,7 @@ export interface Props {
     splitsState: LiveSplit.SplitsComponentStateJson,
     evenOdd: [Option<string>, Option<string>],
     split: LiveSplit.SplitStateJson,
-    icon: string,
+    icon?: string,
     separatorInFrontOfSplit: boolean,
     layoutState: LiveSplit.LayoutStateJson,
     visualSplitIndex: number,
@@ -24,7 +24,7 @@ export default class Split extends React.Component<Props> {
         const twoRows = this.props.splitsState.display_two_rows ? "two-rows" : "";
 
         const splitsHaveIcons = this.props.splitsState.has_icons;
-        const hasIcon = this.props.icon !== "";
+        const hasIcon = this.props.icon !== undefined && this.props.icon !== "";
 
         const innerStyle: any = {};
         const outerStyle: any = {};
@@ -91,19 +91,19 @@ export default class Split extends React.Component<Props> {
                         </div>
                     </div>
                     <div className="split-row split-second-row">
-                    {
-                        columns.map((column, i) =>
-                            <div
-                                key={i}
-                                className={`split-time time ${i < columns.length - 1 ? "split-time-full" : ""}`}
-                                style={{ color: colorToCss(column.visual_color) }}
-                            >
-                                <div className="split-time-inner">
-                                    {column.value}
-                                </div>
-                            </div>,
-                        ).reverse()
-                    }
+                        {
+                            columns.map((column, i) =>
+                                <div
+                                    key={i}
+                                    className={`split-time time ${i < columns.length - 1 ? "split-time-full" : ""}`}
+                                    style={{ color: colorToCss(column.visual_color) }}
+                                >
+                                    <div className="split-time-inner">
+                                        {column.value}
+                                    </div>
+                                </div>,
+                            ).reverse()
+                        }
                     </div>
                 </div>
             </span>
