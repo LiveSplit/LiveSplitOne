@@ -61,15 +61,10 @@ $split-icon-two-row-size: $two-row-height - $split-column-padding;
         object-fit: contain;
         filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.3));
       }
-
-      .split-icon-empty {
-        height: 18px;
-        padding: 0 9px;
-      }
     }
 
     .split-icon-container-empty {
-      padding-right: 0px;
+      padding-right: $split-column-padding;
     }
 
     .split-rows {

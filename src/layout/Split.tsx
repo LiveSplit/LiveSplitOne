@@ -71,9 +71,8 @@ export default class Split extends React.Component<Props> {
                     style={innerStyle}
                 >
                     {
-                        splitsHaveIcons && (hasIcon
-                            ? <img className="split-icon" src={this.props.icon} />
-                            : <div className="split-icon-empty"></div>)
+                        splitsHaveIcons && hasIcon &&
+                        <img className="split-icon" src={this.props.icon} />
                     }
                 </div>
                 <div
