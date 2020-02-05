@@ -21,6 +21,7 @@ export default class Split extends React.Component<Props> {
     public render() {
         const currentSplit = this.props.split.is_current_split ? "current-split" : "";
         const separator = this.props.separatorInFrontOfSplit ? "split-separator" : "";
+        const twoRows = this.props.splitsState.display_two_rows ? "two-rows" : "";
 
         const splitsHaveIcons = this.props.splitsState.has_icons;
         const hasIcon = this.props.icon !== "";
@@ -60,7 +61,7 @@ export default class Split extends React.Component<Props> {
 
         return (
             <span
-                className={["split", currentSplit, separator].filter((s) => s.length > 0).join(" ")}
+                className={["split", currentSplit, separator, twoRows].filter((s) => s.length > 0).join(" ")}
                 style={outerStyle}
             >
                 <div className="current-split-background" style={currentSplitBackgroundStyle}></div>
@@ -76,30 +77,35 @@ export default class Split extends React.Component<Props> {
                     }
                 </div>
                 <div
-                    key="split-name"
-                    className="split-name"
+                    className="split-rows"
                     style={innerStyle}
                 >
-                    <div className="split-name-inner">
-                        {this.props.split.name}
+                    <div className="split-row split-first-row">
+                        <div
+                            key="split-name"
+                            className="split-name"
+                        >
+                            <div className="split-name-inner">
+                                {this.props.split.name}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="split-row split-second-row">
+                    {
+                        columns.map((column, i) =>
+                            <div
+                                key={i}
+                                className={`split-time time ${i < columns.length - 1 ? "split-time-full" : ""}`}
+                                style={{ color: colorToCss(column.visual_color) }}
+                            >
+                                <div className="split-time-inner">
+                                    {column.value}
+                                </div>
+                            </div>,
+                        ).reverse()
+                    }
                     </div>
                 </div>
-                {
-                    columns.map((column, i) =>
-                        <div
-                            key={i}
-                            className={`split-time time ${i < columns.length - 1 ? "split-time-full" : ""}`}
-                            style={{
-                                ...innerStyle,
-                                color: colorToCss(column.visual_color),
-                            }}
-                        >
-                            <div className="split-time-inner">
-                                {column.value}
-                            </div>
-                        </div>,
-                    ).reverse()
-                }
             </span>
         );
     }
