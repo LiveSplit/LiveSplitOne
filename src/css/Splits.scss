@@ -1,26 +1,137 @@
 @import "Time";
+@import 'variables';
 
 $split-column-width: 60px;
 $split-label-height: 22px;
-$split-height: 24px;
-$split-icon-size: 18px;
+$split-column-padding: 6px;
+$split-icon-size: $default-component-height - $split-column-padding;
+$split-icon-two-row-size: $two-row-height - $split-column-padding;
 
 .splits {
   width: 100%;
   position: relative;
 
-  span.split.split-separator div {
-    line-height: 18px;
-  }
-
   .split {
-    line-height: 20px;
+    line-height: $default-component-line-height;
     display: flex;
     position: relative;
     width: 100%;
-    height: $split-height;
+    height: $default-component-height;
+
+    &.two-rows {
+      height: $two-row-height;
+      line-height: $two-row-line-height;
+
+      .split-rows {
+        flex-wrap: wrap;
+
+        .split-row {
+          height: initial;
+
+          &.split-second-row {
+            width: 100%;
+            justify-content: flex-end;
+          }
+        }
+      }
+
+      .split-icon-container {
+        width: $split-icon-two-row-size;
+      }
+    }
 
     @include time;
+
+    .split-icon-container {
+      padding: 2px $split-column-padding;
+      width: $split-icon-size;
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+
+      .split-icon {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.3));
+      }
+    }
+
+    .split-icon-container-empty {
+      padding-right: $split-column-padding;
+      position: relative;
+    }
+
+    .split-rows {
+      display: flex;
+      align-items: center;
+      flex-grow: 1;
+      overflow: hidden;
+      height: 100%;
+      position: relative;
+      box-sizing: border-box;
+
+      .split-row {
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        position: relative;
+        height: 100%;
+
+        &.split-first-row,
+        .split-name {
+          flex-grow: 1;
+        }
+
+        &.split-second-row,
+        .split-time {
+          flex-shrink: 0;
+        }
+
+        .split-name {
+          display: flex;
+          align-items: center;
+          justify-content: flex-start;
+          overflow: hidden;
+          padding: 0px $split-column-padding;
+          padding-left: 0px;
+          padding-top: 1px;
+          height: 100%;
+
+          .split-name-inner {
+            padding: 0;
+            max-width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
+        }
+
+        .split-time {
+          display: flex;
+          align-items: center;
+          justify-content: flex-end;
+          padding: 0px $split-column-padding;
+          padding-left: 0;
+          height: 100%;
+
+          &.split-time-full {
+            width: $split-column-width;
+            flex-shrink: 0;
+          }
+
+          &.split-label {
+            padding-top: 1px;
+          }
+
+          .split-time-inner {
+            padding: 0;
+          }
+        }
+      }
+    }
 
     &.split-label {
       height: $split-label-height;
@@ -31,75 +142,6 @@ $split-icon-size: 18px;
       width: 100%;
       height: 100%;
       padding: 0;
-    }
-
-    .split-icon-empty {
-      height: 18px;
-      padding: 0 9px;
-    }
-
-    .split-name {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      overflow: hidden;
-      flex-grow: 1;
-      padding-left: 0px;
-      padding-top: 1px;
-
-      .split-name-inner {
-        padding: 0;
-        max-width: 100%;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
-    }
-
-    .split-time {
-      display: flex;
-      align-items: center;
-      justify-content: flex-end;
-      padding-left: 0;
-
-      &.split-time-full {
-        width: $split-column-width;
-        flex-shrink: 0;
-      }
-
-      &.split-label {
-        padding-top: 1px;
-      }
-
-      .split-time-inner {
-        padding: 0;
-      }
-    }
-
-    div {
-      padding: 0px 6px;
-      position: relative;
-      white-space: nowrap;
-    }
-
-    .split-icon-container {
-      padding-right: 6px;
-      width: $split-icon-size;
-      display: flex;
-      flex-shrink: 0;
-      align-items: center;
-      justify-content: center;
-
-      .split-icon {
-        max-width: $split-icon-size;
-        height: $split-icon-size;
-        object-fit: contain;
-        filter: drop-shadow(2px 2px 1px rgba(0, 0, 0, 0.3));
-      }
-    }
-
-    .split-icon-container-empty {
-      padding-right: 0px;
     }
   }
 }

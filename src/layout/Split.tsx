@@ -7,7 +7,7 @@ export interface Props {
     splitsState: LiveSplit.SplitsComponentStateJson,
     evenOdd: [Option<string>, Option<string>],
     split: LiveSplit.SplitStateJson,
-    icon: string,
+    icon?: string,
     separatorInFrontOfSplit: boolean,
     layoutState: LiveSplit.LayoutStateJson,
     visualSplitIndex: number,
@@ -20,10 +20,10 @@ export default class Split extends React.Component<Props> {
 
     public render() {
         const currentSplit = this.props.split.is_current_split ? "current-split" : "";
-        const separator = this.props.separatorInFrontOfSplit ? "split-separator" : "";
+        const twoRows = this.props.splitsState.display_two_rows ? "two-rows" : "";
 
         const splitsHaveIcons = this.props.splitsState.has_icons;
-        const hasIcon = this.props.icon !== "";
+        const hasIcon = this.props.icon !== undefined && this.props.icon !== "";
 
         const innerStyle: any = {};
         const outerStyle: any = {};
@@ -60,7 +60,7 @@ export default class Split extends React.Component<Props> {
 
         return (
             <span
-                className={["split", currentSplit, separator].filter((s) => s.length > 0).join(" ")}
+                className={["split", currentSplit, twoRows].filter((s) => s.length > 0).join(" ")}
                 style={outerStyle}
             >
                 <div className="current-split-background" style={currentSplitBackgroundStyle}></div>
@@ -70,36 +70,40 @@ export default class Split extends React.Component<Props> {
                     style={innerStyle}
                 >
                     {
-                        splitsHaveIcons && (hasIcon
-                            ? <img className="split-icon" src={this.props.icon} />
-                            : <div className="split-icon-empty"></div>)
+                        splitsHaveIcons && hasIcon &&
+                        <img className="split-icon" src={this.props.icon} />
                     }
                 </div>
                 <div
-                    key="split-name"
-                    className="split-name"
+                    className="split-rows"
                     style={innerStyle}
                 >
-                    <div className="split-name-inner">
-                        {this.props.split.name}
+                    <div className="split-row split-first-row">
+                        <div
+                            key="split-name"
+                            className="split-name"
+                        >
+                            <div className="split-name-inner">
+                                {this.props.split.name}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="split-row split-second-row">
+                        {
+                            columns.map((column, i) =>
+                                <div
+                                    key={i}
+                                    className={`split-time time ${i < columns.length - 1 ? "split-time-full" : ""}`}
+                                    style={{ color: colorToCss(column.visual_color) }}
+                                >
+                                    <div className="split-time-inner">
+                                        {column.value}
+                                    </div>
+                                </div>,
+                            ).reverse()
+                        }
                     </div>
                 </div>
-                {
-                    columns.map((column, i) =>
-                        <div
-                            key={i}
-                            className={`split-time time ${i < columns.length - 1 ? "split-time-full" : ""}`}
-                            style={{
-                                ...innerStyle,
-                                color: colorToCss(column.visual_color),
-                            }}
-                        >
-                            <div className="split-time-inner">
-                                {column.value}
-                            </div>
-                        </div>,
-                    ).reverse()
-                }
             </span>
         );
     }
