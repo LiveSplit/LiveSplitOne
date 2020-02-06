@@ -11,10 +11,6 @@ $split-icon-two-row-size: $two-row-height - $split-column-padding;
   width: 100%;
   position: relative;
 
-  span.split.split-separator div {
-    line-height: 18px;
-  }
-
   .split {
     line-height: $default-component-line-height;
     display: flex;
@@ -65,6 +61,7 @@ $split-icon-two-row-size: $two-row-height - $split-column-padding;
 
     .split-icon-container-empty {
       padding-right: $split-column-padding;
+      position: relative;
     }
 
     .split-rows {

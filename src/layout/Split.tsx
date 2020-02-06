@@ -20,7 +20,6 @@ export default class Split extends React.Component<Props> {
 
     public render() {
         const currentSplit = this.props.split.is_current_split ? "current-split" : "";
-        const separator = this.props.separatorInFrontOfSplit ? "split-separator" : "";
         const twoRows = this.props.splitsState.display_two_rows ? "two-rows" : "";
 
         const splitsHaveIcons = this.props.splitsState.has_icons;
@@ -61,7 +60,7 @@ export default class Split extends React.Component<Props> {
 
         return (
             <span
-                className={["split", currentSplit, separator, twoRows].filter((s) => s.length > 0).join(" ")}
+                className={["split", currentSplit, twoRows].filter((s) => s.length > 0).join(" ")}
                 style={outerStyle}
             >
                 <div className="current-split-background" style={currentSplitBackgroundStyle}></div>
