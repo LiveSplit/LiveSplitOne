@@ -6,6 +6,8 @@ $split-label-height: 22px;
 $split-column-padding: 6px;
 $split-icon-size: $default-component-height - $split-column-padding;
 $split-icon-two-row-size: $two-row-height - $split-column-padding;
+$thin-separator-width: 1px;
+$thick-separator-width: 2px;
 
 .splits {
   width: 100%;
@@ -17,6 +19,8 @@ $split-icon-two-row-size: $two-row-height - $split-column-padding;
     position: relative;
     width: 100%;
     height: $default-component-height;
+
+    @include time;
 
     &.two-rows {
       height: $two-row-height;
@@ -41,8 +45,6 @@ $split-icon-two-row-size: $two-row-height - $split-column-padding;
         width: $split-icon-two-row-size;
       }
     }
-
-    @include time;
 
     .split-icon-container {
       padding: 2px $split-column-padding;
@@ -139,11 +141,28 @@ $split-icon-two-row-size: $two-row-height - $split-column-padding;
       height: $split-label-height;
     }
 
-    .current-split-background {
+    .current-split-background,
+    .split-borders {
       position: absolute;
       width: 100%;
       height: 100%;
+      top: 0;
       padding: 0;
+      box-sizing: border-box;
+    }
+
+    .split-borders {
+      border-bottom-width: $thin-separator-width;
+      border-top-width: $thin-separator-width;
+      border-bottom-style: solid;
+      border-top-style: solid;
+      top: -$thick-separator-width / 2;
+      height: calc(100% + #{$thick-separator-width} / 2);
+
+      &.separator-above {
+        border-top-width: $thick-separator-width;
+        border-top-style: solid;
+      }
     }
   }
 }
