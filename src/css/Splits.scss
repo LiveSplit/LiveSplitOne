@@ -24,6 +24,8 @@ $split-icon-two-row-size: $two-row-height - $split-column-padding;
 
       .split-rows {
         flex-wrap: wrap;
+        padding-top: $two-row-extra-padding;
+        padding-bottom: $two-row-extra-padding;
 
         .split-row {
           height: initial;
