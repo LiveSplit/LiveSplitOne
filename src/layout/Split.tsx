@@ -29,18 +29,22 @@ export default class Split extends React.Component<Props> {
         const outerStyle: any = {};
 
         if (this.props.split.index % 2 === 1) {
-            innerStyle.borderBottom = this.props.splitsState.show_thin_separators
-                ? `1px solid ${colorToCss(this.props.layoutState.thin_separators_color)}`
-                : "1px solid transparent";
+            if (this.props.splitsState.show_thin_separators) {
+                innerStyle.borderBottomColor = colorToCss(this.props.layoutState.thin_separators_color);
+            } else {
+                innerStyle.borderBottomColor = "transparent";
+            }
             outerStyle.backgroundColor = this.props.evenOdd[1];
         } else {
-            innerStyle.borderBottom = "1px solid transparent";
+            innerStyle.borderBottomColor = "transparent";
             outerStyle.backgroundColor = this.props.evenOdd[0];
         }
-        innerStyle.borderTop = innerStyle.borderBottom;
+        innerStyle.borderTopColor = innerStyle.borderBottomColor;
 
+        let separatorAbove = "";
         if (this.props.separatorInFrontOfSplit) {
-            innerStyle.borderTop = `2px solid ${colorToCss(this.props.layoutState.separators_color)}`;
+            innerStyle.borderTopColor = colorToCss(this.props.layoutState.separators_color);
+            separatorAbove = "separator-above";
         }
 
         const currentSplitBackgroundStyle: any = {};
@@ -64,20 +68,17 @@ export default class Split extends React.Component<Props> {
                 style={outerStyle}
             >
                 <div className="current-split-background" style={currentSplitBackgroundStyle}></div>
+                <div className={`split-borders ${separatorAbove}`} style={innerStyle}></div>
                 <div
                     key="split-icon"
                     className={splitsHaveIcons ? "split-icon-container" : "split-icon-container-empty"}
-                    style={innerStyle}
                 >
                     {
                         splitsHaveIcons && hasIcon &&
                         <img className="split-icon" src={this.props.icon} />
                     }
                 </div>
-                <div
-                    className="split-rows"
-                    style={innerStyle}
-                >
+                <div className="split-rows">
                     <div className="split-row split-first-row">
                         <div
                             key="split-name"

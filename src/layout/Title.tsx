@@ -9,32 +9,11 @@ export interface Props { state: LiveSplit.TitleComponentStateJson }
 
 export default class Title extends React.Component<Props> {
     private iconUrl: string;
-    private gameNameElement: React.RefObject<HTMLElement>;
 
     constructor(props: Props) {
         super(props);
 
         this.iconUrl = "";
-        this.gameNameElement = React.createRef();
-    }
-
-    public componentDidMount() {
-        const container = this.gameNameElement.current;
-        if (container === null) {
-            return;
-        }
-        if (this.getIconUrl() !== ""
-            && container.classList.contains("justify-center")
-            && container.parentElement !== null
-            && container.offsetWidth > container.parentElement.offsetWidth - 100) {
-            if (!container.classList.contains("game-title-center-fix")) {
-                container.classList.add("game-title-center-fix");
-            }
-        } else {
-            if (container.classList.contains("game-title-center-fix")) {
-                container.classList.remove("game-title-center-fix");
-            }
-        }
     }
 
     public render() {
@@ -43,8 +22,10 @@ export default class Title extends React.Component<Props> {
         const finishedRunsExist = this.props.state.finished_runs !== null;
         const attemptsExist = this.props.state.attempts !== null;
         const twoLines = this.props.state.line2 !== null;
-        let attemptsLabel = "";
+        const showIcon = iconUrl !== "";
+        const showAttempts = attemptsExist || finishedRunsExist;
 
+        let attemptsLabel = "";
         if (finishedRunsExist) {
             attemptsLabel += this.props.state.finished_runs;
             if (attemptsExist) {
@@ -54,18 +35,11 @@ export default class Title extends React.Component<Props> {
         if (attemptsExist) {
             attemptsLabel += this.props.state.attempts;
         }
-        const showIcon = iconUrl !== "";
-        const icon = showIcon ? (
-            <div className="game-icon-container">
-                <img className="title-icon" src={iconUrl} />
-            </div>
-        ) : (<div style={{ display: "none" }} />);
 
-        const gameName = twoLines
-            ? <span ref={this.gameNameElement} className={"title-game" + (this.props.state.is_centered ? " justify-center" : "")}>
-                <div className="title-text">{this.props.state.line1}</div>
-            </span>
-            : <div style={{ display: "none" }} />;
+        const alignmentClass = this.props.state.is_centered ? "centered" : "left-align";
+        const numLinesClass = twoLines ? "two-lines" : "one-line";
+        const iconClass = showIcon ? "show-icon" : "";
+
         return (
             <div
                 className="title"
@@ -74,28 +48,37 @@ export default class Title extends React.Component<Props> {
                     color: map(this.props.state.text_color, colorToCss),
                 }}
             >
-                {icon}
+                {
+                    showIcon && <div className="game-icon-container">
+                        <img className="title-icon" src={iconUrl} />
+                    </div>
+                }
                 <div
-                    className={
-                        "run-meta"
-                        + (!this.props.state.is_centered ? " meta-left" : "")
-                        + (twoLines ? " meta-two-lines" : " meta-one-line")
-                        + (showIcon ? " show-icon" : "")
-                    }
+                    className={`run-info ${alignmentClass} ${iconClass}`}
                 >
                     {
-                        gameName
+                        twoLines && <span className={`title-game ${alignmentClass}`}>
+                            <div className="title-text">{this.props.state.line1}</div>
+                        </span>
                     }
-                    <div id="lower-row" style={{ height: (twoLines ? "50%" : "100%") }}>
-                        <div className={
-                            "title-category"
-                            + (this.props.state.is_centered ? " justify-center" : "")
-                        }>
+                    <div className={`lower-row ${numLinesClass} ${alignmentClass}`}>
+                        {
+                            this.props.state.is_centered && showAttempts &&
+                            <div className={`title-attempts-invisible ${numLinesClass}`}>
+                                <div className="title-text">{attemptsLabel}</div>
+                            </div>
+                        }
+                        <div className={`title-category ${alignmentClass}`}>
                             <div className="title-text">
                                 {twoLines ? this.props.state.line2 : this.props.state.line1}
                             </div>
                         </div>
-                        <div className="title-attempts">{attemptsLabel}</div>
+                        {
+                            showAttempts &&
+                            <div className={`title-attempts ${numLinesClass}`}>
+                                <div className="title-text">{attemptsLabel}</div>
+                            </div>
+                        }
                     </div>
                 </div>
             </div>
