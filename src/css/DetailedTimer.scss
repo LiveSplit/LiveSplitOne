@@ -1,7 +1,7 @@
 @import 'Time';
+@import 'variables';
 
 $icon-size: 35px;
-$padding: 6px;
 $table-padding: 2px;
 $segment-name-font-size: 15px;
 $comparison-font-size: 11px;
@@ -15,15 +15,15 @@ $comparison-font-size: 11px;
     position: absolute;
     display: flex;
     top: 0;
-    left: $padding;
+    left: $side-padding;
     height: 100%;
     width: 50%;
 
     .detailed-timer-icon-container {
       width: $icon-size;
       height: 100%;
-      padding: $padding 0;
-      margin-right: $padding;
+      padding: $side-padding 0;
+      margin-right: $side-padding;
       box-sizing: border-box;
 
       .detailed-timer-icon-inner-container {
@@ -46,7 +46,7 @@ $comparison-font-size: 11px;
 
       .detailed-timer-segment-name {
         position: absolute;
-        top: $padding;
+        top: $side-padding;
         left: 0;
         width: 100%;
         font-size: $segment-name-font-size;

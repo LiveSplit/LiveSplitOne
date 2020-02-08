@@ -3,9 +3,8 @@
 
 $split-column-width: 60px;
 $split-label-height: 22px;
-$split-column-padding: 6px;
-$split-icon-size: $default-component-height - $split-column-padding;
-$split-icon-two-row-size: $two-row-height - $split-column-padding;
+$split-icon-size: $default-component-height - $side-padding;
+$split-icon-two-row-size: $two-row-height - $side-padding;
 $thin-separator-width: 1px;
 $thick-separator-width: 2px;
 
@@ -47,7 +46,7 @@ $thick-separator-width: 2px;
     }
 
     .split-icon-container {
-      padding: 2px $split-column-padding;
+      padding: 2px $side-padding;
       width: $split-icon-size;
       display: flex;
       flex-shrink: 0;
@@ -64,7 +63,7 @@ $thick-separator-width: 2px;
     }
 
     .split-icon-container-empty {
-      padding-right: $split-column-padding;
+      padding-right: $side-padding;
       position: relative;
     }
 
@@ -99,7 +98,7 @@ $thick-separator-width: 2px;
           align-items: center;
           justify-content: flex-start;
           overflow: hidden;
-          padding: 0px $split-column-padding;
+          padding: 0px $side-padding;
           padding-left: 0px;
           padding-top: 1px;
           height: 100%;
@@ -117,7 +116,7 @@ $thick-separator-width: 2px;
           display: flex;
           align-items: center;
           justify-content: flex-end;
-          padding: 0px $split-column-padding;
+          padding: 0px $side-padding;
           padding-left: 0;
           height: 100%;
 
