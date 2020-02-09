@@ -3,3 +3,5 @@ dist
 npm-debug.log
 src/livesplit_core.wasm
 src/livesplit-core
+
+test/screenshots

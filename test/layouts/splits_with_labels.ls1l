@@ -1,0 +1,143 @@
+{
+    "components": [
+        {
+            "Splits": {
+                "background": {
+                    "Alternating": [
+                        [
+                            0,
+                            0,
+                            0,
+                            0
+                        ],
+                        [
+                            1,
+                            1,
+                            1,
+                            0.04
+                        ]
+                    ]
+                },
+                "visual_split_count": 3,
+                "split_preview_count": 1,
+                "show_thin_separators": true,
+                "separator_last_split": true,
+                "always_show_last_split": true,
+                "fill_with_blank_space": true,
+                "display_two_rows": false,
+                "current_split_gradient": {
+                    "Vertical": [
+                        [
+                            0.2,
+                            0.4509804,
+                            0.95686275,
+                            1
+                        ],
+                        [
+                            0.08235294,
+                            0.20784314,
+                            0.45490196,
+                            1
+                        ]
+                    ]
+                },
+                "show_column_labels": true,
+                "columns": [
+                    {
+                        "name": "Time",
+                        "start_with": "ComparisonTime",
+                        "update_with": "SplitTime",
+                        "update_trigger": "OnEndingSegment",
+                        "comparison_override": null,
+                        "timing_method": null
+                    },
+                    {
+                        "name": "+/−",
+                        "start_with": "Empty",
+                        "update_with": "Delta",
+                        "update_trigger": "Contextual",
+                        "comparison_override": null,
+                        "timing_method": null
+                    }
+                ]
+            }
+        }
+    ],
+    "general": {
+        "direction": "Vertical",
+        "background": {
+            "Plain": [
+                0.06,
+                0.06,
+                0.06,
+                1
+            ]
+        },
+        "best_segment_color": [
+            1,
+            0.8333333,
+            0,
+            1
+        ],
+        "ahead_gaining_time_color": [
+            0,
+            0.8,
+            0.21333332,
+            1
+        ],
+        "ahead_losing_time_color": [
+            0.38000003,
+            0.82000005,
+            0.49733335,
+            1
+        ],
+        "behind_gaining_time_color": [
+            0.82000005,
+            0.38000003,
+            0.38000003,
+            1
+        ],
+        "behind_losing_time_color": [
+            0.8,
+            0,
+            0,
+            1
+        ],
+        "not_running_color": [
+            0.67,
+            0.67,
+            0.67,
+            1
+        ],
+        "personal_best_color": [
+            0.08000004,
+            0.64733326,
+            1,
+            1
+        ],
+        "paused_color": [
+            0.48,
+            0.48,
+            0.48,
+            1
+        ],
+        "thin_separators_color": [
+            1,
+            1,
+            1,
+            0.09
+        ],
+        "separators_color": [
+            1,
+            1,
+            1,
+            0.35
+        ],
+        "text_color": [
+            1,
+            1,
+            1,
+            1
+        ]
+    }
+}
