@@ -38,20 +38,24 @@ type Menu =
 
 export interface State {
     hotkeySystem: HotkeySystem,
+    isBrowserSource: boolean,
     isDesktop: boolean,
     timer: SharedTimer,
     layout: Layout,
     layoutWidth: number,
     sidebarOpen: boolean,
+    sidebarTransitionsEnabled: boolean,
     menu: Menu,
 }
 
 const DEFAULT_LAYOUT_WIDTH = 300;
 
 export class LiveSplit extends React.Component<{}, State> {
-    private isDesktopQuery = window.matchMedia("(min-width: 1200px)");
+    private isDesktopQuery = window.matchMedia("(min-width: 600px)");
+    private containerRef: React.RefObject<HTMLDivElement>;
     private scrollEvent: Option<EventListenerObject>;
     private rightClickEvent: Option<EventListenerObject>;
+    private resizeEvent: Option<EventListenerObject>;
     private connection: Option<WebSocket>;
 
     constructor(props: {}) {
@@ -112,25 +116,34 @@ export class LiveSplit extends React.Component<{}, State> {
         }
 
         const layoutWidth = +(localStorage.getItem("layoutWidth") || DEFAULT_LAYOUT_WIDTH);
+        const isDesktop = this.isDesktopQuery.matches;
+        const isBrowserSource = !!(window as any).obsstudio;
 
         this.state = {
-            isDesktop: this.isDesktopQuery.matches,
+            isDesktop: isDesktop && !isBrowserSource,
+            isBrowserSource,
             layout,
             layoutWidth,
             menu: { kind: MenuKind.Timer },
             sidebarOpen: false,
+            sidebarTransitionsEnabled: false,
             timer,
             hotkeySystem,
         };
 
         this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
+
+        this.containerRef = React.createRef();
     }
 
-    public componentWillMount() {
+    public componentDidMount() {
         this.scrollEvent = { handleEvent: (e: MouseWheelEvent) => this.onScroll(e) };
         window.addEventListener("wheel", this.scrollEvent);
         this.rightClickEvent = { handleEvent: (e: any) => this.onRightClick(e) };
         window.addEventListener("contextmenu", this.rightClickEvent, false);
+        this.resizeEvent = { handleEvent: () => this.handleAutomaticResize() };
+        window.addEventListener("resize", this.resizeEvent, false);
+
         window.onbeforeunload = (e: BeforeUnloadEvent) => {
             const hasBeenModified = this.readWith((t) => t.getRun().hasBeenModified());
             if (hasBeenModified) {
@@ -139,7 +152,14 @@ export class LiveSplit extends React.Component<{}, State> {
             }
             return null;
         };
+
         this.isDesktopQuery.addListener(this.mediaQueryChanged);
+
+        if (this.state.isBrowserSource) {
+            document.body.className = "browser-source";
+        }
+
+        this.handleAutomaticResize();
     }
 
     public componentWillUnmount() {
@@ -150,6 +170,10 @@ export class LiveSplit extends React.Component<{}, State> {
         window.removeEventListener(
             "contextmenu",
             expect(this.rightClickEvent, "A Right Click Event should exist"),
+        );
+        window.removeEventListener(
+            "resize",
+            expect(this.resizeEvent, "A Resize Event should exist"),
         );
         this.state.timer.dispose();
         this.state.layout.dispose();
@@ -186,6 +210,7 @@ export class LiveSplit extends React.Component<{}, State> {
                                 getState={() => this.readWith(
                                     (t) => this.state.layout.stateAsJson(t),
                                 )}
+                                allowResize={this.state.isDesktop}
                                 width={this.state.layoutWidth}
                                 onResize={(width) => this.onResize(width)}
                             />
@@ -222,15 +247,28 @@ export class LiveSplit extends React.Component<{}, State> {
             />
         );
 
+        const routeClassMap = {
+            [MenuKind.Timer]: "menu-timer",
+            [MenuKind.Splits]: "menu-splits",
+            [MenuKind.RunEditor]: "menu-run-editor",
+            [MenuKind.Layout]: "menu-layout",
+            [MenuKind.LayoutEditor]: "menu-layout-editor",
+            [MenuKind.SettingsEditor]: "menu-settings-editor",
+            [MenuKind.Splits]: "menu-splits",
+        };
+
+        const contentClassName = `livesplit-container ${this.state.isDesktop ? "" : "is-mobile"}`;
+        const viewContainerClassName = `view-container ${routeClassMap[this.state.menu.kind]}`;
+
         return (
             <Sidebar
                 sidebar={sidebarContent}
                 docked={this.state.isDesktop}
                 open={this.state.sidebarOpen}
-                transitions={!this.state.isDesktop}
+                transitions={this.state.sidebarTransitionsEnabled}
                 onSetOpen={((e: boolean) => this.onSetSidebarOpen(e)) as any}
                 sidebarClassName="sidebar"
-                contentClassName="livesplit-container"
+                contentClassName={contentClassName}
                 overlayClassName="sidebar-overlay"
             >
                 {
@@ -241,7 +279,10 @@ export class LiveSplit extends React.Component<{}, State> {
                         onClick={((e: boolean) => this.onSetSidebarOpen(e)) as any}
                     />
                 }
-                <div className="view-container">
+                <div
+                    className={viewContainerClassName}
+                    ref={this.containerRef}
+                >
                     {content}
                 </div>
             </Sidebar>
@@ -250,21 +291,18 @@ export class LiveSplit extends React.Component<{}, State> {
 
     public openTimerView() {
         this.setState({
-            ...this.state,
             menu: { kind: MenuKind.Timer },
         });
     }
 
     public openSplitsView() {
         this.setState({
-            ...this.state,
             menu: { kind: MenuKind.Splits },
         });
     }
 
     public openLayoutView() {
         this.setState({
-            ...this.state,
             menu: { kind: MenuKind.Layout },
         });
     }
@@ -399,7 +437,6 @@ export class LiveSplit extends React.Component<{}, State> {
                 "The Run Editor should always be able to be opened.",
             );
             this.setState({
-                ...this.state,
                 menu: { kind: MenuKind.RunEditor, editor },
                 sidebarOpen: false,
             });
@@ -421,14 +458,12 @@ export class LiveSplit extends React.Component<{}, State> {
                 "The Run Editor should always return a valid Run.",
             );
             this.setState({
-                ...this.state,
                 menu: { kind: MenuKind.Timer },
                 sidebarOpen: false,
             });
         } else {
             run.dispose();
             this.setState({
-                ...this.state,
                 menu: { kind: MenuKind.Timer },
                 sidebarOpen: false,
             });
@@ -446,7 +481,6 @@ export class LiveSplit extends React.Component<{}, State> {
             "The Layout Editor should always be able to be opened.",
         );
         this.setState({
-            ...this.state,
             menu: { kind: MenuKind.LayoutEditor, editor },
             sidebarOpen: false,
         });
@@ -462,7 +496,6 @@ export class LiveSplit extends React.Component<{}, State> {
         if (save) {
             this.state.layout.dispose();
             this.setState({
-                ...this.state,
                 layout,
                 menu: { kind: MenuKind.Timer },
                 sidebarOpen: false,
@@ -471,7 +504,6 @@ export class LiveSplit extends React.Component<{}, State> {
         } else {
             layout.dispose();
             this.setState({
-                ...this.state,
                 menu: { kind: MenuKind.Timer },
                 sidebarOpen: false,
             });
@@ -483,7 +515,6 @@ export class LiveSplit extends React.Component<{}, State> {
     public openSettingsEditor() {
         this.state.hotkeySystem.deactivate();
         this.setState({
-            ...this.state,
             menu: {
                 kind: MenuKind.SettingsEditor,
                 config: this.state.hotkeySystem.config(),
@@ -514,7 +545,6 @@ export class LiveSplit extends React.Component<{}, State> {
         }
 
         this.setState({
-            ...this.state,
             menu: { kind: MenuKind.Timer },
             sidebarOpen: false,
         });
@@ -589,16 +619,39 @@ export class LiveSplit extends React.Component<{}, State> {
         return run;
     }
 
+    private handleAutomaticResize() {
+        if (!this.state.isDesktop) {
+            const fullWidth = this.containerRef.current?.clientWidth;
+            if (fullWidth) {
+                this.setState({
+                    layoutWidth: fullWidth,
+                });
+            }
+        }
+    }
+
     private onResize(width: number) {
         localStorage.setItem("layoutWidth", `${width}`);
         this.setState({
-            ...this.state,
             layoutWidth: width,
         });
     }
 
     private mediaQueryChanged() {
-        this.setState({ isDesktop: this.isDesktopQuery.matches });
+        const isDesktop = this.isDesktopQuery.matches && !this.state.isBrowserSource;
+        if (isDesktop) {
+            const layoutWidth = +(localStorage.getItem("layoutWidth") || DEFAULT_LAYOUT_WIDTH);
+            this.setState({
+                isDesktop,
+                layoutWidth,
+                sidebarTransitionsEnabled: false,
+            });
+        } else {
+            this.setState({
+                isDesktop,
+                sidebarTransitionsEnabled: false,
+            });
+        }
     }
 
     private importLayoutFromString(file: string) {
@@ -619,7 +672,6 @@ export class LiveSplit extends React.Component<{}, State> {
     private setLayout(layout: Layout) {
         this.state.layout.dispose();
         this.setState({
-            ...this.state,
             layout,
         });
         layout.remount();
@@ -664,8 +716,8 @@ export class LiveSplit extends React.Component<{}, State> {
     private onSetSidebarOpen(open: boolean) {
         if (!this.state.isDesktop) {
             this.setState({
-                ...this.state,
                 sidebarOpen: open,
+                sidebarTransitionsEnabled: true,
             });
         }
     }

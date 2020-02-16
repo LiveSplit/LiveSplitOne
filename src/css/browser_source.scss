@@ -1,16 +1,17 @@
-body, .livesplit-container, .buttons {
+body.browser-source {
+  &,
+  .livesplit-container,
+  .buttons {
     background-color: rgba(0, 0, 0, 0);
     overflow: hidden !important;
-}
+  }
 
-.livesplit-container > div {
-    margin: 0px !important;
-}
-
-.sidebar {
+  .sidebar {
     box-shadow: none !important;
-}
+  }
 
-.buttons {
+  .buttons,
+  .sidebar-button {
     visibility: hidden;
+  }
 }
