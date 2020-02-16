@@ -38,6 +38,7 @@ type Menu =
 
 export interface State {
     hotkeySystem: HotkeySystem,
+    isBrowserSource: boolean,
     isDesktop: boolean,
     timer: SharedTimer,
     layout: Layout,
@@ -112,9 +113,11 @@ export class LiveSplit extends React.Component<{}, State> {
         }
 
         const layoutWidth = +(localStorage.getItem("layoutWidth") || DEFAULT_LAYOUT_WIDTH);
+        const isBrowserSource = !!(window as any).obsstudio;
 
         this.state = {
             isDesktop: this.isDesktopQuery.matches,
+            isBrowserSource,
             layout,
             layoutWidth,
             menu: { kind: MenuKind.Timer },
@@ -140,6 +143,10 @@ export class LiveSplit extends React.Component<{}, State> {
             return null;
         };
         this.isDesktopQuery.addListener(this.mediaQueryChanged);
+
+        if (this.state.isBrowserSource) {
+            document.body.className = "browser-source";
+        }
     }
 
     public componentWillUnmount() {
