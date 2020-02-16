@@ -8,6 +8,7 @@ import "../css/Layout.scss";
 
 export interface Props {
     state: LayoutStateJson,
+    allowResize: boolean,
     width: number,
     onResize(width: number): void,
 }
@@ -26,17 +27,22 @@ export default class Layout extends React.Component<Props> {
                     width: this.props.width,
                 }}
             >
-                <ResizableBox
-                    className="resizable-layout"
-                    width={this.props.width}
-                    minConstraints={[200, 0]}
-                    height={0}
-                    handle={<span onClick={(event: React.SyntheticEvent) => { event.stopPropagation(); }} className="resizable-handle" />}
-                    onResize={
-                        (_event: React.SyntheticEvent, data: ResizeCallbackData) => this.props.onResize(data.size.width)
-                    }
-                    axis="x"
-                />
+                {this.props.allowResize &&
+                    <ResizableBox
+                        className="resizable-layout"
+                        width={this.props.width}
+                        minConstraints={[200, 0]}
+                        height={0}
+                        handle={<span onClick={(event: React.SyntheticEvent) => { event.stopPropagation(); }} className="resizable-handle" />}
+                        onResize={
+                            (
+                                _event: React.SyntheticEvent,
+                                data: ResizeCallbackData,
+                            ) => this.props.onResize(data.size.width)
+                        }
+                        axis="x"
+                    />
+                }
                 {
                     this.props.state.components.map((c) => {
                         const componentType = Object.keys(c)[0];

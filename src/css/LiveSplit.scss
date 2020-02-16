@@ -1,14 +1,12 @@
 @import 'variables';
 
-$button-margin: 5px;
-
 .livesplit-container {
   overflow-y: auto !important;
 
   .sidebar-button {
     position: fixed;
-    bottom: 10px;
-    left: 10px;
+    bottom: $button-margin;
+    left: $button-margin;
     z-index: 10;
     font-size: 24px;
     padding: 8px;
@@ -26,15 +24,15 @@ $button-margin: 5px;
       .small {
         button {
           height: 30px;
-          width: calc(50% - #{$button-margin})
+          width: calc(50% - #{$button-margin / 2})
         }
 
         button:first-child {
-          margin-right: $button-margin;
+          margin-right: $button-margin / 2;
         }
 
         button:last-child {
-          margin-left: $button-margin;
+          margin-left: $button-margin / 2;
         }
       }
     }

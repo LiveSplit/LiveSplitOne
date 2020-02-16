@@ -4,6 +4,7 @@ import Layout from "./Layout";
 
 export interface Props {
     getState: () => LayoutStateJson,
+    allowResize: boolean,
     width: number,
     onResize(width: number): void,
 }
@@ -42,6 +43,7 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
         return (
             <Layout
                 state={this.state.layoutState}
+                allowResize={this.props.allowResize}
                 width={this.props.width}
                 onResize={this.props.onResize}
             />
