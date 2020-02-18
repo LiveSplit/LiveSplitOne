@@ -18,7 +18,7 @@ jobs:
       run: git submodule update --init --recursive
 
     - name: Set CURRENT_TWO_WEEKS for use in cache keys
-      run: echo "::set-env name=CURRENT_TWO_WEEKS::$(($(date +%V) / 2))"
+      run: echo "::set-env name=CURRENT_TWO_WEEKS::$(($(date +%-V) / 2))"
 
     - name: Cache Cargo
       uses: actions/cache@v1
