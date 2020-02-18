@@ -1,20 +1,16 @@
 @import "variables";
 
-$title-font-size: 13px;
-$icon-padding: 2px;
-
 .title {
   height: $two-row-height;
   width: 100%;
   display: flex;
-  line-height: $two-row-line-height;
-  padding-top: $two-row-extra-padding;
-  padding-bottom: $two-row-extra-padding;
+  padding-top: $vertical-padding;
+  padding-bottom: $vertical-padding;
 
   .game-icon-container {
     max-width: $two-row-height;
     max-height: $two-row-height;
-    padding: $icon-padding 0;
+    padding: $vertical-padding 0;
     padding-left: $side-padding;
     flex-shrink: 0;
 
