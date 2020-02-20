@@ -6,12 +6,15 @@
     &.menu-splits,
     &.menu-layout {
       margin: 0;
+      min-width: 100%;
+      min-height: 100%;
     }
   }
 
   #upload-drop-zone #upload-drop-zone-overlay {
     width: 100%;
     height: 100%;
+    margin: 0;
   }
 
   .buttons {
