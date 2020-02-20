@@ -61,6 +61,10 @@ export class LiveSplit extends React.Component<{}, State> {
     constructor(props: {}) {
         super(props);
 
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("/service-worker.js");
+        }
+
         const run = this.getDefaultRun();
         const timer = expect(
             Timer.new(run),
