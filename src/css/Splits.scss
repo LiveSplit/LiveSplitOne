@@ -1,19 +1,17 @@
 @import "Time";
 @import 'variables';
 
-$split-column-width: 60px;
-$split-label-height: 22px;
-$split-icon-size: $default-component-height - $side-padding;
-$split-icon-two-row-size: $two-row-height - $side-padding;
-$thin-separator-width: 1px;
-$thick-separator-width: 2px;
+$split-column-width: $default-line-height * 3;
+$split-label-height: $default-component-height - $thick-separator-width;
+$split-icon-size: $default-component-height - $vertical-padding * 2;
+$split-icon-two-row-size: $two-row-height - $vertical-padding * 2;
 
 .splits {
   width: 100%;
   position: relative;
 
   .split {
-    line-height: $default-component-line-height;
+    line-height: $default-line-height;
     display: flex;
     position: relative;
     width: 100%;
@@ -23,12 +21,11 @@ $thick-separator-width: 2px;
 
     &.two-rows {
       height: $two-row-height;
-      line-height: $two-row-line-height;
 
       .split-rows {
         flex-wrap: wrap;
-        padding-top: $two-row-extra-padding;
-        padding-bottom: $two-row-extra-padding;
+        padding-top: $vertical-padding;
+        padding-bottom: $vertical-padding;
 
         .split-row {
           height: initial;
@@ -46,7 +43,7 @@ $thick-separator-width: 2px;
     }
 
     .split-icon-container {
-      padding: 2px $side-padding;
+      padding: $vertical-padding $side-padding;
       width: $split-icon-size;
       display: flex;
       flex-shrink: 0;
@@ -98,8 +95,8 @@ $thick-separator-width: 2px;
           align-items: center;
           justify-content: flex-start;
           overflow: hidden;
-          padding: 0px $side-padding;
-          padding-left: 0px;
+          padding: 0 $side-padding;
+          padding-left: 0;
           padding-top: 1px;
           height: 100%;
 
@@ -116,7 +113,7 @@ $thick-separator-width: 2px;
           display: flex;
           align-items: center;
           justify-content: flex-end;
-          padding: 0px $side-padding;
+          padding: 0 $side-padding;
           padding-left: 0;
           height: 100%;
 

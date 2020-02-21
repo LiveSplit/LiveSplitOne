@@ -3,6 +3,9 @@ import * as LiveSplit from "../livesplit-core";
 import { colorToCss, gradientToCss } from "../util/ColorUtil";
 
 import "../css/Timer.scss";
+import variables from "../css/variables.scss";
+
+const sidePadding = parseInt(variables.sidePadding, 10);
 
 export interface Props {
     state: LiveSplit.TimerComponentStateJson,
@@ -27,7 +30,7 @@ export function renderToSVG(
         case 4: shiftX = height / 0.71; break;
         default: throw new Error("Unexpected Fraction Length");
     }
-    const x = `${componentWidth - 6 - 0.85 * shiftX}px`;
+    const x = `${componentWidth - sidePadding - 0.85 * shiftX}px`;
     const y = `${0.82 * height}px`;
 
     return (

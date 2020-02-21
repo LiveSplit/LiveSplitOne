@@ -1,11 +1,14 @@
 @import 'variables';
 
+$timer-font-size: 60px;
+$timer-top-margin: -10px;
+
 .timer-time {
-  font-size: 60px;
+  font-size: $timer-font-size;
   text-align: right;
   padding-left: $side-padding;
   padding-right: $side-padding;
   font-family: timer, sans-serif;
-  margin-top: -10px;
+  margin-top: $timer-top-margin;
   text-shadow: none;
 }

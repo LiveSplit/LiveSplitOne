@@ -2,11 +2,15 @@ $button-margin: 10px;
 $view-margin: 20px;
 
 $default-component-height: 24px;
-$default-component-line-height: 20px;
-$two-row-height: 40px;
-$two-row-line-height: 15px;
-$two-row-extra-padding: 2px;
-$side-padding: 6px;
+$line-height-to-component-height-ratio: 0.8;
+$default-line-height: $default-component-height * $line-height-to-component-height-ratio;
+$font-size-to-line-height-ratio: 0.85;
+$default-font-size: $default-line-height * $font-size-to-line-height-ratio;
+$two-row-height: $default-line-height + $default-component-height;
+$side-padding: $default-component-height * 0.35;
+$vertical-padding: ($default-component-height - $default-line-height) / 2;
+$thick-separator-width: $default-component-height * 0.1;
+$thin-separator-width: $thick-separator-width / 2;
 
 $border-color: #404040;
 
@@ -27,3 +31,9 @@ $light-row-color: #121212;
 
 $selected-row-color: linear-gradient(rgb(51, 115, 244) 0%, rgb(21, 53, 116) 100%);
 $selected-row-hover-color: linear-gradient(hsl(220, 90%, 70%) 0%, hsl(220, 69%, 40%) 100%);
+
+:export {
+  fontSizeToLineHeightRatio: $font-size-to-line-height-ratio;
+  lineHeightToComponentHeightRatio: $line-height-to-component-height-ratio;
+  sidePadding: $side-padding;
+}
