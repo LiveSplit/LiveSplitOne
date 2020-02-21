@@ -2,6 +2,7 @@ module.exports = (env, argv) => {
     const HtmlWebpackPlugin = require("html-webpack-plugin");
     const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
     const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+    const WorkboxPlugin = require("workbox-webpack-plugin");
     const path = require("path");
 
     const basePath = __dirname;
@@ -51,6 +52,11 @@ module.exports = (env, argv) => {
             new HtmlWebpackPlugin({
                 template: "./src/index.html",
             }),
+            ...(isProduction ? [new WorkboxPlugin.GenerateSW({
+                clientsClaim: true,
+                skipWaiting: true,
+                maximumFileSizeToCacheInBytes: 100 * 1024 * 1024,
+            })] : []),
         ],
 
         module: {
