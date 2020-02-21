@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV === "production" && "serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/service-worker.js");
+}
+
 const UI = import("./ui/LiveSplit");
 const ReactImport = import("react");
 const ReactDOMImport = import("react-dom");

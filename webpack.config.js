@@ -47,6 +47,7 @@ module.exports = (env, argv) => {
                         coast: false,
                         yandex: false,
                     },
+                    start_url: "/",
                 },
             }),
             new HtmlWebpackPlugin({
@@ -56,6 +57,16 @@ module.exports = (env, argv) => {
                 clientsClaim: true,
                 skipWaiting: true,
                 maximumFileSizeToCacheInBytes: 100 * 1024 * 1024,
+                exclude: [
+                    /^assets\//,
+                ],
+                runtimeCaching: [{
+                    urlPattern: (context) => {
+                        return self.origin === context.url.origin &&
+                            context.url.pathname.startsWith("/assets/");
+                    },
+                    handler: "CacheFirst",
+                }],
             })] : []),
         ],
 
