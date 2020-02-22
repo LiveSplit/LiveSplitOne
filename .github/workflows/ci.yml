@@ -70,6 +70,8 @@ jobs:
       run: |
         set -e
         npm install
+      env:
+        DETECT_CHROMEDRIVER_VERSION: true
 
     - name: Build Core
       run: |
@@ -80,6 +82,23 @@ jobs:
       run: |
         set -e
         npm run publish
+
+    - name: Cache screenshots
+      uses: actions/cache@v1
+      with:
+        path: test/screenshots
+        key: ${{ runner.os }}-screenshots-${{ hashFiles('test/rendering-test.js') }}
+        restore-keys: ${{ runner.os }}-screenshots-
+
+    - name: Run tests
+      run: npm run test
+
+    - name: Upload screenshots
+      if: success() || failure()
+      uses: actions/upload-artifact@v1
+      with:
+        name: Screenshots
+        path: test/screenshots
 
     - name: Optimize
       if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'

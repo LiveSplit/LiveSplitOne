@@ -8,7 +8,7 @@ import variables from "../css/variables.scss";
 
 const fontSizeToLineHeightRatio = parseFloat(variables.fontSizeToLineHeightRatio);
 const lineHeightToComponentHeightRatio = parseFloat(variables.lineHeightToComponentHeightRatio);
-const sidePadding = parseInt(variables.sidePadding, 10);
+const sidePadding = parseFloat(variables.sidePadding);
 
 export interface Props {
     state: LiveSplit.DetailedTimerComponentStateJson,

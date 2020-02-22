@@ -1,0 +1,112 @@
+{
+    "components": [
+        {
+            "Title": {
+                "background": {
+                    "Vertical": [
+                        [
+                            1,
+                            1,
+                            1,
+                            0.13
+                        ],
+                        [
+                            1,
+                            1,
+                            1,
+                            0
+                        ]
+                    ]
+                },
+                "text_color": null,
+                "show_game_name": true,
+                "show_category_name": true,
+                "show_finished_runs_count": false,
+                "show_attempt_count": true,
+                "text_alignment": "Center",
+                "display_as_single_line": false,
+                "display_game_icon": true,
+                "show_region": false,
+                "show_platform": false,
+                "show_variables": true
+            }
+        }
+    ],
+    "general": {
+        "direction": "Vertical",
+        "background": {
+            "Plain": [
+                0.06,
+                0.06,
+                0.06,
+                1
+            ]
+        },
+        "best_segment_color": [
+            1,
+            0.8333333,
+            0,
+            1
+        ],
+        "ahead_gaining_time_color": [
+            0,
+            0.8,
+            0.21333332,
+            1
+        ],
+        "ahead_losing_time_color": [
+            0.38000003,
+            0.82000005,
+            0.49733335,
+            1
+        ],
+        "behind_gaining_time_color": [
+            0.82000005,
+            0.38000003,
+            0.38000003,
+            1
+        ],
+        "behind_losing_time_color": [
+            0.8,
+            0,
+            0,
+            1
+        ],
+        "not_running_color": [
+            0.67,
+            0.67,
+            0.67,
+            1
+        ],
+        "personal_best_color": [
+            0.08000004,
+            0.64733326,
+            1,
+            1
+        ],
+        "paused_color": [
+            0.48,
+            0.48,
+            0.48,
+            1
+        ],
+        "thin_separators_color": [
+            1,
+            1,
+            1,
+            0.09
+        ],
+        "separators_color": [
+            1,
+            1,
+            1,
+            0.35
+        ],
+        "text_color": [
+            1,
+            1,
+            1,
+            1
+        ]
+    }
+}
