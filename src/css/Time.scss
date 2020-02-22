@@ -1,6 +1,6 @@
 @mixin time {
   .time {
     font-weight: bold;
-    font-family: "Roboto", sans-serif;
+    font-variant-numeric: tabular-nums;
   }
 }
