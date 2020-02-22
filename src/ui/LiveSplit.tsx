@@ -217,17 +217,17 @@ export class LiveSplit extends React.Component<{}, State> {
                         </div>
                         <div className="buttons" style={{ width: this.state.layoutWidth }}>
                             <div className="small">
-                                <button onClick={(_) => this.undoSplit()}>
+                                <button aria-label="Undo Split" onClick={(_) => this.undoSplit()}>
                                     <i className="fa fa-arrow-up" aria-hidden="true" /></button>
-                                <button onClick={(_) => this.togglePauseOrStart()}>
+                                <button aria-label="Pause" onClick={(_) => this.togglePauseOrStart()}>
                                     <i className="fa fa-pause" aria-hidden="true" />
                                 </button>
                             </div>
                             <div className="small">
-                                <button onClick={(_) => this.skipSplit()}>
+                                <button aria-label="Skip Split" onClick={(_) => this.skipSplit()}>
                                     <i className="fa fa-arrow-down" aria-hidden="true" />
                                 </button>
-                                <button onClick={(_) => this.reset()}>
+                                <button aria-label="Reset" onClick={(_) => this.reset()}>
                                     <i className="fa fa-times" aria-hidden="true" />
                                 </button>
                             </div>
@@ -275,6 +275,7 @@ export class LiveSplit extends React.Component<{}, State> {
                     !this.state.isDesktop &&
                     !this.state.sidebarOpen &&
                     <button
+                        aria-label="Open Sidebar"
                         className="sidebar-button fa fa-bars"
                         onClick={((e: boolean) => this.onSetSidebarOpen(e)) as any}
                     />

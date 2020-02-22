@@ -201,7 +201,9 @@ export class SideBarContent extends React.Component<Props, State> {
                 return (
                     <div className="sidebar-buttons">
                         <div className="livesplit-title">
-                            <span className="livesplit-icon"><img src={LiveSplitIcon} /></span>
+                            <span className="livesplit-icon">
+                                <img src={LiveSplitIcon} alt="LiveSplit Logo" />
+                            </span>
                             <h2> LiveSplit One</h2>
                         </div>
                         <hr />
@@ -214,11 +216,17 @@ export class SideBarContent extends React.Component<Props, State> {
                         <hr />
                         <h2>Compare Against</h2>
                         <div className="choose-comparison">
-                            <button onClick={(_) => this.props.callbacks.switchToPreviousComparison()}>
+                            <button
+                                aria-label="Switch to Previous Comparison"
+                                onClick={(_) => this.props.callbacks.switchToPreviousComparison()}
+                            >
                                 <i className="fa fa-caret-left" aria-hidden="true" />
                             </button>
                             <span>{this.state.comparison}</span>
-                            <button onClick={(_) => this.props.callbacks.switchToNextComparison()}>
+                            <button
+                                aria-label="Switch to Next Comparison"
+                                onClick={(_) => this.props.callbacks.switchToNextComparison()}
+                            >
                                 <i className="fa fa-caret-right" aria-hidden="true" />
                             </button>
                         </div>
