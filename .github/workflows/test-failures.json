@@ -1,0 +1,19 @@
+{
+  "problemMatcher": [
+      {
+          "owner": "mocha",
+          "pattern": [
+              {
+                  "regexp": "^\\s*Error: (.+)$",
+                  "message": 1
+              },
+              {
+                  "regexp": "^\\s*at Context\\.<anonymous>\\s\\((.*):(\\d+):(\\d+)\\)$",
+                  "file": 1,
+                  "line": 2,
+                  "column": 3
+              }
+          ]
+      }
+  ]
+}

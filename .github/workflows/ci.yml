@@ -91,7 +91,9 @@ jobs:
         restore-keys: ${{ runner.os }}-screenshots-
 
     - name: Run tests
-      run: npm run test
+      run: |
+        echo "::add-matcher::.github/workflows/test-failures.json"
+        npm run test
 
     - name: Upload screenshots
       if: success() || failure()
