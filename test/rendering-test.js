@@ -25,7 +25,7 @@ describe("Layout Rendering Tests", () => {
     };
 
     const clickElement = async (selector) => {
-        const element = await driver.wait(until.elementLocated(selector));
+        const element = await findElement(selector);
         await element.click();
     }
 
@@ -79,7 +79,7 @@ describe("Layout Rendering Tests", () => {
             const tempFilePath = `${SCREENSHOTS_FOLDER}/${layoutName}.png`;
 
             fs.writeFileSync(tempFilePath, layoutScreenshot, "base64");
-            const actualHashHex = await imghash.hash(tempFilePath, 12);
+            const actualHashHex = await imghash.hash(tempFilePath, 24);
             const actualHash = hex64.encode(actualHashHex);
 
             const actualScreenshotPath = `${SCREENSHOTS_FOLDER}/${layoutName}_${splitsName}_${actualHash.replace("/", "$")}.png`;
@@ -116,15 +116,15 @@ describe("Layout Rendering Tests", () => {
         });
     }
 
-    testRendering("all_components", "default", "8AAD____-BAAAAAAAALABv_j");
-    testRendering("all_components", "pmw3", "8AAD__8A-B_DuDvDLDACRP-_");
-    testRendering("default", "default", "__wBAAAAAAAAAAAAAAAAAP__");
-    testRendering("default", "pmw3", "_4uBiDvDODPDvDLDPDrDAP-H");
-    testRendering("splits_two_rows", "celeste", "-D-D0B_DyB8D0B_D1D_jxDwD");
-    testRendering("splits_with_labels", "celeste", "AKAL__8D8DkAgDsD_86D-D-A");
-    testRendering("title_centered_no_game_icon", "celeste", "__BgDw__BwAAAwDxDx__DwAA");
-    testRendering("title_centered_with_game_icon", "celeste", "__AwRw__wwwAwYx5x5__x4AA");
-    testRendering("title_left_no_attempt_count", "celeste", "__4A4A__4AAAMA8A8A__cAAA");
+    testRendering("all_components", "default", "f4H-QgAAAAAaAAAO____________________AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA__wCAAAAAABv______4Hb4AG");
+    testRendering("all_components", "pmw3", "f4H-QgAAAAAaAAAO________fmAOf6AAX4AG3_gH3_AOX_APVkgOX-AOVvAPX_AeX_AeWrAebvgfAAAAAABvf_5_f___JIBO");
+    testRendering("default", "default", "________8AAD8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADgAAD_________");
+    testRendering("default", "pmw3", "f_4Ad__mX2AG3-gGUNgGSkgOX3AOW9gOX-APVlwOH_APX8AO1uAPUnAOX1AOXLAeHvAeX_wf__AfAAAAAABgAAD_AAB_____");
+    testRendering("splits_two_rows", "celeste", "f8AAcAAHf8AA____d4AAcAAHf_gAcAAPd_AAYAAHf4AA____f4AAYAAH__AA____Z_gAYAAHf_8A9VVfb_wAcAAPf_AAYAAP");
+    testRendering("splits_with_labels", "celeste", "AABAAABMAADPAADPAADP____7AAP_wAP_wAP_wAPwgAA____QAAH2oAP_4AH34APX4AA____wAAP9EAP38AP38AP38AAAAAA");
+    testRendering("title_centered_no_game_icon", "celeste", "________AAAAADQAAHQAAH4A____________AAAAAAAAAAAA____AAkAAL8DAP8DAP8DAP8D_________-n9AAAAAAAAAAAA");
+    testRendering("title_centered_with_game_icon", "celeste", "________AAAAIA0AIB0AYB-A______9_cA-AcAAAcAAAcAAAcAAAcAJAcC_DcD_DcD_DcD_D__________p9cAAAAAAAAAAA");
+    testRendering("title_left_no_attempt_count", "celeste", "________AAAA-AAA-AAA-AAA____________AAAAAAAAAAAA____CQAA_wAA_4AA_4AA_4AA________qf__AAAAAAAAAAAA");
 
     after(async () => {
         await driver.quit();
