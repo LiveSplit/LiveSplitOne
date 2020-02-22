@@ -2,10 +2,9 @@ import * as React from "react";
 import * as LiveSplit from "../livesplit-core";
 import { colorToCss, gradientToCss } from "../util/ColorUtil";
 
-import "../css/Timer.scss";
 import variables from "../css/variables.scss";
 
-const sidePadding = parseInt(variables.sidePadding, 10);
+const sidePadding = parseFloat(variables.sidePadding);
 
 export interface Props {
     state: LiveSplit.TimerComponentStateJson,
