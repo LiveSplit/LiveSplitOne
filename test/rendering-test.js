@@ -121,7 +121,7 @@ describe("Layout Rendering Tests", () => {
     testRendering("default", "default", "__wBAAAAAAAAAAAAAAAAAP__");
     testRendering("default", "pmw3", "_4uBiDvDODPDvDLDPDrDAP-H");
     testRendering("splits_two_rows", "celeste", "-D-D0B_DyB8D0B_D1D_jxDwD");
-    testRendering("splits_with_labels", "celeste", "AKAL__8D8DkAgBsD-D6D-DOD");
+    testRendering("splits_with_labels", "celeste", "AKAL__8D8DkAgDsD_86D-D-A");
     testRendering("title_centered_no_game_icon", "celeste", "__BgDw__BwAAAwDxDx__DwAA");
     testRendering("title_centered_with_game_icon", "celeste", "__AwRw__wwwAwYx5x5__x4AA");
     testRendering("title_left_no_attempt_count", "celeste", "__4A4A__4AAAMA8A8A__cAAA");
