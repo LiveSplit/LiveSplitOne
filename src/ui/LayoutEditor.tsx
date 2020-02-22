@@ -97,7 +97,12 @@ export class LayoutEditor extends React.Component<Props, State> {
                     <div className="layout-editor-inner">
                         <div className="btn-group">
                             <ContextMenuTrigger id="add-button-context-menu" ref={(c) => contextTrigger = c}>
-                                <button onClick={toggleMenu}><i className="fa fa-plus" aria-hidden="true"></i></button>
+                                <button
+                                    aria-label="Add Component"
+                                    onClick={toggleMenu}
+                                >
+                                    <i className="fa fa-plus" aria-hidden="true"></i>
+                                </button>
                             </ContextMenuTrigger>
                             <ContextMenu id="add-button-context-menu">
                                 <MenuItem onClick={(_) => this.addComponent(LiveSplit.CurrentComparisonComponent)}>
@@ -154,23 +159,27 @@ export class LayoutEditor extends React.Component<Props, State> {
                                 </MenuItem>
                             </ContextMenu>
                             <button
+                                aria-label="Remove Component"
                                 onClick={(_) => this.removeComponent()}
                                 className={this.state.editor.buttons.can_remove ? "" : "disabled"}
                             >
                                 <i className="fa fa-minus" aria-hidden="true"></i>
                             </button>
                             <button
+                                aria-label="Duplicate Component"
                                 onClick={(_) => this.duplicateComponent()}
                             >
                                 <i className="fa fa-clone" aria-hidden="true"></i>
                             </button>
                             <button
+                                aria-label="Move Component Up"
                                 onClick={(_) => this.moveComponentUp()}
                                 className={this.state.editor.buttons.can_move_up ? "" : "disabled"}
                             >
                                 <i className="fa fa-arrow-up" aria-hidden="true"></i>
                             </button>
                             <button
+                                aria-label="Move Component Down"
                                 onClick={(_) => this.moveComponentDown()}
                                 className={this.state.editor.buttons.can_move_down ? "" : "disabled"}
                             >
