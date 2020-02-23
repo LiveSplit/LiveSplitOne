@@ -1,12 +1,18 @@
 @import "ContextMenu";
 @import "Markdown";
+@import "mobile";
 @import "Table";
 @import "Toggle";
-@import 'variables';
+@import "variables";
 
+$tab-bar-height: 35px;
 $tab-width: 625px;
 $button-width: 160px;
 $label-size: 14px;
+
+$mobile-game-icon-size: 100px;
+$small-font-size: 13px;
+$small-button-padding: 1px 3px 1px 3px;
 
 .run-editor {
   @include context-menu;
@@ -66,6 +72,12 @@ $label-size: 14px;
     .settings-table {
       width: 100%;
     }
+
+    @include mobile {
+      width: 100%;
+      min-width: 0;
+      margin-left: 0;
+    }
   }
 
   .video-outer-container {
@@ -89,6 +101,7 @@ $label-size: 14px;
 
   .run-editor-info {
     display: inline-flex;
+    align-items: flex-start;
     margin-bottom: $ui-margin / 2;
 
     .game-icon-container {
@@ -96,33 +109,72 @@ $label-size: 14px;
       border: 1px solid $border-color;
       cursor: pointer;
       box-sizing: border-box;
-      height: $button-width;
       width: $button-width;
+      height: $button-width;
       padding: $ui-margin;
 
       .game-icon-image {
         object-fit: contain;
         width: $button-width - 2 * $ui-margin;
         height: $button-width - 2 * $ui-margin;
+
+        @include mobile {
+          width: $mobile-game-icon-size - 2 * $ui-margin;
+          height: $mobile-game-icon-size - 2 * $ui-margin;
+        }
+      }
+
+      @include mobile {
+        width: $mobile-game-icon-size;
+        height: $mobile-game-icon-size;
+        flex-shrink: 0;
       }
     }
 
     .run-editor-info-table {
       margin-left: $ui-margin;
-      border-spacing: 0;
       width: $tab-width;
+      display: flex;
+      flex-wrap: wrap;
 
-      & tr > td {
-        padding: 0 $ui-margin $ui-margin 0;
+      .info-table-row {
+        flex-grow: 1;
+        width: 100%;
+        display: flex;
+
+        .info-table-cell {
+          padding: 0 $ui-margin $ui-margin 0;
+          flex-grow: 1;
+        }
+
+        .info-table-cell:last-child {
+          padding-right: 0;
+
+          @include mobile {
+            padding-right: $ui-margin;
+          }
+        }
+
+        @include mobile {
+          flex-wrap: wrap;
+        }
       }
 
-      & tr:last-child > td {
+      .info-table-row:last-child .info-table-cell {
         padding-bottom: 0;
+
+        @include mobile {
+          padding-bottom: $ui-margin;
+        }
       }
 
-      & tr > td:last-child {
-        padding-right: 0;
+      @include mobile {
+        width: 100%;
       }
+    }
+
+    @include mobile {
+      margin: $ui-margin 0 0 $ui-margin;
     }
   }
 
@@ -137,6 +189,47 @@ $label-size: 14px;
       > input {
         width: 100%;
         text-overflow: ellipsis;
+
+        @include mobile {
+          font-size: $small-font-size;
+        }
+      } 
+    }
+
+    @include mobile {
+      font-size: $small-font-size;
+    }
+  }
+
+  .bottom-section {
+    display: flex;
+    flex-wrap: wrap;
+
+    .editor-group {
+      .tab-bar {
+        margin-left: $ui-margin / 2;
+        height: $tab-bar-height;
+  
+        @include mobile {
+          height: inherit;
+          margin-left: 0;
+  
+          button {
+            font-size: $small-font-size;
+            padding: $small-button-padding;
+            margin-top: 0;
+          }
+        }
+      }
+
+      @include mobile {
+        min-width: 100%;
+      }
+    }
+
+    @include mobile {
+      .side-buttons {
+        width: 100%;
       }
     }
   }
@@ -144,16 +237,34 @@ $label-size: 14px;
   .btn-group {
     display: flex;
     flex-direction: column;
+    margin-top: $tab-bar-height;
+    margin-right: $ui-margin / 2;
+    width: $button-width;
 
     button {
       font-size: 15px;
       width: $button-width;
+      margin-right: 0;
       height: 30px;
-      margin-right: $ui-margin / 2;
+
+      @include mobile {
+        margin-top: 0;
+        margin-bottom: $ui-margin;
+        margin-right: $ui-margin;
+        width: calc(50% - #{$ui-margin})
+      }
     }
 
     button:nth-child(1) {
       margin-top: 0;
+    }
+
+    @include mobile {
+      width: calc(100% - #{$ui-margin});
+      flex-direction: row;
+      flex-wrap: wrap;
+      margin-top: 0;
+      margin-left: $ui-margin;
     }
   }
 
@@ -161,45 +272,40 @@ $label-size: 14px;
     color: hsla(50, 100%, 50%, 1);
   }
 
-  .leaderboard-row:hover {
-    background: $hover-row-color !important;
-  }
-
-  .leaderboard-rank-column,
-  .splits-download-column {
-    width: 36px;
-  }
-
-  .leaderboard-time-column,
-  .variable-column {
-    width: 100px;
-  }
-
-  .variable-column,
-  .splits-download-column {
-    text-align: center;
-  }
-
-  .leaderboard-expanded-row {
-    & > td {
-      max-width: 0;
+  .leaderboard-table {
+    .leaderboard-row:hover {
+      background: $hover-row-color !important;
+    }
+  
+    .leaderboard-rank-column,
+    .splits-download-column {
+      width: 36px;
+    }
+  
+    .leaderboard-time-column,
+    .variable-column {
+      width: 100px;
+    }
+  
+    .variable-column,
+    .splits-download-column {
+      text-align: center;
+    }
+  
+    .leaderboard-expanded-row {
+      & > td {
+        max-width: 0;
+      }
+  
+      .run-meta-table {
+        border-spacing: $ui-margin 2px;
+        margin-left: -$ui-margin;
+      }
     }
 
-    .run-meta-table {
-      border-spacing: $ui-margin 2px;
-      margin-left: -$ui-margin;
+    @include mobile {
+      font-size: $small-font-size;
     }
-  }> td {
-    max-width: 0;
-  }
-
-  .timing-selection > button {
-    position: relative;
-    left: $button-width + $ui-margin;
-  }
-
-  .editor-group {
-    display: inline-flex;
   }
 
   .group {
@@ -331,6 +437,11 @@ $label-size: 14px;
           }
         }
       }
+    }
+
+    @include mobile {
+      margin: 0 0 $ui-margin (-$ui-margin);
+      width: calc(100% + #{$ui-margin});
     }
   }
 

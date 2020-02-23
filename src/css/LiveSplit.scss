@@ -1,6 +1,8 @@
 @import 'mobile';
 @import 'variables';
 
+$sidebar-button-height: 42px;
+
 .livesplit-container {
   .sidebar-button {
     position: fixed;
@@ -10,6 +12,7 @@
     font-size: 24px;
     padding: 8px;
     margin: 0;
+    height: $sidebar-button-height;
   }
 
   .view-container {
@@ -24,7 +27,7 @@
       display: block;
       margin: 0 0 ($sidebar-button-height + 2 * $ui-margin) 0;
       min-width: 100%;
-      min-height: 100%;
+      min-height: calc(100% - #{$sidebar-button-height + 2 * $ui-margin});
     }
 
     .buttons {

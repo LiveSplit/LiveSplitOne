@@ -155,72 +155,75 @@ export class RunEditor extends React.Component<Props, State> {
                             </MenuItem>
                         }
                     </ContextMenu>
-                    <table className="run-editor-info-table">
-                        <tbody>
-                            <tr>
-                                <td>
-                                    <TextBox
-                                        className="run-editor-game"
-                                        value={this.state.editor.game}
-                                        onChange={(e) => this.handleGameChange(e)}
-                                        label="Game"
-                                        list={[
-                                            "run-editor-game-list",
-                                            searchGames(this.state.editor.game),
-                                        ]}
-                                    />
-                                </td>
-                                <td>
-                                    <TextBox
-                                        className="run-editor-category"
-                                        value={this.state.editor.category}
-                                        onChange={(e) => this.handleCategoryChange(e)}
-                                        label="Category"
-                                        list={[
-                                            "run-editor-category-list",
-                                            categoryNames,
-                                        ]}
-                                    />
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <TextBox
-                                        className="run-editor-offset"
-                                        value={this.state.editor.offset}
-                                        onChange={(e) => this.handleOffsetChange(e)}
-                                        onBlur={(_) => this.handleOffsetBlur()}
-                                        small
-                                        invalid={!this.state.offsetIsValid}
-                                        label="Offset"
-                                    />
-                                </td>
-                                <td>
-                                    <TextBox
-                                        className="run-editor-attempts"
-                                        value={this.state.editor.attempts}
-                                        onChange={(e) => this.handleAttemptsChange(e)}
-                                        onBlur={(_) => this.handleAttemptsBlur()}
-                                        small
-                                        invalid={!this.state.attemptCountIsValid}
-                                        label="Attempts"
-                                    />
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div className="run-editor-info-table">
+                        <div className="info-table-row">
+                            <div className="info-table-cell">
+                                <TextBox
+                                    className="run-editor-game"
+                                    value={this.state.editor.game}
+                                    onChange={(e) => this.handleGameChange(e)}
+                                    label="Game"
+                                    list={[
+                                        "run-editor-game-list",
+                                        searchGames(this.state.editor.game),
+                                    ]}
+                                />
+                            </div>
+                            <div className="info-table-cell">
+                                <TextBox
+                                    className="run-editor-category"
+                                    value={this.state.editor.category}
+                                    onChange={(e) => this.handleCategoryChange(e)}
+                                    label="Category"
+                                    list={[
+                                        "run-editor-category-list",
+                                        categoryNames,
+                                    ]}
+                                />
+                            </div>
+                        </div>
+                        <div className="info-table-row">
+                            <div className="info-table-cell">
+                                <TextBox
+                                    className="run-editor-offset"
+                                    value={this.state.editor.offset}
+                                    onChange={(e) => this.handleOffsetChange(e)}
+                                    onBlur={(_) => this.handleOffsetBlur()}
+                                    small
+                                    invalid={!this.state.offsetIsValid}
+                                    label="Offset"
+                                />
+                            </div>
+                            <div className="info-table-cell">
+                                <TextBox
+                                    className="run-editor-attempts"
+                                    value={this.state.editor.attempts}
+                                    onChange={(e) => this.handleAttemptsChange(e)}
+                                    onBlur={(_) => this.handleAttemptsBlur()}
+                                    small
+                                    invalid={!this.state.attemptCountIsValid}
+                                    label="Attempts"
+                                />
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div className="timing-selection tab-bar">
-                    {this.getTabButtons(tab)}
-                </div>
-                <div className="editor-group">
-                    {this.renderTab(tab, category)}
+                <div className="bottom-section">
+                    <div className="side-buttons">
+                        {this.renderSideButtons(tab, category)}
+                    </div>
+                    <div className="editor-group">
+                        <div className="tab-bar">
+                            {this.renderTabButtons(tab)}
+                        </div>
+                        {this.renderTab(tab, category)}
+                    </div>
                 </div>
             </div >
         );
     }
 
-    private getTabButtons(currentTab: Tab) {
+    private renderTabButtons(currentTab: Tab) {
         const tabNames = {
             [Tab.RealTime]: "Real Time",
             [Tab.GameTime]: "Game Time",
@@ -325,7 +328,7 @@ export class RunEditor extends React.Component<Props, State> {
 
     private renderRulesButtons(): JSX.Element {
         return (
-            <div className="btn-group" style={{ width: 160, marginRight: 5 }}>
+            <div className="btn-group">
                 {this.renderAssociateRunButton()}
             </div>
         );
@@ -333,7 +336,7 @@ export class RunEditor extends React.Component<Props, State> {
 
     private renderVariablesButtons(): JSX.Element {
         return (
-            <div className="btn-group" style={{ width: 160, marginRight: 5 }}>
+            <div className="btn-group">
                 {this.renderAssociateRunButton()}
                 <button onClick={(_) => this.addCustomVariable()}>
                     Add Variable
@@ -350,17 +353,31 @@ export class RunEditor extends React.Component<Props, State> {
         }
     }
 
-    private renderTab(tab: Tab, category: Option<Category>): JSX.Element[] {
+    private renderSideButtons(tab: Tab, category: Option<Category>): JSX.Element {
         switch (tab) {
             case Tab.RealTime:
             case Tab.GameTime:
-                return [this.renderSegmentListButtons(), this.renderSegmentsTable()];
+                return this.renderSegmentListButtons();
             case Tab.Variables:
-                return [this.renderVariablesButtons(), this.renderVariablesTab(category)];
+                return this.renderVariablesButtons();
             case Tab.Rules:
-                return [this.renderRulesButtons(), this.renderRulesTab(category)];
+                return this.renderRulesButtons();
             case Tab.Leaderboard:
-                return [this.renderLeaderboardButtons(category), this.renderLeaderboard(category)];
+                return this.renderLeaderboardButtons(category);
+        }
+    }
+
+    private renderTab(tab: Tab, category: Option<Category>): JSX.Element {
+        switch (tab) {
+            case Tab.RealTime:
+            case Tab.GameTime:
+                return this.renderSegmentsTable();
+            case Tab.Variables:
+                return this.renderVariablesTab(category);
+            case Tab.Rules:
+                return this.renderRulesTab(category);
+            case Tab.Leaderboard:
+                return this.renderLeaderboard(category);
         }
     }
 
@@ -569,7 +586,7 @@ export class RunEditor extends React.Component<Props, State> {
         );
 
         return (
-            <div className="btn-group" style={{ width: 160, marginRight: 5 }}>
+            <div className="btn-group">
                 <button
                     onClick={(_) => {
                         if (category != null) {
@@ -818,7 +835,7 @@ export class RunEditor extends React.Component<Props, State> {
         const variableColumns = variables?.filter((variable) => !this.filters.variables.get(variable.name));
 
         return (
-            <table className="table run-editor-tab">
+            <table className="table run-editor-tab leaderboard-table">
                 <thead className="table-header">
                     <tr>
                         <th>Rank</th>
