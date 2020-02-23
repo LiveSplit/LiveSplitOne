@@ -1,5 +1,7 @@
 @import "variables";
 
+$game-icon-size: $two-row-height - $vertical-padding * 2;
+
 .title {
   height: $two-row-height;
   width: 100%;
@@ -8,8 +10,8 @@
   padding-bottom: $vertical-padding;
 
   .game-icon-container {
-    max-width: $two-row-height;
-    max-height: $two-row-height;
+    max-width: $game-icon-size;
+    max-height: $game-icon-size;
     padding: $vertical-padding 0;
     padding-left: $side-padding;
     flex-shrink: 0;
