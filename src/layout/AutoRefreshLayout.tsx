@@ -1,5 +1,6 @@
 import * as React from "react";
 import { LayoutStateJson } from "../livesplit-core";
+import AutoRefresh from "../util/AutoRefresh";
 import Layout from "./Layout";
 
 export interface Props {
@@ -14,8 +15,6 @@ export interface State {
 }
 
 export default class AutoRefreshLayout extends React.Component<Props, State> {
-    private intervalID: any;
-
     constructor(props: Props) {
         super(props);
 
@@ -24,29 +23,22 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
         };
     }
 
-    public componentWillMount() {
-        this.intervalID = setInterval(
-            () => {
-                this.setState({
-                    layoutState: this.props.getState(),
-                });
-            },
-            1000 / 30,
-        );
-    }
-
-    public componentWillUnmount() {
-        clearInterval(this.intervalID);
+    public refreshLayout() {
+        this.setState({
+            layoutState: this.props.getState(),
+        });
     }
 
     public render() {
         return (
-            <Layout
-                state={this.state.layoutState}
-                allowResize={this.props.allowResize}
-                width={this.props.width}
-                onResize={this.props.onResize}
-            />
+            <AutoRefresh update={() => this.refreshLayout()} >
+                <Layout
+                    state={this.state.layoutState}
+                    allowResize={this.props.allowResize}
+                    width={this.props.width}
+                    onResize={this.props.onResize}
+                />
+            </AutoRefresh>
         );
     }
 }

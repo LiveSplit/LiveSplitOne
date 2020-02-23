@@ -1,5 +1,6 @@
 import * as React from "react";
 import { LayoutStateJson } from "../livesplit-core";
+import AutoRefresh from "../util/AutoRefresh";
 import { colorToCss, gradientToCss } from "../util/ColorUtil";
 import { Option } from "../util/OptionUtil";
 import Component from "./Component";
@@ -21,8 +22,6 @@ export interface State {
 }
 
 export default class AutoRefreshLayout extends React.Component<Props, State> {
-    private intervalID: any;
-
     constructor(props: Props) {
         super(props);
 
@@ -33,26 +32,17 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
         };
     }
 
-    public componentWillMount() {
-        this.intervalID = setInterval(
-            () => {
-                this.setState({
-                    layoutState: this.props.getState(),
-                });
-            },
-            1000 / 30,
-        );
-    }
-
-    public componentWillUnmount() {
-        clearInterval(this.intervalID);
+    public refreshLayout() {
+        this.setState({
+            layoutState: this.props.getState(),
+        });
     }
 
     public render() {
         const layoutState = this.state.layoutState;
         const counts = new Map<string, number>();
 
-        return (
+        const dragLayout = (
             <div
                 className="layout"
                 style={{
@@ -127,6 +117,12 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
                     })
                 }
             </div>
+        );
+
+        return (
+            <AutoRefresh update={() => this.refreshLayout()}>
+                {dragLayout}
+            </AutoRefresh>
         );
     }
 }
