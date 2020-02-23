@@ -1,11 +1,14 @@
 import * as React from "react";
+import { assert } from "./OptionUtil";
 
 export interface Props {
     update(): void,
 }
 
 export default class AutoRefresh extends React.Component<Props> {
+    private readonly fpsInterval = 1000 / 30;
     private reqId: number | null;
+    private previousTime: number | undefined;
 
     constructor(props: Props) {
         super(props);
@@ -14,7 +17,7 @@ export default class AutoRefresh extends React.Component<Props> {
     }
 
     public componentWillMount() {
-        this.requestFrame();
+        this.startAnimation();
     }
 
     public componentWillUnmount() {
@@ -27,12 +30,22 @@ export default class AutoRefresh extends React.Component<Props> {
         return this.props.children;
     }
 
-    private requestFrame() {
-        this.reqId = requestAnimationFrame(() => this.tick());
+    private startAnimation() {
+        this.previousTime = Date.now();
+        this.animate();
     }
 
-    private tick() {
-        this.props.update();
-        this.requestFrame();
+    private animate() {
+        requestAnimationFrame(() => this.animate());
+
+        assert(this.previousTime !== undefined, "Previous time must be defined");
+
+        const currentTime = Date.now();
+        const elapsed = currentTime - this.previousTime;
+
+        if (elapsed > this.fpsInterval) {
+            this.previousTime = currentTime - (elapsed % this.fpsInterval);
+            this.props.update();
+        }
     }
 }
