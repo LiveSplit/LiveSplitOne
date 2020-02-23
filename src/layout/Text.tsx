@@ -19,6 +19,7 @@ export default class Text extends React.Component<Props> {
                 display={KeyValueDisplay.Center}
                 keyColor={this.props.state.left_center_color}
                 keyText={text.Center}
+                keyAbbreviations={[]}
                 valueColor={null}
                 valueText={null}
                 wrapperBackground={this.props.state.background}
@@ -32,6 +33,7 @@ export default class Text extends React.Component<Props> {
             }
             keyColor={this.props.state.left_center_color}
             keyText={text.Split[0]}
+            keyAbbreviations={[]}
             valueColor={this.props.state.right_color}
             valueText={text.Split[1]}
             wrapperBackground={this.props.state.background}

@@ -5,6 +5,7 @@ import { colorToCss, gradientToCss } from "../util/ColorUtil";
 import { map } from "../util/OptionUtil";
 
 import "../css/KeyValue.scss";
+import Abbreviated from "./Abbreviated";
 
 export enum KeyValueDisplay {
     Center,
@@ -16,6 +17,7 @@ export interface Props {
     display: KeyValueDisplay,
     keyColor: LiveSplit.Color | null,
     keyText: string,
+    keyAbbreviations: string[],
     valueColor: LiveSplit.Color | null,
     valueText: string | null,
     wrapperBackground: LiveSplit.Gradient,
@@ -29,7 +31,7 @@ export default class KeyValueGeneric extends React.Component<Props> {
                 color: map(this.props.keyColor, colorToCss),
             }}
         >
-            <div className="key-value-key-inner">{this.props.keyText}</div>
+            <Abbreviated abbreviations={[...this.props.keyAbbreviations, this.props.keyText]} />
         </div>;
 
         const valueCell = <div
@@ -55,7 +57,7 @@ export default class KeyValueGeneric extends React.Component<Props> {
             if (this.props.display === KeyValueDisplay.SplitTwoRows) {
                 wrapperClassName = "key-value-two-rows";
             } else {
-                wrapperClassName = "";
+                wrapperClassName = "key-value-left-right";
             }
         }
 
