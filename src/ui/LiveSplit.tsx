@@ -162,6 +162,10 @@ export class LiveSplit extends React.Component<{}, State> {
         this.handleAutomaticResize();
     }
 
+    public componentDidUpdate() {
+        this.handleAutomaticResize();
+    }
+
     public componentWillUnmount() {
         window.removeEventListener(
             "wheel",
@@ -277,7 +281,7 @@ export class LiveSplit extends React.Component<{}, State> {
                         <button
                             aria-label="Open Sidebar"
                             className="sidebar-button fa fa-bars"
-                            onClick={((e: boolean) => this.onSetSidebarOpen(e)) as any}
+                            onClick={(() => this.onSetSidebarOpen(true)) as any}
                         />
                     }
                     <div
@@ -511,6 +515,7 @@ export class LiveSplit extends React.Component<{}, State> {
             });
             this.state.layout.remount();
         }
+
         this.state.hotkeySystem.activate();
     }
 
@@ -624,7 +629,7 @@ export class LiveSplit extends React.Component<{}, State> {
     private handleAutomaticResize() {
         if (!this.state.isDesktop) {
             const fullWidth = this.containerRef.current?.clientWidth;
-            if (fullWidth) {
+            if (fullWidth && fullWidth !== this.state.layoutWidth) {
                 this.setState({
                     layoutWidth: fullWidth,
                 });
