@@ -36,7 +36,7 @@ export default class AutoRefresh extends React.Component<Props> {
     }
 
     private animate() {
-        requestAnimationFrame(() => this.animate());
+        this.reqId = requestAnimationFrame(() => this.animate());
 
         assert(this.previousTime !== undefined, "Previous time must be defined");
 
