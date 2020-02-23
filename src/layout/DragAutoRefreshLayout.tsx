@@ -21,7 +21,7 @@ export interface State {
     hoverIndex: Option<number>,
 }
 
-export default class AutoRefreshLayout extends React.Component<Props, State> {
+export default class DragAutoRefreshLayout extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
 
