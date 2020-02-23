@@ -10,9 +10,7 @@
   @include toggle;
 
   .layout-editor-inner {
-    margin-right: 10px;
-    margin-bottom: 10px;
-    width: 445px;
+    width: $settings-table-width;
     display: inline-flex;
 
     table {
@@ -20,11 +18,13 @@
     }
 
     .btn-group {
+      display: flex;
+      flex-direction: column;
+
       button {
         width: 40px;
         height: 40px;
         font-size: 15px;
-        margin-right: 5px;
         display: block;
       }
 
@@ -35,7 +35,7 @@
   }
 
   .layout-editor-component-list {
-    margin-left: 10px;
+    margin-left: $ui-margin;
   }
 
   .layout-editor-component {

@@ -29,12 +29,12 @@
       background: $dark-row-color;
 
       > * {
-        padding: 3px 12px;
+        padding: $ui-margin/2 $ui-margin;
         display: table-cell;
       }
 
       > *:nth-child(2) {
-        padding: 3px 12px 3px 5px;
+        padding: $ui-margin/2 $ui-margin $ui-margin/2 $ui-margin/2;
       }
     }
 
@@ -94,7 +94,7 @@
   }
 
   .settings-table {
-    width: 500px;
+    width: $settings-table-width;
 
     > tbody > tr {
       height: 30px;

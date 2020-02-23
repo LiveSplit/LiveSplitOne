@@ -4,7 +4,9 @@
 @import "Toggle";
 @import 'variables';
 
-$tab-width: 600px;
+$tab-width: 625px;
+$button-width: 160px;
+$label-size: 14px;
 
 .run-editor {
   @include context-menu;
@@ -34,12 +36,12 @@ $tab-width: 600px;
     background: $header-row-color;
 
     > * {
-      padding: 3px 12px;
+      padding: $ui-margin/2 $ui-margin;
       display: table-cell;
     }
 
     > *:nth-child(2) {
-      padding: 3px 12px 3px 5px;
+      padding: $ui-margin/2 $ui-margin $ui-margin/2 $ui-margin/2;
     }
   }
 
@@ -49,16 +51,17 @@ $tab-width: 600px;
     width: $tab-width;
 
     .run-editor-rules {
-      padding-left: 10px;
-      padding-right: 10px;
+      padding-left: $ui-margin;
+      padding-right: $ui-margin;
       border: 1px solid $border-color;
       border-collapse: collapse;
     }
   }
 
   .run-editor-tab {
-    margin-left: 5px;
+    margin-left: $ui-margin / 2;
     min-width: $tab-width;
+    box-sizing: border-box;
 
     .settings-table {
       width: 100%;
@@ -68,7 +71,7 @@ $tab-width: 600px;
   .video-outer-container {
     width: 100%;
     padding-top: calc(100% * 9 / 16);
-    margin-top: 5px;
+    margin-top: $ui-margin / 2;
     position: relative;
 
     .video-inner-container {
@@ -86,15 +89,41 @@ $tab-width: 600px;
 
   .run-editor-info {
     display: inline-flex;
-    margin-bottom: 10px;
-  }
+    margin-bottom: $ui-margin / 2;
 
-  .run-editor-info-table {
-    margin-left: 15px;
-  }
+    .game-icon-container {
+      background-color: $light-row-color;
+      border: 1px solid $border-color;
+      cursor: pointer;
+      box-sizing: border-box;
+      height: $button-width;
+      width: $button-width;
+      padding: $ui-margin;
 
-  table.run-editor-info-table > tbody > tr > td {
-    padding: 0px 10px 0px 10px;
+      .game-icon-image {
+        object-fit: contain;
+        width: $button-width - 2 * $ui-margin;
+        height: $button-width - 2 * $ui-margin;
+      }
+    }
+
+    .run-editor-info-table {
+      margin-left: $ui-margin;
+      border-spacing: 0;
+      width: $tab-width;
+
+      & tr > td {
+        padding: 0 $ui-margin $ui-margin 0;
+      }
+
+      & tr:last-child > td {
+        padding-bottom: 0;
+      }
+
+      & tr > td:last-child {
+        padding-right: 0;
+      }
+    }
   }
 
   table.run-editor-table {
@@ -113,12 +142,14 @@ $tab-width: 600px;
   }
 
   .btn-group {
+    display: flex;
+    flex-direction: column;
+
     button {
       font-size: 15px;
-      width: 160px;
+      width: $button-width;
       height: 30px;
-      margin-right: 5px;
-      display: block;
+      margin-right: $ui-margin / 2;
     }
 
     button:nth-child(1) {
@@ -149,13 +180,22 @@ $tab-width: 600px;
     text-align: center;
   }
 
-  .leaderboard-expanded-row > td {
+  .leaderboard-expanded-row {
+    & > td {
+      max-width: 0;
+    }
+
+    .run-meta-table {
+      border-spacing: $ui-margin 2px;
+      margin-left: -$ui-margin;
+    }
+  }> td {
     max-width: 0;
   }
 
   .timing-selection > button {
     position: relative;
-    left: 170px;
+    left: $button-width + $ui-margin;
   }
 
   .editor-group {
@@ -164,16 +204,14 @@ $tab-width: 600px;
 
   .group {
     position: relative;
-    margin-top: $view-margin;
-    margin-bottom: $view-margin;
+    border-bottom: 1px solid $border-color;
 
     > input {
       font-size: 18px;
-      padding: 10px 10px 10px 5px;
+      padding: $label-size+$ui-margin 0 $ui-margin/2 $ui-margin/2;
       display: block;
-      width: 285px;
+      width: 100%;
       border: none;
-      border-bottom: 1px solid $border-color;
       background: transparent;
       color: white;
       font-family: "fira", sans-serif;
@@ -185,21 +223,15 @@ $tab-width: 600px;
 
     > label {
       color: hsla(50, 0%, 75%, 1);
-      font-size: 18px;
+      font-size: $label-size;
       font-weight: normal;
       position: absolute;
       pointer-events: none;
-      left: 5px;
-      top: 10px;
+      left: $ui-margin / 2;
+      top: 0;
       transition: 0.2s ease all;
       -moz-transition: 0.2s ease all;
       -webkit-transition: 0.2s ease all;
-    }
-
-    > input:focus ~ label,
-    > input:valid ~ label {
-      top: -13px;
-      font-size: 14px;
     }
 
     > input:focus ~ label {
@@ -213,7 +245,7 @@ $tab-width: 600px;
     > .bar {
       position: relative;
       display: block;
-      width: 300px;
+      width: 100%;
     }
 
     > .bar:before,
@@ -249,12 +281,21 @@ $tab-width: 600px;
   }
 
   .filter-table {
-    margin-top: 10px;
+    margin-top: $ui-margin / 2;
+    margin-bottom: $ui-margin / 2;
     width: 100%;
 
     &.table {
       td {
-        padding: 5px;
+        padding: $ui-margin/2 $ui-margin;
+      }
+
+      tr:first-child > td {
+        padding-top: $ui-margin;
+      }
+
+      tr:last-child > td {
+        padding-bottom: $ui-margin;
       }
 
       > tbody.table-body > tr {
@@ -270,6 +311,14 @@ $tab-width: 600px;
           border: 1px solid $border-color;
           text-align: center;
           cursor: pointer;
+        }
+
+        tr:first-child > td {
+          padding-top: $ui-margin / 2;
+        }
+  
+        tr:last-child > td {
+          padding-bottom: $ui-margin / 2;
         }
 
         > tbody.table-body > tr {
@@ -288,7 +337,7 @@ $tab-width: 600px;
   .removable-string-box {
     display: grid;
     grid-template-columns: 1fr 30px;
-    column-gap: 5px;
+    column-gap: $ui-margin / 2;
 
     button {
       margin: 0px;

@@ -7,8 +7,7 @@
 
 .sidebar {
   background: $sidebar-background-color;
-  padding: 10px;
-  padding-top: 15px;
+  padding: $ui-margin;
   width: 250px;
   z-index: 4 !important;
 
@@ -43,7 +42,7 @@
 
       .livesplit-icon {
         height: 40px;
-        margin-right: 10px;
+        margin-right: $ui-margin;
 
         img {
           height: 100%;

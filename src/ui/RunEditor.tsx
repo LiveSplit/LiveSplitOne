@@ -104,7 +104,6 @@ export class RunEditor extends React.Component<Props, State> {
 
     public render() {
         const gameIcon = this.getGameIcon();
-        const gameIconSize = 138;
 
         let gameIconContextTrigger: any = null;
         const gameIconToggleMenu = (e: any) => {
@@ -121,14 +120,7 @@ export class RunEditor extends React.Component<Props, State> {
             <div className="run-editor">
                 <div className="run-editor-info">
                     <div
-                        style={{
-                            backgroundColor: "rgba(255, 255, 255, 0.05)",
-                            border: "1px solid hsl(0, 0%, 25%)",
-                            cursor: "pointer",
-                            height: gameIconSize,
-                            padding: 10,
-                            width: gameIconSize,
-                        }}
+                        className="game-icon-container"
                         onClick={(e) => {
                             gameIconToggleMenu(e);
                         }}
@@ -141,11 +133,7 @@ export class RunEditor extends React.Component<Props, State> {
                                 gameIcon !== "" &&
                                 <img
                                     src={gameIcon}
-                                    style={{
-                                        height: gameIconSize,
-                                        objectFit: "contain",
-                                        width: gameIconSize,
-                                    }}
+                                    className="game-icon-image"
                                 />
                             }
                         </ContextMenuTrigger>
@@ -918,11 +906,7 @@ export class RunEditor extends React.Component<Props, State> {
                                         <div className="markdown" style={{
                                             minHeight: 5,
                                         }}>{renderedComment}</div>
-                                        <table style={{
-                                            borderSpacing: "10px 2px",
-                                            paddingBottom: 10,
-                                            marginLeft: -11,
-                                        }}>
+                                        <table className="run-meta-table">
                                             <tbody>
                                                 <tr>
                                                     <td>Date:</td>
