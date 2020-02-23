@@ -1,5 +1,6 @@
 import * as React from "react";
 import { SharedTimerRef, TimingMethod } from "../livesplit-core";
+import AutoRefresh from "../util/AutoRefresh";
 import { Option } from "../util/OptionUtil";
 import { MenuKind } from "./LiveSplit";
 
@@ -47,8 +48,6 @@ export interface State {
 }
 
 export class SideBarContent extends React.Component<Props, State> {
-    private reqId: any;
-
     constructor(props: Props) {
         super(props);
 
@@ -58,23 +57,12 @@ export class SideBarContent extends React.Component<Props, State> {
         };
     }
 
-    public componentWillMount() {
-        let tick = () => {
-            this.update();
-            this.reqId = requestAnimationFrame(tick)
-        }
-
-        this.reqId = requestAnimationFrame(tick)
-    }
-
-    public componentWillUnmount() {
-        cancelAnimationFrame(this.reqId);
-    }
-
     public render() {
+        let sidebarContent;
+
         switch (this.props.menu) {
             case MenuKind.Splits: {
-                return (
+                sidebarContent = (
                     <div className="sidebar-buttons">
                         <h2>Splits</h2>
                         <hr />
@@ -105,9 +93,10 @@ export class SideBarContent extends React.Component<Props, State> {
                         </button>
                     </div>
                 );
+                break;
             }
             case MenuKind.RunEditor: {
-                return (
+                sidebarContent = (
                     <div className="sidebar-buttons">
                         <h2>Splits Editor</h2>
                         <hr />
@@ -127,9 +116,10 @@ export class SideBarContent extends React.Component<Props, State> {
                         </div>
                     </div>
                 );
+                break;
             }
             case MenuKind.Layout: {
-                return (
+                sidebarContent = (
                     <div className="sidebar-buttons">
                         <h2>Layout</h2>
                         <hr />
@@ -154,9 +144,10 @@ export class SideBarContent extends React.Component<Props, State> {
                         </button>
                     </div>
                 );
+                break;
             }
             case MenuKind.LayoutEditor: {
-                return (
+                sidebarContent = (
                     <div className="sidebar-buttons">
                         <h2>Layout Editor</h2>
                         <hr />
@@ -176,9 +167,10 @@ export class SideBarContent extends React.Component<Props, State> {
                         </div>
                     </div>
                 );
+                break;
             }
             case MenuKind.SettingsEditor: {
-                return (
+                sidebarContent = (
                     <div className="sidebar-buttons">
                         <h2>Settings</h2>
                         <hr />
@@ -198,9 +190,10 @@ export class SideBarContent extends React.Component<Props, State> {
                         </div>
                     </div>
                 );
+                break;
             }
             case MenuKind.Timer: {
-                return (
+                sidebarContent = (
                     <div className="sidebar-buttons">
                         <div className="livesplit-title">
                             <span className="livesplit-icon">
@@ -285,8 +278,14 @@ export class SideBarContent extends React.Component<Props, State> {
                         </button>
                     </div >
                 );
+                break;
             }
         }
+        return (
+            <AutoRefresh update={() => this.update()}>
+                {sidebarContent}
+            </AutoRefresh>
+        );
     }
 
     private update() {
