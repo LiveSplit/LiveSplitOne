@@ -162,6 +162,10 @@ export class LiveSplit extends React.Component<{}, State> {
         this.handleAutomaticResize();
     }
 
+    public componentDidUpdate() {
+        this.handleAutomaticResize();
+    }
+
     public componentWillUnmount() {
         window.removeEventListener(
             "wheel",
@@ -257,36 +261,37 @@ export class LiveSplit extends React.Component<{}, State> {
             [MenuKind.Splits]: "menu-splits",
         };
 
-        const contentClassName = `livesplit-container ${this.state.isDesktop ? "" : "is-mobile"}`;
         const viewContainerClassName = `view-container ${routeClassMap[this.state.menu.kind]}`;
 
         return (
-            <Sidebar
-                sidebar={sidebarContent}
-                docked={this.state.isDesktop}
-                open={this.state.sidebarOpen}
-                transitions={this.state.sidebarTransitionsEnabled}
-                onSetOpen={((e: boolean) => this.onSetSidebarOpen(e)) as any}
-                sidebarClassName="sidebar"
-                contentClassName={contentClassName}
-                overlayClassName="sidebar-overlay"
-            >
-                {
-                    !this.state.isDesktop &&
-                    !this.state.sidebarOpen &&
-                    <button
-                        aria-label="Open Sidebar"
-                        className="sidebar-button fa fa-bars"
-                        onClick={((e: boolean) => this.onSetSidebarOpen(e)) as any}
-                    />
-                }
-                <div
-                    className={viewContainerClassName}
-                    ref={this.containerRef}
+            <div className={this.state.isDesktop ? "" : "is-mobile"}>
+                <Sidebar
+                    sidebar={sidebarContent}
+                    docked={this.state.isDesktop}
+                    open={this.state.sidebarOpen}
+                    transitions={this.state.sidebarTransitionsEnabled}
+                    onSetOpen={((e: boolean) => this.onSetSidebarOpen(e)) as any}
+                    sidebarClassName="sidebar"
+                    contentClassName="livesplit-container"
+                    overlayClassName="sidebar-overlay"
                 >
-                    {content}
-                </div>
-            </Sidebar>
+                    {
+                        !this.state.isDesktop &&
+                        !this.state.sidebarOpen &&
+                        <button
+                            aria-label="Open Sidebar"
+                            className="sidebar-button fa fa-bars"
+                            onClick={(() => this.onSetSidebarOpen(true)) as any}
+                        />
+                    }
+                    <div
+                        className={viewContainerClassName}
+                        ref={this.containerRef}
+                    >
+                        {content}
+                    </div>
+                </Sidebar>
+            </div>
         );
     }
 
@@ -510,6 +515,7 @@ export class LiveSplit extends React.Component<{}, State> {
             });
             this.state.layout.remount();
         }
+
         this.state.hotkeySystem.activate();
     }
 
@@ -623,7 +629,7 @@ export class LiveSplit extends React.Component<{}, State> {
     private handleAutomaticResize() {
         if (!this.state.isDesktop) {
             const fullWidth = this.containerRef.current?.clientWidth;
-            if (fullWidth) {
+            if (fullWidth && fullWidth !== this.state.layoutWidth) {
                 this.setState({
                     layoutWidth: fullWidth,
                 });

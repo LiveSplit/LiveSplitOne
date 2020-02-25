@@ -3,7 +3,7 @@
 @mixin context-menu {
   .react-contextmenu {
     min-width: 160px;
-    padding: 5px 0;
+    padding: $ui-margin/2 0;
     margin: 2px 0 0;
     font-size: 16px;
     text-align: left;
@@ -23,7 +23,7 @@
     }
 
     .react-contextmenu-item {
-      padding: 3px 10px;
+      padding: $ui-margin/2 $ui-margin;
       font-weight: 400;
       text-align: inherit;
       white-space: nowrap;
@@ -33,8 +33,8 @@
     }
 
     .react-contextmenu-item--divider {
-      margin-bottom: 3px;
-      padding: 2px 0;
+      margin-bottom: $ui-margin / 2;
+      padding: $ui-margin/2 0 0 0;
       border-bottom: 1px solid $border-color;
       cursor: inherit;
     }

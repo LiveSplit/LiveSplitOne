@@ -93,7 +93,7 @@ export class LayoutEditor extends React.Component<Props, State> {
 
         return (
             <div className="layout-editor-outer">
-                <div style={{ display: "initial" }}>
+                <div className="layout-editor-inner-container">
                     <div className="layout-editor-inner">
                         <div className="btn-group">
                             <ContextMenuTrigger id="add-button-context-menu" ref={(c) => contextTrigger = c}>
@@ -228,7 +228,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                         {settings}
                     </div>
                 </div>
-                <div style={{ marginLeft: 10 }}>
+                <div className="layout-container">
                     <DragAutoRefreshLayout
                         getState={() => this.props.timer.readWith(
                             (t) => this.props.editor.layoutStateAsJson(t),

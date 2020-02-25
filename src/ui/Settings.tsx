@@ -440,7 +440,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                 const colorWidth = color1 && color2 ? "50%" : "100%";
 
                 const children: JSX.Element[] = [
-                    <td>
+                    <td style={{ padding: 0 }}>
                         <select
                             value={type}
                             onChange={(e) => {
@@ -461,7 +461,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
 
                 if (color1) {
                     children.push(
-                        <td style={{ width: colorWidth }}>
+                        <td style={{ width: colorWidth, padding: 0 }}>
                             <ColorPicker
                                 color={color1}
                                 setColor={(color) => {
@@ -477,7 +477,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
 
                 if (color2) {
                     children.push(
-                        <td style={{ width: colorWidth }}>
+                        <td style={{ width: colorWidth, padding: 0 }}>
                             <ColorPicker
                                 color={color2}
                                 setColor={(color) => {
@@ -492,7 +492,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                 }
 
                 component =
-                    <table style={{ width: "100%" }}>
+                    <table style={{ width: "100%", borderSpacing: 0 }}>
                         <tbody>
                             <tr>
                                 {children}
@@ -564,7 +564,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                 const colorWidth = color1 && color2 ? "50%" : "100%";
 
                 const children: JSX.Element[] = [
-                    <td>
+                    <td style={{ padding: 0 }}>
                         <select
                             value={type}
                             onChange={(e) => {
@@ -586,7 +586,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
 
                 if (color1) {
                     children.push(
-                        <td style={{ width: colorWidth }}>
+                        <td style={{ width: colorWidth, padding: 0 }}>
                             <ColorPicker
                                 color={color1}
                                 setColor={(color) => {
@@ -602,7 +602,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
 
                 if (color2) {
                     children.push(
-                        <td style={{ width: colorWidth }}>
+                        <td style={{ width: colorWidth, padding: 0 }}>
                             <ColorPicker
                                 color={color2}
                                 setColor={(color) => {
@@ -617,7 +617,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                 }
 
                 component =
-                    <table style={{ width: "100%" }}>
+                    <table style={{ width: "100%", borderSpacing: 0 }}>
                         <tbody>
                             <tr>
                                 {children}

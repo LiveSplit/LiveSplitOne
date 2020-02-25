@@ -1,3 +1,4 @@
+@import 'mobile';
 @import 'variables';
 
 @mixin table {
@@ -29,12 +30,12 @@
       background: $dark-row-color;
 
       > * {
-        padding: 3px 12px;
+        padding: $ui-margin/2 $ui-margin;
         display: table-cell;
       }
 
       > *:nth-child(2) {
-        padding: 3px 12px 3px 5px;
+        padding: $ui-margin/2 $ui-margin $ui-margin/2 $ui-margin/2;
       }
     }
 
@@ -94,7 +95,7 @@
   }
 
   .settings-table {
-    width: 500px;
+    width: $settings-table-width;
 
     > tbody > tr {
       height: 30px;
@@ -102,11 +103,19 @@
 
     > tbody > tr > td:nth-child(1) {
       width: 250px;
+
+      @include mobile {
+        width: 50%;
+      }
     }
 
     > tbody > tr > td:nth-child(2) > input,
     > tbody > tr > td:nth-child(2) > span,
     > tbody > tr > td:nth-child(2) > select {
+      width: 100%;
+    }
+
+    @include mobile {
       width: 100%;
     }
   }

@@ -1,5 +1,16 @@
+@import 'mobile';
 @import 'Table';
 
 .settings-editor {
   @include table;
+
+  @include mobile {
+    .settings-table {
+      width: 100%;
+  
+      & > tbody > tr > td:nth-child(1) {
+        width: 50%;
+      }
+    }
+  }
 }

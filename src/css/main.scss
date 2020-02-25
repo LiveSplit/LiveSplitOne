@@ -1,5 +1,4 @@
 @import 'browser_source';
-@import 'mobile';
 @import 'variables';
 
 @font-face {
@@ -63,8 +62,8 @@ button:hover {
 }
 
 button {
-  margin-bottom: 4px;
-  margin-top: 4px;
+  margin-bottom: $ui-margin / 2;
+  margin-top: $ui-margin / 2;
   background: $button-color;
   color: $button-text-color;
   cursor: pointer;

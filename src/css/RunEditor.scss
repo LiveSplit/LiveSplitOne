@@ -1,10 +1,18 @@
 @import "ContextMenu";
 @import "Markdown";
+@import "mobile";
 @import "Table";
 @import "Toggle";
-@import 'variables';
+@import "variables";
 
-$tab-width: 600px;
+$tab-bar-height: 30px + $ui-margin / 2;
+$tab-width: 625px;
+$button-width: 160px;
+$label-size: 14px;
+
+$mobile-game-icon-size: 100px;
+$small-font-size: 13px;
+$small-button-padding: 1px 3px 1px 3px;
 
 .run-editor {
   @include context-menu;
@@ -34,12 +42,12 @@ $tab-width: 600px;
     background: $header-row-color;
 
     > * {
-      padding: 3px 12px;
+      padding: $ui-margin/2 $ui-margin;
       display: table-cell;
     }
 
     > *:nth-child(2) {
-      padding: 3px 12px 3px 5px;
+      padding: $ui-margin/2 $ui-margin $ui-margin/2 $ui-margin/2;
     }
   }
 
@@ -49,26 +57,33 @@ $tab-width: 600px;
     width: $tab-width;
 
     .run-editor-rules {
-      padding-left: 10px;
-      padding-right: 10px;
+      padding-left: $ui-margin;
+      padding-right: $ui-margin;
       border: 1px solid $border-color;
       border-collapse: collapse;
     }
   }
 
   .run-editor-tab {
-    margin-left: 5px;
+    margin-left: $ui-large-margin / 2;
     min-width: $tab-width;
+    box-sizing: border-box;
 
     .settings-table {
       width: 100%;
+    }
+
+    @include mobile {
+      width: 100%;
+      min-width: 0;
+      margin-left: 0;
     }
   }
 
   .video-outer-container {
     width: 100%;
     padding-top: calc(100% * 9 / 16);
-    margin-top: 5px;
+    margin-top: $ui-margin / 2;
     position: relative;
 
     .video-inner-container {
@@ -86,15 +101,83 @@ $tab-width: 600px;
 
   .run-editor-info {
     display: inline-flex;
-    margin-bottom: 10px;
-  }
+    align-items: flex-start;
+    margin-bottom: $ui-large-margin - $ui-margin / 2;
 
-  .run-editor-info-table {
-    margin-left: 15px;
-  }
+    .game-icon-container {
+      background-color: $light-row-color;
+      border: 1px solid $border-color;
+      cursor: pointer;
+      box-sizing: border-box;
+      width: $button-width;
+      height: $button-width;
+      padding: $ui-margin;
 
-  table.run-editor-info-table > tbody > tr > td {
-    padding: 0px 10px 0px 10px;
+      .game-icon-image {
+        object-fit: contain;
+        width: $button-width - 2 * $ui-margin;
+        height: $button-width - 2 * $ui-margin;
+
+        @include mobile {
+          width: $mobile-game-icon-size - 2 * $ui-margin;
+          height: $mobile-game-icon-size - 2 * $ui-margin;
+        }
+      }
+
+      @include mobile {
+        width: $mobile-game-icon-size;
+        height: $mobile-game-icon-size;
+        flex-shrink: 0;
+      }
+    }
+
+    .run-editor-info-table {
+      margin-left: $ui-large-margin;
+      width: $tab-width;
+      display: flex;
+      flex-wrap: wrap;
+
+      .info-table-row {
+        flex-grow: 1;
+        width: 100%;
+        display: flex;
+
+        .info-table-cell {
+          padding: 0 $ui-margin $ui-margin 0;
+          flex-grow: 1;
+        }
+
+        .info-table-cell:last-child {
+          padding-right: 0;
+
+          @include mobile {
+            padding-right: $ui-margin;
+          }
+        }
+
+        @include mobile {
+          flex-wrap: wrap;
+        }
+      }
+
+      .info-table-row:last-child .info-table-cell {
+        padding-bottom: 0;
+
+        @include mobile {
+          padding-bottom: $ui-margin;
+        }
+      }
+
+      @include mobile {
+        width: 100%;
+        margin-left: $ui-margin;
+        margin-bottom: $ui-large-margin - $ui-margin;
+      }
+    }
+
+    @include mobile {
+      margin: $ui-margin 0 0 $ui-margin;
+    }
   }
 
   table.run-editor-table {
@@ -108,21 +191,83 @@ $tab-width: 600px;
       > input {
         width: 100%;
         text-overflow: ellipsis;
+
+        @include mobile {
+          font-size: $small-font-size;
+        }
+      } 
+    }
+
+    @include mobile {
+      font-size: $small-font-size;
+    }
+  }
+
+  .bottom-section {
+    display: flex;
+    flex-wrap: wrap;
+
+    .editor-group {
+      .tab-bar {
+        margin-left: $ui-large-margin / 2;
+        height: $tab-bar-height;
+  
+        @include mobile {
+          height: inherit;
+          margin-left: 0;
+  
+          button {
+            font-size: $small-font-size;
+            padding: $small-button-padding;
+            margin-top: 0;
+          }
+        }
+      }
+
+      @include mobile {
+        min-width: 100%;
+        margin-top: $ui-large-margin - $ui-margin;
+      }
+    }
+
+    @include mobile {
+      .side-buttons {
+        width: 100%;
       }
     }
   }
 
   .btn-group {
+    display: flex;
+    flex-direction: column;
+    margin-top: $tab-bar-height;
+    margin-right: $ui-large-margin / 2;
+    width: $button-width;
+
     button {
       font-size: 15px;
-      width: 160px;
+      width: $button-width;
+      margin-right: 0;
       height: 30px;
-      margin-right: 5px;
-      display: block;
+
+      @include mobile {
+        margin-top: 0;
+        margin-bottom: $ui-margin;
+        margin-right: $ui-margin;
+        width: calc(50% - #{$ui-margin})
+      }
     }
 
     button:nth-child(1) {
       margin-top: 0;
+    }
+
+    @include mobile {
+      width: calc(100% - #{$ui-margin});
+      flex-direction: row;
+      flex-wrap: wrap;
+      margin-top: 0;
+      margin-left: $ui-margin;
     }
   }
 
@@ -130,50 +275,52 @@ $tab-width: 600px;
     color: hsla(50, 100%, 50%, 1);
   }
 
-  .leaderboard-row:hover {
-    background: $hover-row-color !important;
-  }
+  .leaderboard-table {
+    .leaderboard-row:hover {
+      background: $hover-row-color !important;
+    }
+  
+    .leaderboard-rank-column,
+    .splits-download-column {
+      width: 36px;
+    }
+  
+    .leaderboard-time-column,
+    .variable-column {
+      width: 100px;
+    }
+  
+    .variable-column,
+    .splits-download-column {
+      text-align: center;
+    }
+  
+    .leaderboard-expanded-row {
+      & > td {
+        max-width: 0;
+      }
+  
+      .run-meta-table {
+        border-spacing: $ui-margin 2px;
+        margin-left: -$ui-margin;
+      }
+    }
 
-  .leaderboard-rank-column,
-  .splits-download-column {
-    width: 36px;
-  }
-
-  .leaderboard-time-column,
-  .variable-column {
-    width: 100px;
-  }
-
-  .variable-column,
-  .splits-download-column {
-    text-align: center;
-  }
-
-  .leaderboard-expanded-row > td {
-    max-width: 0;
-  }
-
-  .timing-selection > button {
-    position: relative;
-    left: 170px;
-  }
-
-  .editor-group {
-    display: inline-flex;
+    @include mobile {
+      font-size: $small-font-size;
+    }
   }
 
   .group {
     position: relative;
-    margin-top: $view-margin;
-    margin-bottom: $view-margin;
+    border-bottom: 1px solid $border-color;
 
     > input {
       font-size: 18px;
-      padding: 10px 10px 10px 5px;
+      padding: $label-size+$ui-margin 0 $ui-margin/2 $ui-margin/2;
       display: block;
-      width: 285px;
+      width: 100%;
       border: none;
-      border-bottom: 1px solid $border-color;
       background: transparent;
       color: white;
       font-family: "fira", sans-serif;
@@ -185,21 +332,15 @@ $tab-width: 600px;
 
     > label {
       color: hsla(50, 0%, 75%, 1);
-      font-size: 18px;
+      font-size: $label-size;
       font-weight: normal;
       position: absolute;
       pointer-events: none;
-      left: 5px;
-      top: 10px;
+      left: $ui-margin / 2;
+      top: 0;
       transition: 0.2s ease all;
       -moz-transition: 0.2s ease all;
       -webkit-transition: 0.2s ease all;
-    }
-
-    > input:focus ~ label,
-    > input:valid ~ label {
-      top: -13px;
-      font-size: 14px;
     }
 
     > input:focus ~ label {
@@ -213,7 +354,7 @@ $tab-width: 600px;
     > .bar {
       position: relative;
       display: block;
-      width: 300px;
+      width: 100%;
     }
 
     > .bar:before,
@@ -249,12 +390,21 @@ $tab-width: 600px;
   }
 
   .filter-table {
-    margin-top: 10px;
+    margin-top: $ui-margin / 2;
+    margin-bottom: $ui-margin / 2;
     width: 100%;
 
     &.table {
       td {
-        padding: 5px;
+        padding: $ui-margin/2 $ui-margin;
+      }
+
+      tr:first-child > td {
+        padding-top: $ui-margin;
+      }
+
+      tr:last-child > td {
+        padding-bottom: $ui-margin;
       }
 
       > tbody.table-body > tr {
@@ -272,6 +422,14 @@ $tab-width: 600px;
           cursor: pointer;
         }
 
+        tr:first-child > td {
+          padding-top: $ui-margin / 2;
+        }
+  
+        tr:last-child > td {
+          padding-bottom: $ui-margin / 2;
+        }
+
         > tbody.table-body > tr {
           > td:hover {
             background: $hover-row-color;
@@ -283,12 +441,17 @@ $tab-width: 600px;
         }
       }
     }
+
+    @include mobile {
+      margin: 0 0 $ui-margin (-$ui-margin);
+      width: calc(100% + #{$ui-margin});
+    }
   }
 
   .removable-string-box {
     display: grid;
     grid-template-columns: 1fr 30px;
-    column-gap: 5px;
+    column-gap: $ui-margin / 2;
 
     button {
       margin: 0px;

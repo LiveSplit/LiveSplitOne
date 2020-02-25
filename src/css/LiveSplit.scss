@@ -1,39 +1,56 @@
+@import 'mobile';
 @import 'variables';
 
-.livesplit-container {
-  overflow-y: auto !important;
+$sidebar-button-height: 42px;
 
+.livesplit-container {
   .sidebar-button {
     position: fixed;
-    bottom: $button-margin;
-    left: $button-margin;
+    bottom: $ui-margin;
+    left: $ui-margin;
     z-index: 10;
     font-size: 24px;
     padding: 8px;
+    margin: 0;
+    height: $sidebar-button-height;
   }
 
   .view-container {
     position: relative;
-    min-width: calc(100% - 2 * #{$view-margin});
-    min-height: calc(100% - 2 * #{$view-margin});
-    margin: $view-margin;
+    display: inline-block;
+    vertical-align: top;
+    min-width: calc(100% - 2 * #{$main-content-margin});
+    min-height: calc(100% - 2 * #{$main-content-margin});
+    margin: $main-content-margin;
+
+    @include mobile {
+      display: block;
+      margin: 0 0 ($sidebar-button-height + 2 * $ui-margin) 0;
+      min-width: 100%;
+      min-height: calc(100% - #{$sidebar-button-height + 2 * $ui-margin});
+    }
 
     .buttons {
-      margin-top: 5px;
+      margin-top: $ui-large-margin - $ui-margin / 2;
 
       .small {
         button {
-          height: 30px;
-          width: calc(50% - #{$button-margin / 2})
+          height: 40px;
+          width: calc(50% - #{$ui-margin / 2})
         }
 
         button:first-child {
-          margin-right: $button-margin / 2;
+          margin-right: $ui-margin / 2;
         }
 
         button:last-child {
-          margin-left: $button-margin / 2;
+          margin-left: $ui-margin / 2;
         }
+      }
+
+      @include mobile {
+        padding: 0 $ui-margin;
+        width: calc(100% - 2 * #{$ui-margin}) !important;
       }
     }
   }
