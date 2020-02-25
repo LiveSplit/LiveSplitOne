@@ -31,7 +31,7 @@ $sidebar-button-height: 42px;
     }
 
     .buttons {
-      margin-top: $ui-margin / 2;
+      margin-top: $ui-large-margin - $ui-margin / 2;
 
       .small {
         button {

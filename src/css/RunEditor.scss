@@ -5,7 +5,7 @@
 @import "Toggle";
 @import "variables";
 
-$tab-bar-height: 35px;
+$tab-bar-height: 30px + $ui-margin / 2;
 $tab-width: 625px;
 $button-width: 160px;
 $label-size: 14px;
@@ -65,7 +65,7 @@ $small-button-padding: 1px 3px 1px 3px;
   }
 
   .run-editor-tab {
-    margin-left: $ui-margin / 2;
+    margin-left: $ui-large-margin / 2;
     min-width: $tab-width;
     box-sizing: border-box;
 
@@ -102,7 +102,7 @@ $small-button-padding: 1px 3px 1px 3px;
   .run-editor-info {
     display: inline-flex;
     align-items: flex-start;
-    margin-bottom: $ui-margin / 2;
+    margin-bottom: $ui-large-margin - $ui-margin / 2;
 
     .game-icon-container {
       background-color: $light-row-color;
@@ -132,7 +132,7 @@ $small-button-padding: 1px 3px 1px 3px;
     }
 
     .run-editor-info-table {
-      margin-left: $ui-margin;
+      margin-left: $ui-large-margin;
       width: $tab-width;
       display: flex;
       flex-wrap: wrap;
@@ -170,6 +170,8 @@ $small-button-padding: 1px 3px 1px 3px;
 
       @include mobile {
         width: 100%;
+        margin-left: $ui-margin;
+        margin-bottom: $ui-large-margin - $ui-margin;
       }
     }
 
@@ -207,7 +209,7 @@ $small-button-padding: 1px 3px 1px 3px;
 
     .editor-group {
       .tab-bar {
-        margin-left: $ui-margin / 2;
+        margin-left: $ui-large-margin / 2;
         height: $tab-bar-height;
   
         @include mobile {
@@ -224,6 +226,7 @@ $small-button-padding: 1px 3px 1px 3px;
 
       @include mobile {
         min-width: 100%;
+        margin-top: $ui-large-margin - $ui-margin;
       }
     }
 
@@ -238,7 +241,7 @@ $small-button-padding: 1px 3px 1px 3px;
     display: flex;
     flex-direction: column;
     margin-top: $tab-bar-height;
-    margin-right: $ui-margin / 2;
+    margin-right: $ui-large-margin / 2;
     width: $button-width;
 
     button {
