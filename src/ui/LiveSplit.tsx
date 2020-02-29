@@ -13,6 +13,7 @@ import * as SplitsIO from "../util/SplitsIO";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
 import { SettingsEditor as SettingsEditorComponent } from "./SettingsEditor";
+import { About } from "./About";
 import { SideBarContent } from "./SideBarContent";
 import { toast } from "react-toastify";
 
@@ -26,6 +27,7 @@ export enum MenuKind {
     Layout,
     LayoutEditor,
     SettingsEditor,
+    About,
 }
 
 type Menu =
@@ -34,7 +36,8 @@ type Menu =
     { kind: MenuKind.RunEditor, editor: RunEditor } |
     { kind: MenuKind.Layout } |
     { kind: MenuKind.LayoutEditor, editor: LayoutEditor } |
-    { kind: MenuKind.SettingsEditor, config: HotkeyConfig };
+    { kind: MenuKind.SettingsEditor, config: HotkeyConfig } |
+    { kind: MenuKind.About };
 
 export interface State {
     hotkeySystem: HotkeySystem,
@@ -197,6 +200,8 @@ export class LiveSplit extends React.Component<{}, State> {
                 />;
             } else if (this.state.menu.kind === MenuKind.SettingsEditor) {
                 return <SettingsEditorComponent hotkeyConfig={this.state.menu.config} />;
+            } else if (this.state.menu.kind === MenuKind.About) {
+                return <About />;
             } else {
                 return <DragUpload
                     importLayout={this.importLayoutFromFile.bind(this)}
@@ -251,18 +256,6 @@ export class LiveSplit extends React.Component<{}, State> {
             />
         );
 
-        const routeClassMap = {
-            [MenuKind.Timer]: "menu-timer",
-            [MenuKind.Splits]: "menu-splits",
-            [MenuKind.RunEditor]: "menu-run-editor",
-            [MenuKind.Layout]: "menu-layout",
-            [MenuKind.LayoutEditor]: "menu-layout-editor",
-            [MenuKind.SettingsEditor]: "menu-settings-editor",
-            [MenuKind.Splits]: "menu-splits",
-        };
-
-        const viewContainerClassName = `view-container ${routeClassMap[this.state.menu.kind]}`;
-
         return (
             <div className={this.state.isDesktop ? "" : "is-mobile"}>
                 <Sidebar
@@ -285,7 +278,7 @@ export class LiveSplit extends React.Component<{}, State> {
                         />
                     }
                     <div
-                        className={viewContainerClassName}
+                        className="view-container"
                         ref={this.containerRef}
                     >
                         {content}
@@ -295,10 +288,16 @@ export class LiveSplit extends React.Component<{}, State> {
         );
     }
 
-    public openTimerView() {
+    public openTimerView(remount: boolean, layout: Layout = this.state.layout) {
         this.setState({
+            layout,
             menu: { kind: MenuKind.Timer },
+            sidebarOpen: false,
         });
+        if (remount) {
+            layout.remount();
+            this.state.hotkeySystem.activate();
+        }
     }
 
     public openSplitsView() {
@@ -311,6 +310,14 @@ export class LiveSplit extends React.Component<{}, State> {
         this.setState({
             menu: { kind: MenuKind.Layout },
         });
+    }
+
+    public openAboutView() {
+        this.setState({
+            menu: { kind: MenuKind.About },
+            sidebarOpen: false,
+        });
+        this.state.hotkeySystem.deactivate();
     }
 
     public async importSplits() {
@@ -454,7 +461,6 @@ export class LiveSplit extends React.Component<{}, State> {
     public closeRunEditor(save: boolean) {
         if (this.state.menu.kind !== MenuKind.RunEditor) {
             panic("No Run Editor to close");
-            return;
         }
         const runEditor = this.state.menu.editor;
         const run = runEditor.close();
@@ -463,19 +469,10 @@ export class LiveSplit extends React.Component<{}, State> {
                 this.writeWith((t) => t.setRun(run)),
                 "The Run Editor should always return a valid Run.",
             );
-            this.setState({
-                menu: { kind: MenuKind.Timer },
-                sidebarOpen: false,
-            });
         } else {
             run.dispose();
-            this.setState({
-                menu: { kind: MenuKind.Timer },
-                sidebarOpen: false,
-            });
         }
-        this.state.layout.remount();
-        this.state.hotkeySystem.activate();
+        this.openTimerView(true);
     }
 
     public openLayoutEditor() {
@@ -495,28 +492,16 @@ export class LiveSplit extends React.Component<{}, State> {
     public closeLayoutEditor(save: boolean) {
         if (this.state.menu.kind !== MenuKind.LayoutEditor) {
             panic("No Layout Editor to close.");
-            return;
         }
         const layoutEditor = this.state.menu.editor;
         const layout = layoutEditor.close();
         if (save) {
             this.state.layout.dispose();
-            this.setState({
-                layout,
-                menu: { kind: MenuKind.Timer },
-                sidebarOpen: false,
-            });
-            layout.remount();
+            this.openTimerView(true, layout);
         } else {
             layout.dispose();
-            this.setState({
-                menu: { kind: MenuKind.Timer },
-                sidebarOpen: false,
-            });
-            this.state.layout.remount();
+            this.openTimerView(true);
         }
-
-        this.state.hotkeySystem.activate();
     }
 
     public openSettingsEditor() {
@@ -535,7 +520,6 @@ export class LiveSplit extends React.Component<{}, State> {
 
         if (menu.kind !== MenuKind.SettingsEditor) {
             panic("No Settings Editor to close.");
-            return;
         }
 
         if (save) {
@@ -551,13 +535,7 @@ export class LiveSplit extends React.Component<{}, State> {
             menu.config.dispose();
         }
 
-        this.setState({
-            menu: { kind: MenuKind.Timer },
-            sidebarOpen: false,
-        });
-
-        this.state.layout.remount();
-        this.state.hotkeySystem.activate();
+        this.openTimerView(true);
     }
 
     public connectToServerOrDisconnect() {

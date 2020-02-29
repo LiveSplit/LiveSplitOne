@@ -9,9 +9,10 @@ import LiveSplitIcon from "../assets/icon_small.png";
 import "../css/SideBarContent.scss";
 
 export interface SidebarCallbacks {
-    openTimerView(): void,
+    openTimerView(remount: boolean): void,
     openSplitsView(): void,
     openLayoutView(): void,
+    openAboutView(): void,
     closeRunEditor(save: boolean): void,
     closeLayoutEditor(save: boolean): void,
     openRunEditor(): void,
@@ -88,7 +89,7 @@ export class SideBarContent extends React.Component<Props, State> {
                             <i className="fa fa-sync" aria-hidden="true" /> Default
                         </button>
                         <hr />
-                        <button onClick={(_) => this.props.callbacks.openTimerView()}>
+                        <button onClick={(_) => this.props.callbacks.openTimerView(false)}>
                             <i className="fa fa-caret-left" aria-hidden="true" /> Back
                         </button>
                     </div>
@@ -139,7 +140,7 @@ export class SideBarContent extends React.Component<Props, State> {
                             <i className="fa fa-sync" aria-hidden="true" /> Default
                         </button>
                         <hr />
-                        <button onClick={(_) => this.props.callbacks.openTimerView()}>
+                        <button onClick={(_) => this.props.callbacks.openTimerView(false)}>
                             <i className="fa fa-caret-left" aria-hidden="true" /> Back
                         </button>
                     </div>
@@ -188,6 +189,18 @@ export class SideBarContent extends React.Component<Props, State> {
                                 <i className="fa fa-times" aria-hidden="true" /> Cancel
                             </button>
                         </div>
+                    </div>
+                );
+                break;
+            }
+            case MenuKind.About: {
+                sidebarContent = (
+                    <div className="sidebar-buttons">
+                        <h2>About</h2>
+                        <hr />
+                        <button onClick={(_) => this.props.callbacks.openTimerView(true)}>
+                            <i className="fa fa-caret-left" aria-hidden="true" /> Back
+                        </button>
                     </div>
                 );
                 break;
@@ -275,6 +288,10 @@ export class SideBarContent extends React.Component<Props, State> {
                         </button>
                         <button onClick={() => this.props.callbacks.openSettingsEditor()}>
                             <i className="fa fa-cog" aria-hidden="true" /> Settings
+                        </button>
+                        <hr />
+                        <button onClick={(_) => this.props.callbacks.openAboutView()}>
+                            <i className="fa fa-info-circle" aria-hidden="true" /> About
                         </button>
                     </div >
                 );
