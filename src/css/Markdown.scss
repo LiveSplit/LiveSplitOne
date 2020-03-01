@@ -17,7 +17,9 @@
   }
 
   .markdown {
-    line-height: 1.2em;
+    span {
+      line-height: 125%;
+    }
 
     img {
       vertical-align: middle;
