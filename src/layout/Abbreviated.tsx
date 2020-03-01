@@ -1,8 +1,10 @@
 import * as React from "react";
 import { expect } from "../util/OptionUtil";
-import { ResizeObserver } from "resize-observer";
+import { install } from "resize-observer";
 
 import "../css/Abbreviated.scss";
+
+if (!(window as any).ResizeObserver) { install(); }
 
 export interface Props {
     abbreviations: string[],
@@ -23,9 +25,10 @@ export default class Abbreviated extends React.Component<Props> {
 
     public componentDidMount() {
         const element = expect(this.element.current, "Element should exist by now.");
-        new ResizeObserver(() => {
+        new (window as any).ResizeObserver(() => {
             this.chooseAbbreviation();
         }).observe(element);
+
         this.chooseAbbreviation();
     }
 
