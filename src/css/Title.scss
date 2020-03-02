@@ -40,7 +40,7 @@ $game-icon-size: $two-row-height - $vertical-padding * 2;
       height: 50%;
       padding: 0 $side-padding;
 
-      &.centered div {
+      &.centered .abbreviated {
         text-align: center;
       }
     }
@@ -66,7 +66,7 @@ $game-icon-size: $two-row-height - $vertical-padding * 2;
         overflow: hidden;
         padding: 0 $side-padding;
 
-        &.centered div {
+        &.centered .abbreviated {
           text-align: center;
         }
       }
