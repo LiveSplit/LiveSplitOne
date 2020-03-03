@@ -2,7 +2,6 @@
   "problemMatcher": [
       {
           "owner": "mocha",
-          "severity": "warning",
           "pattern": [
               {
                   "regexp": "^\\s*Error: (.+)$",

@@ -11,7 +11,7 @@
     "serve": "webpack-dev-server",
     "start": "webpack-dev-server --open",
     "start:electron": "webpack --electron && electron dist/index.html",
-    "test": "mocha --exit test/**/*.js || true"
+    "test": "mocha --exit test/**/*.js"
   },
   "author": "",
   "license": "ISC",
