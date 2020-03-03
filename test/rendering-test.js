@@ -35,14 +35,22 @@ describe("Layout Rendering Tests", () => {
     }
 
     before(async () => {
-        serverProcess = fork("./node_modules/webpack-dev-server/bin/webpack-dev-server.js");
+        serverProcess = fork("./node_modules/webpack-dev-server/bin/webpack-dev-server.js", ["-p"]);
 
         const service = new chrome.ServiceBuilder(chromedriver.path).build();
         chrome.setDefaultService(service);
         const options = new chrome.Options().windowSize({ width: 1200, height: 2400 }).headless();
         driver = await new Builder().forBrowser("chrome").setChromeOptions(options).build();
 
+        console.log('temp1');
+        //const temp1 = await driver.takeScreenshot();
+        //fs.writeFileSync('temp1.png', temp1, "base64");
+
         await driver.get("http://localhost:8080");
+
+        console.log('temp2');
+        //const temp2 = await driver.takeScreenshot();
+        //fs.writeFileSync('temp2.png', temp2, "base64");
 
         await driver.executeScript(() => {
             HTMLInputElement.prototype.click = function() {
@@ -56,36 +64,100 @@ describe("Layout Rendering Tests", () => {
             }
         });
 
+        console.log('temp3');
+        //const temp3 = await driver.takeScreenshot();
+        //fs.writeFileSync('temp3.png', temp3, "base64");
+
         if (!fs.existsSync(SCREENSHOTS_FOLDER)) {
             fs.mkdirSync(SCREENSHOTS_FOLDER);
         }
+
+        console.log('temp4');
+        //const temp4 = await driver.takeScreenshot();
+        //fs.writeFileSync('temp4.png', temp4, "base64");
     });
 
     const testRendering = (layoutName, splitsName, expectedHash) => {
         it(`Renders the ${layoutName} layout with the ${splitsName} splits correctly`, async () => {
+            console.log('temp5');
+            //const temp5 = await driver.takeScreenshot();
+            //fs.writeFileSync('temp5.png', temp5, "base64");
+
             await clickElement(By.xpath(".//button[contains(text(), 'Layout')]"));
+
+            console.log('temp69');
+            //const temp69 = await driver.takeScreenshot();
+            //fs.writeFileSync('temp69.png', temp69, "base64");
+
             await clickElement(By.xpath(".//button[contains(text(), 'Import')]"));
+
+            console.log('temp6');
+            //const temp6 = await driver.takeScreenshot();
+            //fs.writeFileSync('temp6.png', temp6, "base64");
+
             await loadFile(`${LAYOUTS_FOLDER}/${layoutName}.ls1l`);
+
+            console.log('temp7');
+            //const temp7 = await driver.takeScreenshot();
+            //fs.writeFileSync('temp7.png', temp7, "base64");
+
             await clickElement(By.xpath(".//button[contains(text(), 'Back')]"));
+
+            console.log('temp8');
+            //const temp8 = await driver.takeScreenshot();
+            //fs.writeFileSync('temp8.png', temp8, "base64");
 
             await clickElement(By.xpath(".//button[contains(text(), 'Splits')]"));
+
+            console.log('temp9');
+            //const temp9 = await driver.takeScreenshot();
+            //fs.writeFileSync('temp9.png', temp9, "base64");
+
             await clickElement(By.xpath(".//button[contains(text(), 'Import')]"));
+
+            console.log('temp10');
+            //const temp10 = await driver.takeScreenshot();
+            //fs.writeFileSync('temp10.png', temp10, "base64");
+
             await loadFile(`${SPLITS_FOLDER}/${splitsName}.lss`);
+
+            console.log('temp11');
+            //const temp11 = await driver.takeScreenshot();
+            //fs.writeFileSync('temp11.png', temp11, "base64");
+
             await clickElement(By.xpath(".//button[contains(text(), 'Back')]"));
+
+            console.log('temp12');
+            //const temp12 = await driver.takeScreenshot();
+            //fs.writeFileSync('temp12.png', temp12, "base64");
     
             const layoutElement = await findElement(By.className("layout"));
+
+            console.log('temp13');
+            //const temp13 = await driver.takeScreenshot();
+            //fs.writeFileSync('temp13.png', temp13, "base64");
+
             const layoutScreenshot = await layoutElement.takeScreenshot();
 
+            console.log('temp14');
+            //const temp14 = await driver.takeScreenshot();
+            //fs.writeFileSync('temp14.png', temp14, "base64");
+
+            console.log('temp15');
             const tempFilePath = `${SCREENSHOTS_FOLDER}/${layoutName}.png`;
 
             fs.writeFileSync(tempFilePath, layoutScreenshot, "base64");
+            console.log('temp16');
             const actualHashHex = await imghash.hash(tempFilePath, 24);
+            console.log('temp17');
             const actualHash = hex64.encode(actualHashHex);
+            console.log('temp18');
 
             const actualScreenshotPath = `${SCREENSHOTS_FOLDER}/${layoutName}_${splitsName}_${actualHash.replace("/", "$")}.png`;
             const expectedScreenshotPath = `${SCREENSHOTS_FOLDER}/${layoutName}_${splitsName}_${expectedHash.replace("/", "$")}.png`;
 
             fs.renameSync(tempFilePath, actualScreenshotPath);
+            console.log('temp19');
 
             if (actualHash !== expectedHash) {
                 let showWarning = false;
@@ -115,6 +187,7 @@ describe("Layout Rendering Tests", () => {
                     }
                 }
             }
+            console.log('temp20');
         });
     }
 
