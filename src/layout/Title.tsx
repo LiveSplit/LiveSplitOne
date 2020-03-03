@@ -4,6 +4,7 @@ import { colorToCss, gradientToCss } from "../util/ColorUtil";
 import { map } from "../util/OptionUtil";
 
 import "../css/Title.scss";
+import Abbreviated from "./Abbreviated";
 
 export interface Props { state: LiveSplit.TitleComponentStateJson }
 
@@ -21,7 +22,8 @@ export default class Title extends React.Component<Props> {
 
         const finishedRunsExist = this.props.state.finished_runs !== null;
         const attemptsExist = this.props.state.attempts !== null;
-        const twoLines = this.props.state.line2 !== null;
+        const line2 = this.props.state.line2;
+        const twoLines = line2 !== null;
         const showIcon = iconUrl !== "";
         const showAttempts = attemptsExist || finishedRunsExist;
 
@@ -58,7 +60,7 @@ export default class Title extends React.Component<Props> {
                 >
                     {
                         twoLines && <span className={`title-game ${alignmentClass}`}>
-                            <div className="title-text">{this.props.state.line1}</div>
+                            <Abbreviated abbreviations={this.props.state.line1} />
                         </span>
                     }
                     <div className={`lower-row ${numLinesClass} ${alignmentClass}`}>
@@ -69,9 +71,9 @@ export default class Title extends React.Component<Props> {
                             </div>
                         }
                         <div className={`title-category ${alignmentClass}`}>
-                            <div className="title-text">
-                                {twoLines ? this.props.state.line2 : this.props.state.line1}
-                            </div>
+                            <Abbreviated abbreviations={
+                                line2 !== null ? line2 : this.props.state.line1
+                            } />
                         </div>
                         {
                             showAttempts &&

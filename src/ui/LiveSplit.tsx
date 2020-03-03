@@ -598,8 +598,6 @@ export class LiveSplit extends React.Component<{}, State> {
 
     private getDefaultRun() {
         const run = Run.new();
-        run.setGameName("Game");
-        run.setCategoryName("Category");
         run.pushSegment(Segment.new("Time"));
         return run;
     }

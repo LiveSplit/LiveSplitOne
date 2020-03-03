@@ -14,6 +14,7 @@ export default class KeyValue extends React.Component<Props> {
                 KeyValueDisplay.SplitOneRow
             }
             keyText={this.props.state.key}
+            keyAbbreviations={this.props.state.key_abbreviations}
             keyColor={this.props.state.key_color}
             valueText={this.props.state.value}
             valueColor={this.props.state.value_color}

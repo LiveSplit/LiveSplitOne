@@ -31,7 +31,7 @@ export default class Layout extends React.Component<Props> {
                     <ResizableBox
                         className="resizable-layout"
                         width={this.props.width}
-                        minConstraints={[200, 0]}
+                        minConstraints={[160, 0]}
                         height={0}
                         handle={<span onClick={(event: React.SyntheticEvent) => { event.stopPropagation(); }} className="resizable-handle" />}
                         onResize={

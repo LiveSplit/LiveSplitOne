@@ -23,9 +23,16 @@
 
   &.key-value-center {
     justify-content: center;
+    text-align: center;
 
     .key-value-key {
       justify-content: center;
+    }
+  }
+
+  &.key-value-left-right {
+    .key-value-key {
+      padding-right: $side-padding;
     }
   }
 
@@ -36,14 +43,8 @@
     justify-content: flex-start;
     align-items: center;
     overflow: hidden;
-
-    .key-value-key-inner {
-      overflow: hidden;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-    }
   }
-  
+
   .key-value-value {
     display: flex;
     flex-shrink: 0;

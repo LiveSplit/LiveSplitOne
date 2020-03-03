@@ -11,7 +11,7 @@
     "serve": "webpack-dev-server",
     "start": "webpack-dev-server --open",
     "start:electron": "webpack --electron && electron dist/index.html",
-    "test": "mocha --exit --timeout 60000 test/**/*.js || true"
+    "test": "mocha --exit test/**/*.js || true"
   },
   "author": "",
   "license": "ISC",
@@ -33,7 +33,8 @@
     "react-resizable": "^1.10.1",
     "react-sidebar": "^3.0.2",
     "react-toastify": "^5.5.0",
-    "react-twemoji": "0.2.3"
+    "react-twemoji": "0.2.3",
+    "resize-observer": "^1.0.0"
   },
   "devDependencies": {
     "@types/node": "^13.1.7",

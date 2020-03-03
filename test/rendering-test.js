@@ -13,12 +13,25 @@ const hex64 = require("hex64");
 const pixelmatch = require("pixelmatch");
 const PNG = require("pngjs").PNG;
 
-describe("Layout Rendering Tests", () => {
+describe("Layout Rendering Tests", function() {
+    this.timeout(40000);
+
     let driver, serverProcess;
 
     const LAYOUTS_FOLDER = "test/layouts";
     const SCREENSHOTS_FOLDER = "test/screenshots";
     const SPLITS_FOLDER = "test/splits";
+
+    const startServer = async () => {
+        return new Promise((resolve) => {
+            serverProcess = fork("./node_modules/webpack-dev-server/bin/webpack-dev-server.js", [], { silent: true });
+            serverProcess.stdout.on("data", (data) => {
+                if (data.toString().includes("Compiled successfully.")) {
+                    resolve();
+                }
+            });
+        });
+    };
 
     const findElement = async (selector) => {
         return driver.wait(until.elementLocated(selector));
@@ -35,7 +48,7 @@ describe("Layout Rendering Tests", () => {
     }
 
     before(async () => {
-        serverProcess = fork("./node_modules/webpack-dev-server/bin/webpack-dev-server.js");
+        await startServer();
 
         const service = new chrome.ServiceBuilder(chromedriver.path).build();
         chrome.setDefaultService(service);
@@ -62,7 +75,9 @@ describe("Layout Rendering Tests", () => {
     });
 
     const testRendering = (layoutName, splitsName, expectedHash) => {
-        it(`Renders the ${layoutName} layout with the ${splitsName} splits correctly`, async () => {
+        it(`Renders the ${layoutName} layout with the ${splitsName} splits correctly`, async function() {
+            this.timeout(5000);
+
             await clickElement(By.xpath(".//button[contains(text(), 'Layout')]"));
             await clickElement(By.xpath(".//button[contains(text(), 'Import')]"));
             await loadFile(`${LAYOUTS_FOLDER}/${layoutName}.ls1l`);
