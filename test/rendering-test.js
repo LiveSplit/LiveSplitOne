@@ -22,6 +22,17 @@ describe("Layout Rendering Tests", function() {
     const SCREENSHOTS_FOLDER = "test/screenshots";
     const SPLITS_FOLDER = "test/splits";
 
+    const startServer = async () => {
+        return new Promise((resolve) => {
+            serverProcess = fork("./node_modules/webpack-dev-server/bin/webpack-dev-server.js", [], { silent: true });
+            serverProcess.stdout.on("data", (data) => {
+                if (data.toString().includes("Compiled successfully.")) {
+                    resolve();
+                }
+            });
+        });
+    };
+
     const findElement = async (selector) => {
         return driver.wait(until.elementLocated(selector));
     };
@@ -37,7 +48,7 @@ describe("Layout Rendering Tests", function() {
     }
 
     before(async () => {
-        serverProcess = fork("./node_modules/webpack-dev-server/bin/webpack-dev-server.js");
+        await startServer();
 
         const service = new chrome.ServiceBuilder(chromedriver.path).build();
         chrome.setDefaultService(service);
