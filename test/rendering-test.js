@@ -80,8 +80,8 @@ describe("Layout Rendering Tests", () => {
     const testRendering = (layoutName, splitsName, expectedHash) => {
         it(`Renders the ${layoutName} layout with the ${splitsName} splits correctly`, async () => {
             console.log('temp5');
-            //const temp5 = await driver.takeScreenshot();
-            //fs.writeFileSync('temp5.png', temp5, "base64");
+            const temp5 = await driver.takeScreenshot();
+            fs.writeFileSync(`${SCREENSHOTS_FOLDER}/temp5.png`, temp5, "base64");
 
             await clickElement(By.xpath(".//button[contains(text(), 'Layout')]"));
 
