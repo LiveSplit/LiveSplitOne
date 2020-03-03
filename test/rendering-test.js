@@ -35,7 +35,7 @@ describe("Layout Rendering Tests", () => {
     }
 
     before(async () => {
-        serverProcess = fork("./node_modules/webpack-dev-server/bin/webpack-dev-server.js", ["-p"]);
+        serverProcess = fork("./node_modules/webpack-dev-server/bin/webpack-dev-server.js");
 
         const service = new chrome.ServiceBuilder(chromedriver.path).build();
         chrome.setDefaultService(service);
