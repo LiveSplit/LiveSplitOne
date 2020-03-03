@@ -13,7 +13,9 @@ const hex64 = require("hex64");
 const pixelmatch = require("pixelmatch");
 const PNG = require("pngjs").PNG;
 
-describe("Layout Rendering Tests", () => {
+describe("Layout Rendering Tests", function() {
+    this.timeout(40000);
+
     let driver, serverProcess;
 
     const LAYOUTS_FOLDER = "test/layouts";
@@ -62,7 +64,9 @@ describe("Layout Rendering Tests", () => {
     });
 
     const testRendering = (layoutName, splitsName, expectedHash) => {
-        it(`Renders the ${layoutName} layout with the ${splitsName} splits correctly`, async () => {
+        it(`Renders the ${layoutName} layout with the ${splitsName} splits correctly`, async function() {
+            this.timeout(5000);
+
             await clickElement(By.xpath(".//button[contains(text(), 'Layout')]"));
             await clickElement(By.xpath(".//button[contains(text(), 'Import')]"));
             await loadFile(`${LAYOUTS_FOLDER}/${layoutName}.ls1l`);
