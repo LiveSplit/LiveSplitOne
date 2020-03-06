@@ -1,6 +1,8 @@
 @import 'Toggle';
 @import 'variables';
 
+$header-font-size: 24px;
+
 .sidebar-overlay {
   z-index: 3 !important;
 }
@@ -13,17 +15,6 @@
 
   @include toggle;
 
-  > div > hr {
-    border-color: $border-color;
-    margin: ($ui-large-margin - $ui-margin / 2) 0;
-  }
-
-  > div > h2 {
-    font-size: 1.5em;
-    text-align: center;
-    height: 20px;
-  }
-
   > div > div.small > button {
     width: 50%;
     height: 40px;
@@ -31,6 +22,26 @@
   }
 
   .sidebar-buttons {
+    hr {
+      border-color: $border-color;
+      margin: ($ui-large-margin - $ui-margin / 2) 0;
+
+      &.livesplit-title-separator {
+        margin-top: 0;
+      }
+    }
+
+    h1, h2 {
+      font-size: $header-font-size;
+      text-align: center;
+      margin-top: $ui-large-margin;
+      margin-bottom: $ui-large-margin;
+    }
+
+    h2 {
+      margin-bottom: $ui-large-margin - $ui-margin / 2;
+    }
+
     > button {
       width: 100%;
       height: 40px;
