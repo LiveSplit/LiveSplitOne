@@ -1,4 +1,5 @@
 import * as React from "react";
+import localforage from "localforage";
 import Sidebar from "react-sidebar";
 import DragUpload from "./DragUpload";
 import AutoRefreshLayout from "../layout/AutoRefreshLayout";
@@ -39,6 +40,13 @@ type Menu =
     { kind: MenuKind.SettingsEditor, config: HotkeyConfig } |
     { kind: MenuKind.About };
 
+export interface Props {
+    splits: string,
+    layout: any,
+    settings: any,
+    layoutWidth: number,
+}
+
 export interface State {
     hotkeySystem: HotkeySystem,
     isBrowserSource: boolean,
@@ -53,7 +61,21 @@ export interface State {
 
 const DEFAULT_LAYOUT_WIDTH = 300;
 
-export class LiveSplit extends React.Component<{}, State> {
+export class LiveSplit extends React.Component<Props, State> {
+    public static async loadStoredData() {
+        const splits = await localforage.getItem("splits") as string;
+        const layout = await localforage.getItem("layout");
+        const settings = await localforage.getItem("settings");
+        const layoutWidth = await localforage.getItem("layoutWidth") as number;
+
+        return {
+            splits,
+            layout,
+            settings,
+            layoutWidth,
+        };
+    }
+
     private isDesktopQuery = window.matchMedia("(min-width: 600px)");
     private containerRef: React.RefObject<HTMLDivElement>;
     private scrollEvent: Option<EventListenerObject>;
@@ -61,7 +83,7 @@ export class LiveSplit extends React.Component<{}, State> {
     private resizeEvent: Option<EventListenerObject>;
     private connection: Option<WebSocket>;
 
-    constructor(props: {}) {
+    constructor(props: Props) {
         super(props);
 
         const run = this.getDefaultRun();
@@ -71,10 +93,10 @@ export class LiveSplit extends React.Component<{}, State> {
         ).intoShared();
 
         let hotkeySystem = null;
-        const settings = localStorage.getItem("settings");
+        const settings = props.settings;
         try {
             if (settings) {
-                const config = HotkeyConfig.parseJson(JSON.parse(settings).hotkeys);
+                const config = HotkeyConfig.parseJson(settings.hotkeys);
                 if (config !== null) {
                     hotkeySystem = HotkeySystem.withConfig(timer.share(), config);
                 }
@@ -98,27 +120,24 @@ export class LiveSplit extends React.Component<{}, State> {
             );
             this.loadFromSplitsIO(window.location.hash.substr("#/splits-io/".length));
         } else {
-            const lss = localStorage.getItem("splits");
-            if (lss !== null) {
-                const result = Run.parseString(lss, "", false);
-                if (result.parsedSuccessfully()) {
-                    result.unwrap().with((r) => timer.writeWith((t) => t.setRun(r)))?.dispose();
-                }
+            const result = Run.parseString(props.splits, "", false);
+            if (result.parsedSuccessfully()) {
+                result.unwrap().with((r) => timer.writeWith((t) => t.setRun(r)))?.dispose();
             }
         }
 
         let layout: Option<Layout> = null;
         try {
-            const data = localStorage.getItem("layout");
+            const data = props.layout;
             if (data) {
-                layout = Layout.parseJson(JSON.parse(data));
+                layout = Layout.parseJson(data);
             }
         } catch (_) { /* Looks like local storage has no valid data */ }
         if (layout === null) {
             layout = Layout.defaultLayout();
         }
 
-        const layoutWidth = +(localStorage.getItem("layoutWidth") || DEFAULT_LAYOUT_WIDTH);
+        const layoutWidth = props.layoutWidth || DEFAULT_LAYOUT_WIDTH;
         const isDesktop = this.isDesktopQuery.matches;
         const isBrowserSource = !!(window as any).obsstudio;
 
@@ -383,23 +402,23 @@ export class LiveSplit extends React.Component<{}, State> {
         }
     }
 
-    public saveSplits() {
+    public async saveSplits() {
         const lss = this.writeWith((t) => {
             const lss = t.saveAsLss();
             t.markAsUnmodified();
             return lss;
         });
         try {
-            localStorage.setItem("splits", lss);
+            await localforage.setItem("splits", lss);
         } catch (_) {
             toast.error("Failed to save the splits.");
         }
     }
 
-    public saveLayout() {
+    public async saveLayout() {
         try {
             const layout = this.state.layout.settingsAsJson();
-            localStorage.setItem("layout", JSON.stringify(layout));
+            await localforage.setItem("layout", layout);
         } catch (_) {
             toast.error("Failed to save the layout.");
         }
@@ -515,7 +534,7 @@ export class LiveSplit extends React.Component<{}, State> {
         });
     }
 
-    public closeSettingsEditor(save: boolean) {
+    public async closeSettingsEditor(save: boolean) {
         const menu = this.state.menu;
 
         if (menu.kind !== MenuKind.SettingsEditor) {
@@ -526,7 +545,7 @@ export class LiveSplit extends React.Component<{}, State> {
             try {
                 const hotkeys = menu.config.asJson();
                 const settings = { hotkeys };
-                localStorage.setItem("settings", JSON.stringify(settings));
+                await localforage.setItem("settings", settings);
             } catch (_) {
                 toast.error("Failed to save the settings.");
             }
@@ -613,17 +632,17 @@ export class LiveSplit extends React.Component<{}, State> {
         }
     }
 
-    private onResize(width: number) {
-        localStorage.setItem("layoutWidth", `${width}`);
+    private async onResize(width: number) {
         this.setState({
             layoutWidth: width,
         });
+        await localforage.setItem("layoutWidth", width);
     }
 
     private mediaQueryChanged() {
         const isDesktop = this.isDesktopQuery.matches && !this.state.isBrowserSource;
         if (isDesktop) {
-            const layoutWidth = +(localStorage.getItem("layoutWidth") || DEFAULT_LAYOUT_WIDTH);
+            const layoutWidth = this.props.layoutWidth || DEFAULT_LAYOUT_WIDTH;
             this.setState({
                 isDesktop,
                 layoutWidth,
