@@ -58,7 +58,7 @@ export async function openFileAsString(): Promise<[string, File]> {
     return convertFileToString(file);
 }
 
-export function exportFile(filename: string, data: any) {
+export function exportFile(filename: string, data: BlobPart) {
     const url = URL.createObjectURL(new Blob([data], { type: "application/octet-stream" }));
     try {
         const element = document.createElement("a");

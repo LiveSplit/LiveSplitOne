@@ -41,7 +41,7 @@ type Menu =
     { kind: MenuKind.About };
 
 export interface Props {
-    splits: string,
+    splits: Int8Array,
     layout: any,
     settings: any,
     layoutWidth: number,
@@ -63,7 +63,7 @@ const DEFAULT_LAYOUT_WIDTH = 300;
 
 export class LiveSplit extends React.Component<Props, State> {
     public static async loadStoredData() {
-        const splits = await localforage.getItem("splits") as string;
+        const splits = await localforage.getItem("splits") as Int8Array ?? new Int8Array();
         const layout = await localforage.getItem("layout");
         const settings = await localforage.getItem("settings");
         const layoutWidth = await localforage.getItem("layoutWidth") as number;
@@ -119,8 +119,8 @@ export class LiveSplit extends React.Component<Props, State> {
                 "The Default Loading Run should be a valid Run",
             );
             this.loadFromSplitsIO(window.location.hash.substr("#/splits-io/".length));
-        } else {
-            const result = Run.parseString(props.splits, "", false);
+        } else if (props.splits.length > 0) {
+            const result = Run.parseArray(props.splits, "", false);
             if (result.parsedSuccessfully()) {
                 result.unwrap().with((r) => timer.writeWith((t) => t.setRun(r)))?.dispose();
             }
@@ -377,10 +377,10 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     public async uploadToSplitsIO(): Promise<Option<Window>> {
-        const lss = this.readWith((t) => t.saveAsLss());
+        const lss = this.readWith((t) => t.saveAsLssBytes());
 
         try {
-            const claimUri = await SplitsIO.uploadLss(lss);
+            const claimUri = await SplitsIO.uploadLss(new Blob([lss]));
             return window.open(claimUri);
         } catch (_) {
             toast.error("Failed to upload the splits.");
@@ -390,9 +390,9 @@ export class LiveSplit extends React.Component<Props, State> {
 
     public exportSplits() {
         const [lss, name] = this.writeWith((t) => {
-            const lss = t.saveAsLss();
-            const name = t.getRun().extendedFileName(true);
             t.markAsUnmodified();
+            const name = t.getRun().extendedFileName(true);
+            const lss = t.saveAsLssBytes();
             return [lss, name];
         });
         try {
@@ -404,9 +404,8 @@ export class LiveSplit extends React.Component<Props, State> {
 
     public async saveSplits() {
         const lss = this.writeWith((t) => {
-            const lss = t.saveAsLss();
             t.markAsUnmodified();
-            return lss;
+            return t.saveAsLssBytes();
         });
         try {
             await localforage.setItem("splits", lss);

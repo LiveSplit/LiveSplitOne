@@ -28,7 +28,7 @@ export enum UploadError {
     UploadRequestErrored,
 }
 
-export async function uploadLss(lss: string): Promise<string> {
+export async function uploadLss(lss: string | Blob): Promise<string> {
     const response = await validatedFetch(
         "https://splits.io/api/v4/runs",
         {
