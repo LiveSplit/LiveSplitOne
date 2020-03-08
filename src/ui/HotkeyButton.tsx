@@ -41,21 +41,22 @@ export class HotkeyButton extends React.Component<Props, State> {
 
                             let gamepadIdx = 0;
                             for (const gamepad of gamepads) {
-                                if (gamepad === null) { continue; }
+                                if (gamepadIdx >= oldButtonState.length) {
+                                    oldButtonState[gamepadIdx] = [];
+                                }
 
-                                let buttonIdx = 0;
-                                for (const button of gamepad.buttons) {
-                                    const oldState = oldButtonState[gamepadIdx]?.[buttonIdx] ?? false;
-                                    if (button.pressed && !oldState) {
-                                        this.props.setValue(`Gamepad${buttonIdx}`);
+                                if (gamepad !== null) {
+                                    let buttonIdx = 0;
+                                    for (const button of gamepad.buttons) {
+                                        const oldState = oldButtonState[gamepadIdx]?.[buttonIdx] ?? false;
+                                        if (button.pressed && !oldState) {
+                                            this.props.setValue(`Gamepad${buttonIdx}`);
+                                        }
+
+                                        oldButtonState[gamepadIdx][buttonIdx] = button.pressed;
+
+                                        buttonIdx++;
                                     }
-
-                                    if (oldButtonState[gamepadIdx] === undefined) {
-                                        oldButtonState[gamepadIdx] = [];
-                                    }
-                                    oldButtonState[gamepadIdx][buttonIdx] = button.pressed;
-
-                                    buttonIdx++;
                                 }
 
                                 gamepadIdx++;
