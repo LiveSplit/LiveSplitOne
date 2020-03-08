@@ -10,6 +10,7 @@ export interface Props {
 
 export interface State {
     listener: Option<EventListenerObject>,
+    intervalHandle: Option<number>,
 }
 
 export class HotkeyButton extends React.Component<Props, State> {
@@ -18,6 +19,7 @@ export class HotkeyButton extends React.Component<Props, State> {
 
         this.state = {
             listener: null,
+            intervalHandle: null,
         };
     }
 
@@ -33,20 +35,49 @@ export class HotkeyButton extends React.Component<Props, State> {
 
                         window.addEventListener("keypress", listener);
 
+                        const oldButtonState: boolean[][] = [];
+                        const intervalHandle = window.setInterval(() => {
+                            const gamepads = navigator.getGamepads();
+
+                            let gamepadIdx = 0;
+                            for (const gamepad of gamepads) {
+                                if (gamepad === null) { continue; }
+
+                                let buttonIdx = 0;
+                                for (const button of gamepad.buttons) {
+                                    const oldState = oldButtonState[gamepadIdx]?.[buttonIdx] ?? false;
+                                    if (button.pressed && !oldState) {
+                                        this.props.setValue(`Gamepad${buttonIdx}`);
+                                    }
+
+                                    if (oldButtonState[gamepadIdx] === undefined) {
+                                        oldButtonState[gamepadIdx] = [];
+                                    }
+                                    oldButtonState[gamepadIdx][buttonIdx] = button.pressed;
+
+                                    buttonIdx++;
+                                }
+
+                                gamepadIdx++;
+                            }
+                        }, 1000 / 60.0);
+
                         this.setState({
-                            ...this.state,
                             listener,
+                            intervalHandle,
                         });
                     }}
                     onBlur={() => {
                         if (this.state.listener != null) {
                             window.removeEventListener("keypress", this.state.listener);
-
-                            this.setState({
-                                ...this.state,
-                                listener: null,
-                            });
                         }
+                        if (this.state.intervalHandle != null) {
+                            window.clearTimeout(this.state.intervalHandle);
+                        }
+                        this.setState({
+                            listener: null,
+                            intervalHandle: null,
+                        });
                     }}
                 >
                     {
