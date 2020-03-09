@@ -65,7 +65,7 @@ export class SideBarContent extends React.Component<Props, State> {
             case MenuKind.Splits: {
                 sidebarContent = (
                     <div className="sidebar-buttons">
-                        <h2>Splits</h2>
+                        <h1>Splits</h1>
                         <hr />
                         <button onClick={(_) => this.props.callbacks.openRunEditor()}>
                             <i className="fa fa-edit" aria-hidden="true" /> Edit
@@ -99,7 +99,7 @@ export class SideBarContent extends React.Component<Props, State> {
             case MenuKind.RunEditor: {
                 sidebarContent = (
                     <div className="sidebar-buttons">
-                        <h2>Splits Editor</h2>
+                        <h1>Splits Editor</h1>
                         <hr />
                         <div className="small">
                             <button
@@ -122,7 +122,7 @@ export class SideBarContent extends React.Component<Props, State> {
             case MenuKind.Layout: {
                 sidebarContent = (
                     <div className="sidebar-buttons">
-                        <h2>Layout</h2>
+                        <h1>Layout</h1>
                         <hr />
                         <button onClick={(_) => this.props.callbacks.openLayoutEditor()}>
                             <i className="fa fa-edit" aria-hidden="true" /> Edit
@@ -150,7 +150,7 @@ export class SideBarContent extends React.Component<Props, State> {
             case MenuKind.LayoutEditor: {
                 sidebarContent = (
                     <div className="sidebar-buttons">
-                        <h2>Layout Editor</h2>
+                        <h1>Layout Editor</h1>
                         <hr />
                         <div className="small">
                             <button
@@ -173,7 +173,7 @@ export class SideBarContent extends React.Component<Props, State> {
             case MenuKind.SettingsEditor: {
                 sidebarContent = (
                     <div className="sidebar-buttons">
-                        <h2>Settings</h2>
+                        <h1>Settings</h1>
                         <hr />
                         <div className="small">
                             <button
@@ -196,7 +196,7 @@ export class SideBarContent extends React.Component<Props, State> {
             case MenuKind.About: {
                 sidebarContent = (
                     <div className="sidebar-buttons">
-                        <h2>About</h2>
+                        <h1>About</h1>
                         <hr />
                         <button onClick={(_) => this.props.callbacks.openTimerView(true)}>
                             <i className="fa fa-caret-left" aria-hidden="true" /> Back
@@ -212,9 +212,9 @@ export class SideBarContent extends React.Component<Props, State> {
                             <span className="livesplit-icon">
                                 <img src={LiveSplitIcon} alt="LiveSplit Logo" />
                             </span>
-                            <h2> LiveSplit One</h2>
+                            <h1> LiveSplit One</h1>
                         </div>
-                        <hr />
+                        <hr className="livesplit-title-separator" />
                         <button onClick={(_) => this.props.callbacks.openSplitsView()}>
                             <i className="fa fa-list" aria-hidden="true" /> Splits
                         </button>
