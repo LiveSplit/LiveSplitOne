@@ -19,7 +19,7 @@ async function run() {
     const {
         splits,
         layout,
-        settings,
+        hotkeys,
         layoutWidth,
     } = await LiveSplit.loadStoredData();
 
@@ -29,7 +29,7 @@ async function run() {
                 <LiveSplit
                     splits={splits}
                     layout={layout}
-                    settings={settings}
+                    hotkeys={hotkeys}
                     layoutWidth={layoutWidth}
                 />
                 <ToastContainer

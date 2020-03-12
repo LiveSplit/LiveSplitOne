@@ -1,5 +1,4 @@
 import * as React from "react";
-import localforage from "localforage";
 import Sidebar from "react-sidebar";
 import DragUpload from "./DragUpload";
 import AutoRefreshLayout from "../layout/AutoRefreshLayout";
@@ -17,6 +16,7 @@ import { SettingsEditor as SettingsEditorComponent } from "./SettingsEditor";
 import { About } from "./About";
 import { SideBarContent } from "./SideBarContent";
 import { toast } from "react-toastify";
+import * as Storage from "../storage";
 
 import "react-toastify/dist/ReactToastify.css";
 import "../css/LiveSplit.scss";
@@ -41,9 +41,9 @@ type Menu =
     { kind: MenuKind.About };
 
 export interface Props {
-    splits: Int8Array,
-    layout: any,
-    settings: any,
+    splits?: Uint8Array,
+    layout?: Storage.LayoutSettings,
+    hotkeys?: Storage.HotkeyConfigSettings,
     layoutWidth: number,
 }
 
@@ -59,19 +59,17 @@ export interface State {
     menu: Menu,
 }
 
-const DEFAULT_LAYOUT_WIDTH = 300;
-
 export class LiveSplit extends React.Component<Props, State> {
     public static async loadStoredData() {
-        const splits = await localforage.getItem("splits") as Int8Array ?? new Int8Array();
-        const layout = await localforage.getItem("layout");
-        const settings = await localforage.getItem("settings");
-        const layoutWidth = await localforage.getItem("layoutWidth") as number;
+        const splits = await Storage.loadSplits();
+        const layout = await Storage.loadLayout();
+        const hotkeys = await Storage.loadHotkeys();
+        const layoutWidth = await Storage.loadLayoutWidth();
 
         return {
             splits,
             layout,
-            settings,
+            hotkeys,
             layoutWidth,
         };
     }
@@ -93,10 +91,10 @@ export class LiveSplit extends React.Component<Props, State> {
         ).intoShared();
 
         let hotkeySystem = null;
-        const settings = props.settings;
+        const hotkeys = props.hotkeys;
         try {
-            if (settings) {
-                const config = HotkeyConfig.parseJson(settings.hotkeys);
+            if (hotkeys !== undefined) {
+                const config = HotkeyConfig.parseJson(hotkeys);
                 if (config !== null) {
                     hotkeySystem = HotkeySystem.withConfig(timer.share(), config);
                 }
@@ -119,7 +117,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 "The Default Loading Run should be a valid Run",
             );
             this.loadFromSplitsIO(window.location.hash.substr("#/splits-io/".length));
-        } else if (props.splits.length > 0) {
+        } else if (props.splits !== undefined) {
             const result = Run.parseArray(props.splits, "", false);
             if (result.parsedSuccessfully()) {
                 result.unwrap().with((r) => timer.writeWith((t) => t.setRun(r)))?.dispose();
@@ -129,7 +127,7 @@ export class LiveSplit extends React.Component<Props, State> {
         let layout: Option<Layout> = null;
         try {
             const data = props.layout;
-            if (data) {
+            if (data !== undefined) {
                 layout = Layout.parseJson(data);
             }
         } catch (_) { /* Looks like local storage has no valid data */ }
@@ -137,7 +135,6 @@ export class LiveSplit extends React.Component<Props, State> {
             layout = Layout.defaultLayout();
         }
 
-        const layoutWidth = props.layoutWidth || DEFAULT_LAYOUT_WIDTH;
         const isDesktop = this.isDesktopQuery.matches;
         const isBrowserSource = !!(window as any).obsstudio;
 
@@ -145,7 +142,7 @@ export class LiveSplit extends React.Component<Props, State> {
             isDesktop: isDesktop && !isBrowserSource,
             isBrowserSource,
             layout,
-            layoutWidth,
+            layoutWidth: props.layoutWidth,
             menu: { kind: MenuKind.Timer },
             sidebarOpen: false,
             sidebarTransitionsEnabled: false,
@@ -408,7 +405,7 @@ export class LiveSplit extends React.Component<Props, State> {
             return t.saveAsLssBytes();
         });
         try {
-            await localforage.setItem("splits", lss);
+            await Storage.storeSplits(lss);
         } catch (_) {
             toast.error("Failed to save the splits.");
         }
@@ -417,7 +414,7 @@ export class LiveSplit extends React.Component<Props, State> {
     public async saveLayout() {
         try {
             const layout = this.state.layout.settingsAsJson();
-            await localforage.setItem("layout", layout);
+            await Storage.storeLayout(layout);
         } catch (_) {
             toast.error("Failed to save the layout.");
         }
@@ -543,8 +540,7 @@ export class LiveSplit extends React.Component<Props, State> {
         if (save) {
             try {
                 const hotkeys = menu.config.asJson();
-                const settings = { hotkeys };
-                await localforage.setItem("settings", settings);
+                await Storage.storeHotkeys(hotkeys);
             } catch (_) {
                 toast.error("Failed to save the settings.");
             }
@@ -635,16 +631,15 @@ export class LiveSplit extends React.Component<Props, State> {
         this.setState({
             layoutWidth: width,
         });
-        await localforage.setItem("layoutWidth", width);
+        await Storage.storeLayoutWidth(width);
     }
 
     private mediaQueryChanged() {
         const isDesktop = this.isDesktopQuery.matches && !this.state.isBrowserSource;
         if (isDesktop) {
-            const layoutWidth = this.props.layoutWidth || DEFAULT_LAYOUT_WIDTH;
             this.setState({
                 isDesktop,
-                layoutWidth,
+                layoutWidth: this.props.layoutWidth,
                 sidebarTransitionsEnabled: false,
             });
         } else {
@@ -687,7 +682,7 @@ export class LiveSplit extends React.Component<Props, State> {
 
     private importSplitsFromArrayBuffer(buffer: [ArrayBuffer, File]) {
         const [file] = buffer;
-        const result = Run.parseArray(new Int8Array(file), "", false);
+        const result = Run.parseArray(new Uint8Array(file), "", false);
         if (result.parsedSuccessfully()) {
             const run = result.unwrap();
             this.setRun(run, () => { throw Error("Empty Splits are not supported."); });
