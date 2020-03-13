@@ -5,7 +5,7 @@ import AutoRefreshLayout from "../layout/AutoRefreshLayout";
 import {
     HotkeySystem, Layout, LayoutEditor, Run, RunEditor,
     Segment, SharedTimer, Timer, TimerPhase, TimingMethod,
-    TimeSpan, TimerRef, TimerRefMut, HotkeyConfig,
+    TimeSpan, TimerRef, TimerRefMut, HotkeyConfig, ParseRunResult,
 } from "../livesplit-core";
 import { convertFileToArrayBuffer, convertFileToString, exportFile, openFileAsArrayBuffer, openFileAsString } from "../util/FileUtil";
 import { Option, assertNull, expect, maybeDisposeAndThen, panic } from "../util/OptionUtil";
@@ -41,7 +41,7 @@ type Menu =
     { kind: MenuKind.About };
 
 export interface Props {
-    splits?: Uint8Array,
+    splits?: { Array: { data: Uint8Array } } | { String: { data: string } },
     layout?: Storage.LayoutSettings,
     hotkeys?: Storage.HotkeyConfigSettings,
     layoutWidth: number,
@@ -118,7 +118,12 @@ export class LiveSplit extends React.Component<Props, State> {
             );
             this.loadFromSplitsIO(window.location.hash.substr("#/splits-io/".length));
         } else if (props.splits !== undefined) {
-            const result = Run.parseArray(props.splits, "", false);
+            let result: ParseRunResult;
+            if ("Array" in props.splits) {
+                result = Run.parseArray(props.splits.Array.data, "", false);
+            } else {
+                result = Run.parseString(props.splits.String.data, "", false);
+            }
             if (result.parsedSuccessfully()) {
                 result.unwrap().with((r) => timer.writeWith((t) => t.setRun(r)))?.dispose();
             }

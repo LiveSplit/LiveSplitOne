@@ -33,10 +33,29 @@ export async function storeSplits(lssBytes: Uint8Array) {
     await db.put("splits", lssBytes, "splits");
 }
 
-export async function loadSplits(): Promise<Uint8Array | undefined> {
+export async function loadSplits():
+    Promise<{ Array: { data: Uint8Array } } | { String: { data: string } } | undefined> {
     const db = await getDb();
 
-    return await db.get("splits", "splits");
+    const splitsData = await db.get("splits", "splits");
+    if (splitsData !== undefined) {
+        return {
+            Array: {
+                data: splitsData,
+            },
+        };
+    }
+
+    const legacySplitsData = localStorage.getItem("splits");
+    if (legacySplitsData !== null) {
+        return {
+            String: {
+                data: legacySplitsData,
+            },
+        };
+    }
+
+    return;
 }
 
 export async function storeLayout(layout: LayoutSettings) {
@@ -48,7 +67,17 @@ export async function storeLayout(layout: LayoutSettings) {
 export async function loadLayout(): Promise<LayoutSettings | undefined> {
     const db = await getDb();
 
-    return await db.get("layouts", "layout");
+    const layoutData = await db.get("layouts", "layout");
+    if (layoutData !== undefined) {
+        return layoutData;
+    }
+
+    const legacyLayoutData = localStorage.getItem("layout");
+    if (legacyLayoutData !== null) {
+        return JSON.parse(legacyLayoutData);
+    }
+
+    return;
 }
 
 export async function storeHotkeys(hotkeys: HotkeyConfigSettings) {
@@ -60,7 +89,17 @@ export async function storeHotkeys(hotkeys: HotkeyConfigSettings) {
 export async function loadHotkeys(): Promise<HotkeyConfigSettings | undefined> {
     const db = await getDb();
 
-    return await db.get("settings", "hotkeys");
+    const hotkeysData = await db.get("settings", "hotkeys");
+    if (hotkeysData !== undefined) {
+        return hotkeysData;
+    }
+
+    const legacySettingsData = localStorage.getItem("settings");
+    if (legacySettingsData !== null) {
+        return JSON.parse(legacySettingsData).hotkeys;
+    }
+
+    return;
 }
 
 export async function storeLayoutWidth(layoutWidth: number) {
@@ -72,5 +111,10 @@ export async function storeLayoutWidth(layoutWidth: number) {
 export async function loadLayoutWidth(): Promise<number> {
     const db = await getDb();
 
-    return await db.get("settings", "layoutWidth") ?? DEFAULT_LAYOUT_WIDTH;
+    const layoutWidth = await db.get("settings", "layoutWidth");
+    if (layoutWidth !== undefined) {
+        return layoutWidth;
+    }
+
+    return +(localStorage.getItem("layoutWidth") ?? DEFAULT_LAYOUT_WIDTH);
 }
