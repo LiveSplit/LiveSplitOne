@@ -5,7 +5,7 @@ import AutoRefreshLayout from "../layout/AutoRefreshLayout";
 import {
     HotkeySystem, Layout, LayoutEditor, Run, RunEditor,
     Segment, SharedTimer, Timer, TimerPhase, TimingMethod,
-    TimeSpan, TimerRef, TimerRefMut, HotkeyConfig, ParseRunResult,
+    TimeSpan, TimerRef, TimerRefMut, HotkeyConfig,
 } from "../livesplit-core";
 import { convertFileToArrayBuffer, convertFileToString, exportFile, openFileAsArrayBuffer, openFileAsString } from "../util/FileUtil";
 import { Option, assertNull, expect, maybeDisposeAndThen, panic } from "../util/OptionUtil";
@@ -41,7 +41,7 @@ type Menu =
     { kind: MenuKind.About };
 
 export interface Props {
-    splits?: { Array: { data: Uint8Array } } | { String: { data: string } },
+    splits?: Uint8Array,
     layout?: Storage.LayoutSettings,
     hotkeys?: Storage.HotkeyConfigSettings,
     layoutWidth: number,
@@ -90,7 +90,7 @@ export class LiveSplit extends React.Component<Props, State> {
             "The Default Run should be a valid Run",
         ).intoShared();
 
-        let hotkeySystem = null;
+        let hotkeySystem: Option<HotkeySystem> = null;
         const hotkeys = props.hotkeys;
         try {
             if (hotkeys !== undefined) {
@@ -99,8 +99,8 @@ export class LiveSplit extends React.Component<Props, State> {
                     hotkeySystem = HotkeySystem.withConfig(timer.share(), config);
                 }
             }
-        } catch (_) { /* Looks like local storage has no valid data */ }
-        if (hotkeySystem === null) {
+        } catch (_) { /* Looks like the storage has no valid data */ }
+        if (hotkeySystem == null) {
             hotkeySystem = expect(
                 HotkeySystem.new(timer.share()),
                 "Couldn't initialize the hotkeys",
@@ -118,12 +118,7 @@ export class LiveSplit extends React.Component<Props, State> {
             );
             this.loadFromSplitsIO(window.location.hash.substr("#/splits-io/".length));
         } else if (props.splits !== undefined) {
-            let result: ParseRunResult;
-            if ("Array" in props.splits) {
-                result = Run.parseArray(props.splits.Array.data, "", false);
-            } else {
-                result = Run.parseString(props.splits.String.data, "", false);
-            }
+            const result = Run.parseArray(props.splits, "", false);
             if (result.parsedSuccessfully()) {
                 result.unwrap().with((r) => timer.writeWith((t) => t.setRun(r)))?.dispose();
             }
@@ -135,7 +130,7 @@ export class LiveSplit extends React.Component<Props, State> {
             if (data !== undefined) {
                 layout = Layout.parseJson(data);
             }
-        } catch (_) { /* Looks like local storage has no valid data */ }
+        } catch (_) { /* Looks like the storage has no valid data */ }
         if (layout === null) {
             layout = Layout.defaultLayout();
         }
