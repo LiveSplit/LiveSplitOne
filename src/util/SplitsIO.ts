@@ -28,7 +28,7 @@ export enum UploadError {
     UploadRequestErrored,
 }
 
-export async function uploadLss(lss: string): Promise<string> {
+export async function uploadLss(lss: string | Blob): Promise<string> {
     const response = await validatedFetch(
         "https://splits.io/api/v4/runs",
         {
@@ -90,7 +90,7 @@ export async function downloadById(id: string): Promise<Run> {
         DownloadError.InvalidBuffer,
     );
 
-    const result = Run.parseArray(new Int8Array(data), "", false);
+    const result = Run.parseArray(new Uint8Array(data), "", false);
 
     if (result.parsedSuccessfully()) {
         return result.unwrap();

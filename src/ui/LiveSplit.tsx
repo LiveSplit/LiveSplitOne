@@ -16,6 +16,7 @@ import { SettingsEditor as SettingsEditorComponent } from "./SettingsEditor";
 import { About } from "./About";
 import { SideBarContent } from "./SideBarContent";
 import { toast } from "react-toastify";
+import * as Storage from "../storage";
 
 import "react-toastify/dist/ReactToastify.css";
 import "../css/LiveSplit.scss";
@@ -39,6 +40,13 @@ type Menu =
     { kind: MenuKind.SettingsEditor, config: HotkeyConfig } |
     { kind: MenuKind.About };
 
+export interface Props {
+    splits?: Uint8Array,
+    layout?: Storage.LayoutSettings,
+    hotkeys?: Storage.HotkeyConfigSettings,
+    layoutWidth: number,
+}
+
 export interface State {
     hotkeySystem: HotkeySystem,
     isBrowserSource: boolean,
@@ -51,9 +59,21 @@ export interface State {
     menu: Menu,
 }
 
-const DEFAULT_LAYOUT_WIDTH = 300;
+export class LiveSplit extends React.Component<Props, State> {
+    public static async loadStoredData() {
+        const splits = await Storage.loadSplits();
+        const layout = await Storage.loadLayout();
+        const hotkeys = await Storage.loadHotkeys();
+        const layoutWidth = await Storage.loadLayoutWidth();
 
-export class LiveSplit extends React.Component<{}, State> {
+        return {
+            splits,
+            layout,
+            hotkeys,
+            layoutWidth,
+        };
+    }
+
     private isDesktopQuery = window.matchMedia("(min-width: 600px)");
     private containerRef: React.RefObject<HTMLDivElement>;
     private scrollEvent: Option<EventListenerObject>;
@@ -61,7 +81,7 @@ export class LiveSplit extends React.Component<{}, State> {
     private resizeEvent: Option<EventListenerObject>;
     private connection: Option<WebSocket>;
 
-    constructor(props: {}) {
+    constructor(props: Props) {
         super(props);
 
         const run = this.getDefaultRun();
@@ -70,17 +90,17 @@ export class LiveSplit extends React.Component<{}, State> {
             "The Default Run should be a valid Run",
         ).intoShared();
 
-        let hotkeySystem = null;
-        const settings = localStorage.getItem("settings");
+        let hotkeySystem: Option<HotkeySystem> = null;
+        const hotkeys = props.hotkeys;
         try {
-            if (settings) {
-                const config = HotkeyConfig.parseJson(JSON.parse(settings).hotkeys);
+            if (hotkeys !== undefined) {
+                const config = HotkeyConfig.parseJson(hotkeys);
                 if (config !== null) {
                     hotkeySystem = HotkeySystem.withConfig(timer.share(), config);
                 }
             }
-        } catch (_) { /* Looks like local storage has no valid data */ }
-        if (hotkeySystem === null) {
+        } catch (_) { /* Looks like the storage has no valid data */ }
+        if (hotkeySystem == null) {
             hotkeySystem = expect(
                 HotkeySystem.new(timer.share()),
                 "Couldn't initialize the hotkeys",
@@ -97,28 +117,24 @@ export class LiveSplit extends React.Component<{}, State> {
                 "The Default Loading Run should be a valid Run",
             );
             this.loadFromSplitsIO(window.location.hash.substr("#/splits-io/".length));
-        } else {
-            const lss = localStorage.getItem("splits");
-            if (lss !== null) {
-                const result = Run.parseString(lss, "", false);
-                if (result.parsedSuccessfully()) {
-                    result.unwrap().with((r) => timer.writeWith((t) => t.setRun(r)))?.dispose();
-                }
+        } else if (props.splits !== undefined) {
+            const result = Run.parseArray(props.splits, "", false);
+            if (result.parsedSuccessfully()) {
+                result.unwrap().with((r) => timer.writeWith((t) => t.setRun(r)))?.dispose();
             }
         }
 
         let layout: Option<Layout> = null;
         try {
-            const data = localStorage.getItem("layout");
-            if (data) {
-                layout = Layout.parseJson(JSON.parse(data));
+            const data = props.layout;
+            if (data !== undefined) {
+                layout = Layout.parseJson(data);
             }
-        } catch (_) { /* Looks like local storage has no valid data */ }
+        } catch (_) { /* Looks like the storage has no valid data */ }
         if (layout === null) {
             layout = Layout.defaultLayout();
         }
 
-        const layoutWidth = +(localStorage.getItem("layoutWidth") || DEFAULT_LAYOUT_WIDTH);
         const isDesktop = this.isDesktopQuery.matches;
         const isBrowserSource = !!(window as any).obsstudio;
 
@@ -126,7 +142,7 @@ export class LiveSplit extends React.Component<{}, State> {
             isDesktop: isDesktop && !isBrowserSource,
             isBrowserSource,
             layout,
-            layoutWidth,
+            layoutWidth: props.layoutWidth,
             menu: { kind: MenuKind.Timer },
             sidebarOpen: false,
             sidebarTransitionsEnabled: false,
@@ -358,10 +374,10 @@ export class LiveSplit extends React.Component<{}, State> {
     }
 
     public async uploadToSplitsIO(): Promise<Option<Window>> {
-        const lss = this.readWith((t) => t.saveAsLss());
+        const lss = this.readWith((t) => t.saveAsLssBytes());
 
         try {
-            const claimUri = await SplitsIO.uploadLss(lss);
+            const claimUri = await SplitsIO.uploadLss(new Blob([lss]));
             return window.open(claimUri);
         } catch (_) {
             toast.error("Failed to upload the splits.");
@@ -371,9 +387,9 @@ export class LiveSplit extends React.Component<{}, State> {
 
     public exportSplits() {
         const [lss, name] = this.writeWith((t) => {
-            const lss = t.saveAsLss();
-            const name = t.getRun().extendedFileName(true);
             t.markAsUnmodified();
+            const name = t.getRun().extendedFileName(true);
+            const lss = t.saveAsLssBytes();
             return [lss, name];
         });
         try {
@@ -383,23 +399,22 @@ export class LiveSplit extends React.Component<{}, State> {
         }
     }
 
-    public saveSplits() {
+    public async saveSplits() {
         const lss = this.writeWith((t) => {
-            const lss = t.saveAsLss();
             t.markAsUnmodified();
-            return lss;
+            return t.saveAsLssBytes();
         });
         try {
-            localStorage.setItem("splits", lss);
+            await Storage.storeSplits(lss);
         } catch (_) {
             toast.error("Failed to save the splits.");
         }
     }
 
-    public saveLayout() {
+    public async saveLayout() {
         try {
             const layout = this.state.layout.settingsAsJson();
-            localStorage.setItem("layout", JSON.stringify(layout));
+            await Storage.storeLayout(layout);
         } catch (_) {
             toast.error("Failed to save the layout.");
         }
@@ -515,7 +530,7 @@ export class LiveSplit extends React.Component<{}, State> {
         });
     }
 
-    public closeSettingsEditor(save: boolean) {
+    public async closeSettingsEditor(save: boolean) {
         const menu = this.state.menu;
 
         if (menu.kind !== MenuKind.SettingsEditor) {
@@ -525,8 +540,7 @@ export class LiveSplit extends React.Component<{}, State> {
         if (save) {
             try {
                 const hotkeys = menu.config.asJson();
-                const settings = { hotkeys };
-                localStorage.setItem("settings", JSON.stringify(settings));
+                await Storage.storeHotkeys(hotkeys);
             } catch (_) {
                 toast.error("Failed to save the settings.");
             }
@@ -613,20 +627,19 @@ export class LiveSplit extends React.Component<{}, State> {
         }
     }
 
-    private onResize(width: number) {
-        localStorage.setItem("layoutWidth", `${width}`);
+    private async onResize(width: number) {
         this.setState({
             layoutWidth: width,
         });
+        await Storage.storeLayoutWidth(width);
     }
 
     private mediaQueryChanged() {
         const isDesktop = this.isDesktopQuery.matches && !this.state.isBrowserSource;
         if (isDesktop) {
-            const layoutWidth = +(localStorage.getItem("layoutWidth") || DEFAULT_LAYOUT_WIDTH);
             this.setState({
                 isDesktop,
-                layoutWidth,
+                layoutWidth: this.props.layoutWidth,
                 sidebarTransitionsEnabled: false,
             });
         } else {
@@ -669,7 +682,7 @@ export class LiveSplit extends React.Component<{}, State> {
 
     private importSplitsFromArrayBuffer(buffer: [ArrayBuffer, File]) {
         const [file] = buffer;
-        const result = Run.parseArray(new Int8Array(file), "", false);
+        const result = Run.parseArray(new Uint8Array(file), "", false);
         if (result.parsedSuccessfully()) {
             const run = result.unwrap();
             this.setRun(run, () => { throw Error("Empty Splits are not supported."); });

@@ -16,10 +16,22 @@ async function run() {
     const ReactDOM = await ReactDOMImport;
     const { toast, ToastContainer } = await Toastify;
 
+    const {
+        splits,
+        layout,
+        hotkeys,
+        layoutWidth,
+    } = await LiveSplit.loadStoredData();
+
     try {
         ReactDOM.render(
             <div>
-                <LiveSplit />
+                <LiveSplit
+                    splits={splits}
+                    layout={layout}
+                    hotkeys={hotkeys}
+                    layoutWidth={layoutWidth}
+                />
                 <ToastContainer
                     position={toast.POSITION.BOTTOM_RIGHT}
                     toastClassName="toast-class"

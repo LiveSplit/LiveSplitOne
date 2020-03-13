@@ -1379,7 +1379,7 @@ export class RunEditor extends React.Component<Props, State> {
 
     private async importComparison() {
         const [data, file] = await openFileAsArrayBuffer();
-        const result = LiveSplit.Run.parseArray(new Int8Array(data), "", false);
+        const result = LiveSplit.Run.parseArray(new Uint8Array(data), "", false);
         if (!result.parsedSuccessfully()) {
             toast.error("Couldn't parse the splits.");
             return;
@@ -1430,7 +1430,7 @@ export class RunEditor extends React.Component<Props, State> {
     private async changeSegmentIcon(index: number) {
         this.props.editor.selectOnly(index);
         const [file] = await openFileAsArrayBuffer();
-        this.props.editor.activeSetIconFromArray(new Int8Array(file));
+        this.props.editor.activeSetIconFromArray(new Uint8Array(file));
         this.update();
     }
 
@@ -1462,7 +1462,7 @@ export class RunEditor extends React.Component<Props, State> {
 
     private async changeGameIcon() {
         const [file] = await openFileAsArrayBuffer();
-        this.props.editor.setGameIconFromArray(new Int8Array(file));
+        this.props.editor.setGameIconFromArray(new Uint8Array(file));
         this.update();
     }
 
@@ -1476,9 +1476,7 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private update(switchTab?: Tab) {
-        const intendedTab = switchTab === undefined
-            ? this.state.tab
-            : switchTab;
+        const intendedTab = switchTab ?? this.state.tab;
         const shouldShowTab = this.shouldShowTab(intendedTab);
         const newActiveTab = shouldShowTab ? intendedTab : Tab.RealTime;
 
@@ -1782,7 +1780,7 @@ export class RunEditor extends React.Component<Props, State> {
                 const response = await fetch(uri);
                 const buffer = await response.arrayBuffer();
                 // TODO Racy situation with Run Editor closing
-                this.props.editor.setGameIconFromArray(new Int8Array(buffer));
+                this.props.editor.setGameIconFromArray(new Uint8Array(buffer));
                 this.update();
             }
         }
@@ -1798,7 +1796,7 @@ export class RunEditor extends React.Component<Props, State> {
                 const response = await fetch(uri);
                 const buffer = await response.arrayBuffer();
                 // TODO Racy situation with Run Editor closing
-                this.props.editor.setGameIconFromArray(new Int8Array(buffer));
+                this.props.editor.setGameIconFromArray(new Uint8Array(buffer));
                 this.update();
             }
         }
