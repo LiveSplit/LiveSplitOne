@@ -363,7 +363,7 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     public openFromSplitsIO() {
-        let id = prompt("Specify the splits i/o URL or ID:");
+        let id = prompt("Specify the Splits.io URL or ID:");
         if (!id) {
             return;
         }

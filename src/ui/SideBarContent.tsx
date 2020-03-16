@@ -80,10 +80,10 @@ export class SideBarContent extends React.Component<Props, State> {
                             <i className="fa fa-upload" aria-hidden="true" /> Export
                         </button>
                         <button onClick={(_) => this.props.callbacks.openFromSplitsIO()}>
-                            <i className="fa fa-download" aria-hidden="true" /> From splits i/o
+                            <i className="fa fa-download" aria-hidden="true" /> From Splits.io
                         </button>
                         <button onClick={(_) => this.props.callbacks.uploadToSplitsIO()}>
-                            <i className="fa fa-upload" aria-hidden="true" /> Upload to splits i/o
+                            <i className="fa fa-upload" aria-hidden="true" /> Upload to Splits.io
                         </button>
                         <button onClick={(_) => this.props.callbacks.loadDefaultSplits()}>
                             <i className="fa fa-sync" aria-hidden="true" /> Default
