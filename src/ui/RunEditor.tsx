@@ -1838,7 +1838,7 @@ export class RunEditor extends React.Component<Props, State> {
 
     private async downloadSplits<T>(apiRun: Run<T>, apiUri: string) {
         const baseUri = "https://splits.io/api/v3/runs/";
-        assert(apiUri.startsWith(baseUri), "Unexpected splits i/o URL");
+        assert(apiUri.startsWith(baseUri), "Unexpected Splits.io URL");
         const splitsId = apiUri.slice(baseUri.length);
         try {
             const gameName = this.state.editor.game;
