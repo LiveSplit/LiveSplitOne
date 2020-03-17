@@ -1,12 +1,20 @@
 import * as React from "react";
-import { getSplitsInfos, SplitsInfo } from "../storage";
+import { getSplitsInfos, SplitsInfo, storeSplits, deleteSplits, copySplits, loadSplits } from "../storage";
+import { Run, Segment, SharedTimerRef } from "../livesplit-core";
+import * as SplitsIO from "../util/SplitsIO";
+import { toast } from "react-toastify";
+import { openFileAsArrayBuffer } from "../util/FileUtil";
+import { maybeDisposeAndThen } from "../util/OptionUtil";
 
 export interface Props {
+    timer: SharedTimerRef,
+    originalOpenedSplitsKey?: number,
     callbacks: Callbacks,
 }
 
 interface State {
     splitsInfos?: Array<[number, SplitsInfo]>,
+    openedSplitsKey?: number,
 }
 
 interface Callbacks {
@@ -31,7 +39,9 @@ export class SplitsSelection extends React.Component<Props, State> {
 
         super(props);
 
-        this.state = {};
+        this.state = {
+            openedSplitsKey: props.originalOpenedSplitsKey,
+        };
     }
 
     public render() {
@@ -52,23 +62,50 @@ export class SplitsSelection extends React.Component<Props, State> {
                 <button onClick={() => this.importSplits()}>
                     <i className="fa fa-download" aria-hidden="true" /> Import
                 </button>
+                <button onClick={() => this.importSplitsFromSplitsIo()}>
+                    <i className="fa fa-download" aria-hidden="true" /> From Splits.io
+                </button>
             </div>
             <div>
+                <h2>Active Splits</h2>
                 {
-                    this.state.splitsInfos.map(([key, info]) => {
-                        return <div>
-                            <button onClick={() => this.editSplits(key)}>
-                                <i className="fa fa-edit" aria-hidden="true" />
-                            </button>
-                            <button onClick={() => this.copySplits(key)}>
-                                <i className="fa fa-clone" aria-hidden="true" />
-                            </button>
-                            <button onClick={() => this.deleteSplits(key)}>
-                                <i className="fa fa-trash" aria-hidden="true" />
-                            </button>
-                            {info.game} - {info.category}
-                        </div>;
-                    })
+                    this.state.splitsInfos
+                        .filter(([key]) => key === this.state.openedSplitsKey)
+                        .map(([key, info]) => {
+                            return <div key={key}>
+                                <button onClick={() => this.editSplits(key)}>
+                                    <i className="fa fa-edit" aria-hidden="true" />
+                                </button>
+                                <button onClick={() => this.copySplits(key)}>
+                                    <i className="fa fa-clone" aria-hidden="true" />
+                                </button>
+                                {info.game} - {info.category}
+                            </div>;
+                        })
+                }
+            </div>
+            <div>
+                <h2>Other Splits</h2>
+                {
+                    this.state.splitsInfos
+                        .filter(([key]) => key !== this.state.openedSplitsKey)
+                        .map(([key, info]) => {
+                            return <div key={key}>
+                                <button onClick={() => this.openSplits(key)}>
+                                    <i className="fa fa-folder-open" aria-hidden="true" />
+                                </button>
+                                <button onClick={() => this.editSplits(key)}>
+                                    <i className="fa fa-edit" aria-hidden="true" />
+                                </button>
+                                <button onClick={() => this.copySplits(key)}>
+                                    <i className="fa fa-clone" aria-hidden="true" />
+                                </button>
+                                <button onClick={() => this.deleteSplits(key)}>
+                                    <i className="fa fa-trash" aria-hidden="true" />
+                                </button>
+                                {info.game} - {info.category}
+                            </div>;
+                        })
                 }
             </div>
         </div>;
@@ -108,23 +145,115 @@ export class SplitsSelection extends React.Component<Props, State> {
         );
     }
 
+    private async refreshState() {
+        this.setState({
+            splitsInfos: await getSplitsInfos(),
+        });
+    }
+
+    private async openSplits(key: number) {
+        const splitsData = await loadSplits(key);
+        if (splitsData === undefined) {
+            // TODO: This should never happen. Maybe show an error / use expect?
+            return;
+        }
+
+        // TODO: Manually accessing the timer like this has two disadvantages:
+        // 1. This is copy paste from LiveSplit.tsx for the most part.
+        // 2. We don't communicate back the new splits key yet.
+        const result = Run.parseArray(new Uint8Array(splitsData), "", false);
+        try {
+            if (result.parsedSuccessfully()) {
+                const run = result.unwrap();
+                maybeDisposeAndThen(
+                    this.props.timer.writeWith((timer) => timer.setRun(run)),
+                    () => toast.error("The loaded splits are invalid."),
+                );
+                this.setState({ openedSplitsKey: key });
+            } else {
+                throw Error("Couldn't parse the splits.");
+            }
+        } finally {
+            result.dispose();
+        }
+    }
+
     private editSplits(_key: number): void {
         throw new Error("Method not implemented.");
     }
 
-    private copySplits(_key: number): void {
-        throw new Error("Method not implemented.");
+    private async copySplits(key: number) {
+        await copySplits(key);
+        await this.refreshState();
     }
 
-    private deleteSplits(_key: number): void {
-        throw new Error("Method not implemented.");
+    private async deleteSplits(key: number) {
+        // TODO: We probably want to ask for confirmation here.
+        await deleteSplits(key);
+        await this.refreshState();
     }
 
-    private importSplits() {
-        throw new Error("Method not implemented.");
+    private async importSplits() {
+        const splits = await openFileAsArrayBuffer();
+        try {
+            await this.importSplitsFromArrayBuffer(splits);
+        } catch (err) {
+            toast.error(err.message);
+        }
     }
 
-    private addNewSplits() {
-        console.log("hi");
+    private async importSplitsFromArrayBuffer(buffer: [ArrayBuffer, File]) {
+        const [file] = buffer;
+        const result = Run.parseArray(new Uint8Array(file), "", false);
+        try {
+            if (result.parsedSuccessfully()) {
+                await this.storeRun(result.unwrap());
+            } else {
+                throw Error("Couldn't parse the splits.");
+            }
+        } finally {
+            result.dispose();
+        }
+    }
+
+    private async importSplitsFromSplitsIo() {
+        let id = prompt("Specify the Splits.io URL or ID:");
+        if (!id) {
+            return;
+        }
+        if (id.indexOf("https://splits.io/") === 0) {
+            id = id.substr("https://splits.io/".length);
+        }
+        try {
+            const run = await SplitsIO.downloadById(id);
+            await this.storeRun(run);
+        } catch (_) {
+            toast.error("Failed to download the splits.");
+        }
+    }
+
+    private async addNewSplits() {
+        // TODO: This is mostly copy paste atm.
+        const run = Run.new();
+        run.pushSegment(Segment.new("Time"));
+        await this.storeRun(run);
+    }
+
+    private async storeRun(run: Run) {
+        try {
+            if (run.len() === 0) {
+                toast.error("Can't import empty splits.");
+                return;
+            }
+            await storeSplits(
+                (callback) => {
+                    callback(run, run.saveAsLssBytes());
+                },
+                undefined,
+            );
+            await this.refreshState();
+        } finally {
+            run.dispose();
+        }
     }
 }

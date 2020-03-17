@@ -1,6 +1,6 @@
 import { openDB, IDBPDatabase } from "idb";
 import { Option } from "../util/OptionUtil";
-import { RunRef, Run, TimerRefMut } from "../livesplit-core";
+import { RunRef, Run } from "../livesplit-core";
 
 export type HotkeyConfigSettings = unknown;
 export type LayoutSettings = unknown;
@@ -102,16 +102,19 @@ async function getDb(): Promise<IDBPDatabase<unknown>> {
     return db;
 }
 
-export async function storeSplits(accessTimer: (callback: (timer: TimerRefMut) => void) => void) {
+export async function storeSplits(
+    callback: (callback: (run: RunRef, lssBytes: Uint8Array) => void) => void,
+    key: number | undefined,
+) {
     const db = await getDb();
 
-    const key = 1;
     const tx = db.transaction(["splitsData", "splitsInfo"], "readwrite");
 
-    accessTimer((timer) => {
-        tx.objectStore("splitsInfo").put(getSplitsInfo(timer.getRun()), key);
-        tx.objectStore("splitsData").put(timer.saveAsLssBytes(), key);
-        timer.markAsUnmodified();
+    callback((run, lssBytes) => {
+        // We need to consume the bytes first as they are usually very
+        // short-living, because they directly point into the WebAssembly memory.
+        tx.objectStore("splitsData").put(lssBytes, key);
+        tx.objectStore("splitsInfo").put(getSplitsInfo(run), key);
     });
 
     await tx.done;
@@ -132,10 +135,30 @@ export async function getSplitsInfos(): Promise<Array<[number, SplitsInfo]>> {
     return arr;
 }
 
-export async function loadSplits(): Promise<Uint8Array | undefined> {
+export async function loadSplits(key: number): Promise<Uint8Array | undefined> {
     const db = await getDb();
 
-    return await db.get("splitsData", 1);
+    return await db.get("splitsData", key);
+}
+
+export async function deleteSplits(key: number) {
+    const db = await getDb();
+
+    const tx = db.transaction(["splitsData", "splitsInfo"], "readwrite");
+    tx.objectStore("splitsData").delete(key);
+    tx.objectStore("splitsInfo").delete(key);
+    await tx.done;
+}
+
+export async function copySplits(key: number) {
+    const db = await getDb();
+
+    const tx = db.transaction(["splitsData", "splitsInfo"], "readwrite");
+    const splitsData = tx.objectStore("splitsData");
+    splitsData.put(await splitsData.get(key));
+    const splitsInfo = tx.objectStore("splitsInfo");
+    splitsInfo.put(await splitsInfo.get(key));
+    await tx.done;
 }
 
 export async function storeLayout(layout: LayoutSettings) {

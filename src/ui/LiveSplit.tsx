@@ -62,11 +62,13 @@ export interface State {
     menu: Menu,
     comparison: Option<string>,
     timingMethod: Option<TimingMethod>,
+    splitsKey: number,
 }
 
 export class LiveSplit extends React.Component<Props, State> {
     public static async loadStoredData() {
-        const splits = await Storage.loadSplits();
+        const splitsKey = 1; // TODO: Load this from the settings. Not sure if here or somewhere else.
+        const splits = await Storage.loadSplits(splitsKey);
         const layout = await Storage.loadLayout();
         const hotkeys = await Storage.loadHotkeys();
         const layoutWidth = await Storage.loadLayoutWidth();
@@ -155,6 +157,7 @@ export class LiveSplit extends React.Component<Props, State> {
             hotkeySystem,
             comparison: null,
             timingMethod: null,
+            splitsKey: 1, // TODO: Should be flexible
         };
 
         this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
@@ -232,7 +235,11 @@ export class LiveSplit extends React.Component<Props, State> {
         } else if (this.state.menu.kind === MenuKind.About) {
             return <About callbacks={this} />;
         } else if (this.state.menu.kind === MenuKind.Splits) {
-            return <SplitsSelection callbacks={this} />;
+            return <SplitsSelection
+                callbacks={this}
+                timer={this.state.timer}
+                originalOpenedSplitsKey={this.state.splitsKey}
+            />;
         } else {
             const renderedView = this.renderTimerView();
             const sidebarContent = this.renderTimerViewSidebarContent();
@@ -372,9 +379,12 @@ export class LiveSplit extends React.Component<Props, State> {
 
     public async saveSplits() {
         try {
-            await Storage.storeSplits((accessTimer) => {
-                this.writeWith(accessTimer);
-            });
+            await Storage.storeSplits((callback) => {
+                this.writeWith((timer) => {
+                    callback(timer.getRun(), timer.saveAsLssBytes());
+                    timer.markAsUnmodified();
+                });
+            }, this.state.splitsKey);
         } catch (_) {
             toast.error("Failed to save the splits.");
         }
