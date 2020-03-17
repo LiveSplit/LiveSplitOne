@@ -20,6 +20,7 @@ import * as Storage from "../storage";
 
 import "react-toastify/dist/ReactToastify.css";
 import "../css/LiveSplit.scss";
+import { SplitsSelection } from "./SplitsSelection";
 
 import LiveSplitIcon from "../assets/icon_small.png";
 
@@ -230,6 +231,8 @@ export class LiveSplit extends React.Component<Props, State> {
             />;
         } else if (this.state.menu.kind === MenuKind.About) {
             return <About callbacks={this} />;
+        } else if (this.state.menu.kind === MenuKind.Splits) {
+            return <SplitsSelection callbacks={this} />;
         } else {
             const renderedView = this.renderTimerView();
             const sidebarContent = this.renderTimerViewSidebarContent();
@@ -285,7 +288,9 @@ export class LiveSplit extends React.Component<Props, State> {
     public openSplitsView() {
         this.setState({
             menu: { kind: MenuKind.Splits },
+            sidebarOpen: false,
         });
+        this.state.hotkeySystem.deactivate();
     }
 
     public openLayoutView() {
@@ -366,12 +371,10 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     public async saveSplits() {
-        const lss = this.writeWith((t) => {
-            t.markAsUnmodified();
-            return t.saveAsLssBytes();
-        });
         try {
-            await Storage.storeSplits(lss);
+            await Storage.storeSplits((accessTimer) => {
+                this.writeWith(accessTimer);
+            });
         } catch (_) {
             toast.error("Failed to save the splits.");
         }
@@ -453,7 +456,7 @@ export class LiveSplit extends React.Component<Props, State> {
         } else {
             run.dispose();
         }
-        this.openTimerView(true);
+        this.openSplitsView();
     }
 
     public openLayoutEditor() {
