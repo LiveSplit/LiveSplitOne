@@ -78,6 +78,12 @@ jobs:
         set -e
         npm run build:core
 
+    - name: Set up tslint matcher
+      run: echo "::add-matcher::.github/workflows/tslint.json"
+
+    - name: Run tslint
+      run: npm run lint
+
     - name: Build Frontend
       run: |
         set -e
@@ -124,24 +130,3 @@ jobs:
         PUBLISH_DIR: ./dist
       with:
         forceOrphan: true
-
-  linter:
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Checkout commit
-      uses: actions/checkout@v1
-
-    - name: Install Node
-      uses: actions/setup-node@v1
-      with:
-        node-version: '12.x' # FIXME: https://github.com/actions/setup-node/issues/26
-
-    - name: Install dependencies
-      run: npm install
-
-    - name: Set up tslint matcher
-      run: echo "::add-matcher::.github/workflows/tslint.json"
-
-    - name: Run tslint
-      run: npm run lint
