@@ -1,0 +1,89 @@
+@import 'variables';
+
+$loading-text-font-size: 40px;
+$header-text-size: 30px;
+$splits-title-text-size: 20px;
+
+$splits-row-min-width: 800px;
+$splits-row-height: 70px;
+
+.splits-selection {
+  .loading {
+    display: flex;
+    width: fit-content;
+    font-size: $loading-text-font-size;
+
+    .loading-text {
+      margin-left: $ui-margin;
+    }
+  }
+
+  .splits-selection-container {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+
+    .main-actions {
+      display: flex;
+      justify-content: flex-start;
+    
+      button {
+        margin-bottom: $ui-large-margin / 2;
+        margin-right: $ui-margin;
+      }
+    }
+  
+    .splits-table {
+      background-color: $dark-row-color;
+      border: 1px solid $border-color;
+      margin: $ui-large-margin/2 0;
+      width: fit-content;
+  
+      .header-text {
+        font-size: $header-text-size;
+        padding: $ui-margin;
+        font-weight: bold;
+        background-color: $header-row-color;
+      }
+
+      .splits-row {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        padding: $ui-margin;
+        height: $splits-row-height;
+        min-width: $splits-row-min-width;
+
+        &:nth-of-type(odd) {
+          background-color: $light-row-color;
+        }
+
+        &:first-child {
+          border-top: 1px solid $border-color;
+        }
+
+        .splits-title-text {
+          font-size: $splits-title-text-size;
+          flex-grow: 1;
+
+          .splits-game {
+            margin-bottom: $ui-margin;
+          }
+        }
+
+        .splits-row-buttons {
+          flex-shrink: 0;
+          margin-left: $ui-large-margin;
+
+          button {
+            margin: 0;
+
+            &:not(:last-child) {
+              margin-right: $ui-margin;
+            }
+          }
+        }
+      }
+    }
+  }
+}

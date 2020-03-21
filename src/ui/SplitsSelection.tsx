@@ -6,6 +6,8 @@ import { toast } from "react-toastify";
 import { openFileAsArrayBuffer } from "../util/FileUtil";
 import { maybeDisposeAndThen } from "../util/OptionUtil";
 
+import "../css/SplitsSelection.scss";
+
 export interface Props {
     timer: SharedTimerRef,
     originalOpenedSplitsKey?: number,
@@ -51,64 +53,100 @@ export class SplitsSelection extends React.Component<Props, State> {
     }
 
     private renderView() {
-        if (this.state.splitsInfos === undefined) {
-            return <p>Loading...</p>;
+        let content;
+
+        if (this.state.splitsInfos == null) {
+            content = (
+                <div className="loading">
+                    <div className="fa fa-spinner fa-spin"></div>
+                    <div className="loading-text">Loading...</div>
+                </div>
+            );
+        } else {
+            content = (
+                <div className="splits-selection-container">
+                    <div className="main-actions">
+                        <button onClick={() => this.addNewSplits()}>
+                            <i className="fa fa-plus" aria-hidden="true" /> Add
+                        </button>
+                        <button onClick={() => this.importSplits()}>
+                            <i className="fa fa-download" aria-hidden="true" /> Import
+                        </button>
+                        <button onClick={() => this.importSplitsFromSplitsIo()}>
+                            <i className="fa fa-download" aria-hidden="true" /> From Splits.io
+                        </button>
+                    </div>
+                    <div className="splits-table">
+                        <div className="header-text">Active Splits</div>
+                        <div className="splits-rows">
+                            {
+                                this.state.splitsInfos
+                                    .filter(([key]) => key === this.state.openedSplitsKey)
+                                    .map(([key, info]) => this.renderActiveSplitsRow(key, info))
+                            }
+                        </div>
+                    </div>
+                    <div className="splits-table">
+                        <div className="header-text">Other Splits</div>
+                        <div className="splits-rows">
+                            {
+                                this.state.splitsInfos
+                                    .filter(([key]) => key !== this.state.openedSplitsKey)
+                                    .map(([key, info]) => this.renderOtherSplitsRow(key, info))
+                            }
+                        </div>
+                    </div>
+                </div>
+            );
         }
-        return <div>
-            <div>
-                <button onClick={() => this.addNewSplits()}>
-                    <i className="fa fa-plus" aria-hidden="true" /> Add
-                </button>
-                <button onClick={() => this.importSplits()}>
-                    <i className="fa fa-download" aria-hidden="true" /> Import
-                </button>
-                <button onClick={() => this.importSplitsFromSplitsIo()}>
-                    <i className="fa fa-download" aria-hidden="true" /> From Splits.io
-                </button>
+        return <div className="splits-selection">{content}</div>;
+    }
+
+    private renderActiveSplitsRow(key: number, info: SplitsInfo) {
+        return (
+            <div className="splits-row" key={key}>
+                {this.splitsTitle(info)}
+                <div className="splits-row-buttons">
+                    <button onClick={() => this.editSplits(key)}>
+                        <i aria-label="Edit Splits" className="fa fa-edit" aria-hidden="true" />
+                    </button>
+                    <button aria-label="Duplicate Splits" onClick={() => this.copySplits(key)}>
+                        <i className="fa fa-clone" aria-hidden="true" />
+                    </button>
+                </div>
             </div>
-            <div>
-                <h2>Active Splits</h2>
-                {
-                    this.state.splitsInfos
-                        .filter(([key]) => key === this.state.openedSplitsKey)
-                        .map(([key, info]) => {
-                            return <div key={key}>
-                                <button onClick={() => this.editSplits(key)}>
-                                    <i className="fa fa-edit" aria-hidden="true" />
-                                </button>
-                                <button onClick={() => this.copySplits(key)}>
-                                    <i className="fa fa-clone" aria-hidden="true" />
-                                </button>
-                                {info.game} - {info.category}
-                            </div>;
-                        })
-                }
+        );
+    }
+
+    private renderOtherSplitsRow(key: number, info: SplitsInfo) {
+        return (
+            <div className="splits-row" key={key}>
+                {this.splitsTitle(info)}
+                <div className="splits-row-buttons">
+                    <button aria-label="Open Splits" onClick={() => this.openSplits(key)}>
+                        <i className="fa fa-folder-open" aria-hidden="true" />
+                    </button>
+                    <button aria-label="Edit Splits" onClick={() => this.editSplits(key)}>
+                        <i className="fa fa-edit" aria-hidden="true" />
+                    </button>
+                    <button aria-label="Duplicate Splits" onClick={() => this.copySplits(key)}>
+                        <i className="fa fa-clone" aria-hidden="true" />
+                    </button>
+                    <button aria-label="Remove Splits" onClick={() => this.deleteSplits(key)}>
+                        <i className="fa fa-trash" aria-hidden="true" />
+                    </button>
+                </div>
             </div>
-            <div>
-                <h2>Other Splits</h2>
-                {
-                    this.state.splitsInfos
-                        .filter(([key]) => key !== this.state.openedSplitsKey)
-                        .map(([key, info]) => {
-                            return <div key={key}>
-                                <button onClick={() => this.openSplits(key)}>
-                                    <i className="fa fa-folder-open" aria-hidden="true" />
-                                </button>
-                                <button onClick={() => this.editSplits(key)}>
-                                    <i className="fa fa-edit" aria-hidden="true" />
-                                </button>
-                                <button onClick={() => this.copySplits(key)}>
-                                    <i className="fa fa-clone" aria-hidden="true" />
-                                </button>
-                                <button onClick={() => this.deleteSplits(key)}>
-                                    <i className="fa fa-trash" aria-hidden="true" />
-                                </button>
-                                {info.game} - {info.category}
-                            </div>;
-                        })
-                }
+        );
+    }
+
+    private splitsTitle(info: SplitsInfo) {
+        return (
+            <div className="splits-title-text">
+                <div className="splits-game">{info.game}</div>
+                <div className="splits-category">{info.category}</div>
             </div>
-        </div>;
+        );
     }
 
     private renderSidebarContent() {
