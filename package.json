@@ -43,7 +43,7 @@
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^3.4.2",
     "favicons-webpack-plugin": "=2.1.0",
-    "file-loader": "^5.0.2",
+    "file-loader": "^6.0.0",
     "hex64": "^0.4.0",
     "html-webpack-plugin": "^4.0.0",
     "imghash": "0.0.6",
