@@ -1,5 +1,7 @@
 @import 'variables';
+@import 'Table';
 
+// TODO: Clean this up again.
 $loading-text-font-size: 40px;
 $header-text-size: 30px;
 $splits-title-text-size: 20px;
@@ -26,57 +28,65 @@ $splits-row-height: 70px;
     .main-actions {
       display: flex;
       justify-content: flex-start;
-    
+
       button {
         margin-bottom: $ui-large-margin / 2;
         margin-right: $ui-margin;
       }
     }
-  
+
+    @include table;
+
     .splits-table {
-      background-color: $dark-row-color;
-      border: 1px solid $border-color;
-      margin: $ui-large-margin/2 0;
+
+    //   background-color: $dark-row-color;
+    //   border: 1px solid $border-color;
+      margin-top: $ui-large-margin / 2;
       width: fit-content;
-  
-      .header-text {
-        font-size: $header-text-size;
-        padding: $ui-margin;
-        font-weight: bold;
-        background-color: $header-row-color;
-      }
 
       .splits-row {
-        display: flex;
-        flex-wrap: nowrap;
-        align-items: center;
-        padding: $ui-margin;
-        height: $splits-row-height;
-        min-width: $splits-row-min-width;
+      //     display: flex;
+      //     flex-wrap: nowrap;
+      //     align-items: center;
+      //     padding: $ui-margin;
+      //     height: $splits-row-height;
+      //     min-width: $splits-row-min-width;
 
-        &:nth-of-type(odd) {
-          background-color: $light-row-color;
-        }
+      //     &:nth-of-type(odd) {
+      //       background-color: $light-row-color;
+      //     }
 
-        &:first-child {
-          border-top: 1px solid $border-color;
-        }
+      //     .splits-title-text {
+      //       font-size: $splits-title-text-size;
+      //       flex-grow: 1;
 
-        .splits-title-text {
-          font-size: $splits-title-text-size;
-          flex-grow: 1;
+      //       .splits-game {
+      //         margin-bottom: $ui-margin;
+      //       }
+      //     }
 
-          .splits-game {
-            margin-bottom: $ui-margin;
-          }
+        &.selected .splits-row-buttons button {
+            opacity: 70%;
         }
 
         .splits-row-buttons {
-          flex-shrink: 0;
-          margin-left: $ui-large-margin;
+          display: flex;
+          justify-content: flex-end;
+          // align-items: flex-end;
+          // flex-shrink: 0;
+          // margin-left: $ui-large-margin;
 
           button {
+            background: transparent;
+            border: 0;
+            opacity: 50%;
             margin: 0;
+            transition: 0.3s;
+            color: white;
+
+            &:hover {
+              opacity: 100%;
+            }
 
             &:not(:last-child) {
               margin-right: $ui-margin;

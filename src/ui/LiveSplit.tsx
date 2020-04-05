@@ -4,7 +4,7 @@ import DragUpload from "./DragUpload";
 import AutoRefreshLayout from "../layout/AutoRefreshLayout";
 import {
     HotkeySystem, Layout, LayoutEditor, Run, RunEditor,
-    Segment, SharedTimer, Timer, TimerPhase, TimingMethod,
+    Segment, SharedTimer, Timer, TimingMethod,
     TimeSpan, TimerRef, TimerRefMut, HotkeyConfig,
 } from "../livesplit-core";
 import { convertFileToArrayBuffer, convertFileToString, exportFile, openFileAsArrayBuffer, openFileAsString } from "../util/FileUtil";
@@ -20,7 +20,7 @@ import * as Storage from "../storage";
 
 import "react-toastify/dist/ReactToastify.css";
 import "../css/LiveSplit.scss";
-import { SplitsSelection } from "./SplitsSelection";
+import { SplitsSelection, EditingInfo } from "./SplitsSelection";
 
 import LiveSplitIcon from "../assets/icon_small.png";
 
@@ -37,7 +37,7 @@ export enum MenuKind {
 type Menu =
     { kind: MenuKind.Timer } |
     { kind: MenuKind.Splits } |
-    { kind: MenuKind.RunEditor, editor: RunEditor } |
+    { kind: MenuKind.RunEditor, editor: RunEditor, splitsKey?: number } |
     { kind: MenuKind.Layout } |
     { kind: MenuKind.LayoutEditor, editor: LayoutEditor } |
     { kind: MenuKind.SettingsEditor, config: HotkeyConfig } |
@@ -48,6 +48,7 @@ export interface Props {
     layout?: Storage.LayoutSettings,
     hotkeys?: Storage.HotkeyConfigSettings,
     layoutWidth: number,
+    splitsKey?: number,
 }
 
 export interface State {
@@ -62,19 +63,20 @@ export interface State {
     menu: Menu,
     comparison: Option<string>,
     timingMethod: Option<TimingMethod>,
-    splitsKey: number,
+    openedSplitsKey?: number,
 }
 
 export class LiveSplit extends React.Component<Props, State> {
     public static async loadStoredData() {
-        const splitsKey = 1; // TODO: Load this from the settings. Not sure if here or somewhere else.
-        const splits = await Storage.loadSplits(splitsKey);
+        const splitsKey = await Storage.loadSplitsKey();
+        const splits = splitsKey !== undefined ? await Storage.loadSplits(splitsKey) : undefined;
         const layout = await Storage.loadLayout();
         const hotkeys = await Storage.loadHotkeys();
         const layoutWidth = await Storage.loadLayoutWidth();
 
         return {
             splits,
+            splitsKey,
             layout,
             hotkeys,
             layoutWidth,
@@ -157,7 +159,7 @@ export class LiveSplit extends React.Component<Props, State> {
             hotkeySystem,
             comparison: null,
             timingMethod: null,
-            splitsKey: 1, // TODO: Should be flexible
+            openedSplitsKey: props.splitsKey,
         };
 
         this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
@@ -236,9 +238,9 @@ export class LiveSplit extends React.Component<Props, State> {
             return <About callbacks={this} />;
         } else if (this.state.menu.kind === MenuKind.Splits) {
             return <SplitsSelection
-                callbacks={this}
                 timer={this.state.timer}
-                originalOpenedSplitsKey={this.state.splitsKey}
+                openedSplitsKey={this.state.openedSplitsKey}
+                callbacks={this}
             />;
         } else {
             const renderedView = this.renderTimerView();
@@ -379,12 +381,21 @@ export class LiveSplit extends React.Component<Props, State> {
 
     public async saveSplits() {
         try {
-            await Storage.storeSplits((callback) => {
-                this.writeWith((timer) => {
-                    callback(timer.getRun(), timer.saveAsLssBytes());
-                    timer.markAsUnmodified();
+            const openedSplitsKey = await Storage.storeSplits(
+                (callback) => {
+                    this.writeWith((timer) => {
+                        callback(timer.getRun(), timer.saveAsLssBytes());
+                        timer.markAsUnmodified();
+                    });
+                },
+                this.state.openedSplitsKey,
+            );
+            if (this.state.openedSplitsKey === undefined) {
+                this.setState({
+                    openedSplitsKey,
                 });
-            }, this.state.splitsKey);
+                await Storage.storeSplitsKey(openedSplitsKey);
+            }
         } catch (_) {
             toast.error("Failed to save the splits.");
         }
@@ -428,45 +439,45 @@ export class LiveSplit extends React.Component<Props, State> {
         this.setLayout(layout);
     }
 
-    public openRunEditor() {
-        const run = this.readWith((t) => {
-            if (t.currentPhase() === TimerPhase.NotRunning) {
-                return t.getRun().clone();
-            } else {
-                return null;
-            }
+    public openRunEditor({ splitsKey, run }: EditingInfo) {
+        const editor = expect(
+            RunEditor.new(run),
+            "The Run Editor should always be able to be opened.",
+        );
+        this.setState({
+            menu: { kind: MenuKind.RunEditor, editor, splitsKey },
+            sidebarOpen: false,
         });
-
-        if (run !== null) {
-            this.state.hotkeySystem.deactivate();
-            const editor = expect(
-                RunEditor.new(run),
-                "The Run Editor should always be able to be opened.",
-            );
-            this.setState({
-                menu: { kind: MenuKind.RunEditor, editor },
-                sidebarOpen: false,
-            });
-        } else {
-            toast.error("You can't edit your run while the timer is running.");
-        }
     }
 
     public closeRunEditor(save: boolean) {
         if (this.state.menu.kind !== MenuKind.RunEditor) {
             panic("No Run Editor to close");
         }
-        const runEditor = this.state.menu.editor;
-        const run = runEditor.close();
+        const { editor, splitsKey } = this.state.menu;
+        const run = editor.close();
         if (save) {
-            assertNull(
-                this.writeWith((t) => t.setRun(run)),
-                "The Run Editor should always return a valid Run.",
-            );
+            if (splitsKey == null) {
+                assertNull(
+                    this.writeWith((t) => t.setRun(run)),
+                    "The Run Editor should always return a valid Run.",
+                );
+            } else {
+                Storage.storeRunAndDispose(run, splitsKey);
+            }
         } else {
             run.dispose();
         }
         this.openSplitsView();
+    }
+
+    public setSplitsKey(openedSplitsKey?: number) {
+        this.setState({
+            openedSplitsKey,
+        });
+        if (openedSplitsKey !== undefined) {
+            Storage.storeSplitsKey(openedSplitsKey);
+        }
     }
 
     public openLayoutEditor() {
@@ -634,39 +645,6 @@ export class LiveSplit extends React.Component<Props, State> {
 
     private renderTimerViewSidebarContent() {
         switch (this.state.menu.kind) {
-            case MenuKind.Splits: {
-                return (
-                    <div className="sidebar-buttons">
-                        <h1>Splits</h1>
-                        <hr />
-                        <button onClick={(_) => this.openRunEditor()}>
-                            <i className="fa fa-edit" aria-hidden="true" /> Edit
-                        </button>
-                        <button onClick={(_) => this.saveSplits()}>
-                            <i className="fa fa-save" aria-hidden="true" /> Save
-                        </button>
-                        <button onClick={(_) => this.importSplits()}>
-                            <i className="fa fa-download" aria-hidden="true" /> Import
-                        </button>
-                        <button onClick={(_) => this.exportSplits()}>
-                            <i className="fa fa-upload" aria-hidden="true" /> Export
-                        </button>
-                        <button onClick={(_) => this.openFromSplitsIO()}>
-                            <i className="fa fa-download" aria-hidden="true" /> From Splits.io
-                        </button>
-                        <button onClick={(_) => this.uploadToSplitsIO()}>
-                            <i className="fa fa-upload" aria-hidden="true" /> Upload to Splits.io
-                        </button>
-                        <button onClick={(_) => this.loadDefaultSplits()}>
-                            <i className="fa fa-sync" aria-hidden="true" /> Default
-                        </button>
-                        <hr />
-                        <button onClick={(_) => this.openTimerView(false)}>
-                            <i className="fa fa-caret-left" aria-hidden="true" /> Back
-                        </button>
-                    </div>
-                );
-            }
             case MenuKind.Layout: {
                 return (
                     <div className="sidebar-buttons">
@@ -879,6 +857,7 @@ export class LiveSplit extends React.Component<Props, State> {
             this.writeWith((t) => t.setRun(run)),
             callback,
         );
+        this.setSplitsKey(undefined);
     }
 
     private importSplitsFromArrayBuffer(buffer: [ArrayBuffer, File]) {

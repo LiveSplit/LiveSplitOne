@@ -1,5 +1,5 @@
 import { openDB, IDBPDatabase } from "idb";
-import { Option } from "../util/OptionUtil";
+import { Option, assert } from "../util/OptionUtil";
 import { RunRef, Run } from "../livesplit-core";
 
 export type HotkeyConfigSettings = unknown;
@@ -102,22 +102,43 @@ async function getDb(): Promise<IDBPDatabase<unknown>> {
     return db;
 }
 
+export async function storeRunWithoutDisposing(run: RunRef, key: number | undefined) {
+    await storeSplits(
+        (callback) => {
+            callback(run, run.saveAsLssBytes());
+        },
+        key,
+    );
+}
+
+export async function storeRunAndDispose(run: Run, key: number | undefined) {
+    try {
+        await storeRunWithoutDisposing(run, key);
+    } finally {
+        run.dispose();
+    }
+}
+
 export async function storeSplits(
     callback: (callback: (run: RunRef, lssBytes: Uint8Array) => void) => void,
     key: number | undefined,
-) {
+): Promise<number> {
     const db = await getDb();
 
     const tx = db.transaction(["splitsData", "splitsInfo"], "readwrite");
 
+    let promise: Promise<unknown> | null = null;
     callback((run, lssBytes) => {
         // We need to consume the bytes first as they are usually very
         // short-living, because they directly point into the WebAssembly memory.
-        tx.objectStore("splitsData").put(lssBytes, key);
+        promise = tx.objectStore("splitsData").put(lssBytes, key);
         tx.objectStore("splitsInfo").put(getSplitsInfo(run), key);
     });
 
     await tx.done;
+
+    assert(promise !== null, "Callback needs to actually run");
+    return promise;
 }
 
 export async function getSplitsInfos(): Promise<Array<[number, SplitsInfo]>> {
@@ -195,4 +216,16 @@ export async function loadLayoutWidth(): Promise<number> {
     const db = await getDb();
 
     return await db.get("settings", "layoutWidth") ?? DEFAULT_LAYOUT_WIDTH;
+}
+
+export async function storeSplitsKey(splitsKey?: number) {
+    const db = await getDb();
+
+    await db.put("settings", splitsKey, "splitsKey");
+}
+
+export async function loadSplitsKey(): Promise<number | undefined> {
+    const db = await getDb();
+
+    return await db.get("settings", "splitsKey");
 }
