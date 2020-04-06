@@ -1,13 +1,9 @@
 @import 'variables';
 @import 'Table';
 
-// TODO: Clean this up again.
 $loading-text-font-size: 40px;
-$header-text-size: 30px;
-$splits-title-text-size: 20px;
-
-$splits-row-min-width: 800px;
-$splits-row-height: 70px;
+$splits-title-width: 400px;
+$splits-buttons-width: 225px;
 
 .splits-selection {
   .loading {
@@ -38,43 +34,29 @@ $splits-row-height: 70px;
     @include table;
 
     .splits-table {
-
-    //   background-color: $dark-row-color;
-    //   border: 1px solid $border-color;
       margin-top: $ui-large-margin / 2;
       width: fit-content;
 
       .splits-row {
-      //     display: flex;
-      //     flex-wrap: nowrap;
-      //     align-items: center;
-      //     padding: $ui-margin;
-      //     height: $splits-row-height;
-      //     min-width: $splits-row-min-width;
+        .splits-title-text {
+          width: $splits-title-width;
+          overflow: hidden;
 
-      //     &:nth-of-type(odd) {
-      //       background-color: $light-row-color;
-      //     }
-
-      //     .splits-title-text {
-      //       font-size: $splits-title-text-size;
-      //       flex-grow: 1;
-
-      //       .splits-game {
-      //         margin-bottom: $ui-margin;
-      //       }
-      //     }
+          .splits-text {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
+        }
 
         &.selected .splits-row-buttons button {
-            opacity: 70%;
+          opacity: 70%;
         }
 
         .splits-row-buttons {
           display: flex;
           justify-content: flex-end;
-          // align-items: flex-end;
-          // flex-shrink: 0;
-          // margin-left: $ui-large-margin;
+          width: $splits-buttons-width;
 
           button {
             background: transparent;

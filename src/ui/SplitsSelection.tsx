@@ -164,8 +164,8 @@ export class SplitsSelection extends React.Component<Props, State> {
     private splitsTitle(info: SplitsInfo) {
         return (
             <div className="splits-title-text">
-                <div className="splits-game">{info.game}</div>
-                <div className="splits-category">{info.category}</div>
+                <div className="splits-text">{info.game}</div>
+                <div className="splits-text">{info.category}</div>
             </div>
         );
     }
