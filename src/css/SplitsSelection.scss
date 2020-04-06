@@ -1,9 +1,10 @@
+@import 'mobile';
 @import 'variables';
 @import 'Table';
 
 $loading-text-font-size: 40px;
-$splits-title-width: 400px;
-$splits-buttons-width: 225px;
+$splits-row-width: 500px;
+$splits-row-height: 40px;
 
 .splits-selection {
   .loading {
@@ -26,26 +27,51 @@ $splits-buttons-width: 225px;
       justify-content: flex-start;
 
       button {
+        margin-top: 0;
         margin-bottom: $ui-large-margin / 2;
         margin-right: $ui-margin;
       }
+
+      @include mobile {
+        margin-top: $ui-margin;
+        margin-left: $ui-margin;
+      }
     }
 
-    @include table;
-
     .splits-table {
-      margin-top: $ui-large-margin / 2;
+      background-color: $dark-row-color;
+      border: 1px solid $border-color;
+      margin: $ui-large-margin/2 0;
       width: fit-content;
 
       .splits-row {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        padding: $ui-margin;
+        height: $splits-row-height;
+        width: $splits-row-width;
+
+        &:nth-of-type(odd) {
+          background-color: $light-row-color;
+        }
+
+        &.selected {
+          background: $selected-row-color;
+        }
+
         .splits-title-text {
-          width: $splits-title-width;
+          flex-grow: 1;
           overflow: hidden;
 
           .splits-text {
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
+            
+            &.splits-game {
+              margin-bottom: $ui-margin;
+            }
           }
         }
 
@@ -54,9 +80,8 @@ $splits-buttons-width: 225px;
         }
 
         .splits-row-buttons {
-          display: flex;
-          justify-content: flex-end;
-          width: $splits-buttons-width;
+          flex-shrink: 0;
+          margin-left: $ui-large-margin;
 
           button {
             background: transparent;
@@ -75,6 +100,17 @@ $splits-buttons-width: 225px;
             }
           }
         }
+
+        @include mobile {
+          width: 100%;
+          box-sizing: border-box;
+          height: $splits-row-height + 2 * $ui-margin;
+        }
+      }
+
+      @include mobile {
+        width: 100%;
+        box-sizing: border-box;
       }
     }
   }

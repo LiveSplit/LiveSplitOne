@@ -88,14 +88,14 @@ export class SplitsSelection extends React.Component<Props, State> {
                             <i className="fa fa-download" aria-hidden="true" /> From Splits.io
                         </button>
                     </div>
-                    <table className="table splits-table">
-                        <tbody className="splits-rows table-body">
+                    <div className="splits-table">
+                        <div className="splits-rows">
                             {
                                 this.state.splitsInfos
                                     .map(([key, info]) => this.renderSavedSplitsRow(key, info))
                             }
-                        </tbody>
-                    </table>
+                        </div>
+                    </div>
                 </div>
             );
         }
@@ -130,11 +130,9 @@ export class SplitsSelection extends React.Component<Props, State> {
     private renderSavedSplitsRow(key: number, info: SplitsInfo) {
         const isOpened = key === this.props.openedSplitsKey;
         return (
-            <tr className={isOpened ? "splits-row selected" : "splits-row"} key={key}>
-                <td>
-                    {this.splitsTitle(info)}
-                </td>
-                <td className="splits-row-buttons">
+            <div className={isOpened ? "splits-row selected" : "splits-row"} key={key}>
+                {this.splitsTitle(info)}
+                <div className="splits-row-buttons">
                     {
                         isOpened
                             ? null
@@ -156,16 +154,16 @@ export class SplitsSelection extends React.Component<Props, State> {
                     <button aria-label="Remove Splits" onClick={() => this.deleteSplits(key)}>
                         <i className="fa fa-trash" aria-hidden="true" />
                     </button>
-                </td>
-            </tr>
+                </div>
+            </div>
         );
     }
 
     private splitsTitle(info: SplitsInfo) {
         return (
             <div className="splits-title-text">
-                <div className="splits-text">{info.game}</div>
-                <div className="splits-text">{info.category}</div>
+                <div className="splits-text splits-game">{info.game}</div>
+                <div className="splits-text splits-category">{info.category}</div>
             </div>
         );
     }
