@@ -59,12 +59,17 @@ jobs:
         cd binaryen
         cmake .
         make wasm-opt
-        cargo install wasm-gc
 
-    - name: Install wasm-bindgen
-      run: |
-        set -e
-        cargo install wasm-bindgen-cli
+    - name: Install wasm-gc
+      if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
+      uses: actions-rs/install@v0.1
+      with: # FIXME: Add use-tool-cache when the crate is added to https://github.com/actions-rs/tool-cache/blob/master/.github/workflows/build.yml
+        crate: wasm-gc
+
+    - name: Install wasm-bindgen-cli
+      uses: actions-rs/install@v0.1
+      with: # FIXME: Add use-tool-cache when the crate is added to https://github.com/actions-rs/tool-cache/blob/master/.github/workflows/build.yml
+        crate: wasm-bindgen-cli
 
     - name: Install npm packages
       run: |
