@@ -60,16 +60,11 @@ jobs:
         cmake .
         make wasm-opt
 
-    - name: Install wasm-gc
-      if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
-      uses: actions-rs/install@v0.1
-      with: # FIXME: Add use-tool-cache when the crate is added to https://github.com/actions-rs/tool-cache/blob/master/.github/workflows/build.yml
-        crate: wasm-gc
-
     - name: Install wasm-bindgen-cli
       uses: actions-rs/install@v0.1
-      with: # FIXME: Add use-tool-cache when the crate is added to https://github.com/actions-rs/tool-cache/blob/master/.github/workflows/build.yml
+      with:
         crate: wasm-bindgen-cli
+        use-tool-cache: true
 
     - name: Install npm packages
       run: |
@@ -119,7 +114,6 @@ jobs:
         set -e
         WASM_FILE=$(ls dist/*.wasm)
         ~/binaryen/bin/wasm-opt -O4 "$WASM_FILE" -o "$WASM_FILE"
-        wasm-gc "$WASM_FILE"
 
     - name: Add CNAME file
       if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
