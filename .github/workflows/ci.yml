@@ -59,12 +59,12 @@ jobs:
         cd binaryen
         cmake .
         make wasm-opt
-        cargo install wasm-gc
 
-    - name: Install wasm-bindgen
-      run: |
-        set -e
-        cargo install wasm-bindgen-cli
+    - name: Install wasm-bindgen-cli
+      uses: actions-rs/install@v0.1
+      with:
+        crate: wasm-bindgen-cli
+        use-tool-cache: true
 
     - name: Install npm packages
       run: |
@@ -114,7 +114,6 @@ jobs:
         set -e
         WASM_FILE=$(ls dist/*.wasm)
         ~/binaryen/bin/wasm-opt -O4 "$WASM_FILE" -o "$WASM_FILE"
-        wasm-gc "$WASM_FILE"
 
     - name: Add CNAME file
       if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
