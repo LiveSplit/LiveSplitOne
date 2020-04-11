@@ -51,7 +51,7 @@
     "moment": "^2.24.0",
     "node-fetch": "^2.6.0",
     "pixelmatch": "^5.1.0",
-    "pngjs": "^3.4.0",
+    "pngjs": "^4.0.0",
     "sass": "^1.24.4",
     "sass-loader": "^8.0.2",
     "selenium-webdriver": "^4.0.0-alpha.5",
