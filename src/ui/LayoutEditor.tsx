@@ -10,10 +10,16 @@ export interface Props {
     editor: LiveSplit.LayoutEditor,
     layoutWidth: number,
     timer: LiveSplit.SharedTimerRef,
+    callbacks: Callbacks,
 }
 export interface State {
     editor: LiveSplit.LayoutEditorStateJson,
     showComponentSettings: boolean,
+}
+
+interface Callbacks {
+    renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
+    closeLayoutEditor(save: boolean): void,
 }
 
 export class LayoutEditor extends React.Component<Props, State> {
@@ -27,6 +33,12 @@ export class LayoutEditor extends React.Component<Props, State> {
     }
 
     public render() {
+        const renderedView = this.renderView();
+        const sidebarContent = this.renderSidebarContent();
+        return this.props.callbacks.renderViewWithSidebar(renderedView, sidebarContent);
+    }
+
+    private renderView() {
         const components = this.state.editor.components.map((c, i) => {
             let className = "layout-editor-component";
             if (i === this.state.editor.selected_component) {
@@ -243,6 +255,29 @@ export class LayoutEditor extends React.Component<Props, State> {
                         onDrop={(i) => this.props.editor.moveComponent(i)}
                         isSelected={(i) => this.state.editor.selected_component === i}
                     />
+                </div>
+            </div>
+        );
+    }
+
+    private renderSidebarContent() {
+        return (
+            <div className="sidebar-buttons">
+                <h1>Layout Editor</h1>
+                <hr />
+                <div className="small">
+                    <button
+                        className="toggle-left"
+                        onClick={(_) => this.props.callbacks.closeLayoutEditor(true)}
+                    >
+                        <i className="fa fa-check" aria-hidden="true" /> OK
+                    </button>
+                    <button
+                        className="toggle-right"
+                        onClick={(_) => this.props.callbacks.closeLayoutEditor(false)}
+                    >
+                        <i className="fa fa-times" aria-hidden="true" /> Cancel
+                    </button>
                 </div>
             </div>
         );

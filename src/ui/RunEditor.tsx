@@ -22,13 +22,21 @@ import { renderMarkdown, replaceFlag } from "../util/Markdown";
 
 import "../css/RunEditor.scss";
 
-export interface Props { editor: LiveSplit.RunEditor }
+export interface Props {
+    editor: LiveSplit.RunEditor,
+    callbacks: Callbacks,
+}
 export interface State {
     editor: LiveSplit.RunEditorStateJson,
     offsetIsValid: boolean,
     attemptCountIsValid: boolean,
     rowState: RowState,
     tab: Tab,
+}
+
+interface Callbacks {
+    renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
+    closeRunEditor(save: boolean): void,
 }
 
 interface RowState {
@@ -103,6 +111,12 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     public render() {
+        const renderedView = this.renderView();
+        const sidebarContent = this.renderSidebarContent();
+        return this.props.callbacks.renderViewWithSidebar(renderedView, sidebarContent);
+    }
+
+    private renderView() {
         const gameIcon = this.getGameIcon();
 
         let gameIconContextTrigger: any = null;
@@ -220,6 +234,29 @@ export class RunEditor extends React.Component<Props, State> {
                     </div>
                 </div>
             </div >
+        );
+    }
+
+    private renderSidebarContent() {
+        return (
+            <div className="sidebar-buttons">
+                <h1>Splits Editor</h1>
+                <hr />
+                <div className="small">
+                    <button
+                        className="toggle-left"
+                        onClick={(_) => this.props.callbacks.closeRunEditor(true)}
+                    >
+                        <i className="fa fa-check" aria-hidden="true" /> OK
+                    </button>
+                    <button
+                        className="toggle-right"
+                        onClick={(_) => this.props.callbacks.closeRunEditor(false)}
+                    >
+                        <i className="fa fa-times" aria-hidden="true" /> Cancel
+                    </button>
+                </div>
+            </div>
         );
     }
 
