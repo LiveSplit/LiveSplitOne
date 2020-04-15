@@ -1416,22 +1416,23 @@ export class RunEditor extends React.Component<Props, State> {
 
     private async importComparison() {
         const [data, file] = await openFileAsArrayBuffer();
-        const result = LiveSplit.Run.parseArray(new Uint8Array(data), "", false);
-        if (!result.parsedSuccessfully()) {
-            toast.error("Couldn't parse the splits.");
-            return;
-        }
-        result.unwrap().with((run) => {
-            const comparisonName = prompt("Comparison Name:", file.name.replace(/\.[^/.]+$/, ""));
-            if (!comparisonName) {
+        LiveSplit.Run.parseArray(new Uint8Array(data), "", false).with((result) => {
+            if (!result.parsedSuccessfully()) {
+                toast.error("Couldn't parse the splits.");
                 return;
             }
-            const valid = this.props.editor.importComparison(run, comparisonName);
-            if (!valid) {
-                toast.error("The comparison could not be added. It may be a duplicate or a reserved name.");
-            } else {
-                this.update();
-            }
+            result.unwrap().with((run) => {
+                const comparisonName = prompt("Comparison Name:", file.name.replace(/\.[^/.]+$/, ""));
+                if (!comparisonName) {
+                    return;
+                }
+                const valid = this.props.editor.importComparison(run, comparisonName);
+                if (!valid) {
+                    toast.error("The comparison could not be added. It may be a duplicate or a reserved name.");
+                } else {
+                    this.update();
+                }
+            });
         });
     }
 

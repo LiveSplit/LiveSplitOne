@@ -7,7 +7,7 @@ import {
     Segment, SharedTimer, Timer, TimingMethod,
     TimeSpan, TimerRef, TimerRefMut, HotkeyConfig,
 } from "../livesplit-core";
-import { convertFileToArrayBuffer, convertFileToString, exportFile, openFileAsArrayBuffer, openFileAsString } from "../util/FileUtil";
+import { convertFileToArrayBuffer, convertFileToString, exportFile, openFileAsString } from "../util/FileUtil";
 import { Option, assertNull, expect, maybeDisposeAndThen, panic } from "../util/OptionUtil";
 import * as SplitsIO from "../util/SplitsIO";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
@@ -127,10 +127,11 @@ export class LiveSplit extends React.Component<Props, State> {
             );
             this.loadFromSplitsIO(window.location.hash.substr("#/splits-io/".length));
         } else if (props.splits !== undefined) {
-            const result = Run.parseArray(props.splits, "", false);
-            if (result.parsedSuccessfully()) {
-                result.unwrap().with((r) => timer.writeWith((t) => t.setRun(r)))?.dispose();
-            }
+            Run.parseArray(props.splits, "", false).with((result) => {
+                if (result.parsedSuccessfully()) {
+                    result.unwrap().with((r) => timer.writeWith((t) => t.setRun(r)))?.dispose();
+                }
+            });
         }
 
         let layout: Option<Layout> = null;
@@ -316,15 +317,6 @@ export class LiveSplit extends React.Component<Props, State> {
         this.state.hotkeySystem.deactivate();
     }
 
-    public async importSplits() {
-        const splits = await openFileAsArrayBuffer();
-        try {
-            this.importSplitsFromArrayBuffer(splits);
-        } catch (err) {
-            toast.error(err.message);
-        }
-    }
-
     public async importSplitsFromFile(file: File) {
         const splits = await convertFileToArrayBuffer(file);
         this.importSplitsFromArrayBuffer(splits);
@@ -340,65 +332,6 @@ export class LiveSplit extends React.Component<Props, State> {
 
     public switchToNextComparison() {
         this.writeWith((t) => t.switchToNextComparison());
-    }
-
-    public openFromSplitsIO() {
-        let id = prompt("Specify the Splits.io URL or ID:");
-        if (!id) {
-            return;
-        }
-        if (id.indexOf("https://splits.io/") === 0) {
-            id = id.substr("https://splits.io/".length);
-        }
-        this.loadFromSplitsIO(id);
-    }
-
-    public async uploadToSplitsIO(): Promise<Option<Window>> {
-        const lss = this.readWith((t) => t.saveAsLssBytes());
-
-        try {
-            const claimUri = await SplitsIO.uploadLss(new Blob([lss]));
-            return window.open(claimUri);
-        } catch (_) {
-            toast.error("Failed to upload the splits.");
-            return null;
-        }
-    }
-
-    public exportSplits() {
-        const [lss, name] = this.writeWith((t) => {
-            t.markAsUnmodified();
-            const name = t.getRun().extendedFileName(true);
-            const lss = t.saveAsLssBytes();
-            return [lss, name];
-        });
-        try {
-            exportFile(name + ".lss", lss);
-        } catch (_) {
-            toast.error("Failed to export the splits.");
-        }
-    }
-
-    public async saveSplits() {
-        try {
-            const openedSplitsKey = await Storage.storeSplits(
-                (callback) => {
-                    this.writeWith((timer) => {
-                        callback(timer.getRun(), timer.saveAsLssBytes());
-                        timer.markAsUnmodified();
-                    });
-                },
-                this.state.openedSplitsKey,
-            );
-            if (this.state.openedSplitsKey === undefined) {
-                this.setState({
-                    openedSplitsKey,
-                });
-                await Storage.storeSplitsKey(openedSplitsKey);
-            }
-        } catch (_) {
-            toast.error("Failed to save the splits.");
-        }
     }
 
     public async saveLayout() {
@@ -427,11 +360,6 @@ export class LiveSplit extends React.Component<Props, State> {
     public exportLayout() {
         const layout = this.state.layout.settingsAsJson();
         exportFile("layout.ls1l", JSON.stringify(layout, null, 4));
-    }
-
-    public loadDefaultSplits() {
-        const run = this.getDefaultRun();
-        this.setRun(run, () => { throw Error("Could not set default run."); });
     }
 
     public loadDefaultLayout() {
@@ -571,7 +499,7 @@ export class LiveSplit extends React.Component<Props, State> {
             toast.error(e);
         };
         this.connection.onmessage = (e) => {
-            // TODO Clone the Shared Timer. This assumes that `this` is always
+            // FIXME: Clone the Shared Timer. This assumes that `this` is always
             // mounted.
             if (typeof e.data === "string") {
                 const [command, ...args] = e.data.split(" ");
@@ -862,13 +790,14 @@ export class LiveSplit extends React.Component<Props, State> {
 
     private importSplitsFromArrayBuffer(buffer: [ArrayBuffer, File]) {
         const [file] = buffer;
-        const result = Run.parseArray(new Uint8Array(file), "", false);
-        if (result.parsedSuccessfully()) {
-            const run = result.unwrap();
-            this.setRun(run, () => { throw Error("Empty Splits are not supported."); });
-        } else {
-            throw Error("Couldn't parse the splits.");
-        }
+        Run.parseArray(new Uint8Array(file), "", false).with((result) => {
+            if (result.parsedSuccessfully()) {
+                const run = result.unwrap();
+                this.setRun(run, () => { throw Error("Empty Splits are not supported."); });
+            } else {
+                throw Error("Couldn't parse the splits.");
+            }
+        });
     }
 
     private async loadFromSplitsIO(id: string) {

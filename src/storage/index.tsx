@@ -33,7 +33,6 @@ function getSplitsInfo(run: RunRef): SplitsInfo {
 }
 
 function parseSplitsAndGetInfo(splits: Uint8Array): Option<SplitsInfo> {
-    // TODO: We leak the ParseRunResult if it's unsuccessful everywhere else. whoops
     return Run.parseArray(splits, "", false).with((r) => {
         if (r.parsedSuccessfully()) {
             return r.unwrap();
@@ -52,7 +51,6 @@ async function getDb(): Promise<IDBPDatabase<unknown>> {
                 const splitsInfoStore = db.createObjectStore("splitsInfo", {
                     autoIncrement: true,
                 });
-                splitsInfoStore.createIndex("game", "game");
 
                 if (oldVersion === 1) {
                     const settingsStore = tx.objectStore("settings");

@@ -7,7 +7,8 @@ import { Run, Segment, SharedTimerRef, TimerPhase } from "../livesplit-core";
 import * as SplitsIO from "../util/SplitsIO";
 import { toast } from "react-toastify";
 import { openFileAsArrayBuffer, exportFile } from "../util/FileUtil";
-import { maybeDisposeAndThen } from "../util/OptionUtil";
+import { Option, maybeDisposeAndThen } from "../util/OptionUtil";
+import * as Storage from "../storage";
 
 import "../css/SplitsSelection.scss";
 
@@ -24,19 +25,12 @@ export interface Props {
 
 interface State {
     splitsInfos?: Array<[number, SplitsInfo]>,
-    splitsKeyKnown: boolean,
 }
 
 interface Callbacks {
-    openRunEditor: (editingInfo: EditingInfo) => void,
-    setSplitsKey: (newKey?: number) => void,
-    openTimerView(arg0: boolean): void;
-    loadDefaultSplits(): void;
-    uploadToSplitsIO(): void;
-    openFromSplitsIO(): void;
-    exportSplits(): void;
-    importSplits(): void;
-    saveSplits(): void;
+    openRunEditor(editingInfo: EditingInfo): void,
+    setSplitsKey(newKey?: number): void,
+    openTimerView(remount: boolean): void,
     renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
 }
 
@@ -44,10 +38,8 @@ export class SplitsSelection extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
 
-        this.refreshDb(props.openedSplitsKey !== undefined);
-        this.state = {
-            splitsKeyKnown: props.openedSplitsKey !== undefined,
-        };
+        this.refreshDb();
+        this.state = {};
     }
 
     public render() {
@@ -58,14 +50,6 @@ export class SplitsSelection extends React.Component<Props, State> {
 
     private renderView() {
         let content;
-
-        if (!this.state.splitsKeyKnown && this.props.openedSplitsKey !== undefined) {
-            this.refreshDb(this.props.openedSplitsKey !== undefined);
-        } else if (this.state.splitsKeyKnown && this.props.openedSplitsKey === undefined) {
-            this.setState({
-                splitsKeyKnown: false,
-            });
-        }
 
         if (this.state.splitsInfos == null) {
             content = (
@@ -102,28 +86,10 @@ export class SplitsSelection extends React.Component<Props, State> {
         return <div className="splits-selection">{content}</div>;
     }
 
-    private async refreshDb(splitsKeyKnown: boolean) {
+    private async refreshDb() {
         const splitsInfos = await getSplitsInfos();
-        // splitsInfos.sort(([_ai, a], [_bi, b]) => {
-        //     if (a.game < b.game) {
-        //         return -1;
-        //     }
-        //     if (a.game > b.game) {
-        //         return 1;
-        //     }
-
-        //     if (a.category < b.category) {
-        //         return -1;
-        //     }
-        //     if (a.category > b.category) {
-        //         return 1;
-        //     }
-
-        //     return 0;
-        // });
         this.setState({
             splitsInfos,
-            splitsKeyKnown,
         });
     }
 
@@ -189,24 +155,15 @@ export class SplitsSelection extends React.Component<Props, State> {
                 }}>
                     <i className="fa fa-edit" aria-hidden="true" /> Edit
                 </button>
-                <button onClick={(_) => this.props.callbacks.saveSplits()}>
+                <button onClick={(_) => this.saveSplits()}>
                     <i className="fa fa-save" aria-hidden="true" /> Save
                 </button>
-                {/* <button onClick={(_) => this.props.callbacks.importSplits()}>
-                    <i className="fa fa-download" aria-hidden="true" /> Import
-                </button> */}
-                <button onClick={(_) => this.props.callbacks.exportSplits()}>
+                <button onClick={(_) => this.exportTimerSplits()}>
                     <i className="fa fa-upload" aria-hidden="true" /> Export
                 </button>
-                {/* <button onClick={(_) => this.props.callbacks.openFromSplitsIO()}>
-                    <i className="fa fa-download" aria-hidden="true" /> From Splits.io
-                </button> */}
-                <button onClick={(_) => this.props.callbacks.uploadToSplitsIO()}>
+                <button onClick={(_) => this.uploadToSplitsIO()}>
                     <i className="fa fa-upload" aria-hidden="true" /> Upload to Splits.io
                 </button>
-                {/* <button onClick={(_) => this.props.callbacks.loadDefaultSplits()}>
-                    <i className="fa fa-sync" aria-hidden="true" /> Default
-                </button> */}
                 <hr />
                 <button onClick={(_) => this.props.callbacks.openTimerView(true)}>
                     <i className="fa fa-caret-left" aria-hidden="true" /> Back
@@ -215,19 +172,12 @@ export class SplitsSelection extends React.Component<Props, State> {
         );
     }
 
-    private async refreshState() {
-        await this.refreshDb(this.state.splitsKeyKnown);
-    }
-
     private async getRunFromKey(key: number): Promise<Run> {
         const splitsData = await loadSplits(key);
         if (splitsData === undefined) {
             throw Error("The splits key is invalid.");
         }
 
-        // TODO: Manually accessing the timer like this has two disadvantages:
-        // 1. This is copy paste from LiveSplit.tsx for the most part.
-        // 2. We don't communicate back the new splits key yet.
         return Run.parseArray(new Uint8Array(splitsData), "", false).with((result) => {
             if (result.parsedSuccessfully()) {
                 return result.unwrap();
@@ -238,6 +188,13 @@ export class SplitsSelection extends React.Component<Props, State> {
     }
 
     private async openSplits(key: number) {
+        const isModified = this.props.timer.readWith((t) => t.getRun().hasBeenModified());
+        if (isModified && !confirm(
+            "Your current splits are modified and have unsaved changes. Do you want to continue and discard those changes?",
+        )) {
+            return;
+        }
+
         const run = await this.getRunFromKey(key);
         run.with((run) => {
             maybeDisposeAndThen(
@@ -261,6 +218,20 @@ export class SplitsSelection extends React.Component<Props, State> {
         }
     }
 
+    private exportTimerSplits() {
+        const [lss, name] = this.props.timer.writeWith((t) => {
+            t.markAsUnmodified();
+            const name = t.getRun().extendedFileName(true);
+            const lss = t.saveAsLssBytes();
+            return [lss, name];
+        });
+        try {
+            exportFile(name + ".lss", lss);
+        } catch (_) {
+            toast.error("Failed to export the splits.");
+        }
+    }
+
     private async editSplits(splitsKey: number) {
         const run = await this.getRunFromKey(splitsKey);
         this.props.callbacks.openRunEditor({ splitsKey, run });
@@ -268,17 +239,22 @@ export class SplitsSelection extends React.Component<Props, State> {
 
     private async copySplits(key: number) {
         await copySplits(key);
-        await this.refreshState();
+        await this.refreshDb();
     }
 
     private async deleteSplits(key: number) {
-        // TODO: We probably want to ask for confirmation here.
+        if (!confirm(
+            "Are you sure you want to delete the splits? This operation can not be undone.",
+        )) {
+            return;
+        }
+
         await deleteSplits(key);
         if (key === this.props.openedSplitsKey) {
             this.props.callbacks.setSplitsKey(undefined);
             storeSplitsKey(undefined);
         }
-        await this.refreshState();
+        await this.refreshDb();
     }
 
     private async importSplits() {
@@ -304,6 +280,38 @@ export class SplitsSelection extends React.Component<Props, State> {
         }
     }
 
+    private async saveSplits() {
+        try {
+            const openedSplitsKey = await Storage.storeSplits(
+                (callback) => {
+                    this.props.timer.writeWith((timer) => {
+                        callback(timer.getRun(), timer.saveAsLssBytes());
+                        timer.markAsUnmodified();
+                    });
+                },
+                this.props.openedSplitsKey,
+            );
+            if (this.props.openedSplitsKey !== openedSplitsKey) {
+                this.props.callbacks.setSplitsKey(openedSplitsKey);
+            }
+            this.refreshDb();
+        } catch (_) {
+            toast.error("Failed to save the splits.");
+        }
+    }
+
+    private async uploadToSplitsIO(): Promise<Option<Window>> {
+        const lss = this.props.timer.readWith((t) => t.saveAsLssBytes());
+
+        try {
+            const claimUri = await SplitsIO.uploadLss(new Blob([lss]));
+            return window.open(claimUri);
+        } catch (_) {
+            toast.error("Failed to upload the splits.");
+            return null;
+        }
+    }
+
     private async importSplitsFromSplitsIo() {
         let id = prompt("Specify the Splits.io URL or ID:");
         if (!id) {
@@ -321,7 +329,6 @@ export class SplitsSelection extends React.Component<Props, State> {
     }
 
     private async addNewSplits() {
-        // TODO: This is mostly copy paste atm.
         const run = Run.new();
         run.pushSegment(Segment.new("Time"));
         await this.storeRun(run);
@@ -334,7 +341,7 @@ export class SplitsSelection extends React.Component<Props, State> {
                 return;
             }
             await storeRunWithoutDisposing(run, undefined);
-            await this.refreshState();
+            await this.refreshDb();
         } finally {
             run.dispose();
         }
