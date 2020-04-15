@@ -8,10 +8,16 @@ import "../css/SettingsEditor.scss";
 
 export interface Props {
     hotkeyConfig: HotkeyConfig,
+    callbacks: Callbacks,
 }
 
 export interface State {
     settings: SettingsDescriptionJson,
+}
+
+interface Callbacks {
+    renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
+    closeSettingsEditor(save: boolean): void,
 }
 
 export class SettingsEditor extends React.Component<Props, State> {
@@ -24,6 +30,12 @@ export class SettingsEditor extends React.Component<Props, State> {
     }
 
     public render() {
+        const renderedView = this.renderView();
+        const sidebarContent = this.renderSidebarContent();
+        return this.props.callbacks.renderViewWithSidebar(renderedView, sidebarContent);
+    }
+
+    private renderView() {
         return (
             <div className="settings-editor">
                 <SettingsComponent
@@ -37,6 +49,29 @@ export class SettingsEditor extends React.Component<Props, State> {
                         this.update();
                     }}
                 />
+            </div>
+        );
+    }
+
+    private renderSidebarContent() {
+        return (
+            <div className="sidebar-buttons">
+                <h1>Settings</h1>
+                <hr />
+                <div className="small">
+                    <button
+                        className="toggle-left"
+                        onClick={(_) => this.props.callbacks.closeSettingsEditor(true)}
+                    >
+                        <i className="fa fa-check" aria-hidden="true" /> OK
+                    </button>
+                    <button
+                        className="toggle-right"
+                        onClick={(_) => this.props.callbacks.closeSettingsEditor(false)}
+                    >
+                        <i className="fa fa-times" aria-hidden="true" /> Cancel
+                    </button>
+                </div>
             </div>
         );
     }

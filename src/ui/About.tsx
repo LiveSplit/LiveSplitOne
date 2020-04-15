@@ -2,10 +2,25 @@ import * as React from "react";
 
 import LiveSplitIcon from "../assets/icon_small.png";
 
+export interface Props {
+    callbacks: Callbacks,
+}
+
+interface Callbacks {
+    renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
+    openTimerView(remount: boolean): void,
+}
+
 import "../css/About.scss";
 
-export class About extends React.Component {
+export class About extends React.Component<Props> {
     public render() {
+        const renderedView = this.renderView();
+        const sidebarContent = this.renderSidebarContent();
+        return this.props.callbacks.renderViewWithSidebar(renderedView, sidebarContent);
+    }
+
+    private renderView() {
         return (
             <div className="about">
                 <div className="about-inner-container">
@@ -36,6 +51,18 @@ export class About extends React.Component {
                         ))
                     }
                 </div>
+            </div>
+        );
+    }
+
+    private renderSidebarContent() {
+        return (
+            <div className="sidebar-buttons">
+                <h1>About</h1>
+                <hr />
+                <button onClick={(_) => this.props.callbacks.openTimerView(true)}>
+                    <i className="fa fa-caret-left" aria-hidden="true" /> Back
+                </button>
             </div>
         );
     }

@@ -14,12 +14,14 @@ import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
 import { SettingsEditor as SettingsEditorComponent } from "./SettingsEditor";
 import { About } from "./About";
-import { SideBarContent } from "./SideBarContent";
+import AutoRefresh from "../util/AutoRefresh";
 import { toast } from "react-toastify";
 import * as Storage from "../storage";
 
 import "react-toastify/dist/ReactToastify.css";
 import "../css/LiveSplit.scss";
+
+import LiveSplitIcon from "../assets/icon_small.png";
 
 export enum MenuKind {
     Timer,
@@ -57,6 +59,8 @@ export interface State {
     sidebarOpen: boolean,
     sidebarTransitionsEnabled: boolean,
     menu: Menu,
+    comparison: Option<string>,
+    timingMethod: Option<TimingMethod>,
 }
 
 export class LiveSplit extends React.Component<Props, State> {
@@ -148,6 +152,8 @@ export class LiveSplit extends React.Component<Props, State> {
             sidebarTransitionsEnabled: false,
             timer,
             hotkeySystem,
+            comparison: null,
+            timingMethod: null,
         };
 
         this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
@@ -205,73 +211,33 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     public render() {
-        const content = ((): JSX.Element => {
-            if (this.state.menu.kind === MenuKind.RunEditor) {
-                return <RunEditorComponent editor={this.state.menu.editor} />;
-            } else if (this.state.menu.kind === MenuKind.LayoutEditor) {
-                return <LayoutEditorComponent
-                    editor={this.state.menu.editor}
-                    layoutWidth={this.state.layoutWidth}
-                    timer={this.state.timer}
-                />;
-            } else if (this.state.menu.kind === MenuKind.SettingsEditor) {
-                return <SettingsEditorComponent hotkeyConfig={this.state.menu.config} />;
-            } else if (this.state.menu.kind === MenuKind.About) {
-                return <About />;
-            } else {
-                return <DragUpload
-                    importLayout={this.importLayoutFromFile.bind(this)}
-                    importSplits={this.importSplitsFromFile.bind(this)}
-                >
-                    <div>
-                        <div
-                            onClick={(_) => this.splitOrStart()}
-                            style={{
-                                display: "inline-block",
-                                cursor: "pointer",
-                            }}
-                        >
-                            <AutoRefreshLayout
-                                getState={() => this.readWith(
-                                    (t) => this.state.layout.stateAsJson(t),
-                                )}
-                                allowResize={this.state.isDesktop}
-                                width={this.state.layoutWidth}
-                                onResize={(width) => this.onResize(width)}
-                            />
-                        </div>
-                        <div className="buttons" style={{ width: this.state.layoutWidth }}>
-                            <div className="small">
-                                <button aria-label="Undo Split" onClick={(_) => this.undoSplit()}>
-                                    <i className="fa fa-arrow-up" aria-hidden="true" /></button>
-                                <button aria-label="Pause" onClick={(_) => this.togglePauseOrStart()}>
-                                    <i className="fa fa-pause" aria-hidden="true" />
-                                </button>
-                            </div>
-                            <div className="small">
-                                <button aria-label="Skip Split" onClick={(_) => this.skipSplit()}>
-                                    <i className="fa fa-arrow-down" aria-hidden="true" />
-                                </button>
-                                <button aria-label="Reset" onClick={(_) => this.reset()}>
-                                    <i className="fa fa-times" aria-hidden="true" />
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </DragUpload>;
-            }
-        })();
-
-        const sidebarContent = (
-            <SideBarContent
-                menu={this.state.menu.kind}
+        if (this.state.menu.kind === MenuKind.RunEditor) {
+            return <RunEditorComponent
+                editor={this.state.menu.editor}
                 callbacks={this}
+            />;
+        } else if (this.state.menu.kind === MenuKind.LayoutEditor) {
+            return <LayoutEditorComponent
+                editor={this.state.menu.editor}
+                layoutWidth={this.state.layoutWidth}
                 timer={this.state.timer}
-                sidebarOpen={this.state.sidebarOpen || this.state.isDesktop}
-                connectionState={this.connection?.readyState ?? WebSocket.CLOSED}
-            />
-        );
+                callbacks={this}
+            />;
+        } else if (this.state.menu.kind === MenuKind.SettingsEditor) {
+            return <SettingsEditorComponent
+                hotkeyConfig={this.state.menu.config}
+                callbacks={this}
+            />;
+        } else if (this.state.menu.kind === MenuKind.About) {
+            return <About callbacks={this} />;
+        } else {
+            const renderedView = this.renderTimerView();
+            const sidebarContent = this.renderTimerViewSidebarContent();
+            return this.renderViewWithSidebar(renderedView, sidebarContent);
+        }
+    }
 
+    public renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element) {
         return (
             <div className={this.state.isDesktop ? "" : "is-mobile"}>
                 <Sidebar
@@ -297,7 +263,7 @@ export class LiveSplit extends React.Component<Props, State> {
                         className="view-container"
                         ref={this.containerRef}
                     >
-                        {content}
+                        {renderedView}
                     </div>
                 </Sidebar>
             </div>
@@ -608,6 +574,228 @@ export class LiveSplit extends React.Component<Props, State> {
             this.connection = null;
             this.forceUpdate();
         };
+    }
+
+    private renderTimerView() {
+        return <DragUpload
+            importLayout={this.importLayoutFromFile.bind(this)}
+            importSplits={this.importSplitsFromFile.bind(this)}
+        >
+            <div>
+                <div
+                    onClick={(_) => this.splitOrStart()}
+                    style={{
+                        display: "inline-block",
+                        cursor: "pointer",
+                    }}
+                >
+                    <AutoRefreshLayout
+                        getState={() => this.readWith(
+                            (t) => this.state.layout.stateAsJson(t),
+                        )}
+                        allowResize={this.state.isDesktop}
+                        width={this.state.layoutWidth}
+                        onResize={(width) => this.onResize(width)}
+                    />
+                </div>
+                <div className="buttons" style={{ width: this.state.layoutWidth }}>
+                    <div className="small">
+                        <button aria-label="Undo Split" onClick={(_) => this.undoSplit()}>
+                            <i className="fa fa-arrow-up" aria-hidden="true" /></button>
+                        <button aria-label="Pause" onClick={(_) => this.togglePauseOrStart()}>
+                            <i className="fa fa-pause" aria-hidden="true" />
+                        </button>
+                    </div>
+                    <div className="small">
+                        <button aria-label="Skip Split" onClick={(_) => this.skipSplit()}>
+                            <i className="fa fa-arrow-down" aria-hidden="true" />
+                        </button>
+                        <button aria-label="Reset" onClick={(_) => this.reset()}>
+                            <i className="fa fa-times" aria-hidden="true" />
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </DragUpload>;
+    }
+
+    private renderTimerViewSidebarContent() {
+        switch (this.state.menu.kind) {
+            case MenuKind.Splits: {
+                return (
+                    <div className="sidebar-buttons">
+                        <h1>Splits</h1>
+                        <hr />
+                        <button onClick={(_) => this.openRunEditor()}>
+                            <i className="fa fa-edit" aria-hidden="true" /> Edit
+                        </button>
+                        <button onClick={(_) => this.saveSplits()}>
+                            <i className="fa fa-save" aria-hidden="true" /> Save
+                        </button>
+                        <button onClick={(_) => this.importSplits()}>
+                            <i className="fa fa-download" aria-hidden="true" /> Import
+                        </button>
+                        <button onClick={(_) => this.exportSplits()}>
+                            <i className="fa fa-upload" aria-hidden="true" /> Export
+                        </button>
+                        <button onClick={(_) => this.openFromSplitsIO()}>
+                            <i className="fa fa-download" aria-hidden="true" /> From Splits.io
+                        </button>
+                        <button onClick={(_) => this.uploadToSplitsIO()}>
+                            <i className="fa fa-upload" aria-hidden="true" /> Upload to Splits.io
+                        </button>
+                        <button onClick={(_) => this.loadDefaultSplits()}>
+                            <i className="fa fa-sync" aria-hidden="true" /> Default
+                        </button>
+                        <hr />
+                        <button onClick={(_) => this.openTimerView(false)}>
+                            <i className="fa fa-caret-left" aria-hidden="true" /> Back
+                        </button>
+                    </div>
+                );
+            }
+            case MenuKind.Layout: {
+                return (
+                    <div className="sidebar-buttons">
+                        <h1>Layout</h1>
+                        <hr />
+                        <button onClick={(_) => this.openLayoutEditor()}>
+                            <i className="fa fa-edit" aria-hidden="true" /> Edit
+                        </button>
+                        <button onClick={(_) => this.saveLayout()}>
+                            <i className="fa fa-save" aria-hidden="true" /> Save
+                        </button>
+                        <button onClick={(_) => this.importLayout()}>
+                            <i className="fa fa-download" aria-hidden="true" /> Import
+                        </button>
+                        <button onClick={(_) => this.exportLayout()}>
+                            <i className="fa fa-upload" aria-hidden="true" /> Export
+                        </button>
+                        <button onClick={(_) => this.loadDefaultLayout()}>
+                            <i className="fa fa-sync" aria-hidden="true" /> Default
+                        </button>
+                        <hr />
+                        <button onClick={(_) => this.openTimerView(false)}>
+                            <i className="fa fa-caret-left" aria-hidden="true" /> Back
+                        </button>
+                    </div>
+                );
+            }
+            case MenuKind.Timer: {
+                return (
+                    <AutoRefresh update={() => this.updateSidebar()}>
+                        <div className="sidebar-buttons">
+                            <div className="livesplit-title">
+                                <span className="livesplit-icon">
+                                    <img src={LiveSplitIcon} alt="LiveSplit Logo" />
+                                </span>
+                                <h1> LiveSplit One</h1>
+                            </div>
+                            <hr className="livesplit-title-separator" />
+                            <button onClick={(_) => this.openSplitsView()}>
+                                <i className="fa fa-list" aria-hidden="true" /> Splits
+                            </button>
+                            <button onClick={(_) => this.openLayoutView()}>
+                                <i className="fa fa-layer-group" aria-hidden="true" /> Layout
+                            </button>
+                            <hr />
+                            <h2>Compare Against</h2>
+                            <div className="choose-comparison">
+                                <button
+                                    aria-label="Switch to Previous Comparison"
+                                    onClick={(_) => this.switchToPreviousComparison()}
+                                >
+                                    <i className="fa fa-caret-left" aria-hidden="true" />
+                                </button>
+                                <span>{this.state.comparison}</span>
+                                <button
+                                    aria-label="Switch to Next Comparison"
+                                    onClick={(_) => this.switchToNextComparison()}
+                                >
+                                    <i className="fa fa-caret-right" aria-hidden="true" />
+                                </button>
+                            </div>
+                            <div className="small">
+                                <button
+                                    onClick={(_) => {
+                                        this.setCurrentTimingMethod(TimingMethod.RealTime);
+                                        this.updateSidebar();
+                                    }}
+                                    className={
+                                        (this.state.timingMethod === TimingMethod.RealTime ? "button-pressed" : "") +
+                                        " toggle-left"
+                                    }
+                                >
+                                    Real Time
+                                </button>
+                                <button
+                                    onClick={(_) => {
+                                        this.setCurrentTimingMethod(TimingMethod.GameTime);
+                                        this.updateSidebar();
+                                    }}
+                                    className={
+                                        (this.state.timingMethod === TimingMethod.GameTime ? "button-pressed" : "") +
+                                        " toggle-right"
+                                    }
+                                >
+                                    Game Time
+                                </button>
+                            </div>
+                            <hr />
+                            <button onClick={(_) => this.connectToServerOrDisconnect()}>
+                                {
+                                    (() => {
+                                        const connectionState = this.connection?.readyState ?? WebSocket.CLOSED;
+                                        switch (connectionState) {
+                                            case WebSocket.OPEN:
+                                                return <div>
+                                                    <i className="fa fa-power-off" aria-hidden="true" /> Disconnect
+                                                </div>;
+                                            case WebSocket.CLOSED:
+                                                return <div>
+                                                    <i className="fa fa-desktop" aria-hidden="true" /> Connect to Server
+                                                </div>;
+                                            case WebSocket.CONNECTING:
+                                                return <div>Connecting...</div>;
+                                            case WebSocket.CLOSING:
+                                                return <div>Disconnecting...</div>;
+                                            default: throw new Error("Unknown WebSocket State");
+                                        }
+                                    })()
+                                }
+                            </button>
+                            <button onClick={() => this.openSettingsEditor()}>
+                                <i className="fa fa-cog" aria-hidden="true" /> Settings
+                            </button>
+                            <hr />
+                            <button onClick={(_) => this.openAboutView()}>
+                                <i className="fa fa-info-circle" aria-hidden="true" /> About
+                            </button>
+                        </div >
+                    </AutoRefresh>
+                );
+            }
+        }
+        throw Error(`Invalid menu: ${this.state.menu}`);
+    }
+
+    private updateSidebar() {
+        if (this.state.menu.kind === MenuKind.Timer && (this.state.sidebarOpen || this.state.isDesktop)) {
+            const [comparison, timingMethod] = this.state.timer.readWith((t): [string, number] => {
+                return [
+                    t.currentComparison(),
+                    t.currentTimingMethod(),
+                ];
+            });
+
+            if (comparison !== this.state.comparison || timingMethod !== this.state.timingMethod) {
+                this.setState({
+                    ...this.state,
+                    comparison,
+                    timingMethod,
+                });
+            }
+        }
     }
 
     private getDefaultRun() {
