@@ -60,11 +60,11 @@ jobs:
         cmake .
         make wasm-opt
 
-    - name: Install wasm-bindgen-cli
-      uses: actions-rs/install@v0.1
-      with:
-        crate: wasm-bindgen-cli
-        use-tool-cache: true
+    # FIXME: Use actions-rs/install@v0.1 again once it can handle wasm-bindgen
+    - name: Install wasm-bindgen
+      run: |
+        set -e
+        cargo install wasm-bindgen-cli
 
     - name: Install npm packages
       run: |
