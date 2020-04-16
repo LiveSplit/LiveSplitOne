@@ -148,10 +148,10 @@ export interface Record {
     run: Run,
 }
 
-export type PlayersNotEmbedded = Array<PlayerUserRef | PlayerGuest>;
+export type PlayersNotEmbedded = (PlayerUserRef | PlayerGuest)[];
 
 export interface PlayersEmbedded {
-    data: Array<PlayerUser | PlayerGuest>,
+    data: (PlayerUser | PlayerGuest)[],
 }
 
 export interface Run<PlayerEmbedding = PlayersNotEmbedded> {
@@ -314,7 +314,7 @@ async function executePaginatedRequest<T>(uri: string): Promise<Page<T>> {
     return new Page(data as T[], next);
 }
 
-export async function getGame(gameId: string, embeds?: Array<"variables">): Promise<Game> {
+export async function getGame(gameId: string, embeds?: "variables"[]): Promise<Game> {
     const parameters = [];
     if (embeds !== undefined) {
         parameters.push(`embed=${embeds.join(",")}`);
@@ -349,7 +349,7 @@ export async function getCategories(gameId: string): Promise<Category[]> {
 export async function getLeaderboard(
     gameId: string,
     categoryId: string,
-    embeds?: Array<"players">,
+    embeds?: "players"[],
 ): Promise<Leaderboard> {
     const parameters = [];
     if (embeds !== undefined) {
