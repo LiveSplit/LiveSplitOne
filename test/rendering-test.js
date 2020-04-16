@@ -45,6 +45,7 @@ describe("Layout Rendering Tests", function() {
     const loadFile = async (filePath) => {
         const inputElement = await findElement(By.id("file-input"));
         await inputElement.sendKeys(path.resolve(filePath));
+        await driver.sleep(500);
     }
 
     before(async () => {
@@ -86,6 +87,7 @@ describe("Layout Rendering Tests", function() {
             await clickElement(By.xpath(".//button[contains(text(), 'Splits')]"));
             await clickElement(By.xpath(".//button[contains(text(), 'Import')]"));
             await loadFile(`${SPLITS_FOLDER}/${splitsName}.lss`);
+            await clickElement(By.xpath("(.//button[contains(@aria-label, 'Open Splits')])[last()]"));
             await clickElement(By.xpath(".//button[contains(text(), 'Back')]"));
     
             const layoutElement = await findElement(By.className("layout"));
