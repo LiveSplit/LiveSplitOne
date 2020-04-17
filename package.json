@@ -57,7 +57,7 @@
     "selenium-webdriver": "^4.0.0-alpha.7",
     "source-map-loader": "^0.2.4",
     "style-loader": "^1.1.4",
-    "ts-loader": "^6.2.1",
+    "ts-loader": "^7.0.0",
     "tslint": "^6.1.1",
     "typescript": "^3.8.3",
     "url-loader": "^4.1.0",
