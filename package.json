@@ -38,7 +38,7 @@
     "resize-observer": "^1.0.0"
   },
   "devDependencies": {
-    "@types/node": "^13.1.7",
+    "@types/node": "^13.11.1",
     "chromedriver": "^81.0.0",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^3.5.2",
