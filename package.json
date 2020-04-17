@@ -26,7 +26,7 @@
     "commonmark": "^0.29.1",
     "commonmark-react-renderer": "^4.3.5",
     "idb": "^5.0.2",
-    "react": "^16.12.0",
+    "react": "^16.13.1",
     "react-color": "^2.18.0",
     "react-contextmenu": "^2.13.0",
     "react-dom": "^16.12.0",
