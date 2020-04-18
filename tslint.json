@@ -40,7 +40,8 @@
         "variable-name": [
             "check-format",
             "allow-leading-underscores"
-        ]
+        ],
+        "array-type": false
     },
     "rulesDirectory": []
 }
