@@ -20,7 +20,7 @@ const gameIdToCategoriesPromises: Map<string, Promise<Category[]>> = new Map();
 const gameIdToGameInfoMap: Map<string, Game> = new Map();
 const gameIdToGameInfoPromises: Map<string, Promise<Game>> = new Map();
 const gameAndCategoryToLeaderboardPromises: Map<string, Promise<void>> = new Map();
-const gameAndCategoryToLeaderboardMap: Map<string, Run<PlayersEmbedded>[]> = new Map();
+const gameAndCategoryToLeaderboardMap: Map<string, Array<Run<PlayersEmbedded>>> = new Map();
 let gameListPromise: Option<Promise<void>> = null;
 let platformListPromise: Option<Promise<void>> = null;
 let regionListPromise: Option<Promise<void>> = null;
@@ -61,7 +61,7 @@ export function getRegions(): Map<string, string> {
     return regionList;
 }
 
-export function getLeaderboard(gameName: string, categoryName: string): Run<PlayersEmbedded>[] | undefined {
+export function getLeaderboard(gameName: string, categoryName: string): Array<Run<PlayersEmbedded>> | undefined {
     const key = JSON.stringify({ gameName, categoryName });
     return gameAndCategoryToLeaderboardMap.get(key);
 }

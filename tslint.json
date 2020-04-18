@@ -41,7 +41,7 @@
             "check-format",
             "allow-leading-underscores"
         ],
-        "array-type": false
+        "array-type": [true, "array-simple"]
     },
     "rulesDirectory": []
 }
