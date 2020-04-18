@@ -1,0 +1,120 @@
+@import 'mobile';
+@import 'variables';
+@import 'Table';
+@import 'ContextMenu';
+
+$loading-text-font-size: 40px;
+$splits-row-width: 500px;
+$splits-row-height: 40px;
+
+.splits-selection {
+  .loading {
+    display: flex;
+    width: fit-content;
+    font-size: $loading-text-font-size;
+
+    .loading-text {
+      margin-left: $ui-margin;
+    }
+  }
+
+  .splits-selection-container {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+
+    .main-actions {
+      display: flex;
+      justify-content: flex-start;
+
+      button {
+        margin-top: 0;
+        margin-bottom: $ui-large-margin / 2;
+        margin-right: $ui-margin;
+      }
+
+      @include mobile {
+        margin-top: $ui-margin;
+        margin-left: $ui-margin;
+      }
+    }
+
+    .splits-table {
+      background-color: $dark-row-color;
+      border: 1px solid $border-color;
+      margin: $ui-large-margin/2 0;
+      width: fit-content;
+
+      .splits-row {
+        display: flex;
+        flex-wrap: nowrap;
+        align-items: center;
+        padding: $ui-margin;
+        height: $splits-row-height;
+        width: $splits-row-width;
+
+        &:nth-of-type(odd) {
+          background-color: $light-row-color;
+        }
+
+        &.selected {
+          background: $selected-row-color;
+        }
+
+        .splits-title-text {
+          flex-grow: 1;
+          overflow: hidden;
+
+          .splits-text {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+
+            &.splits-game {
+              margin-bottom: $ui-margin;
+            }
+          }
+        }
+
+        &.selected .splits-row-buttons button {
+          opacity: 70%;
+        }
+
+        .splits-row-buttons {
+          flex-shrink: 0;
+          margin-left: $ui-large-margin;
+
+          @include context-menu;
+
+          button {
+            background: transparent;
+            border: 0;
+            opacity: 50%;
+            margin: 0;
+            transition: 0.3s;
+            color: white;
+
+            &:hover {
+              opacity: 100%;
+            }
+
+            &:not(:last-child) {
+              margin-right: $ui-margin;
+            }
+          }
+        }
+
+        @include mobile {
+          width: 100%;
+          box-sizing: border-box;
+          height: $splits-row-height + 2 * $ui-margin;
+        }
+      }
+
+      @include mobile {
+        width: 100%;
+        box-sizing: border-box;
+      }
+    }
+  }
+}

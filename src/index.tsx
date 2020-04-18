@@ -18,6 +18,7 @@ async function run() {
 
     const {
         splits,
+        splitsKey,
         layout,
         hotkeys,
         layoutWidth,
@@ -30,6 +31,7 @@ async function run() {
                     splits={splits}
                     layout={layout}
                     hotkeys={hotkeys}
+                    splitsKey={splitsKey}
                     layoutWidth={layoutWidth}
                 />
                 <ToastContainer

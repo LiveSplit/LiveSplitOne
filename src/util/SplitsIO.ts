@@ -90,11 +90,11 @@ export async function downloadById(id: string): Promise<Run> {
         DownloadError.InvalidBuffer,
     );
 
-    const result = Run.parseArray(new Uint8Array(data), "", false);
-
-    if (result.parsedSuccessfully()) {
-        return result.unwrap();
-    } else {
-        throw DownloadError.FailedParsing;
-    }
+    return Run.parseArray(new Uint8Array(data), "", false).with((result) => {
+        if (result.parsedSuccessfully()) {
+            return result.unwrap();
+        } else {
+            throw DownloadError.FailedParsing;
+        }
+    });
 }
