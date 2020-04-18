@@ -12,6 +12,7 @@ import * as Storage from "../storage";
 
 import "../css/SplitsSelection.scss";
 import DragUpload from "./DragUpload";
+import { ContextMenuTrigger, ContextMenu, MenuItem } from "react-contextmenu";
 
 export interface EditingInfo {
     splitsKey?: number,
@@ -69,7 +70,7 @@ export class SplitsSelection extends React.Component<Props, State> {
                         <button onClick={() => this.importSplits()}>
                             <i className="fa fa-download" aria-hidden="true" /> Import
                         </button>
-                        <button onClick={() => this.importSplitsFromSplitsIo()}>
+                        <button onClick={() => this.importSplitsFromSplitsIO()}>
                             <i className="fa fa-download" aria-hidden="true" /> From Splits.io
                         </button>
                     </div>
@@ -100,6 +101,15 @@ export class SplitsSelection extends React.Component<Props, State> {
 
     private renderSavedSplitsRow(key: number, info: SplitsInfo) {
         const isOpened = key === this.props.openedSplitsKey;
+
+        const segmentIconContextMenuId = `splits-${key}-context-menu`;
+        let exportContextTrigger: any = null;
+        const exportButtonToggleMenu = (e: any) => {
+            if (exportContextTrigger) {
+                exportContextTrigger.handleContextClick(e);
+            }
+        };
+
         return (
             <div className={isOpened ? "splits-row selected" : "splits-row"} key={key}>
                 {this.splitsTitle(info)}
@@ -114,9 +124,22 @@ export class SplitsSelection extends React.Component<Props, State> {
                                 <button aria-label="Edit Splits" onClick={() => this.editSplits(key)}>
                                     <i className="fa fa-edit" aria-hidden="true" />
                                 </button>
-                                <button aria-label="Export Splits" onClick={(_) => this.exportSplits(key, info)}>
-                                    <i className="fa fa-upload" aria-hidden="true" />
+                                <button aria-label="Export Splits" onClick={(e) => exportButtonToggleMenu(e)}>
+                                    <ContextMenuTrigger
+                                        id={segmentIconContextMenuId}
+                                        ref={(c) => exportContextTrigger = c}
+                                    >
+                                        <i className="fa fa-upload" aria-hidden="true" />
+                                    </ContextMenuTrigger>
                                 </button>
+                                <ContextMenu id={segmentIconContextMenuId}>
+                                    <MenuItem onClick={(_) => this.exportSplits(key, info)}>
+                                        Export to File
+                                    </MenuItem>
+                                    <MenuItem onClick={(_) => this.uploadSplitsToSplitsIO(key)}>
+                                        Upload to Splits.io
+                                    </MenuItem>
+                                </ContextMenu>
                             </>
                     }
                     <button aria-label="Copy Splits" onClick={() => this.copySplits(key)}>
@@ -166,7 +189,7 @@ export class SplitsSelection extends React.Component<Props, State> {
                 <button onClick={(_) => this.exportTimerSplits()}>
                     <i className="fa fa-upload" aria-hidden="true" /> Export
                 </button>
-                <button onClick={(_) => this.uploadToSplitsIO()}>
+                <button onClick={(_) => this.uploadTimerToSplitsIO()}>
                     <i className="fa fa-upload" aria-hidden="true" /> Upload to Splits.io
                 </button>
                 <hr />
@@ -310,7 +333,22 @@ export class SplitsSelection extends React.Component<Props, State> {
         }
     }
 
-    private async uploadToSplitsIO(): Promise<Option<Window>> {
+    private async uploadSplitsToSplitsIO(key: number): Promise<Option<Window>> {
+        try {
+            const splitsData = await loadSplits(key);
+            if (splitsData === undefined) {
+                throw Error("The splits key is invalid.");
+            }
+
+            const claimUri = await SplitsIO.uploadLss(new Blob([splitsData]));
+            return window.open(claimUri);
+        } catch (_) {
+            toast.error("Failed to upload the splits.");
+            return null;
+        }
+    }
+
+    private async uploadTimerToSplitsIO(): Promise<Option<Window>> {
         const lss = this.props.timer.readWith((t) => t.saveAsLssBytes());
 
         try {
@@ -322,7 +360,7 @@ export class SplitsSelection extends React.Component<Props, State> {
         }
     }
 
-    private async importSplitsFromSplitsIo() {
+    private async importSplitsFromSplitsIO() {
         let id = prompt("Specify the Splits.io URL or ID:");
         if (!id) {
             return;

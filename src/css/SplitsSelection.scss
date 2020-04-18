@@ -1,6 +1,7 @@
 @import 'mobile';
 @import 'variables';
 @import 'Table';
+@import 'ContextMenu';
 
 $loading-text-font-size: 40px;
 $splits-row-width: 500px;
@@ -68,7 +69,7 @@ $splits-row-height: 40px;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;
-            
+
             &.splits-game {
               margin-bottom: $ui-margin;
             }
@@ -82,6 +83,8 @@ $splits-row-height: 40px;
         .splits-row-buttons {
           flex-shrink: 0;
           margin-left: $ui-large-margin;
+
+          @include context-menu;
 
           button {
             background: transparent;
