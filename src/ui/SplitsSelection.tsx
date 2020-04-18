@@ -74,14 +74,17 @@ export class SplitsSelection extends React.Component<Props, State> {
                             <i className="fa fa-download" aria-hidden="true" /> From Splits.io
                         </button>
                     </div>
-                    <div className="splits-table">
-                        <div className="splits-rows">
-                            {
-                                this.state.splitsInfos
-                                    .map(([key, info]) => this.renderSavedSplitsRow(key, info))
-                            }
+                    {
+                        this.state.splitsInfos?.length > 0 &&
+                        <div className="splits-table">
+                            <div className="splits-rows">
+                                {
+                                    this.state.splitsInfos
+                                        .map(([key, info]) => this.renderSavedSplitsRow(key, info))
+                                }
+                            </div>
                         </div>
-                    </div>
+                    }
                 </div>
             );
         }
