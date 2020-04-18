@@ -76,6 +76,7 @@ async function getDb(): Promise<IDBPDatabase<unknown>> {
                         if (splitsInfo != null) {
                             splitsInfoStore.put(splitsInfo);
                             splitsDataStore.put(splits);
+                            settingsStore.put(1, "splitsKey");
                         }
                     }
 
