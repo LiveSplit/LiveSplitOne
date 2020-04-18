@@ -6,11 +6,12 @@ import {
 import { Run, Segment, SharedTimerRef, TimerPhase } from "../livesplit-core";
 import * as SplitsIO from "../util/SplitsIO";
 import { toast } from "react-toastify";
-import { openFileAsArrayBuffer, exportFile } from "../util/FileUtil";
+import { openFileAsArrayBuffer, exportFile, convertFileToArrayBuffer } from "../util/FileUtil";
 import { Option, maybeDisposeAndThen } from "../util/OptionUtil";
 import * as Storage from "../storage";
 
 import "../css/SplitsSelection.scss";
+import DragUpload from "./DragUpload";
 
 export interface EditingInfo {
     splitsKey?: number,
@@ -83,7 +84,11 @@ export class SplitsSelection extends React.Component<Props, State> {
                 </div>
             );
         }
-        return <div className="splits-selection">{content}</div>;
+        return <DragUpload
+            importSplits={this.importSplitsFromFile.bind(this)}
+        >
+            <div className="splits-selection">{content}</div>
+        </DragUpload>;
     }
 
     private async refreshDb() {
@@ -264,6 +269,11 @@ export class SplitsSelection extends React.Component<Props, State> {
         } catch (err) {
             toast.error(err.message);
         }
+    }
+
+    private async importSplitsFromFile(file: File) {
+        const splits = await convertFileToArrayBuffer(file);
+        this.importSplitsFromArrayBuffer(splits);
     }
 
     private async importSplitsFromArrayBuffer(buffer: [ArrayBuffer, File]) {
