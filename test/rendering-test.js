@@ -113,7 +113,7 @@ describe("Layout Rendering Tests", function() {
                         const { width, height } = actualImage;
                         const diff = new PNG({ width, height });
         
-                        const numPixelsDifferent = pixelmatch(actualImage.data, expectedImage.data, diff.data, width, height);
+                        const numPixelsDifferent = pixelmatch(actualImage.data, expectedImage.data, diff.data, width, height, { threshold: 0.2 });
 
                         if (numPixelsDifferent === 0) {
                             showWarning = true;
