@@ -32,7 +32,7 @@ interface State {
 interface Callbacks {
     openRunEditor(editingInfo: EditingInfo): void,
     setSplitsKey(newKey?: number): void,
-    openTimerView(remount: boolean): void,
+    openTimerView(): void,
     renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
 }
 
@@ -196,7 +196,7 @@ export class SplitsSelection extends React.Component<Props, State> {
                     <i className="fa fa-upload" aria-hidden="true" /> Upload to Splits.io
                 </button>
                 <hr />
-                <button onClick={(_) => this.props.callbacks.openTimerView(true)}>
+                <button onClick={(_) => this.props.callbacks.openTimerView()}>
                     <i className="fa fa-caret-left" aria-hidden="true" /> Back
                 </button>
             </div>

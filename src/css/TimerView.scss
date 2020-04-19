@@ -1,0 +1,25 @@
+@import 'mobile';
+@import 'variables';
+
+.buttons {
+  margin-top: $ui-large-margin - $ui-margin / 2;
+
+  .small {
+    button {
+      width: calc(50% - #{$ui-margin / 2})
+    }
+
+    button:first-child {
+      margin-right: $ui-margin / 2;
+    }
+
+    button:last-child {
+      margin-left: $ui-margin / 2;
+    }
+  }
+
+  @include mobile {
+    padding: 0 $ui-margin;
+    width: calc(100% - 2 * #{$ui-margin}) !important;
+  }
+}

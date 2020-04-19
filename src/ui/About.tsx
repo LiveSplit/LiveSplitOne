@@ -2,16 +2,16 @@ import * as React from "react";
 
 import LiveSplitIcon from "../assets/icon_small.png";
 
+import "../css/About.scss";
+
 export interface Props {
     callbacks: Callbacks,
 }
 
 interface Callbacks {
     renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
-    openTimerView(remount: boolean): void,
+    openTimerView(): void,
 }
-
-import "../css/About.scss";
 
 export class About extends React.Component<Props> {
     public render() {
@@ -60,7 +60,7 @@ export class About extends React.Component<Props> {
             <div className="sidebar-buttons">
                 <h1>About</h1>
                 <hr />
-                <button onClick={(_) => this.props.callbacks.openTimerView(true)}>
+                <button onClick={(_) => this.props.callbacks.openTimerView()}>
                     <i className="fa fa-caret-left" aria-hidden="true" /> Back
                 </button>
             </div>
