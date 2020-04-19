@@ -140,7 +140,7 @@ describe("Layout Rendering Tests", function() {
     testRendering("default", "default", "________8AAD8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADgAAD_________");
     testRendering("default", "pmw3", "f_wAb__mX2AG3-gGUdgGSkgOX3AOW9gOX-APVlwOH_APX8AO1uAPUnAOX1AOXLAeHvAeX_wf__AfAAAAAABgAAD_AAB_____");
     testRendering("splits_two_rows", "celeste", "f8AAcAAHf8AA____d4AAcAAHf_gAcAAPd_AAYAAHf4AA____f4AAYAAH__AA____Z_gAYAAHf_8A9VVfb_wAcAAPf_AAYAAP");
-    testRendering("splits_with_labels", "celeste", "AABAAABMAADPAADPAADP____7AAP_wAP_wAP_wAPwgAA____wAAH2oAP_4AH34APX4AA____wAAP9EAP38AP38AP38AAAAAA");
+    testRendering("splits_with_labels", "celeste", "AABAAABMAADPAADPAADP____7AAP_wAP_wAP_wAPwgAA____QAAH2oAP_4AH34APX4AA____wAAP9EAP38AP38AP38AAAAAA");
     testRendering("title_centered_no_game_icon", "celeste", "________AAAAADQAAHQAAH4A______3_____AAAAAAAAAAAA____AAkAAL8DAP8DAP8DAP8D_________-n9AAAAAAAAAAAA");
     testRendering("title_centered_with_game_icon", "celeste", "________AAAAIB0AIB8AYB8A________cB8AcAAAcAAAcAAAcAAAcAZAcC_DcD_DcD_DcD_D_________9Z9cAAAAAAAAAAA");
     testRendering("title_left_no_attempt_count", "celeste", "________AAAA-AAA-AAA-AAA____________AAAAAAAAAAAA____CQAA_wAA_4AA_4AA_4AA________qf__AAAAAAAAAAAA");
