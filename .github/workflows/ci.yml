@@ -13,9 +13,8 @@ jobs:
     steps:
     - name: Checkout commit
       uses: actions/checkout@v2
-
-    - name: Checkout submodules
-      run: git submodule update --init --recursive
+      with:
+        submodules: recursive
 
     - name: Set CURRENT_TWO_WEEKS for use in cache keys
       run: echo "::set-env name=CURRENT_TWO_WEEKS::$(($(date +%-V) / 2))"
