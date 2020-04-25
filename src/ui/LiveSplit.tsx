@@ -52,13 +52,14 @@ export interface State {
     hotkeySystem: HotkeySystem,
     isBrowserSource: boolean,
     isDesktop: boolean,
-    timer: SharedTimer,
     layout: Layout,
     layoutWidth: number,
-    sidebarOpen: boolean,
-    sidebarTransitionsEnabled: boolean,
     menu: Menu,
     openedSplitsKey?: number,
+    sidebarOpen: boolean,
+    sidebarTransitionsEnabled: boolean,
+    storedLayoutWidth: number,
+    timer: SharedTimer,
 }
 
 export class LiveSplit extends React.Component<Props, State> {
@@ -150,6 +151,7 @@ export class LiveSplit extends React.Component<Props, State> {
             menu: { kind: MenuKind.Timer },
             sidebarOpen: false,
             sidebarTransitionsEnabled: false,
+            storedLayoutWidth: props.layoutWidth,
             timer,
             hotkeySystem,
             openedSplitsKey: props.splitsKey,
@@ -469,6 +471,7 @@ export class LiveSplit extends React.Component<Props, State> {
     public async onResize(width: number) {
         this.setState({
             layoutWidth: width,
+            storedLayoutWidth: width,
         });
         await Storage.storeLayoutWidth(width);
     }
@@ -492,18 +495,11 @@ export class LiveSplit extends React.Component<Props, State> {
 
     private mediaQueryChanged() {
         const isDesktop = this.isDesktopQuery.matches && !this.state.isBrowserSource;
-        if (isDesktop) {
-            this.setState({
-                isDesktop,
-                layoutWidth: this.props.layoutWidth,
-                sidebarTransitionsEnabled: false,
-            });
-        } else {
-            this.setState({
-                isDesktop,
-                sidebarTransitionsEnabled: false,
-            });
-        }
+        this.setState({
+            isDesktop,
+            layoutWidth: isDesktop ? this.state.storedLayoutWidth : this.state.layoutWidth,
+            sidebarTransitionsEnabled: false,
+        });
     }
 
     private importLayoutFromString(file: string) {
