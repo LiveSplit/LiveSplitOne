@@ -4,6 +4,7 @@ import { assertNever, expect, Option } from "../util/OptionUtil";
 import ColorPicker from "./ColorPicker";
 
 import HotkeyButton from "./HotkeyButton";
+import ToggleCheckbox from "./ToggleCheckbox";
 
 export interface Props<T> {
     setValue: (index: number, value: T) => void,
@@ -149,13 +150,12 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
             let component;
             if ("Bool" in value) {
                 component =
-                    <input
-                        type="checkbox"
-                        checked={value.Bool}
-                        onChange={(e) => {
+                    <ToggleCheckbox
+                        value={value.Bool}
+                        setValue={(value) => {
                             this.props.setValue(
                                 valueIndex,
-                                factory.fromBool(e.target.checked),
+                                factory.fromBool(value)
                             );
                         }}
                     />;
@@ -199,11 +199,10 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     />;
             } else if ("OptionalString" in value) {
                 const children = [
-                    <input
-                        type="checkbox"
-                        checked={value.OptionalString !== null}
-                        onChange={(e) => {
-                            if (e.target.checked) {
+                    <ToggleCheckbox
+                        value={value.OptionalString !== null}
+                        setValue={(value) => {
+                            if (value) {
                                 this.props.setValue(
                                     valueIndex,
                                     factory.fromOptionalString(""),
@@ -360,14 +359,10 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
 
                 component =
                     <span>
-                        <input
-                            type="checkbox"
-                            checked={value.OptionalColor !== null}
-                            style={{
-                                float: "left",
-                            }}
-                            onChange={(e) => {
-                                if (e.target.checked) {
+                        <ToggleCheckbox
+                            value={value.OptionalColor !== null}
+                            setValue={(value) => {
+                                if (value) {
                                     this.props.setValue(
                                         valueIndex,
                                         factory.fromOptionalColor(1.0, 1.0, 1.0, 1.0),
@@ -626,11 +621,10 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     </table>;
             } else if ("OptionalTimingMethod" in value) {
                 const children = [
-                    <input
-                        type="checkbox"
-                        checked={value.OptionalTimingMethod !== null}
-                        onChange={(e) => {
-                            if (e.target.checked) {
+                    <ToggleCheckbox
+                        value={value.OptionalTimingMethod !== null}
+                        setValue={(value) => {
+                            if (value) {
                                 this.props.setValue(
                                     valueIndex,
                                     expect(

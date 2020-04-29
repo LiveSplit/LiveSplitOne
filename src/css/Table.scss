@@ -109,10 +109,13 @@
       }
     }
 
-    > tbody > tr > td:nth-child(2) > input,
-    > tbody > tr > td:nth-child(2) > span,
-    > tbody > tr > td:nth-child(2) > select {
-      width: 100%;
+    > tbody > tr > td:nth-child(2) {
+      & > input,
+      & > span,
+      & > select,
+      & > .toggle-checkbox {
+        width: 100%;
+      }
     }
 
     @include mobile {
