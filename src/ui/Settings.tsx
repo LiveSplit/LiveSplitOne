@@ -3,7 +3,7 @@ import { Color, SettingsDescriptionValueJson } from "../livesplit-core";
 import { assertNever, expect, Option } from "../util/OptionUtil";
 import ColorPicker from "./ColorPicker";
 
-import { HotkeyButton } from "./HotkeyButton";
+import HotkeyButton from "./HotkeyButton";
 
 export interface Props<T> {
     setValue: (index: number, value: T) => void,
