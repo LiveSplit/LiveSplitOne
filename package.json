@@ -56,7 +56,7 @@
     "sass-loader": "^8.0.2",
     "selenium-webdriver": "^4.0.0-alpha.7",
     "source-map-loader": "^0.2.4",
-    "style-loader": "^1.2.0",
+    "style-loader": "^1.2.1",
     "ts-loader": "^7.0.2",
     "tslint": "^6.1.2",
     "typescript": "^3.8.3",
