@@ -14,7 +14,7 @@ const pixelmatch = require("pixelmatch");
 const PNG = require("pngjs").PNG;
 
 describe("Layout Rendering Tests", function() {
-    this.timeout(40000);
+    this.timeout(90000);
 
     let driver, serverProcess;
 
@@ -49,7 +49,12 @@ describe("Layout Rendering Tests", function() {
     }
 
     before(async () => {
+        console.log('Starting server...');
+
         await startServer();
+
+        console.log('Server started!');
+        console.log('Preparing WebDriver for tests...');
 
         const service = new chrome.ServiceBuilder(chromedriver.path).build();
         chrome.setDefaultService(service);
@@ -73,11 +78,13 @@ describe("Layout Rendering Tests", function() {
         if (!fs.existsSync(SCREENSHOTS_FOLDER)) {
             fs.mkdirSync(SCREENSHOTS_FOLDER);
         }
+
+        console.log('Ready to run tests!');
     });
 
     const testRendering = (layoutName, splitsName, expectedHash) => {
         it(`Renders the ${layoutName} layout with the ${splitsName} splits correctly`, async function() {
-            this.timeout(5000);
+            this.timeout(10000);
 
             await clickElement(By.xpath(".//button[contains(text(), 'Layout')]"));
             await clickElement(By.xpath(".//button[contains(text(), 'Import')]"));
