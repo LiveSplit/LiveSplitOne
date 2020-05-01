@@ -48,7 +48,7 @@
     "html-webpack-plugin": "^4.2.0",
     "imghash": "0.0.7",
     "mocha": "^7.1.2",
-    "moment": "^2.24.0",
+    "moment": "^2.25.0",
     "node-fetch": "^2.6.0",
     "pixelmatch": "^5.2.0",
     "pngjs": "^5.0.0",
