@@ -57,6 +57,8 @@ export default class Split extends React.Component<Props> {
             const column = this.props.split.columns[i];
             if (!column.value) {
                 lastEmptyColumnIndex = i;
+            } else {
+                break;
             }
         }
 
