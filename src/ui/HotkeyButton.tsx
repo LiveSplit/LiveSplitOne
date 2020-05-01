@@ -27,59 +27,8 @@ export class HotkeyButton extends React.Component<Props, State> {
         return (
             <div className="hotkey-box">
                 <button
-                    className="hotkey-button"
-                    onFocus={() => {
-                        const listener = {
-                            handleEvent: (ev: KeyboardEvent) => this.props.setValue(ev.code),
-                        };
-
-                        window.addEventListener("keypress", listener);
-
-                        const oldButtonState: boolean[][] = [];
-                        const intervalHandle = window.setInterval(() => {
-                            const gamepads = navigator.getGamepads();
-
-                            let gamepadIdx = 0;
-                            for (const gamepad of gamepads) {
-                                if (gamepadIdx >= oldButtonState.length) {
-                                    oldButtonState[gamepadIdx] = [];
-                                }
-
-                                if (gamepad !== null) {
-                                    let buttonIdx = 0;
-                                    for (const button of gamepad.buttons) {
-                                        const oldState = oldButtonState[gamepadIdx]?.[buttonIdx] ?? false;
-                                        if (button.pressed && !oldState) {
-                                            this.props.setValue(`Gamepad${buttonIdx}`);
-                                        }
-
-                                        oldButtonState[gamepadIdx][buttonIdx] = button.pressed;
-
-                                        buttonIdx++;
-                                    }
-                                }
-
-                                gamepadIdx++;
-                            }
-                        }, 1000 / 60.0);
-
-                        this.setState({
-                            listener,
-                            intervalHandle,
-                        });
-                    }}
-                    onBlur={() => {
-                        if (this.state.listener != null) {
-                            window.removeEventListener("keypress", this.state.listener);
-                        }
-                        if (this.state.intervalHandle != null) {
-                            window.clearTimeout(this.state.intervalHandle);
-                        }
-                        this.setState({
-                            listener: null,
-                            intervalHandle: null,
-                        });
-                    }}
+                    className={`hotkey-button ${this.state.listener != null ? "focused" : ""}`}
+                    onClick={() => this.focusButton()}
                 >
                     {
                         this.props.value != null
@@ -99,7 +48,73 @@ export class HotkeyButton extends React.Component<Props, State> {
                         </button>
                     ))
                 }
+                { this.state.listener != null &&
+                    <div
+                        style={{
+                            bottom: "0px",
+                            left: "0px",
+                            position: "fixed",
+                            right: "0px",
+                            top: "0px",
+                        }}
+                        onClick={() => this.blurButton()}
+                    />
+                }
             </div>
         );
+    }
+
+    private focusButton() {
+        const listener = {
+            handleEvent: (ev: KeyboardEvent) => this.props.setValue(ev.code),
+        };
+
+        window.addEventListener("keypress", listener);
+
+        const oldButtonState: boolean[][] = [];
+        const intervalHandle = window.setInterval(() => {
+            const gamepads = navigator.getGamepads();
+
+            let gamepadIdx = 0;
+            for (const gamepad of gamepads) {
+                if (gamepadIdx >= oldButtonState.length) {
+                    oldButtonState[gamepadIdx] = [];
+                }
+
+                if (gamepad !== null) {
+                    let buttonIdx = 0;
+                    for (const button of gamepad.buttons) {
+                        const oldState = oldButtonState[gamepadIdx]?.[buttonIdx] ?? false;
+                        if (button.pressed && !oldState) {
+                            this.props.setValue(`Gamepad${buttonIdx}`);
+                        }
+
+                        oldButtonState[gamepadIdx][buttonIdx] = button.pressed;
+
+                        buttonIdx++;
+                    }
+                }
+
+                gamepadIdx++;
+            }
+        }, 1000 / 60.0);
+
+        this.setState({
+            listener,
+            intervalHandle,
+        });
+    }
+
+    private blurButton() {
+        if (this.state.listener != null) {
+            window.removeEventListener("keypress", this.state.listener);
+        }
+        if (this.state.intervalHandle != null) {
+            window.clearTimeout(this.state.intervalHandle);
+        }
+        this.setState({
+            listener: null,
+            intervalHandle: null,
+        });
     }
 }
