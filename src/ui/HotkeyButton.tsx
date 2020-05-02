@@ -3,6 +3,27 @@ import { Option, map } from "../util/OptionUtil";
 
 import "../css/HotkeyButton.scss";
 
+let layoutMap: { get: (keyCode: string) => string | undefined; } | null = null;
+
+(navigator as any).keyboard?.getLayoutMap()?.then((m: any) => {
+    layoutMap = m;
+});
+
+function resolveKey(keyCode: string): string {
+    if (layoutMap == null) {
+        return keyCode;
+    }
+    const lowercase = layoutMap.get(keyCode);
+    if (lowercase === undefined) {
+        return keyCode;
+    }
+    if (lowercase === "ß") {
+        // ß uppercases to SS, but that's not what's on the keyboard.
+        return lowercase;
+    }
+    return lowercase.toUpperCase();
+}
+
 export interface Props {
     value: Option<string>,
     setValue: (value: Option<string>) => void,
@@ -24,19 +45,21 @@ export default class HotkeyButton extends React.Component<Props, State> {
     }
 
     public render() {
+        const value = this.props.value;
+        let buttonText = null;
+        if (value != null) {
+            buttonText = resolveKey(value);
+        } else if (this.state.listener != null) {
+            buttonText = <i className="fa fa-circle" aria-hidden="true" />;
+        }
+
         return (
             <div className="hotkey-box">
                 <button
                     className={`hotkey-button ${this.state.listener != null ? "focused" : ""}`}
                     onClick={() => this.focusButton()}
                 >
-                    {
-                        this.props.value != null
-                            ? this.props.value
-                            : this.state.listener != null
-                                ? <i className="fa fa-circle" aria-hidden="true" />
-                                : null
-                    }
+                    {buttonText}
                 </button>
                 {
                     map(this.props.value, () => (
@@ -48,7 +71,7 @@ export default class HotkeyButton extends React.Component<Props, State> {
                         </button>
                     ))
                 }
-                { this.state.listener != null &&
+                {this.state.listener != null &&
                     <div
                         style={{
                             bottom: "0px",
