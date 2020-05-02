@@ -1,0 +1,10 @@
+@import 'variables';
+
+.color-picker-button {
+  border: 2px solid white;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.1);
+  cursor: pointer;
+  box-sizing: border-box;
+  height: $settings-row-height;
+}

@@ -1121,17 +1121,11 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private renderSegmentsTable(): JSX.Element {
-        const segmentIconSize = 19;
-
         return (
             <table className="table run-editor-tab run-editor-table">
                 <thead className="table-header">
                     <tr>
-                        <th style={{
-                            paddingLeft: 4,
-                            paddingRight: 0,
-                            width: "inherit",
-                        }}>Icon</th>
+                        <th>Icon</th>
                         <th>Segment Name</th>
                         <th>Split Time</th>
                         <th>Segment Time</th>
@@ -1219,15 +1213,7 @@ export class RunEditor extends React.Component<Props, State> {
                                     onClick={(e) => this.changeSegmentSelection(e, segmentIndex)}
                                 >
                                     <td
-                                        style={{
-                                            cursor: "pointer",
-                                            height: segmentIconSize,
-                                            paddingBottom: 0,
-                                            paddingLeft: 16,
-                                            paddingRight: 0,
-                                            paddingTop: 2,
-                                            width: segmentIconSize,
-                                        }}
+                                        className="segment-icon-container"
                                         onClick={(e) => {
                                             if (segmentIcon !== "") {
                                                 segmentIconToggleMenu(e);
@@ -1243,12 +1229,8 @@ export class RunEditor extends React.Component<Props, State> {
                                             {
                                                 segmentIcon !== "" &&
                                                 <img
+                                                    className="segment-icon"
                                                     src={segmentIcon}
-                                                    style={{
-                                                        height: segmentIconSize,
-                                                        objectFit: "contain",
-                                                        width: segmentIconSize,
-                                                    }}
                                                 />
                                             }
                                         </ContextMenuTrigger>

@@ -2,6 +2,8 @@ import * as React from "react";
 import { ChromePicker, RGBColor } from "react-color";
 import { colorToCss } from "../util/ColorUtil";
 
+import "../css/ColorPicker.scss";
+
 export interface Props {
     color: number[],
     setColor: (color: number[]) => void,
@@ -24,15 +26,8 @@ export default class ColorPicker extends React.Component<Props, State> {
         return (
             <div>
                 <div
-                    style={{
-                        background: colorToCss(this.props.color),
-                        border: "2px solid white",
-                        borderCollapse: "collapse",
-                        borderRadius: "2px",
-                        boxShadow: "0 0 0 1px rgba(0,0,0,.1)",
-                        cursor: "pointer",
-                        height: "13px",
-                    }}
+                    className="color-picker-button"
+                    style={{ background: colorToCss(this.props.color) }}
                     onClick={(_) => this.handleClick()}
                 />
                 <div style={{

@@ -2,21 +2,19 @@
 
 $inactive-color: $button-disabled-color;
 $inactive-hover-color: $hover-row-color;
-$active-color: $selected-row-color;
-$active-hover-color: $selected-row-hover-color;
+$active-color: #1e4491;
+$active-hover-color: #2356bd;
 
 .toggle-checkbox {
   display: flex;
   justify-content: center;
   align-items: center;
-  float: left;
-  margin-right: $ui-margin;
 
   .react-toggle {
     .react-toggle-track {
       background: $inactive-color;
-      width: 34px;
-      height: 16px;
+      width: 36px;
+      height: $settings-row-height;
       border-radius: 20px;
     }
   
@@ -38,12 +36,12 @@ $active-hover-color: $selected-row-hover-color;
       }
   
       .react-toggle-thumb {
-        left: 19px;
+        left: 18px;
       }
     }
     .react-toggle-thumb {
-      width: 14px;
-      height: 14px;
+      width: 17px;
+      height: 17px;
       border: none;
       box-shadow: none !important;
     }
