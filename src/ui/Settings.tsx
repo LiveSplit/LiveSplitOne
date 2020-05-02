@@ -3,7 +3,8 @@ import { Color, SettingsDescriptionValueJson } from "../livesplit-core";
 import { assertNever, expect, Option } from "../util/OptionUtil";
 import ColorPicker from "./ColorPicker";
 
-import { HotkeyButton } from "./HotkeyButton";
+import HotkeyButton from "./HotkeyButton";
+import ToggleCheckbox from "./ToggleCheckbox";
 
 export interface Props<T> {
     setValue: (index: number, value: T) => void,
@@ -148,62 +149,72 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
             const { value } = field;
             let component;
             if ("Bool" in value) {
-                component =
-                    <input
-                        type="checkbox"
-                        checked={value.Bool}
-                        onChange={(e) => {
-                            this.props.setValue(
-                                valueIndex,
-                                factory.fromBool(e.target.checked),
-                            );
-                        }}
-                    />;
+                component = (
+                    <div className="settings-value-box">
+                        <ToggleCheckbox
+                            value={value.Bool}
+                            setValue={(value) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    factory.fromBool(value)
+                                );
+                            }}
+                        />
+                    </div>
+                );
             } else if ("UInt" in value) {
-                component =
-                    <input
-                        type="number"
-                        className="number"
-                        value={value.UInt}
-                        min="0"
-                        onChange={(e) => {
-                            this.props.setValue(
-                                valueIndex,
-                                factory.fromUint(e.target.valueAsNumber),
-                            );
-                        }}
-                    />;
+                component = (
+                    <div className="settings-value-box">
+                        <input
+                            type="number"
+                            className="number"
+                            value={value.UInt}
+                            min="0"
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    factory.fromUint(e.target.valueAsNumber),
+                                );
+                            }}
+                        />
+                    </div>
+                );
             } else if ("Int" in value) {
-                component =
-                    <input
-                        type="number"
-                        className="number"
-                        value={value.Int}
-                        onChange={(e) => {
-                            this.props.setValue(
-                                valueIndex,
-                                factory.fromInt(e.target.valueAsNumber),
-                            );
-                        }}
-                    />;
+                component = (
+                    <div className="settings-value-box">
+                        <input
+                            type="number"
+                            className="number"
+                            value={value.Int}
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    factory.fromInt(e.target.valueAsNumber),
+                                );
+                            }}
+                        />
+                    </div>
+                );
             } else if ("String" in value) {
-                component =
-                    <input
-                        value={value.String}
-                        onChange={(e) => {
-                            this.props.setValue(
-                                valueIndex,
-                                factory.fromString(e.target.value),
-                            );
-                        }}
-                    />;
+                component = (
+                    <div className="settings-value-box">
+                        <input
+                            value={value.String}
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    factory.fromString(e.target.value),
+                                );
+                            }}
+                        />
+                    </div>
+                );
             } else if ("OptionalString" in value) {
                 const children = [
-                    <input
-                        type="checkbox"
-                        checked={value.OptionalString !== null}
-                        onChange={(e) => {
-                            if (e.target.checked) {
+                    <ToggleCheckbox
+                        value={value.OptionalString !== null}
+                        setValue={(value) => {
+                            if (value) {
                                 this.props.setValue(
                                     valueIndex,
                                     factory.fromOptionalString(""),
@@ -232,13 +243,14 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     );
                 }
 
-                component =
-                    <span>
+                component = (
+                    <div className="settings-value-box optional-value">
                         {children}
-                    </span>;
+                    </div>
+                );
             } else if ("RemovableString" in value) {
-                component =
-                    <div className="removable-string-box">
+                component = (
+                    <div className="settings-value-box removable-string">
                         <input
                             value={value.RemovableString || ""}
                             onChange={(e) => {
@@ -266,76 +278,89 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                         >
                             <i className="fa fa-trash" aria-hidden="true" />
                         </button>
-                    </div>;
+                    </div>
+                );
             } else if ("Float" in value) {
-                component =
-                    <input
-                        type="number"
-                        value={value.Float}
-                        className="number"
-                        onChange={(e) => {
-                            this.props.setValue(
-                                valueIndex,
-                                factory.fromFloat(e.target.valueAsNumber),
-                            );
-                        }}
-                    />;
+                component = (
+                    <div className="settings-value-box">
+                        <input
+                            type="number"
+                            value={value.Float}
+                            className="number"
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    factory.fromFloat(e.target.valueAsNumber),
+                                );
+                            }}
+                        />
+                    </div>
+                );
             } else if ("Accuracy" in value) {
-                component =
-                    <select
-                        value={value.Accuracy}
-                        onChange={(e) => {
-                            this.props.setValue(
-                                valueIndex,
-                                expect(
-                                    factory.fromAccuracy(e.target.value),
-                                    "Unexpected Accuracy",
-                                ),
-                            );
-                        }}
-                    >
-                        <option value="Seconds">Seconds</option>
-                        <option value="Tenths">Tenths</option>
-                        <option value="Hundredths">Hundredths</option>
-                        <option value="Milliseconds">Milliseconds</option>
-                    </select>;
+                component = (
+                    <div className="settings-value-box">
+                        <select
+                            value={value.Accuracy}
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    expect(
+                                        factory.fromAccuracy(e.target.value),
+                                        "Unexpected Accuracy",
+                                    ),
+                                );
+                            }}
+                        >
+                            <option value="Seconds">Seconds</option>
+                            <option value="Tenths">Tenths</option>
+                            <option value="Hundredths">Hundredths</option>
+                            <option value="Milliseconds">Milliseconds</option>
+                        </select>
+                    </div>
+                );
             } else if ("DigitsFormat" in value) {
-                component =
-                    <select
-                        value={value.DigitsFormat}
-                        onChange={(e) => {
-                            this.props.setValue(
-                                valueIndex,
-                                expect(
-                                    factory.fromDigitsFormat(e.target.value),
-                                    "Unexpected Digits Format",
-                                ),
-                            );
-                        }}
-                    >
-                        <option value="SingleDigitSeconds">1</option>
-                        <option value="DoubleDigitSeconds">01</option>
-                        <option value="SingleDigitMinutes">0:01</option>
-                        <option value="DoubleDigitMinutes">00:01</option>
-                        <option value="SingleDigitHours">0:00:01</option>
-                        <option value="DoubleDigitHours">00:00:01</option>
-                    </select>;
+                component = (
+                    <div className="settings-value-box">
+                        <select
+                            value={value.DigitsFormat}
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    expect(
+                                        factory.fromDigitsFormat(e.target.value),
+                                        "Unexpected Digits Format",
+                                    ),
+                                );
+                            }}
+                        >
+                            <option value="SingleDigitSeconds">1</option>
+                            <option value="DoubleDigitSeconds">01</option>
+                            <option value="SingleDigitMinutes">0:01</option>
+                            <option value="DoubleDigitMinutes">00:01</option>
+                            <option value="SingleDigitHours">0:00:01</option>
+                            <option value="DoubleDigitHours">00:00:01</option>
+                        </select>
+                    </div>
+                );
             } else if ("Color" in value) {
-                component =
-                    <ColorPicker
-                        color={value.Color}
-                        setColor={(color) => {
-                            this.props.setValue(
-                                valueIndex,
-                                factory.fromColor(
-                                    color[0],
-                                    color[1],
-                                    color[2],
-                                    color[3],
-                                ),
-                            );
-                        }}
-                    />;
+                component = (
+                    <div className="settings-value-box">
+                        <ColorPicker
+                            color={value.Color}
+                            setColor={(color) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    factory.fromColor(
+                                        color[0],
+                                        color[1],
+                                        color[2],
+                                        color[3],
+                                    ),
+                                );
+                            }}
+                        />
+                    </div>
+                );
             } else if ("OptionalColor" in value) {
                 const children = [];
 
@@ -358,16 +383,12 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     );
                 }
 
-                component =
-                    <span>
-                        <input
-                            type="checkbox"
-                            checked={value.OptionalColor !== null}
-                            style={{
-                                float: "left",
-                            }}
-                            onChange={(e) => {
-                                if (e.target.checked) {
+                component = (
+                    <div className="settings-value-box optional-value">
+                        <ToggleCheckbox
+                            value={value.OptionalColor !== null}
+                            setValue={(value) => {
+                                if (value) {
                                     this.props.setValue(
                                         valueIndex,
                                         factory.fromOptionalColor(1.0, 1.0, 1.0, 1.0),
@@ -380,12 +401,9 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 }
                             }}
                         />
-                        <div style={{
-                            overflow: "hidden",
-                        }}>
-                            {children}
-                        </div>
-                    </span>;
+                        {children}
+                    </div>
+                );
             } else if ("Gradient" in value) {
                 let type: string;
                 let color1: Option<Color> = null;
@@ -436,69 +454,70 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     }
                 };
 
-                const inputWidth = !color1 && !color2 ? "100%" : undefined;
-                const colorWidth = color1 && color2 ? "50%" : "100%";
-
                 const children: JSX.Element[] = [
-                    <td style={{ padding: 0 }}>
-                        <select
-                            value={type}
-                            onChange={(e) => {
-                                this.props.setValue(
-                                    valueIndex,
-                                    colorsToValue(e.target.value, color1, color2),
-                                );
-                            }}
-                            style={{ width: inputWidth }}
-                        >
-                            <option value="Transparent">Transparent</option>
-                            <option value="Plain">Plain</option>
-                            <option value="Vertical">Vertical</option>
-                            <option value="Horizontal">Horizontal</option>
-                        </select>
-                    </td>,
+                    <select
+                        value={type}
+                        onChange={(e) => {
+                            this.props.setValue(
+                                valueIndex,
+                                colorsToValue(e.target.value, color1, color2),
+                            );
+                        }}
+                    >
+                        <option value="Transparent">Transparent</option>
+                        <option value="Plain">Plain</option>
+                        <option value="Vertical">Vertical</option>
+                        <option value="Horizontal">Horizontal</option>
+                    </select>,
                 ];
 
                 if (color1) {
                     children.push(
-                        <td style={{ width: colorWidth, padding: 0 }}>
-                            <ColorPicker
-                                color={color1}
-                                setColor={(color) => {
-                                    this.props.setValue(
-                                        valueIndex,
-                                        colorsToValue(type, color, color2),
-                                    );
-                                }}
-                            />
-                        </td>,
+                        <ColorPicker
+                            color={color1}
+                            setColor={(color) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    colorsToValue(type, color, color2),
+                                );
+                            }}
+                        />,
                     );
                 }
 
                 if (color2) {
                     children.push(
-                        <td style={{ width: colorWidth, padding: 0 }}>
-                            <ColorPicker
-                                color={color2}
-                                setColor={(color) => {
-                                    this.props.setValue(
-                                        valueIndex,
-                                        colorsToValue(type, color1, color),
-                                    );
-                                }}
-                            />
-                        </td>,
+                        <ColorPicker
+                            color={color2}
+                            setColor={(color) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    colorsToValue(type, color1, color),
+                                );
+                            }}
+                        />,
                     );
                 }
 
-                component =
-                    <table style={{ width: "100%", borderSpacing: 0 }}>
-                        <tbody>
-                            <tr>
-                                {children}
-                            </tr>
-                        </tbody>
-                    </table>;
+                if (color2) {
+                    component = (
+                        <div className="settings-value-box two-colors">
+                            {children}
+                        </div>
+                    );
+                } else if (color1) {
+                    component = (
+                        <div className="settings-value-box one-color">
+                            {children}
+                        </div>
+                    );
+                } else {
+                    component = (
+                        <div className="settings-value-box">
+                            {children}
+                        </div>
+                    );
+                }
             } else if ("ListGradient" in value) {
                 let type: string;
                 let color1: Option<Color> = null;
@@ -560,77 +579,77 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     }
                 };
 
-                const inputWidth = !color1 && !color2 ? "100%" : undefined;
-                const colorWidth = color1 && color2 ? "50%" : "100%";
-
                 const children: JSX.Element[] = [
-                    <td style={{ padding: 0 }}>
-                        <select
-                            value={type}
-                            onChange={(e) => {
-                                this.props.setValue(
-                                    valueIndex,
-                                    colorsToValue(e.target.value, color1, color2),
-                                );
-                            }}
-                            style={{ width: inputWidth }}
-                        >
-                            <option value="Transparent">Transparent</option>
-                            <option value="Plain">Plain</option>
-                            <option value="Vertical">Vertical</option>
-                            <option value="Horizontal">Horizontal</option>
-                            <option value="Alternating">Alternating</option>
-                        </select>
-                    </td>,
+                    <select
+                        value={type}
+                        onChange={(e) => {
+                            this.props.setValue(
+                                valueIndex,
+                                colorsToValue(e.target.value, color1, color2),
+                            );
+                        }}
+                    >
+                        <option value="Transparent">Transparent</option>
+                        <option value="Plain">Plain</option>
+                        <option value="Vertical">Vertical</option>
+                        <option value="Horizontal">Horizontal</option>
+                        <option value="Alternating">Alternating</option>
+                    </select>,
                 ];
 
                 if (color1) {
                     children.push(
-                        <td style={{ width: colorWidth, padding: 0 }}>
-                            <ColorPicker
-                                color={color1}
-                                setColor={(color) => {
-                                    this.props.setValue(
-                                        valueIndex,
-                                        colorsToValue(type, color, color2),
-                                    );
-                                }}
-                            />
-                        </td>,
+                        <ColorPicker
+                            color={color1}
+                            setColor={(color) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    colorsToValue(type, color, color2),
+                                );
+                            }}
+                        />,
                     );
                 }
 
                 if (color2) {
                     children.push(
-                        <td style={{ width: colorWidth, padding: 0 }}>
-                            <ColorPicker
-                                color={color2}
-                                setColor={(color) => {
-                                    this.props.setValue(
-                                        valueIndex,
-                                        colorsToValue(type, color1, color),
-                                    );
-                                }}
-                            />
-                        </td>,
+                        <ColorPicker
+                            color={color2}
+                            setColor={(color) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    colorsToValue(type, color1, color),
+                                );
+                            }}
+                        />,
                     );
                 }
 
-                component =
-                    <table style={{ width: "100%", borderSpacing: 0 }}>
-                        <tbody>
-                            <tr>
-                                {children}
-                            </tr>
-                        </tbody>
-                    </table>;
+                if (color2) {
+                    component = (
+                        <div className="settings-value-box two-colors">
+                            {children}
+                        </div>
+                    );
+                } else if (color1) {
+                    component = (
+                        <div className="settings-value-box one-color">
+                            {children}
+                        </div>
+                    );
+                } else {
+                    component = (
+                        <div className="settings-value-box">
+                            {children}
+                        </div>
+                    );
+                }
             } else if ("OptionalTimingMethod" in value) {
                 const children = [
-                    <input
-                        type="checkbox"
-                        checked={value.OptionalTimingMethod !== null}
-                        onChange={(e) => {
-                            if (e.target.checked) {
+                    <ToggleCheckbox
+                        value={value.OptionalTimingMethod !== null}
+                        setValue={(value) => {
+                            if (value) {
                                 this.props.setValue(
                                     valueIndex,
                                     expect(
@@ -668,138 +687,164 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     );
                 }
 
-                component =
-                    <span>
+                component = (
+                    <div className="settings-value-box optional-value">
                         {children}
-                    </span>;
+                    </div>
+                );
             } else if ("Alignment" in value) {
-                component = <select
-                    value={value.Alignment}
-                    onChange={(e) => {
-                        this.props.setValue(
-                            valueIndex,
-                            expect(
-                                factory.fromAlignment(e.target.value),
-                                "Unexpected Alignment",
-                            ),
-                        );
-                    }}
-                >
-                    <option value="Auto">Automatic</option>
-                    <option value="Left">Left</option>
-                    <option value="Center">Center</option>
-                </select>;
+                component = (
+                    <div className="settings-value-box">
+                        <select
+                            value={value.Alignment}
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    expect(
+                                        factory.fromAlignment(e.target.value),
+                                        "Unexpected Alignment",
+                                    ),
+                                );
+                            }}
+                        >
+                            <option value="Auto">Automatic</option>
+                            <option value="Left">Left</option>
+                            <option value="Center">Center</option>
+                        </select>
+                    </div>
+                );
             } else if ("ColumnStartWith" in value) {
-                component = <select
-                    value={value.ColumnStartWith}
-                    onChange={(e) => {
-                        this.props.setValue(
-                            valueIndex,
-                            expect(
-                                factory.fromColumnStartWith(e.target.value),
-                                "Unexpected Column Start With value",
-                            ),
-                        );
-                    }}
-                >
-                    <option value="Empty">Empty</option>
-                    <option value="ComparisonTime">Comparison Time</option>
-                    <option value="ComparisonSegmentTime">Comparison Segment Time</option>
-                    <option value="PossibleTimeSave">Possible Time Save</option>
-                </select>;
+                component = (
+                    <div className="settings-value-box">
+                        <select
+                            value={value.ColumnStartWith}
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    expect(
+                                        factory.fromColumnStartWith(e.target.value),
+                                        "Unexpected Column Start With value",
+                                    ),
+                                );
+                            }}
+                        >
+                            <option value="Empty">Empty</option>
+                            <option value="ComparisonTime">Comparison Time</option>
+                            <option value="ComparisonSegmentTime">Comparison Segment Time</option>
+                            <option value="PossibleTimeSave">Possible Time Save</option>
+                        </select>
+                    </div>
+                );
             } else if ("ColumnUpdateWith" in value) {
-                component = <select
-                    value={value.ColumnUpdateWith}
-                    onChange={(e) => {
-                        this.props.setValue(
-                            valueIndex,
-                            expect(
-                                factory.fromColumnUpdateWith(e.target.value),
-                                "Unexpected Column Update With value",
-                            ),
-                        );
-                    }}
-                >
-                    <option value="DontUpdate">Dont Update</option>
-                    <option value="SplitTime">Split Time</option>
-                    <option value="Delta">Time Ahead / Behind</option>
-                    <option value="DeltaWithFallback">Time Ahead / Behind or Split Time If Empty</option>
-                    <option value="SegmentTime">Segment Time</option>
-                    <option value="SegmentDelta">Time Saved / Lost</option>
-                    <option value="SegmentDeltaWithFallback">Time Saved / Lost or Segment Time If Empty</option>
-                </select>;
+                component = (
+                    <div className="settings-value-box">
+                        <select
+                            value={value.ColumnUpdateWith}
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    expect(
+                                        factory.fromColumnUpdateWith(e.target.value),
+                                        "Unexpected Column Update With value",
+                                    ),
+                                );
+                            }}
+                        >
+                            <option value="DontUpdate">Dont Update</option>
+                            <option value="SplitTime">Split Time</option>
+                            <option value="Delta">Time Ahead / Behind</option>
+                            <option value="DeltaWithFallback">Time Ahead / Behind or Split Time If Empty</option>
+                            <option value="SegmentTime">Segment Time</option>
+                            <option value="SegmentDelta">Time Saved / Lost</option>
+                            <option value="SegmentDeltaWithFallback">Time Saved / Lost or Segment Time If Empty</option>
+                        </select>
+                    </div>
+                );
             } else if ("ColumnUpdateTrigger" in value) {
-                component = <select
-                    value={value.ColumnUpdateTrigger}
-                    onChange={(e) => {
-                        this.props.setValue(
-                            valueIndex,
-                            expect(
-                                factory.fromColumnUpdateTrigger(e.target.value),
-                                "Unexpected Column Update Trigger value",
-                            ),
-                        );
-                    }}
-                >
-                    <option value="OnStartingSegment">On Starting Segment</option>
-                    <option value="Contextual">Contextual</option>
-                    <option value="OnEndingSegment">On Ending Segment</option>
-                </select>;
+                component = (
+                    <div className="settings-value-box">
+                        <select
+                            value={value.ColumnUpdateTrigger}
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    expect(
+                                        factory.fromColumnUpdateTrigger(e.target.value),
+                                        "Unexpected Column Update Trigger value",
+                                    ),
+                                );
+                            }}
+                        >
+                            <option value="OnStartingSegment">On Starting Segment</option>
+                            <option value="Contextual">Contextual</option>
+                            <option value="OnEndingSegment">On Ending Segment</option>
+                        </select>
+                    </div>
+                );
             } else if ("CustomCombobox" in value) {
                 const isError = value.CustomCombobox.mandatory
                     && !value.CustomCombobox.value;
-                component = <select
-                    value={value.CustomCombobox.value}
-                    onChange={(e) => {
-                        this.props.setValue(
-                            valueIndex,
-                            factory.fromString(e.target.value),
-                        );
-                    }}
-                    style={{
-                        border: isError
-                            ? "1px solid rgb(255, 0, 0)"
-                            : undefined,
-                    }}
-                >
-                    {value.CustomCombobox.list.map((v) => <option value={v}>{v}</option>)}
-                </select>;
+                component = (
+                    <div className="settings-value-box">
+                        <select
+                            value={value.CustomCombobox.value}
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    factory.fromString(e.target.value),
+                                );
+                            }}
+                            style={{
+                                border: isError
+                                    ? "1px solid rgb(255, 0, 0)"
+                                    : undefined,
+                            }}
+                        >
+                            {value.CustomCombobox.list.map((v) => <option value={v}>{v}</option>)}
+                        </select>
+                    </div>
+                );
             } else if ("Hotkey" in value) {
                 component = (
-                    <HotkeyButton
-                        value={value.Hotkey}
-                        setValue={(value) => {
-                            if (value != null) {
-                                this.props.setValue(
-                                    valueIndex,
-                                    factory.fromOptionalString(value),
-                                );
-                            } else {
-                                this.props.setValue(
-                                    valueIndex,
-                                    factory.fromOptionalEmptyString(),
-                                );
-                            }
-                        }}
-                    />
+                    <div className="settings-value-box">
+                        <HotkeyButton
+                            value={value.Hotkey}
+                            setValue={(value) => {
+                                if (value != null) {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        factory.fromOptionalString(value),
+                                    );
+                                } else {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        factory.fromOptionalEmptyString(),
+                                    );
+                                }
+                            }}
+                        />
+                    </div>
                 );
             } else if ("LayoutDirection" in value) {
-                component =
-                    <select
-                        value={value.LayoutDirection}
-                        onChange={(e) => {
-                            this.props.setValue(
-                                valueIndex,
-                                expect(
-                                    factory.fromLayoutDirection(e.target.value),
-                                    "Unexpected Layout Direction",
-                                ),
-                            );
-                        }}
-                    >
-                        <option value="Vertical">Vertical</option>
-                        <option value="Horizontal">Horizontal</option>
-                    </select>;
+                component = (
+                    <div className="settings-value-box">
+                        <select
+                            value={value.LayoutDirection}
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    expect(
+                                        factory.fromLayoutDirection(e.target.value),
+                                        "Unexpected Layout Direction",
+                                    ),
+                                );
+                            }}
+                        >
+                            <option value="Vertical">Vertical</option>
+                            <option value="Horizontal">Horizontal</option>
+                        </select>
+                    </div>
+                );
             } else {
                 assertNever(value);
             }

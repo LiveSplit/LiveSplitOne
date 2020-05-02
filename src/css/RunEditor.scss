@@ -9,6 +9,7 @@ $tab-bar-height: 30px + $ui-margin / 2;
 $tab-width: 625px;
 $button-width: 160px;
 $label-size: 14px;
+$segment-icon-size: 19px;
 
 $mobile-game-icon-size: 100px;
 $small-font-size: 13px;
@@ -41,13 +42,17 @@ $small-button-padding: 1px 3px 1px 3px;
     display: table-row;
     background: $header-row-color;
 
-    > * {
-      padding: $ui-margin/2 $ui-margin;
+    > th {
+      padding: $ui-margin/2 $ui-margin/2;
       display: table-cell;
-    }
 
-    > *:nth-child(2) {
-      padding: $ui-margin/2 $ui-margin $ui-margin/2 $ui-margin/2;
+      &:first-child {
+        padding-left: $ui-margin;
+      }
+
+      &:last-child {
+        padding-right: $ui-margin;
+      }
     }
   }
 
@@ -195,7 +200,24 @@ $small-button-padding: 1px 3px 1px 3px;
         @include mobile {
           font-size: $small-font-size;
         }
-      } 
+      }
+
+      &.segment-icon-container {
+        width: $segment-icon-size;
+        cursor: pointer;
+
+        div {
+          width: 100%;
+          height: $segment-icon-size;
+
+          .segment-icon {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: 100% 50%;
+          }
+        }
+      }
     }
 
     @include mobile {
@@ -445,22 +467,6 @@ $small-button-padding: 1px 3px 1px 3px;
     @include mobile {
       margin: 0 0 $ui-margin (-$ui-margin);
       width: calc(100% + #{$ui-margin});
-    }
-  }
-
-  .removable-string-box {
-    display: grid;
-    grid-template-columns: 1fr 30px;
-    column-gap: $ui-margin / 2;
-
-    button {
-      margin: 0px;
-      font-size: 16px;
-      height: 22px;
-    }
-
-    input:focus {
-      outline: 0;
     }
   }
 }

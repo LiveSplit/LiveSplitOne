@@ -13,7 +13,7 @@ export interface State {
     intervalHandle: Option<number>,
 }
 
-export class HotkeyButton extends React.Component<Props, State> {
+export default class HotkeyButton extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
 
