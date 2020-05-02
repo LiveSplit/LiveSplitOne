@@ -88,39 +88,46 @@ export default class HotkeyButton extends React.Component<Props, State> {
     }
 
     private focusButton() {
-        const listener = {
-            handleEvent: (ev: KeyboardEvent) => this.props.setValue(ev.code),
-        };
+        let listener = this.state.listener;
+        let intervalHandle = this.state.intervalHandle;
 
-        window.addEventListener("keypress", listener);
+        if (listener === null) {
+            listener = {
+                handleEvent: (ev: KeyboardEvent) => this.props.setValue(ev.code),
+            };
 
-        const oldButtonState: boolean[][] = [];
-        const intervalHandle = window.setInterval(() => {
-            const gamepads = navigator.getGamepads();
+            window.addEventListener("keypress", listener);
+        }
 
-            let gamepadIdx = 0;
-            for (const gamepad of gamepads) {
-                if (gamepadIdx >= oldButtonState.length) {
-                    oldButtonState[gamepadIdx] = [];
-                }
+        if (intervalHandle === null) {
+            const oldButtonState: boolean[][] = [];
+            intervalHandle = window.setInterval(() => {
+                const gamepads = navigator.getGamepads();
 
-                if (gamepad !== null) {
-                    let buttonIdx = 0;
-                    for (const button of gamepad.buttons) {
-                        const oldState = oldButtonState[gamepadIdx]?.[buttonIdx] ?? false;
-                        if (button.pressed && !oldState) {
-                            this.props.setValue(`Gamepad${buttonIdx}`);
-                        }
-
-                        oldButtonState[gamepadIdx][buttonIdx] = button.pressed;
-
-                        buttonIdx++;
+                let gamepadIdx = 0;
+                for (const gamepad of gamepads) {
+                    if (gamepadIdx >= oldButtonState.length) {
+                        oldButtonState[gamepadIdx] = [];
                     }
-                }
 
-                gamepadIdx++;
-            }
-        }, 1000 / 60.0);
+                    if (gamepad !== null) {
+                        let buttonIdx = 0;
+                        for (const button of gamepad.buttons) {
+                            const oldState = oldButtonState[gamepadIdx]?.[buttonIdx] ?? false;
+                            if (button.pressed && !oldState) {
+                                this.props.setValue(`Gamepad${buttonIdx}`);
+                            }
+
+                            oldButtonState[gamepadIdx][buttonIdx] = button.pressed;
+
+                            buttonIdx++;
+                        }
+                    }
+
+                    gamepadIdx++;
+                }
+            }, 1000 / 60.0);
+        }
 
         this.setState({
             listener,
