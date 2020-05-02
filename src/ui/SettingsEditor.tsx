@@ -39,6 +39,7 @@ export class SettingsEditor extends React.Component<Props, State> {
         return (
             <div className="settings-editor">
                 <SettingsComponent
+                    context="settings-editor"
                     factory={SettingValue}
                     state={this.state.settings}
                     setValue={(index, value) => {
