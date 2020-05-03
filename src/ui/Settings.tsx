@@ -7,6 +7,7 @@ import HotkeyButton from "./HotkeyButton";
 import ToggleCheckbox from "./ToggleCheckbox";
 
 export interface Props<T> {
+    context: string,
     setValue: (index: number, value: T) => void,
     state: ExtendedSettingsDescriptionJson,
     factory: SettingValueFactory<T>,
@@ -850,7 +851,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
             }
 
             settingsRows.push(
-                <tr>
+                <tr key={`${this.props.context}$${valueIndex}`}>
                     <td>{field.text}</td>
                     <td>{component}</td>
                 </tr>,

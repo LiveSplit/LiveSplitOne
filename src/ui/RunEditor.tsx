@@ -779,6 +779,7 @@ export class RunEditor extends React.Component<Props, State> {
                     </table>
                 }
                 <SettingsComponent
+                    context="run-editor-variables"
                     factory={new JsonSettingValueFactory()}
                     state={{ fields }}
                     setValue={(index, value) => {

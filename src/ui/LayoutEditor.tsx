@@ -85,6 +85,7 @@ export class LayoutEditor extends React.Component<Props, State> {
         const settings = this.state.showComponentSettings
             ? (
                 <SettingsComponent
+                    context={`component-settings$${this.state.editor.selected_component}`}
                     factory={LiveSplit.SettingValue}
                     state={this.state.editor.component_settings}
                     setValue={(index, value) => {
@@ -94,6 +95,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                 />
             ) : (
                 <SettingsComponent
+                    context={`layout-settings`}
                     factory={LiveSplit.SettingValue}
                     state={this.state.editor.general_settings}
                     setValue={(index, value) => {

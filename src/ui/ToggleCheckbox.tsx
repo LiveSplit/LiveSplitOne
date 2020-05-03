@@ -18,7 +18,7 @@ export default class ToggleCheckbox extends React.Component<Props> {
         return (
             <div className="toggle-checkbox">
                 <Toggle
-                    defaultChecked={this.props.value}
+                    checked={this.props.value}
                     icons={false}
                     onChange={(event) => this.props.setValue(event.target.checked)}
                 />
