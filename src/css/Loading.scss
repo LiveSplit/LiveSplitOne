@@ -1,0 +1,15 @@
+@import 'variables';
+
+$loading-text-font-size: 45px;
+
+@mixin loading {
+  .loading {
+    display: flex;
+    width: fit-content;
+    font-size: $loading-text-font-size;
+  
+    .loading-text {
+      margin-left: $ui-margin;
+    }
+  }
+}

@@ -1,5 +1,6 @@
 @import 'browser_source';
 @import 'variables';
+@import 'Loading';
 
 @font-face {
   font-family: timer;
@@ -130,9 +131,6 @@ button.disabled:active {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 50px;
 
-  .initial-load-text {
-    margin-left: 10px;
-  }
+  @include loading;
 }

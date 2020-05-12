@@ -28,6 +28,7 @@ export interface Props {
 }
 export interface State {
     editor: LiveSplit.RunEditorStateJson,
+    isLoading: boolean,
     offsetIsValid: boolean,
     attemptCountIsValid: boolean,
     rowState: RowState,
@@ -81,6 +82,7 @@ export class RunEditor extends React.Component<Props, State> {
         this.state = {
             attemptCountIsValid: true,
             editor: state,
+            isLoading: false,
             offsetIsValid: true,
             rowState: {
                 bestSegmentTime: "",
@@ -117,6 +119,17 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private renderView() {
+        if (this.state.isLoading) {
+            return (
+                <div className="run-editor">
+                    <div className="loading">
+                        <div className="fa fa-spinner fa-spin"></div>
+                        <div className="loading-text">Loading...</div>
+                    </div>
+                </div>
+            );
+        }
+
         const gameIcon = this.getGameIcon();
 
         let gameIconContextTrigger: any = null;

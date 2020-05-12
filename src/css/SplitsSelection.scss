@@ -1,22 +1,14 @@
 @import 'mobile';
 @import 'variables';
+@import 'Loading';
 @import 'Table';
 @import 'ContextMenu';
 
-$loading-text-font-size: 40px;
 $splits-row-width: 500px;
 $splits-row-height: 40px;
 
 .splits-selection {
-  .loading {
-    display: flex;
-    width: fit-content;
-    font-size: $loading-text-font-size;
-
-    .loading-text {
-      margin-left: $ui-margin;
-    }
-  }
+  @include loading;
 
   .splits-selection-container {
     display: flex;
