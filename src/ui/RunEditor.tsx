@@ -37,6 +37,7 @@ export interface State {
 
 interface Callbacks {
     renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
+    replaceRunEditor(editor: LiveSplit.RunEditor): void,
     closeRunEditor(save: boolean): void,
 }
 
@@ -1871,6 +1872,18 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private async downloadSplits<T>(apiRun: Run<T>, apiUri: string) {
+        // FIXME: Determine whether there are any unsaved changes in the Run Editor
+        if (!confirm(
+            "Are you sure you want to load these splits? Any unsaved changes will be lost.",
+        )) {
+            return;
+        }
+
+        this.setState({
+            ...this.state,
+            isLoading: true,
+        });
+
         const baseUri = "https://splits.io/api/v3/runs/";
         assert(apiUri.startsWith(baseUri), "Unexpected Splits.io URL");
         const splitsId = apiUri.slice(baseUri.length);
@@ -1881,11 +1894,12 @@ export class RunEditor extends React.Component<Props, State> {
             const platformListDownload = downloadPlatformList();
             const regionListDownload = downloadRegionList();
             const gameInfoDownload = downloadGameInfo(gameName);
+
             await gameInfoDownload;
             await platformListDownload;
             await regionListDownload;
             const run = await runDownload;
-            // TODO Race Condition with the Run Editor closing (and probably others)
+
             run.with((run) => {
                 const newEditor = LiveSplit.RunEditor.new(run);
                 if (newEditor !== null) {
@@ -1896,10 +1910,7 @@ export class RunEditor extends React.Component<Props, State> {
                         apiRun,
                     );
 
-                    // TODO Oh no, not internal pointer stuff
-                    this.props.editor.dispose();
-                    this.props.editor.ptr = newEditor.ptr;
-
+                    this.props.callbacks.replaceRunEditor(newEditor);
                     this.update();
                 } else {
                     toast.error("The downloaded splits are not suitable for being edited.");
@@ -1908,6 +1919,12 @@ export class RunEditor extends React.Component<Props, State> {
         } catch (_) {
             toast.error("Failed to download the splits.");
         }
+
+        this.setState({
+            ...this.state,
+            isLoading: false,
+        });
+        this.update(Tab.RealTime);
     }
 
     private toggleExpandLeaderboardRow(rowIndex: number) {

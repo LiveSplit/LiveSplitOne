@@ -34,7 +34,7 @@ export enum MenuKind {
 type Menu =
     { kind: MenuKind.Timer } |
     { kind: MenuKind.Splits } |
-    { kind: MenuKind.RunEditor, editor: RunEditor, splitsKey?: number } |
+    { kind: MenuKind.RunEditor, editor: RunEditor, splitsKey?: number, persistChanges: boolean } |
     { kind: MenuKind.Layout } |
     { kind: MenuKind.LayoutEditor, editor: LayoutEditor } |
     { kind: MenuKind.SettingsEditor, config: HotkeyConfig } |
@@ -370,13 +370,25 @@ export class LiveSplit extends React.Component<Props, State> {
         this.setLayout(layout);
     }
 
-    public openRunEditor({ splitsKey, run }: EditingInfo) {
+    public openRunEditor({ splitsKey, persistChanges, run }: EditingInfo) {
         const editor = expect(
             RunEditor.new(run),
             "The Run Editor should always be able to be opened.",
         );
         this.setState({
-            menu: { kind: MenuKind.RunEditor, editor, splitsKey },
+            menu: { kind: MenuKind.RunEditor, editor, splitsKey, persistChanges },
+            sidebarOpen: false,
+        });
+    }
+
+    public replaceRunEditor(editor: RunEditor) {
+        this.setState({
+            menu: {
+                kind: MenuKind.RunEditor,
+                editor,
+                splitsKey: undefined,
+                persistChanges: true,
+            },
             sidebarOpen: false,
         });
     }
@@ -385,16 +397,16 @@ export class LiveSplit extends React.Component<Props, State> {
         if (this.state.menu.kind !== MenuKind.RunEditor) {
             panic("No Run Editor to close");
         }
-        const { editor, splitsKey } = this.state.menu;
+        const { editor, persistChanges, splitsKey } = this.state.menu;
         const run = editor.close();
         if (save) {
-            if (splitsKey == null) {
+            if (persistChanges) {
+                Storage.storeRunAndDispose(run, splitsKey);
+            } else {
                 assertNull(
                     this.writeWith((t) => t.setRun(run)),
                     "The Run Editor should always return a valid Run.",
                 );
-            } else {
-                Storage.storeRunAndDispose(run, splitsKey);
             }
         } else {
             run.dispose();
