@@ -1,15 +1,24 @@
 import * as React from "react";
+import deepEqual from "fast-deep-equal";
 import * as LiveSplit from "../livesplit-core";
 import { colorToCss, gradientToCss } from "../util/ColorUtil";
 import { Option } from "../util/OptionUtil";
 
 export interface Props {
-    splitsState: LiveSplit.SplitsComponentStateJson,
+    splitsState: {
+        has_icons: boolean,
+        show_thin_separators: boolean,
+        display_two_rows: boolean,
+        current_split_gradient: LiveSplit.Gradient,
+    },
     evenOdd: [Option<string>, Option<string>],
     split: LiveSplit.SplitStateJson,
     icon?: string,
     separatorInFrontOfSplit: boolean,
-    layoutState: LiveSplit.LayoutStateJson,
+    layoutState: {
+        thin_separators_color: LiveSplit.Color,
+        separators_color: LiveSplit.Color,
+    },
     visualSplitIndex: number,
 }
 
@@ -109,5 +118,15 @@ export default class Split extends React.Component<Props> {
                 </div>
             </span>
         );
+    }
+
+    public shouldComponentUpdate(nextProps: Readonly<Props>): boolean {
+        return !deepEqual(nextProps.splitsState, this.props.splitsState) ||
+            !deepEqual(nextProps.evenOdd, this.props.evenOdd) ||
+            !deepEqual(nextProps.split, this.props.split) ||
+            nextProps.icon !== this.props.icon ||
+            nextProps.separatorInFrontOfSplit !== this.props.separatorInFrontOfSplit ||
+            !deepEqual(nextProps.layoutState, this.props.layoutState) ||
+            nextProps.visualSplitIndex !== this.props.visualSplitIndex;
     }
 }

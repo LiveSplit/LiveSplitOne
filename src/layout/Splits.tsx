@@ -9,7 +9,10 @@ import "../css/Splits.scss";
 
 export interface Props {
     state: LiveSplit.SplitsComponentStateJson,
-    layoutState: LiveSplit.LayoutStateJson,
+    layoutState: {
+        thin_separators_color: LiveSplit.Color,
+        separators_color: LiveSplit.Color,
+    },
 }
 
 export default class Splits extends React.Component<Props> {
@@ -40,6 +43,13 @@ export default class Splits extends React.Component<Props> {
             style.background = gradientToCss(background.Same);
         }
 
+        const splitsState = {
+            has_icons: this.props.state.has_icons,
+            show_thin_separators: this.props.state.show_thin_separators,
+            display_two_rows: this.props.state.display_two_rows,
+            current_split_gradient: this.props.state.current_split_gradient
+        };
+
         return (
             <div className="splits" style={style}>
                 {
@@ -53,7 +63,7 @@ export default class Splits extends React.Component<Props> {
                         <Split
                             evenOdd={evenOdd}
                             split={s}
-                            splitsState={this.props.state}
+                            splitsState={splitsState}
                             layoutState={this.props.layoutState}
                             icon={this.iconUrls[s.index]}
                             key={s.index.toString()}
