@@ -5,7 +5,9 @@ import { colorToCss } from "../util/ColorUtil";
 import "../css/Separator.scss";
 
 export interface Props {
-    layoutState: LiveSplit.LayoutStateJson,
+    layoutState: {
+        separators_color: LiveSplit.Color,
+    }
 }
 
 export default class Separator extends React.Component<Props> {

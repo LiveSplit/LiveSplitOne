@@ -15,15 +15,18 @@ export interface Props {
 
 export default class Layout extends React.Component<Props> {
     public render() {
-        const layoutState = this.props.state;
+        const layoutState = {
+            thin_separators_color: this.props.state.thin_separators_color,
+            separators_color: this.props.state.separators_color,
+        };
         const counts = new Map<string, number>();
 
         return (
             <div
                 className="layout"
                 style={{
-                    background: gradientToCss(layoutState.background),
-                    color: colorToCss(layoutState.text_color),
+                    background: gradientToCss(this.props.state.background),
+                    color: colorToCss(this.props.state.text_color),
                     width: this.props.width,
                 }}
             >
