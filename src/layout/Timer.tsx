@@ -3,6 +3,7 @@ import * as LiveSplit from "../livesplit-core";
 import { colorToCss, gradientToCss } from "../util/ColorUtil";
 
 import variables from "../css/variables.scss";
+import "../css/Timer.scss";
 
 const sidePadding = parseFloat(variables.sidePadding);
 
@@ -34,7 +35,7 @@ export function renderToSVG(
 
     return (
         <div
-            className={className}
+            className="timer"
             style={{
                 background: gradientToCss(state.background),
             }}
