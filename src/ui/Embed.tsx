@@ -60,5 +60,6 @@ function resolveYoutube(videoId: string): JSX.Element {
 }
 
 function resolveTwitch(videoId: string): JSX.Element {
-    return videoIframe(`https://player.twitch.tv/?video=${videoId}&autoplay=false`);
+    const domain = window.location.hostname;
+    return videoIframe(`https://player.twitch.tv/?video=${videoId}&parent=${domain}&autoplay=false`);
 }
