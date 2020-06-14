@@ -2,7 +2,7 @@ import * as React from "react";
 import { toast } from "react-toastify";
 import {
     SharedTimer, TimerRef, TimerRefMut, Layout,
-    TimingMethod, TimeSpan,
+    TimingMethod, TimeSpan, LayoutStateRefMut,
 } from "../livesplit-core";
 import { Option } from "../util/OptionUtil";
 import DragUpload from "./DragUpload";
@@ -16,6 +16,7 @@ import "../css/TimerView.scss";
 export interface Props {
     isDesktop: boolean,
     layout: Layout,
+    layoutState: LayoutStateRefMut,
     layoutWidth: number,
     renderWithSidebar: boolean,
     sidebarOpen: boolean,
@@ -75,7 +76,7 @@ export class TimerView extends React.Component<Props, State> {
                 >
                     <AutoRefreshLayout
                         getState={() => this.readWith(
-                            (t) => this.props.layout.stateAsJson(t),
+                            (t) => this.props.layout.updateStateAsJson(this.props.layoutState, t),
                         )}
                         allowResize={this.props.isDesktop}
                         width={this.props.layoutWidth}
