@@ -3,8 +3,7 @@ import Sidebar from "react-sidebar";
 import {
     HotkeySystem, Layout, LayoutEditor, Run, RunEditor,
     Segment, SharedTimer, Timer, TimerRef, TimerRefMut,
-    HotkeyConfig,
-    LayoutState,
+    HotkeyConfig, LayoutState,
 } from "../livesplit-core";
 import { convertFileToArrayBuffer, convertFileToString, exportFile, openFileAsString } from "../util/FileUtil";
 import { Option, assertNull, expect, maybeDisposeAndThen, panic } from "../util/OptionUtil";
