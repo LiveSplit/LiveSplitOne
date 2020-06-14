@@ -23,7 +23,7 @@ export default class Title extends React.Component<Props> {
         const finishedRunsExist = this.props.state.finished_runs !== null;
         const attemptsExist = this.props.state.attempts !== null;
         const line2 = this.props.state.line2;
-        const twoLines = line2 !== null;
+        const twoLines = line2.length !== 0;
         const showIcon = iconUrl !== "";
         const showAttempts = attemptsExist || finishedRunsExist;
 
@@ -72,7 +72,7 @@ export default class Title extends React.Component<Props> {
                         }
                         <div className={`title-category ${alignmentClass}`}>
                             <Abbreviated abbreviations={
-                                line2 !== null ? line2 : this.props.state.line1
+                                twoLines ? line2 : this.props.state.line1
                             } />
                         </div>
                         {

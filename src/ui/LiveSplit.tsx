@@ -3,7 +3,7 @@ import Sidebar from "react-sidebar";
 import {
     HotkeySystem, Layout, LayoutEditor, Run, RunEditor,
     Segment, SharedTimer, Timer, TimerRef, TimerRefMut,
-    HotkeyConfig,
+    HotkeyConfig, LayoutState,
 } from "../livesplit-core";
 import { convertFileToArrayBuffer, convertFileToString, exportFile, openFileAsString } from "../util/FileUtil";
 import { Option, assertNull, expect, maybeDisposeAndThen, panic } from "../util/OptionUtil";
@@ -53,6 +53,7 @@ export interface State {
     isBrowserSource: boolean,
     isDesktop: boolean,
     layout: Layout,
+    layoutState: LayoutState,
     layoutWidth: number,
     menu: Menu,
     openedSplitsKey?: number,
@@ -147,6 +148,7 @@ export class LiveSplit extends React.Component<Props, State> {
             isDesktop: isDesktop && !isBrowserSource,
             isBrowserSource,
             layout,
+            layoutState: LayoutState.new(),
             layoutWidth: props.layoutWidth,
             menu: { kind: MenuKind.Timer },
             sidebarOpen: false,
@@ -207,6 +209,7 @@ export class LiveSplit extends React.Component<Props, State> {
         );
         this.state.timer.dispose();
         this.state.layout.dispose();
+        this.state.layoutState.dispose();
         this.state.hotkeySystem?.dispose();
         this.isDesktopQuery.removeListener(this.mediaQueryChanged);
     }
@@ -240,6 +243,7 @@ export class LiveSplit extends React.Component<Props, State> {
         } else if (this.state.menu.kind === MenuKind.Timer) {
             return <TimerView
                 layout={this.state.layout}
+                layoutState={this.state.layoutState}
                 layoutWidth={this.state.layoutWidth}
                 isDesktop={this.state.isDesktop}
                 renderWithSidebar={true}
@@ -250,6 +254,7 @@ export class LiveSplit extends React.Component<Props, State> {
         } else if (this.state.menu.kind === MenuKind.Layout) {
             return <LayoutView
                 layout={this.state.layout}
+                layoutState={this.state.layoutState}
                 layoutWidth={this.state.layoutWidth}
                 isDesktop={this.state.isDesktop}
                 renderWithSidebar={true}
