@@ -10,6 +10,7 @@ const chrome = require("selenium-webdriver/chrome");
 const chromedriver = require("chromedriver");
 const imghash = require("imghash");
 const hex64 = require("hex64");
+const leven = require("leven");
 const pixelmatch = require("pixelmatch");
 const PNG = require("pngjs").PNG;
 
@@ -47,6 +48,12 @@ describe("Layout Rendering Tests", function() {
         await inputElement.sendKeys(path.resolve(filePath));
         await driver.sleep(500);
     }
+
+    const hashToBinary = (hash) => {
+        const buffer = Buffer.from(hash, "base64");
+        const values = Array.from(buffer.values());
+        return values.map((value) => value.toString(2).padStart(8, "0")).join("");
+    };
 
     before(async () => {
         console.log('Starting server...');
@@ -111,7 +118,11 @@ describe("Layout Rendering Tests", function() {
 
             fs.renameSync(tempFilePath, actualScreenshotPath);
 
-            if (actualHash !== expectedHash) {
+            const actualBinary = hashToBinary(actualHash);
+            const expectedBinary = hashToBinary(expectedHash);
+            const distance = leven(actualBinary, expectedBinary);
+
+            if (distance > 1) {
                 let showWarning = false;
                 try {
                     if (fs.existsSync(expectedScreenshotPath)) {
