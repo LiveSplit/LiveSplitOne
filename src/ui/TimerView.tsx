@@ -5,6 +5,7 @@ import {
     TimingMethod, TimeSpan, LayoutStateRefMut,
 } from "../livesplit-core";
 import { Option } from "../util/OptionUtil";
+import { formatTimeForServer } from "../util/TimeUtil";
 import DragUpload from "./DragUpload";
 import AutoRefresh from "../util/AutoRefresh";
 import AutoRefreshLayout from "../layout/AutoRefreshLayout";
@@ -252,13 +253,16 @@ export class TimerView extends React.Component<Props, State> {
             if (typeof e.data === "string") {
                 const [command, ...args] = e.data.split(" ");
                 switch (command) {
-                    case "start": this.start(); break;
+                    case "starttimer": this.start(); break;
+                    case "getcurrenttime": this.getTime(); break;
+                    case "getcurrenttimerphase": this.getTimerPhase(); break;
                     case "split": this.split(); break;
                     case "splitorstart": this.splitOrStart(); break;
                     case "reset": this.reset(); break;
-                    case "togglepause": this.togglePauseOrStart(); break;
-                    case "undo": this.undoSplit(); break;
-                    case "skip": this.skipSplit(); break;
+                    case "pause": this.togglePauseOrStart(); break;
+                    case "resume": this.togglePauseOrStart(); break;
+                    case "unsplit": this.undoSplit(); break;
+                    case "skipsplit": this.skipSplit(); break;
                     case "initgametime": this.initializeGameTime(); break;
                     case "setgametime": this.setGameTime(args[0]); break;
                     case "setloadingtimes": this.setLoadingTimes(args[0]); break;
@@ -274,6 +278,27 @@ export class TimerView extends React.Component<Props, State> {
             this.connection = null;
             this.forceUpdate();
         };
+    }
+
+    private getTime() {
+        console.log(`Fetching game time`);
+        this.readWith((t) => {
+            console.log(`Read time: ${formatTimeForServer(t.currentTime().realTime()!.totalSeconds(), false)}`);
+            this.connection?.send(formatTimeForServer(t.currentTime().realTime()!.totalSeconds(), false));
+        });
+    }
+
+    private getTimerPhase() {
+        this.readWith((t) => {
+            let result = "";
+            switch (t.currentPhase()) {
+                case 0: result = "NotRunning"; break;
+                case 1: result = "Running"; break;
+                case 2: result = "Ended"; break;
+                case 3: result = "Paused"; break;
+            }
+            this.connection?.send(result);
+        });
     }
 
     private writeWith<T>(action: (timer: TimerRefMut) => T): T {

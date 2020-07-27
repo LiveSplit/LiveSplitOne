@@ -27,3 +27,13 @@ export function formatLeaderboardTime(totalSeconds: number, hideMilliseconds: bo
             }`;
     }
 }
+
+export function formatTimeForServer(totalSeconds: number, hideMilliseconds: boolean): string {
+    let t = formatLeaderboardTime(totalSeconds, hideMilliseconds);
+    let parts = t.split(":");
+    if (parts[0].length < 2) {
+        return "0" + parts[0] + ":" + parts[1].slice(0, parts[1].length - 1);
+    } else {
+        return parts[0] + ":" + parts[1].slice(0, parts[1].length - 1);
+    }
+}
