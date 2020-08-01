@@ -35,7 +35,7 @@
     "react-linkifier": "^4.0.0",
     "react-resizable": "^1.10.1",
     "react-sidebar": "^3.0.2",
-    "react-toastify": "^5.5.0",
+    "react-toastify": "^6.0.8",
     "react-toggle": "^4.1.1",
     "react-twemoji": "0.2.3",
     "resize-observer": "^1.0.0"
