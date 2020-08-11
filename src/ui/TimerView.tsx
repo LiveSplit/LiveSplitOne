@@ -12,7 +12,7 @@ import AutoRefreshLayout from "../layout/AutoRefreshLayout";
 import LiveSplitIcon from "../assets/icon_small.png";
 
 import "../css/TimerView.scss";
-import { mapPhaseEnumToString, formatTimeForServer } from "../util/WebSocket";
+import { WebSocketManager } from "../util/WebSocketManager";
 
 export interface Props {
     isDesktop: boolean,
@@ -41,11 +41,31 @@ interface Callbacks {
 }
 
 export class TimerView extends React.Component<Props, State> {
-    private connection: Option<WebSocket>;
+    private connection: WebSocketManager;
 
     constructor(props: Props) {
         super(props);
 
+        this.connection = new WebSocketManager({
+            start: () => this.start(),
+            split: () => this.split(),
+            splitOrStart: () => this.splitOrStart(),
+            reset: () => this.reset(),
+            undoSplit: () => this.undoSplit(),
+            skip: () => this.skipSplit(),
+            initGameTime: () => this.initializeGameTime(),
+            setGameTime: (time: string) => this.setGameTime(time),
+            setLoadingTimes: (loadTime: string) => this.setLoadingTimes(loadTime),
+            pauseGameTime: () => this.pauseGameTime(),
+            resumeGameTime: () => this.resumeGameTime(),
+            getCurrentTime: (cb: (totalSeconds: number) => void) => this.getTime(cb),
+            getCurrentPhase: (cb: (currentPhase: number) => void) => this.getCurrentPhase(cb),
+            togglePause: () => this.togglePauseOrStart(),
+        },
+        {
+            info: toast.info,
+            error: toast.error
+        });
         this.state = {
             comparison: null,
             timingMethod: null,
@@ -169,7 +189,7 @@ export class TimerView extends React.Component<Props, State> {
                     <button onClick={(_) => this.connectToServerOrDisconnect()}>
                         {
                             (() => {
-                                const connectionState = this.connection?.readyState ?? WebSocket.CLOSED;
+                                const connectionState = this.connection.connectionState();
                                 switch (connectionState) {
                                     case WebSocket.OPEN:
                                         return <div>
@@ -220,75 +240,18 @@ export class TimerView extends React.Component<Props, State> {
     }
 
     private connectToServerOrDisconnect() {
-        if (this.connection) {
-            if (this.connection.readyState === WebSocket.OPEN) {
-                this.connection.close();
-                this.forceUpdate();
-            }
-            return;
-        }
-        const url = prompt("Specify the WebSocket URL:");
-        if (!url) {
-            return;
-        }
-        try {
-            this.connection = new WebSocket(url);
-        } catch (e) {
-            toast.error(`Failed to connect: ${e}`);
-            throw e;
-        }
-        this.forceUpdate();
-        let wasConnected = false;
-        this.connection.onopen = (_) => {
-            wasConnected = true;
-            toast.info("Connected to server");
-            this.forceUpdate();
-        };
-        this.connection.onerror = (e) => {
-            toast.error(e);
-        };
-        this.connection.onmessage = (e) => {
-            // FIXME: Clone the Shared Timer. This assumes that `this` is always
-            // mounted.
-            if (typeof e.data === "string") {
-                const [command, ...args] = e.data.split(" ");
-                switch (command) {
-                    case "starttimer": this.start(); break;
-                    case "getcurrenttime": this.sendTime(); break;
-                    case "getcurrenttimerphase": this.sendTimerPhase(); break;
-                    case "split": this.split(); break;
-                    case "splitorstart": this.splitOrStart(); break;
-                    case "reset": this.reset(); break;
-                    case "pause":
-                    case "resume":
-                    case "togglepause": this.togglePauseOrStart(); break; // These are different aliases for the same command
-                    case "unsplit": this.undoSplit(); break;
-                    case "skipsplit": this.skipSplit(); break;
-                    case "initgametime": this.initializeGameTime(); break;
-                    case "setgametime": this.setGameTime(args[0]); break;
-                    case "setloadingtimes": this.setLoadingTimes(args[0]); break;
-                    case "pausegametime": this.pauseGameTime(); break;
-                    case "resumegametime": this.resumeGameTime(); break;
-                }
-            }
-        };
-        this.connection.onclose = (_) => {
-            if (wasConnected) {
-                toast.info("Closed connection to server");
-            }
-            this.connection = null;
-            this.forceUpdate();
-        };
+        const connectionState = this.connection.connectionState();
+        connectionState === WebSocket.OPEN ? this.connection.disconnect() : this.connection.connectToServer();
     }
 
-    private sendTime() {
+    private getTime(cb: (totalSeconds: number) => void) {
         this.readWith((t) => {
-            this.connection?.send(formatTimeForServer(t.currentTime().realTime()!.totalSeconds()));
+            cb(t.currentTime().realTime()!.totalSeconds());
         });
     }
 
-    private sendTimerPhase() {
-        this.readWith((t) => this.connection?.send(mapPhaseEnumToString(t.currentPhase())));
+    private getCurrentPhase(cb: (phase: number) => void) {
+        this.readWith((t) => cb(t.currentPhase()));
     }
 
     private writeWith<T>(action: (timer: TimerRefMut) => T): T {
