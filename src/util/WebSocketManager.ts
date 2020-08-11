@@ -64,7 +64,6 @@ export class WebSocketManager {
     private handleCommand(e: MessageEvent) {
         if (typeof e.data === "string") {
             const [command, ...args] = e.data.split(" ");
-            console.log(this);
             switch (command) {
                 case "starttimer": this.actions.start(); break;
                 case "getcurrenttime": this.getAndSendCurrentTime(); break;
