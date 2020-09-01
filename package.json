@@ -37,7 +37,7 @@
     "react-sidebar": "^3.0.2",
     "react-toastify": "^6.0.8",
     "react-toggle": "^4.1.1",
-    "react-twemoji": "0.2.3",
+    "react-twemoji": "0.3.0",
     "resize-observer": "^1.0.0"
   },
   "devDependencies": {
