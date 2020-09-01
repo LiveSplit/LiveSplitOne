@@ -33,7 +33,7 @@
     "react-contextmenu": "^2.14.0",
     "react-dom": "^16.13.1",
     "react-linkifier": "^4.0.0",
-    "react-resizable": "^1.10.1",
+    "react-resizable": "^2.0.0",
     "react-sidebar": "^3.0.2",
     "react-toastify": "^6.0.8",
     "react-toggle": "^4.1.1",
