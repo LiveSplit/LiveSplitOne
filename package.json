@@ -52,7 +52,7 @@
     "imghash": "0.0.7",
     "leven": "^3.1.0",
     "mocha": "^8.2.0",
-    "moment": "^2.29.0",
+    "moment": "^2.29.1",
     "node-fetch": "^2.6.1",
     "pixelmatch": "^5.2.1",
     "pngjs": "^5.0.0",
