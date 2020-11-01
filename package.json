@@ -19,7 +19,7 @@
     "@types/commonmark": "^0.27.4",
     "@types/react": "^16.9.55",
     "@types/react-color": "^3.0.4",
-    "@types/react-dom": "^16.9.8",
+    "@types/react-dom": "^16.9.9",
     "@types/react-resizable": "^1.7.2",
     "@types/react-sidebar": "^3.0.0",
     "@types/react-toastify": "^4.1.0",
