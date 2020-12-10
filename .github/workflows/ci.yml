@@ -17,7 +17,7 @@ jobs:
         submodules: recursive
 
     - name: Set CURRENT_TWO_WEEKS for use in cache keys
-      run: echo "::set-env name=CURRENT_TWO_WEEKS::$(($(date +%-V) / 2))"
+      run: echo "CURRENT_TWO_WEEKS=$(($(date +%-V) / 2))" >> $GITHUB_ENV
 
     - name: Cache Cargo
       uses: actions/cache@v1
