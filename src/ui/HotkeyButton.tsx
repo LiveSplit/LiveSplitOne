@@ -79,6 +79,7 @@ export default class HotkeyButton extends React.Component<Props, State> {
                             position: "fixed",
                             right: "0px",
                             top: "0px",
+                            zIndex: 5,
                         }}
                         onClick={() => this.blurButton()}
                     />
