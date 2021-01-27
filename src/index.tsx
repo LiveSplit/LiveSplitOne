@@ -53,7 +53,7 @@ Alternatively, you may be using an Adblocker like uBlock Origin. \
 Those are known to block WebAssembly.`);
         }
     } catch (e) {
-        if (e.name == "InvalidStateError") {
+        if (e.name === "InvalidStateError") {
             alert(`Couldn't load LiveSplit One. \
 You may be in private browsing mode. \
 LiveSplit One cannot store any splits, layouts, or other settings because of the limitations of the browser's private browsing mode. \
