@@ -16,40 +16,49 @@ async function run() {
     const ReactDOM = await ReactDOMImport;
     const { toast, ToastContainer } = await Toastify;
 
-    const {
-        splits,
-        splitsKey,
-        layout,
-        hotkeys,
-        layoutWidth,
-    } = await LiveSplit.loadStoredData();
-
     try {
-        ReactDOM.render(
-            <div>
-                <LiveSplit
-                    splits={splits}
-                    layout={layout}
-                    hotkeys={hotkeys}
-                    splitsKey={splitsKey}
-                    layoutWidth={layoutWidth}
-                />
-                <ToastContainer
-                    position={toast.POSITION.BOTTOM_RIGHT}
-                    toastClassName="toast-class"
-                    bodyClassName="toast-body"
-                    style={{
-                        textShadow: "none",
-                    }}
-                />
-            </div>,
-            document.getElementById("base"),
-        );
-    } catch (_) {
-        alert(`Couldn't load LiveSplit One. \
+        const {
+            splits,
+            splitsKey,
+            layout,
+            hotkeys,
+            layoutWidth,
+        } = await LiveSplit.loadStoredData();
+
+        try {
+            ReactDOM.render(
+                <div>
+                    <LiveSplit
+                        splits={splits}
+                        layout={layout}
+                        hotkeys={hotkeys}
+                        splitsKey={splitsKey}
+                        layoutWidth={layoutWidth}
+                    />
+                    <ToastContainer
+                        position={toast.POSITION.BOTTOM_RIGHT}
+                        toastClassName="toast-class"
+                        bodyClassName="toast-body"
+                        style={{
+                            textShadow: "none",
+                        }}
+                    />
+                </div>,
+                document.getElementById("base"),
+            );
+        } catch (_) {
+            alert(`Couldn't load LiveSplit One. \
 You may be using a browser that doesn't support WebAssembly. \
 Alternatively, you may be using an Adblocker like uBlock Origin. \
 Those are known to block WebAssembly.`);
+        }
+    } catch (e) {
+        if (e.name == "InvalidStateError") {
+            alert(`Couldn't load LiveSplit One. \
+You may be in private browsing mode. \
+LiveSplitOne cannot run in this mode. \
+To run LiveSplitOne, please disable private browsing in your settings.\n`);
+        }
     }
 }
 
