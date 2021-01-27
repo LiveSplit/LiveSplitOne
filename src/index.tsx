@@ -56,8 +56,9 @@ Those are known to block WebAssembly.`);
         if (e.name == "InvalidStateError") {
             alert(`Couldn't load LiveSplit One. \
 You may be in private browsing mode. \
-LiveSplitOne cannot run in this mode. \
-To run LiveSplitOne, please disable private browsing in your settings.\n`);
+LiveSplit One cannot store any splits, layouts, or other settings because of the limitations of the browser's private browsing mode. \
+These limitations may be lifted in the future. \
+To run LiveSplit One for now, please disable private browsing in your settings.\n`);
         }
     }
 }
