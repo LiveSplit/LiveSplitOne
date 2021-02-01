@@ -48,7 +48,7 @@
     "favicons-webpack-plugin": "^4.2.0",
     "file-loader": "^6.2.0",
     "hex64": "^0.4.0",
-    "html-webpack-plugin": "^4.5.0",
+    "html-webpack-plugin": "^4.5.1",
     "imghash": "0.0.8",
     "leven": "^3.1.0",
     "mocha": "^8.2.1",
