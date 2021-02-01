@@ -57,7 +57,7 @@
     "pixelmatch": "^5.2.1",
     "pngjs": "^6.0.0",
     "sass": "^1.32.0",
-    "sass-loader": "^10.1.0",
+    "sass-loader": "^10.1.1",
     "selenium-webdriver": "^4.0.0-alpha.7",
     "source-map-loader": "^1.1.2",
     "style-loader": "^2.0.0",
