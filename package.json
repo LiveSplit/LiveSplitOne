@@ -68,6 +68,6 @@
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.1",
-    "workbox-webpack-plugin": "^6.0.2"
+    "workbox-webpack-plugin": "^6.1.0"
   }
 }
