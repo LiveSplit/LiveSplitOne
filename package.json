@@ -17,7 +17,7 @@
   "license": "ISC",
   "dependencies": {
     "@types/commonmark": "^0.27.4",
-    "@types/react": "^17.0.0",
+    "@types/react": "^17.0.2",
     "@types/react-color": "^3.0.4",
     "@types/react-dom": "^17.0.1",
     "@types/react-resizable": "^1.7.2",
