@@ -1,0 +1,18 @@
+version: 2
+updates:
+- package-ecosystem: npm
+  directory: "/"
+  schedule:
+    interval: monthly
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: css-loader
+    versions:
+    - 5.0.1
+  - dependency-name: webpack-cli
+    versions:
+    - 4.3.1
+    - 4.4.0
+  - dependency-name: react-toastify
+    versions:
+    - 7.0.2
