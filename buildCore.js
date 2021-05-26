@@ -14,6 +14,10 @@ execSync(
     {
         cwd: "livesplit-core",
         stdio: "inherit",
+        env: {
+            ...process.env,
+            'RUSTFLAGS': '-C target-feature=+sign-ext',
+        },
     },
 );
 
