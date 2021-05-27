@@ -48,9 +48,10 @@ async function run() {
             );
         } catch (_) {
             alert(`Couldn't load LiveSplit One. \
-You may be using a browser that doesn't support WebAssembly. \
-Alternatively, you may be using an Adblocker like uBlock Origin. \
-Those are known to block WebAssembly.`);
+You may be using a browser that is not up to date. \
+Please update your browser or your iOS version and try again. \
+Another reason might be that a browser extension, such as an adblocker, \
+is blocking access to important scripts.`);
         }
     } catch (e) {
         if (e.name === "InvalidStateError") {
