@@ -38,7 +38,7 @@
     "react-toastify": "^7.0.4",
     "react-toggle": "^4.1.2",
     "react-twemoji": "0.3.0",
-    "resize-observer": "^1.0.0"
+    "resize-observer": "^1.0.2"
   },
   "devDependencies": {
     "@types/node": "^15.0.2",
