@@ -15,7 +15,8 @@ import DragUpload from "./DragUpload";
 import { ContextMenuTrigger, ContextMenu, MenuItem } from "react-contextmenu";
 
 export interface EditingInfo {
-    splitsKey?: number,
+    splitsKey: number | undefined,
+    persistChanges: boolean,
     run: Run,
 }
 
@@ -179,7 +180,11 @@ export class SplitsSelection extends React.Component<Props, State> {
                         }
                     });
                     if (run !== null) {
-                        this.props.callbacks.openRunEditor({ run });
+                        this.props.callbacks.openRunEditor({
+                            run,
+                            splitsKey: this.props.openedSplitsKey,
+                            persistChanges: false,
+                        });
                     } else {
                         toast.error("You can't edit your run while the timer is running.");
                     }
@@ -265,7 +270,11 @@ export class SplitsSelection extends React.Component<Props, State> {
 
     private async editSplits(splitsKey: number) {
         const run = await this.getRunFromKey(splitsKey);
-        this.props.callbacks.openRunEditor({ splitsKey, run });
+        this.props.callbacks.openRunEditor({
+            splitsKey,
+            persistChanges: true,
+            run,
+        });
     }
 
     private async copySplits(key: number) {

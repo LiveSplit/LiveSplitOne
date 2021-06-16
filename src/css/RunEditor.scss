@@ -1,9 +1,10 @@
-@import "ContextMenu";
-@import "Markdown";
-@import "mobile";
-@import "Table";
-@import "Toggle";
-@import "variables";
+@import 'mobile';
+@import 'variables';
+@import 'ContextMenu';
+@import 'Loading';
+@import 'Markdown';
+@import 'Table';
+@import 'Toggle';
 
 $tab-bar-height: 30px + $ui-margin / 2;
 $tab-width: 625px;
@@ -17,6 +18,7 @@ $small-button-padding: 1px 3px 1px 3px;
 
 .run-editor {
   @include context-menu;
+  @include loading;
   @include markdown;
   @include table;
   @include toggle;
