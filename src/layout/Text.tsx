@@ -4,7 +4,9 @@ import KeyValueGeneric, { KeyValueDisplay } from "./KeyValueGeneric";
 
 import "../css/KeyValue.scss";
 
-export interface Props { state: LiveSplit.TextComponentStateJson }
+export interface Props {
+    state: LiveSplit.TextComponentStateJson,
+}
 
 export default class Text extends React.Component<Props> {
     constructor(props: Props) {

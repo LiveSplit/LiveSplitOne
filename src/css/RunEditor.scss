@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 @import "ContextMenu";
 @import "Markdown";
 @import "mobile";
@@ -5,7 +7,7 @@
 @import "Toggle";
 @import "variables";
 
-$tab-bar-height: 30px + $ui-margin / 2;
+$tab-bar-height: 30px + math.div($ui-margin, 2);
 $tab-width: 625px;
 $button-width: 160px;
 $label-size: 14px;
@@ -43,7 +45,7 @@ $small-button-padding: 1px 3px 1px 3px;
     background: $header-row-color;
 
     > th {
-      padding: $ui-margin/2 $ui-margin/2;
+      padding: math.div($ui-margin, 2) math.div($ui-margin, 2);
       display: table-cell;
 
       &:first-child {
@@ -70,7 +72,7 @@ $small-button-padding: 1px 3px 1px 3px;
   }
 
   .run-editor-tab {
-    margin-left: $ui-large-margin / 2;
+    margin-left: math.div($ui-large-margin, 2);
     min-width: $tab-width;
     box-sizing: border-box;
 
@@ -88,7 +90,7 @@ $small-button-padding: 1px 3px 1px 3px;
   .video-outer-container {
     width: 100%;
     padding-top: calc(100% * 9 / 16);
-    margin-top: $ui-margin / 2;
+    margin-top: math.div($ui-margin, 2);
     position: relative;
 
     .video-inner-container {
@@ -107,7 +109,7 @@ $small-button-padding: 1px 3px 1px 3px;
   .run-editor-info {
     display: inline-flex;
     align-items: flex-start;
-    margin-bottom: $ui-large-margin - $ui-margin / 2;
+    margin-bottom: $ui-large-margin - math.div($ui-margin, 2);
 
     .game-icon-container {
       background-color: $light-row-color;
@@ -231,13 +233,13 @@ $small-button-padding: 1px 3px 1px 3px;
 
     .editor-group {
       .tab-bar {
-        margin-left: $ui-large-margin / 2;
+        margin-left: math.div($ui-large-margin, 2);
         height: $tab-bar-height;
-  
+
         @include mobile {
           height: inherit;
           margin-left: 0;
-  
+
           button {
             font-size: $small-font-size;
             padding: $small-button-padding;
@@ -263,7 +265,7 @@ $small-button-padding: 1px 3px 1px 3px;
     display: flex;
     flex-direction: column;
     margin-top: $tab-bar-height;
-    margin-right: $ui-large-margin / 2;
+    margin-right: math.div($ui-large-margin, 2);
     width: $button-width;
 
     button {
@@ -301,27 +303,27 @@ $small-button-padding: 1px 3px 1px 3px;
     .leaderboard-row:hover {
       background: $hover-row-color !important;
     }
-  
+
     .leaderboard-rank-column,
     .splits-download-column {
       width: 36px;
     }
-  
+
     .leaderboard-time-column,
     .variable-column {
       width: 100px;
     }
-  
+
     .variable-column,
     .splits-download-column {
       text-align: center;
     }
-  
+
     .leaderboard-expanded-row {
       & > td {
         max-width: 0;
       }
-  
+
       .run-meta-table {
         border-spacing: $ui-margin 2px;
         margin-left: -$ui-margin;
@@ -339,7 +341,7 @@ $small-button-padding: 1px 3px 1px 3px;
 
     > input {
       font-size: 18px;
-      padding: $label-size+$ui-margin 0 $ui-margin/2 $ui-margin/2;
+      padding: $label-size+$ui-margin 0 math.div($ui-margin, 2) math.div($ui-margin, 2);
       display: block;
       width: 100%;
       border: none;
@@ -358,7 +360,7 @@ $small-button-padding: 1px 3px 1px 3px;
       font-weight: normal;
       position: absolute;
       pointer-events: none;
-      left: $ui-margin / 2;
+      left: math.div($ui-margin, 2);
       top: 0;
       transition: 0.2s ease all;
       -moz-transition: 0.2s ease all;
@@ -412,13 +414,13 @@ $small-button-padding: 1px 3px 1px 3px;
   }
 
   .filter-table {
-    margin-top: $ui-margin / 2;
-    margin-bottom: $ui-margin / 2;
+    margin-top: math.div($ui-margin, 2);
+    margin-bottom: math.div($ui-margin, 2);
     width: 100%;
 
     &.table {
       td {
-        padding: $ui-margin/2 $ui-margin;
+        padding: math.div($ui-margin, 2) $ui-margin;
       }
 
       tr:first-child > td {
@@ -445,11 +447,11 @@ $small-button-padding: 1px 3px 1px 3px;
         }
 
         tr:first-child > td {
-          padding-top: $ui-margin / 2;
+          padding-top: math.div($ui-margin, 2);
         }
-  
+
         tr:last-child > td {
-          padding-bottom: $ui-margin / 2;
+          padding-bottom: math.div($ui-margin, 2);
         }
 
         > tbody.table-body > tr {

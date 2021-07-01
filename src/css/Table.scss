@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 @import 'mobile';
 @import 'variables';
 
@@ -27,7 +29,7 @@
       background: $dark-row-color;
 
       > td {
-        padding: $ui-margin/2 $ui-margin/2;
+        padding: math.div($ui-margin, 2) math.div($ui-margin, 2);
         display: table-cell;
 
         &:first-child {
@@ -71,7 +73,7 @@
       outline: 0;
     }
   }
-  
+
   input {
     font-size: 15px;
     border: none;
@@ -81,7 +83,7 @@
     text-overflow: ellipsis;
     font-family: "fira", sans-serif;
   }
-  
+
   input[Type="text"] {
     font-family: inherit;
   }
@@ -106,9 +108,10 @@
       }
 
       .settings-value-box {
-        width: $settings-table-width/2 - 2*$ui-margin;
+        width: math.div($settings-table-width, 2) - 2*$ui-margin;
         display: grid;
         column-gap: $ui-margin;
+        row-gap: $ui-margin;
         grid-template-columns: 100%;
 
         input {
@@ -125,7 +128,7 @@
         }
 
         &.optional-value {
-          grid-template-columns: 36px 1fr;
+          grid-template-columns: max-content 1fr;
         }
 
         &.two-colors {

@@ -3,7 +3,7 @@
         "sourceMap": true,
         "noImplicitAny": true,
         "module": "ESNext",
-        "target": "ES5",
+        "target": "ES2018",
         "jsx": "react",
         "strictNullChecks": true,
         "noImplicitReturns": true,
@@ -17,7 +17,7 @@
         "allowSyntheticDefaultImports": true,
         "moduleResolution": "Node",
         "lib": [
-            "ES2015",
+            "ES2018",
             "DOM"
         ]
     },

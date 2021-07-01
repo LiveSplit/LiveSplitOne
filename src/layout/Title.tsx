@@ -6,7 +6,9 @@ import { map } from "../util/OptionUtil";
 import "../css/Title.scss";
 import Abbreviated from "./Abbreviated";
 
-export interface Props { state: LiveSplit.TitleComponentStateJson }
+export interface Props {
+    state: LiveSplit.TitleComponentStateJson,
+}
 
 export default class Title extends React.Component<Props> {
     private iconUrl: string;
@@ -56,14 +58,14 @@ export default class Title extends React.Component<Props> {
                     </div>
                 }
                 <div
-                    className={`run-info ${alignmentClass} ${iconClass}`}
+                    className={`run-info text-font ${alignmentClass} ${iconClass}`}
                 >
                     {
                         twoLines && <span className={`title-game ${alignmentClass}`}>
                             <Abbreviated abbreviations={this.props.state.line1} />
                         </span>
                     }
-                    <div className={`lower-row ${numLinesClass} ${alignmentClass}`}>
+                    <div className={`lower-row ${numLinesClass} ${alignmentClass}`} >
                         {
                             this.props.state.is_centered && showAttempts &&
                             <div className={`title-attempts-invisible ${numLinesClass}`}>

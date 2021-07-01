@@ -8,7 +8,7 @@ export default class SplitLabels extends React.Component<Props> {
     public render() {
         return (
             <span
-                className="split split-label"
+                className="split split-label text-font"
             >
                 <div className="current-split-background" />
                 <div className="split-icon-container-empty" />

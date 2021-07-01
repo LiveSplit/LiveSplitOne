@@ -35,7 +35,6 @@ export interface SettingValueFactory<T> {
     fromOptionalEmptyString(): T;
     fromRemovableString?(value: string): T;
     fromRemovableEmptyString?(): T;
-    fromFloat(value: number): T;
     fromAccuracy(value: string): T | null;
     fromDigitsFormat(value: string): T | null;
     fromOptionalTimingMethod(value: string): T | null;
@@ -61,6 +60,8 @@ export interface SettingValueFactory<T> {
     fromColumnUpdateWith(value: string): T | null;
     fromColumnUpdateTrigger(value: string): T | null;
     fromLayoutDirection(value: string): T | null;
+    fromFont(name: string, style: string, weight: string, stretch: string): T | null;
+    fromEmptyFont(): T;
 }
 
 export class JsonSettingValueFactory {
@@ -87,9 +88,6 @@ export class JsonSettingValueFactory {
     }
     public fromRemovableEmptyString(): ExtendedSettingsDescriptionValueJson {
         return { RemovableString: null };
-    }
-    public fromFloat(_: number): ExtendedSettingsDescriptionValueJson {
-        throw new Error("Not implemented");
     }
     public fromAccuracy(_: string): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
@@ -137,6 +135,17 @@ export class JsonSettingValueFactory {
         throw new Error("Not implemented");
     }
     public fromLayoutDirection(_: string): ExtendedSettingsDescriptionValueJson | null {
+        throw new Error("Not implemented");
+    }
+    public fromFont(
+        _name: string,
+        _style: string,
+        _weight: string,
+        _stretch: string,
+    ): ExtendedSettingsDescriptionValueJson | null {
+        throw new Error("Not implemented");
+    }
+    public fromEmptyFont(): ExtendedSettingsDescriptionValueJson {
         throw new Error("Not implemented");
     }
 }
@@ -279,22 +288,6 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                         >
                             <i className="fa fa-trash" aria-hidden="true" />
                         </button>
-                    </div>
-                );
-            } else if ("Float" in value) {
-                component = (
-                    <div className="settings-value-box">
-                        <input
-                            type="number"
-                            value={value.Float}
-                            className="number"
-                            onChange={(e) => {
-                                this.props.setValue(
-                                    valueIndex,
-                                    factory.fromFloat(e.target.valueAsNumber),
-                                );
-                            }}
-                        />
                     </div>
                 );
             } else if ("Accuracy" in value) {
@@ -844,6 +837,117 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             <option value="Vertical">Vertical</option>
                             <option value="Horizontal">Horizontal</option>
                         </select>
+                    </div>
+                );
+            } else if ("Font" in value) {
+                const children = [
+                    <ToggleCheckbox
+                        value={value.Font !== null}
+                        setValue={(value) => {
+                            if (value) {
+                                this.props.setValue(
+                                    valueIndex,
+                                    expect(
+                                        factory.fromFont("", "normal", "normal", "normal"),
+                                        "Unexpected Font",
+                                    ),
+                                );
+                            } else {
+                                this.props.setValue(
+                                    valueIndex,
+                                    factory.fromEmptyFont(),
+                                );
+                            }
+                        }}
+                    />,
+                ];
+
+                if (value.Font !== null) {
+                    const { family, style, weight, stretch } = value.Font;
+
+                    children.push(
+                        <input
+                            value={family}
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    expect(
+                                        factory.fromFont(e.target.value, style, weight, stretch),
+                                        "Unexpected Font",
+                                    ),
+                                );
+                            }}
+                        />,
+                        <>Style</>,
+                        <select
+                            value={style}
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    expect(
+                                        factory.fromFont(family, e.target.value, weight, stretch),
+                                        "Unexpected Font",
+                                    ),
+                                );
+                            }}
+                        >
+                            <option value="normal">Normal</option>
+                            <option value="italic">Italic</option>
+                        </select>,
+                        <>Weight</>,
+                        <select
+                            value={weight}
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    expect(
+                                        factory.fromFont(family, style, e.target.value, stretch),
+                                        "Unexpected Font",
+                                    ),
+                                );
+                            }}
+                        >
+                            <option value="thin">Thin</option>
+                            <option value="extra-light">Extra Light</option>
+                            <option value="light">Light</option>
+                            <option value="semi-light">Semi Light</option>
+                            <option value="normal">Normal</option>
+                            <option value="medium">Medium</option>
+                            <option value="semi-bold">Semi Bold</option>
+                            <option value="bold">Bold</option>
+                            <option value="extra-bold">Extra Bold</option>
+                            <option value="black">Black</option>
+                            <option value="extra-black">Extra Black</option>
+                        </select>,
+                        <>Stretch</>,
+                        <select
+                            value={stretch}
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    expect(
+                                        factory.fromFont(family, style, weight, e.target.value),
+                                        "Unexpected Font",
+                                    ),
+                                );
+                            }}
+                        >
+                            <option value="ultra-condensed">Ultra Condensed</option>
+                            <option value="extra-condensed">Extra Condensed</option>
+                            <option value="condensed">Condensed</option>
+                            <option value="semi-condensed">Semi Condensed</option>
+                            <option value="normal">Normal</option>
+                            <option value="semi-expanded">Semi Expanded</option>
+                            <option value="expanded">Expanded</option>
+                            <option value="extra-expanded">Extra Expanded</option>
+                            <option value="ultra-expanded">Ultra Expanded</option>
+                        </select>,
+                    );
+                }
+
+                component = (
+                    <div className="settings-value-box optional-value">
+                        {children}
                     </div>
                 );
             } else {

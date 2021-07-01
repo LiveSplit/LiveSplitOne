@@ -92,21 +92,24 @@ module.exports = async (env, argv) => {
                 COMMIT_HASH: JSON.stringify(commitHash),
                 CONTRIBUTORS_LIST: JSON.stringify(contributorsList),
             }),
-            ...(isProduction ? [new WorkboxPlugin.GenerateSW({
-                clientsClaim: true,
-                skipWaiting: true,
-                maximumFileSizeToCacheInBytes: 100 * 1024 * 1024,
-                exclude: [
-                    /^assets\//,
-                ],
-                runtimeCaching: [{
-                    urlPattern: (context) => {
-                        return self.origin === context.url.origin &&
-                            context.url.pathname.startsWith("/assets/");
-                    },
-                    handler: "CacheFirst",
-                }],
-            })] : []),
+            ...(isProduction ? [
+                new WorkboxPlugin.GenerateSW({
+                    clientsClaim: true,
+                    skipWaiting: true,
+                    maximumFileSizeToCacheInBytes: 100 * 1024 * 1024,
+                    exclude: [
+                        /^assets\//,
+                        /.*\.LICENSE\.txt/,
+                    ],
+                    runtimeCaching: [{
+                        urlPattern: (context) => {
+                            return self.origin === context.url.origin &&
+                                context.url.pathname.startsWith("/assets/");
+                        },
+                        handler: "CacheFirst",
+                    }],
+                })
+            ] : []),
         ],
 
         module: {
@@ -119,14 +122,26 @@ module.exports = async (env, argv) => {
                     exclude: "/node_modules",
                 },
                 {
-                    test: /\.(s*)css$/,
-                    use: ["style-loader", "css-loader", {
-                        loader: "sass-loader",
-                        options: {
-                            // Prefer `dart-sass`
-                            implementation: require("sass"),
+                    test: /\.(s?)css$/,
+                    use: [
+                        "style-loader",
+                        {
+                            loader: "css-loader",
+                            options: {
+                                importLoaders: 1,
+                                modules: {
+                                    compileType: "icss"
+                                }
+                            }
                         },
-                    }],
+                        {
+                            loader: "sass-loader",
+                            options: {
+                                // Prefer `dart-sass`
+                                implementation: require("sass"),
+                            },
+                        }
+                    ],
                 },
                 {
                     test: /\.(png|jpg|gif|woff|ico)$/,
@@ -142,8 +157,8 @@ module.exports = async (env, argv) => {
             ],
         },
 
-        node: {
-            fs: "empty",
+        experiments: {
+            asyncWebAssembly: true,
         },
 
         mode: isProduction ? "production" : "development",

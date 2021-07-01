@@ -15,10 +15,6 @@ export interface Props {
     split: LiveSplit.SplitStateJson,
     icon?: string,
     separatorInFrontOfSplit: boolean,
-    layoutState: {
-        thin_separators_color: LiveSplit.Color,
-        separators_color: LiveSplit.Color,
-    },
     visualSplitIndex: number,
 }
 
@@ -39,7 +35,7 @@ export default class Split extends React.Component<Props> {
 
         if (this.props.split.index % 2 === 1) {
             if (this.props.splitsState.show_thin_separators) {
-                innerStyle.borderBottomColor = colorToCss(this.props.layoutState.thin_separators_color);
+                innerStyle.borderBottomColor = "var(--thin-separators-color)";
             } else {
                 innerStyle.borderBottomColor = "transparent";
             }
@@ -52,7 +48,7 @@ export default class Split extends React.Component<Props> {
 
         let separatorAbove = "";
         if (this.props.separatorInFrontOfSplit) {
-            innerStyle.borderTopColor = colorToCss(this.props.layoutState.separators_color);
+            innerStyle.borderTopColor = "var(--separators-color)";
             separatorAbove = "separator-above";
         }
 
@@ -93,20 +89,24 @@ export default class Split extends React.Component<Props> {
                     <div className="split-row split-first-row">
                         <div
                             key="split-name"
-                            className="split-name"
+                            className="split-name text-font"
                         >
                             <div className="split-name-inner">
                                 {this.props.split.name}
                             </div>
                         </div>
                     </div>
-                    <div className="split-row split-second-row">
+                    <div
+                        className="split-row split-second-row"
+                    >
                         {
                             columns.map((column, i) =>
                                 <div
                                     key={i}
-                                    className={`split-time time ${i < columns.length - 1 ? "split-time-full" : ""}`}
-                                    style={{ color: colorToCss(column.visual_color) }}
+                                    className={`split-time time times-font ${i < columns.length - 1 ? "split-time-full" : ""}`}
+                                    style={{
+                                        color: colorToCss(column.visual_color),
+                                    }}
                                 >
                                     <div className="split-time-inner">
                                         {column.value}
@@ -126,7 +126,6 @@ export default class Split extends React.Component<Props> {
             !deepEqual(nextProps.split, this.props.split) ||
             nextProps.icon !== this.props.icon ||
             nextProps.separatorInFrontOfSplit !== this.props.separatorInFrontOfSplit ||
-            !deepEqual(nextProps.layoutState, this.props.layoutState) ||
             nextProps.visualSplitIndex !== this.props.visualSplitIndex;
     }
 }
