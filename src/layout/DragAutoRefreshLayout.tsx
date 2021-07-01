@@ -4,6 +4,7 @@ import AutoRefresh from "../util/AutoRefresh";
 import { colorToCss, gradientToCss } from "../util/ColorUtil";
 import { Option } from "../util/OptionUtil";
 import Component from "./Component";
+import { getLayoutStateStyle } from "./Layout";
 
 export interface Props {
     getState: () => LayoutStateJson,
@@ -40,6 +41,7 @@ export default class DragAutoRefreshLayout extends React.Component<Props, State>
 
     public render() {
         const layoutState = this.state.layoutState;
+        const layoutStateStyle = getLayoutStateStyle(layoutState);
         const counts = new Map<string, number>();
 
         const dragLayout = (
@@ -49,6 +51,7 @@ export default class DragAutoRefreshLayout extends React.Component<Props, State>
                     background: gradientToCss(layoutState.background),
                     color: colorToCss(layoutState.text_color),
                     width: this.props.layoutWidth,
+                    ...layoutStateStyle
                 }}
             >
                 {
@@ -109,7 +112,6 @@ export default class DragAutoRefreshLayout extends React.Component<Props, State>
                             }
                             <Component
                                 state={c}
-                                layoutState={layoutState}
                                 layoutWidth={this.props.layoutWidth}
                                 componentId={key}
                             />

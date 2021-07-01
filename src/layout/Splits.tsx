@@ -9,10 +9,6 @@ import "../css/Splits.scss";
 
 export interface Props {
     state: LiveSplit.SplitsComponentStateJson,
-    layoutState: {
-        thin_separators_color: LiveSplit.Color,
-        separators_color: LiveSplit.Color,
-    },
 }
 
 export default class Splits extends React.Component<Props> {
@@ -55,7 +51,9 @@ export default class Splits extends React.Component<Props> {
                 {
                     map(
                         this.props.state.column_labels,
-                        (labels) => <SplitLabels labels={labels} />,
+                        (labels) => <SplitLabels
+                            labels={labels}
+                        />,
                     )
                 }
                 {
@@ -64,7 +62,6 @@ export default class Splits extends React.Component<Props> {
                             evenOdd={evenOdd}
                             split={s}
                             splitsState={splitsState}
-                            layoutState={this.props.layoutState}
                             icon={this.iconUrls[s.index]}
                             key={s.index.toString()}
                             separatorInFrontOfSplit={

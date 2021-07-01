@@ -14,7 +14,7 @@ const leven = require("leven");
 const pixelmatch = require("pixelmatch");
 const PNG = require("pngjs").PNG;
 
-describe("Layout Rendering Tests", function() {
+describe("Layout Rendering Tests", function () {
     this.timeout(90000);
 
     let driver, serverProcess;
@@ -25,7 +25,7 @@ describe("Layout Rendering Tests", function() {
 
     const startServer = async () => {
         return new Promise((resolve) => {
-            serverProcess = fork("./node_modules/webpack-dev-server/bin/webpack-dev-server.js", [], { silent: true });
+            serverProcess = fork("./node_modules/webpack/bin/webpack.js", ["serve"], { silent: true });
             serverProcess.stdout.on("data", (data) => {
                 if (data.toString().includes("Compiled successfully.")) {
                     resolve();
@@ -71,7 +71,7 @@ describe("Layout Rendering Tests", function() {
         await driver.get("http://localhost:8080");
 
         await driver.executeScript(() => {
-            HTMLInputElement.prototype.click = function() {
+            HTMLInputElement.prototype.click = function () {
                 const existingFileInput = document.getElementById("file-input");
                 if (existingFileInput) {
                     existingFileInput.remove();
@@ -90,7 +90,7 @@ describe("Layout Rendering Tests", function() {
     });
 
     const testRendering = (layoutName, splitsName, expectedHash) => {
-        it(`Renders the ${layoutName} layout with the ${splitsName} splits correctly`, async function() {
+        it(`Renders the ${layoutName} layout with the ${splitsName} splits correctly`, async function () {
             this.timeout(10000);
 
             await clickElement(By.xpath(".//button[contains(text(), 'Layout')]"));
@@ -103,7 +103,7 @@ describe("Layout Rendering Tests", function() {
             await loadFile(`${SPLITS_FOLDER}/${splitsName}.lss`);
             await clickElement(By.xpath("(.//button[contains(@aria-label, 'Open Splits')])[last()]"));
             await clickElement(By.xpath(".//button[contains(text(), 'Back')]"));
-    
+
             const layoutElement = await findElement(By.className("layout"));
             const layoutScreenshot = await layoutElement.takeScreenshot();
 
@@ -130,13 +130,13 @@ describe("Layout Rendering Tests", function() {
                         const expectedImage = PNG.sync.read(fs.readFileSync(expectedScreenshotPath));
                         const { width, height } = actualImage;
                         const diff = new PNG({ width, height });
-        
+
                         const numPixelsDifferent = pixelmatch(actualImage.data, expectedImage.data, diff.data, width, height, { threshold: 0.2 });
 
                         if (numPixelsDifferent === 0) {
                             showWarning = true;
                         }
-        
+
                         fs.writeFileSync(`${SCREENSHOTS_FOLDER}/${layoutName}_${splitsName}_diff.png`, PNG.sync.write(diff));
                     }
                 }
@@ -153,12 +153,12 @@ describe("Layout Rendering Tests", function() {
         });
     }
 
-    testRendering("all_components", "default", "f4H-QgAAAAAaAAAO____________________AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA__wCAAAAAABv______4Hb4AG");
-    testRendering("all_components", "pmw3", "f4H-QgAAAAAaAAAO________fmAOf6AAX4AG3_gH3_AOX_APVkgOX-AOVvAPX_AeX_AeWrAebvgfAAAAAABvf_5_f___JIBO");
-    testRendering("default", "default", "________8AAD8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADgAAD_________");
-    testRendering("default", "pmw3", "f_wAb__mX2AG3-gGUdgGSkgOX3AOW9gOX-APVlwOH_APX8AO1uAPUnAOX1AOXLAeHvAeX_wf__AfAAAAAABgAAD_AAB_____");
+    testRendering("all_components", "default", "f4G-QgAAAAAeAAAO____________________AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA__wCAAAAAABv______4Hb4AG");
+    testRendering("all_components", "pmw3", "f4G-QgAAAAAeAAAO________fmAOf6AAX4AG3_gH3_AOX_APVkgOX-AOVvAPX_AeX_AeWrAef_gfAAAAAABvf_5-f___JABO");
+    testRendering("default", "default", "____________AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADgAAD_________");
+    testRendering("default", "pmw3", "f_wAb__mX-AG3-gGWNgGSkAOXnAOW9gOX-APVtwOH_APX8AOX_APRnAOXVAOXJAeHvAeX_wf__AfAAAAAABgAAD_AAB_____");
     testRendering("splits_two_rows", "celeste", "f8AAcAAHf8AA____d4AAcAAHf_gAcAAPd_AAYAAHf4AA____f4AAYAAH__AA____Z_gAYAAHf_8A9VVfb_wAcAAPf_AAYAAP");
-    testRendering("splits_with_labels", "celeste", "AABAAABMAADPAADPAADP____7AAP_wAP_wAP_wAPwgAA____QAAH2oAP_4AH34APX4AA____wAAP9EAP38AP38AP38AAAAAA");
+    testRendering("splits_with_labels", "celeste", "AABEAADPAADPAADPAADA_____AAH_wAP_wAP_wAPwgAA____wgAH34AP_4AH34APQYAA____0EAP_8AP38AP38APwAAAAAAA");
     testRendering("title_centered_no_game_icon", "celeste", "________AAAAADQAAHQAAH4A______3_____AAAAAAAAAAAA____AAkAAL8DAP8DAP8DAP8D_________-n9AAAAAAAAAAAA");
     testRendering("title_centered_with_game_icon", "celeste", "________AAAAIB0AIB8AYB8A________cB8AcAAAcAAAcAAAcAAAcAZAcC_DcD_DcD_DcD_D_________9Z9cAAAAAAAAAAA");
     testRendering("title_left_no_attempt_count", "celeste", "________AAAA-AAA-AAA-AAA____________AAAAAAAAAAAA____CQAA_wAA_4AA_4AA_4AA________qf__AAAAAAAAAAAA");

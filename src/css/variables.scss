@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 $ui-margin: 8px;
 $ui-large-margin: 16px;
 $main-content-margin: 24px;
@@ -12,9 +14,9 @@ $font-size-to-line-height-ratio: 0.85;
 $default-font-size: $default-line-height * $font-size-to-line-height-ratio;
 $two-row-height: $default-line-height + $default-component-height;
 $side-padding: $default-component-height * 0.35;
-$vertical-padding: ($default-component-height - $default-line-height) / 2;
+$vertical-padding: math.div($default-component-height - $default-line-height, 2);
 $thick-separator-width: $default-component-height * 0.1;
-$thin-separator-width: $thick-separator-width / 2;
+$thin-separator-width: math.div($thick-separator-width, 2);
 
 $border-color: #404040;
 

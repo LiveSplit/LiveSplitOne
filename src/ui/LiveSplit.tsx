@@ -165,7 +165,7 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     public componentDidMount() {
-        this.scrollEvent = { handleEvent: (e: MouseWheelEvent) => this.onScroll(e) };
+        this.scrollEvent = { handleEvent: (e: WheelEvent) => this.onScroll(e) };
         window.addEventListener("wheel", this.scrollEvent);
         this.rightClickEvent = { handleEvent: (e: any) => this.onRightClick(e) };
         window.addEventListener("contextmenu", this.rightClickEvent, false);
@@ -181,7 +181,7 @@ export class LiveSplit extends React.Component<Props, State> {
             return null;
         };
 
-        this.isDesktopQuery.addListener(this.mediaQueryChanged);
+        this.isDesktopQuery.addEventListener("change", this.mediaQueryChanged);
 
         if (this.state.isBrowserSource) {
             document.body.className = "browser-source";
@@ -211,7 +211,7 @@ export class LiveSplit extends React.Component<Props, State> {
         this.state.layout.dispose();
         this.state.layoutState.dispose();
         this.state.hotkeySystem?.dispose();
-        this.isDesktopQuery.removeListener(this.mediaQueryChanged);
+        this.isDesktopQuery.removeEventListener("change", this.mediaQueryChanged);
     }
 
     public render() {

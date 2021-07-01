@@ -22,16 +22,16 @@ export function renderToSVG(
     const fraction = state.fraction;
     const height = state.height;
 
-    let shiftX;
-    switch (state.fraction.length) {
-        case 0: shiftX = 0; break;
-        case 2: shiftX = height * 0.6; break;
-        case 3: shiftX = height; break;
-        case 4: shiftX = height / 0.71; break;
-        default: throw new Error("Unexpected Fraction Length");
-    }
-    const x = `${componentWidth - sidePadding - 0.85 * shiftX}px`;
     const y = `${0.82 * height}px`;
+
+    const alignState: { x: string, element: SVGTextElement | null } = {
+        x: "",
+        element: null,
+    };
+
+    const updateAlign = () => {
+        alignState.element?.setAttribute("x", alignState.x);
+    };
 
     return (
         <div
@@ -65,16 +65,41 @@ export function renderToSVG(
                         />
                     </linearGradient>
                 </defs>
-                <text className="timer-time" style={{
-                    fill: `url(#${className}-text-gradient)`,
-                    fontFamily: "timer, sans-serif",
-                    fontSize: `${0.9 * height}px`,
-                }} x={x} y={y} textAnchor="end">{time}</text>
-                <text className="timer-time" style={{
-                    fill: `url(#${className}-text-gradient)`,
-                    fontFamily: "timer, sans-serif",
-                    fontSize: `${0.6 * height}px`,
-                }} x={`${componentWidth - 6}px`} y={y} textAnchor="end">{fraction}</text>
+                <text
+                    ref={(instance) => {
+                        alignState.element = instance;
+                        updateAlign();
+                    }}
+                    className="timer-time timer-font"
+                    style={{
+                        fill: `url(#${className}-text-gradient)`,
+                        fontSize: `${0.9 * height}px`,
+                        fontVariant: "tabular-nums",
+                    }}
+                    y={y}
+                    textAnchor="end"
+                >
+                    {time}
+                </text>
+                <text
+                    ref={(instance) => {
+                        if (instance != null) {
+                            alignState.x = `${componentWidth - sidePadding - instance.getComputedTextLength()}px`;
+                        }
+                        updateAlign();
+                    }}
+                    className="timer-time timer-font"
+                    style={{
+                        fill: `url(#${className}-text-gradient)`,
+                        fontSize: `${0.6 * height}px`,
+                        fontVariant: "tabular-nums",
+                    }}
+                    x={`${componentWidth - sidePadding}px`}
+                    y={y}
+                    textAnchor="end"
+                >
+                    {fraction}
+                </text>
             </svg>
         </div>
     );
@@ -82,6 +107,10 @@ export function renderToSVG(
 
 export default class Timer extends React.Component<Props> {
     public render() {
-        return renderToSVG(this.props.state, this.props.componentId, this.props.layoutWidth);
+        return renderToSVG(
+            this.props.state,
+            this.props.componentId,
+            this.props.layoutWidth,
+        );
     }
 }

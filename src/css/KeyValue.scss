@@ -3,7 +3,6 @@
 
 .key-value {
   height: $default-component-height;
-  line-height: $default-line-height;
   padding: 0 $side-padding;
   display: flex;
 
@@ -39,7 +38,6 @@
   .key-value-key {
     display: flex;
     flex-grow: 1;
-    padding-top: 1px;
     justify-content: flex-start;
     align-items: center;
     overflow: hidden;

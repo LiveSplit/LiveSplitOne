@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 @import "Time";
 @import 'variables';
 
@@ -11,7 +13,6 @@ $split-icon-two-row-size: $two-row-height - $vertical-padding * 2;
   position: relative;
 
   .split {
-    line-height: $default-line-height;
     display: flex;
     position: relative;
     width: 100%;
@@ -97,7 +98,6 @@ $split-icon-two-row-size: $two-row-height - $vertical-padding * 2;
           overflow: hidden;
           padding: 0 $side-padding;
           padding-left: 0;
-          padding-top: 1px;
           height: 100%;
 
           .split-name-inner {
@@ -120,10 +120,6 @@ $split-icon-two-row-size: $two-row-height - $vertical-padding * 2;
           &.split-time-full {
             width: $split-column-width;
             flex-shrink: 0;
-          }
-
-          &.split-label {
-            padding-top: 1px;
           }
 
           .split-time-inner {
@@ -152,8 +148,8 @@ $split-icon-two-row-size: $two-row-height - $vertical-padding * 2;
       border-top-width: $thin-separator-width;
       border-bottom-style: solid;
       border-top-style: solid;
-      top: -$thick-separator-width / 2;
-      height: calc(100% + #{$thick-separator-width} / 2);
+      top: math.div(-$thick-separator-width, 2);
+      height: calc(100% + #{math.div($thick-separator-width, 2)});
 
       &.separator-above {
         border-top-width: $thick-separator-width;
