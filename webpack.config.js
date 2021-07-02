@@ -1,5 +1,6 @@
 module.exports = async (env, argv) => {
     const HtmlWebpackPlugin = require("html-webpack-plugin");
+    const HtmlInlineScriptPlugin = require('html-inline-script-webpack-plugin');
     const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
     const { CleanWebpackPlugin } = require("clean-webpack-plugin");
     const WorkboxPlugin = require("workbox-webpack-plugin");
@@ -51,6 +52,7 @@ module.exports = async (env, argv) => {
         output: {
             filename: "[name].js",
             path: distPath,
+            publicPath: '',
         },
 
         devtool: isProduction ? undefined : "source-map",
@@ -93,14 +95,16 @@ module.exports = async (env, argv) => {
                 CONTRIBUTORS_LIST: JSON.stringify(contributorsList),
             }),
             ...(isProduction ? [
+                new HtmlInlineScriptPlugin(['bundle.js']),
                 new WorkboxPlugin.GenerateSW({
                     clientsClaim: true,
                     skipWaiting: true,
                     maximumFileSizeToCacheInBytes: 100 * 1024 * 1024,
                     exclude: [
-                        /^assets\//,
-                        /.*\.LICENSE\.txt/,
+                        /^assets/,
+                        /\.LICENSE\.txt$/,
                     ],
+
                     runtimeCaching: [{
                         urlPattern: (context) => {
                             return self.origin === context.url.origin &&
@@ -158,7 +162,8 @@ module.exports = async (env, argv) => {
         },
 
         experiments: {
-            asyncWebAssembly: true,
+            syncWebAssembly: true,
+            topLevelAwait: true,
         },
 
         mode: isProduction ? "production" : "development",
