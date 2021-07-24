@@ -57,7 +57,7 @@ jobs:
         git -C binaryen pull || git clone https://github.com/WebAssembly/binaryen binaryen
         cd binaryen
         cmake .
-        make wasm-opt
+        make -j wasm-opt
 
     # FIXME: Use actions-rs/install@v0.1 again once it can handle wasm-bindgen
     - name: Install wasm-bindgen
