@@ -39,9 +39,9 @@ jobs:
         key: ${{ runner.os }}-target-${{ env.CURRENT_TWO_WEEKS }}
 
     - name: Install Node
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v2.3.0
       with:
-        node-version: '12.x' # FIXME: https://github.com/actions/setup-node/issues/26
+        node-version: 'lts/*'
 
     - name: Install Rust
       uses: hecrj/setup-rust-action@v1
