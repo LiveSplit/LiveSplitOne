@@ -42,7 +42,7 @@
   },
   "devDependencies": {
     "@types/node": "^15.14.0",
-    "chromedriver": "^91.0.1",
+    "chromedriver": "^92.0.0",
     "clean-webpack-plugin": "^3.0.0",
     "css-loader": "^5.2.6",
     "favicons": "^6.2.2",
