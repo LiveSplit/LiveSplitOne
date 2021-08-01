@@ -58,7 +58,7 @@
     "node-fetch": "^2.6.1",
     "pixelmatch": "^5.2.1",
     "pngjs": "^6.0.0",
-    "sass": "^1.35.1",
+    "sass": "^1.37.0",
     "sass-loader": "^12.1.0",
     "selenium-webdriver": "^4.0.0-beta.4",
     "source-map-loader": "^3.0.0",
