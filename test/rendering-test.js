@@ -154,13 +154,13 @@ describe("Layout Rendering Tests", function () {
     }
 
     testRendering("all_components", "default", "f4G-QgAAAAAeAAAO____________________AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA__wCAAAAAABv______4Hb4AG");
-    testRendering("all_components", "pmw3", "f4G-QgAAAAAeAAAO________fmAOf6AAX4AG3_gH3_AOX_APVkgOX-AOVvAPX_AeX_AeWrAef_gfAAAAAABvf_5-f___JABO");
+    testRendering("all_components", "pmw3", "f4G-QgAAAAAeAAAO________fmAOf6AAX4AG3_gH3_AOX_APVkgOX-AOVvAPX_AeX_AeWrAeb_gfAAAAAABv__x-____JABO");
     testRendering("default", "default", "____________AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADgAAD_________");
-    testRendering("default", "pmw3", "f_wAb__mX-AG3-gGWNgGSkAOXnAOW9gOX-APVtwOH_APX8AOX_APRnAOXVAOXJAeHvAeX_wf__AfAAAAAABgAAD_AAB_____");
+    testRendering("default", "pmw3", "__wA___GX2AGX-gGWNgGSkAOXnAOW9gOX-APVtwOH_APX8AOX_APRnAOXVAOXJAeHvAeX_wf__AfAAAAAABgAAD_AAB_____");
     testRendering("splits_two_rows", "celeste", "f8AAcAAHf8AA____d4AAcAAHf_gAcAAPd_AAYAAHf4AA____f4AAYAAH__AA____Z_gAYAAHf_8A9VVfb_wAcAAPf_AAYAAP");
     testRendering("splits_with_labels", "celeste", "AABEAADPAADPAADPAADA_____AAH_wAP_wAP_wAPwgAA____wgAH34AP_4AH34APQYAA____0EAP_8AP38AP38APwAAAAAAA");
     testRendering("title_centered_no_game_icon", "celeste", "________AAAAADQAAHQAAH4A______3_____AAAAAAAAAAAA____AAkAAL8DAP8DAP8DAP8D_________-n9AAAAAAAAAAAA");
-    testRendering("title_centered_with_game_icon", "celeste", "________AAAAIB0AIB8AYB8A________cB8AcAAAcAAAcAAAcAAAcAZAcC_DcD_DcD_DcD_D_________9Z9cAAAAAAAAAAA");
+    testRendering("title_centered_with_game_icon", "celeste", "________AAAAQBoAQBoAYB8A________4B8A4AAA4AAA4AAA4AAA4ASA4H_D4H_D4H_D4H_D_________9T94AAAAAAAAAAA");
     testRendering("title_left_no_attempt_count", "celeste", "________AAAA-AAA-AAA-AAA____________AAAAAAAAAAAA____CQAA_wAA_4AA_4AA_4AA________qf__AAAAAAAAAAAA");
 
     after(async () => {
