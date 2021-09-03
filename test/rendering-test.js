@@ -27,7 +27,7 @@ describe("Layout Rendering Tests", function () {
         return new Promise((resolve) => {
             serverProcess = fork("./node_modules/webpack/bin/webpack.js", ["serve"], { silent: true });
             serverProcess.stdout.on("data", (data) => {
-                if (data.toString().includes("Compiled successfully.")) {
+                if (data.toString().includes(" compiled ")) {
                     resolve();
                 }
             });

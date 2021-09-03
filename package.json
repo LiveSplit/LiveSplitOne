@@ -9,7 +9,7 @@
     "lint": "tslint --project tsconfig.json",
     "publish": "webpack --mode production",
     "serve": "webpack serve",
-    "start": "webpack --open",
+    "start": "webpack serve --open",
     "start:electron": "webpack --electron && electron dist/index.html",
     "test": "mocha --exit test/**/*.js"
   },
