@@ -134,10 +134,8 @@ module.exports = async (env, argv) => {
                             loader: "css-loader",
                             options: {
                                 importLoaders: 1,
-                                modules: {
-                                    compileType: "icss"
-                                }
-                            }
+                                modules: "icss",
+                            },
                         },
                         {
                             loader: "sass-loader",
@@ -145,19 +143,12 @@ module.exports = async (env, argv) => {
                                 // Prefer `dart-sass`
                                 implementation: require("sass"),
                             },
-                        }
+                        },
                     ],
                 },
                 {
                     test: /\.(png|jpg|gif|woff|ico)$/,
-                    use: [
-                        {
-                            loader: "url-loader",
-                            options: {
-                                limit: 8192,
-                            },
-                        },
-                    ],
+                    type: 'asset/resource'
                 },
             ],
         },
