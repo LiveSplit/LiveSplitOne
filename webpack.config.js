@@ -58,8 +58,9 @@ module.exports = async (env, argv) => {
         devtool: isProduction ? undefined : "source-map",
 
         devServer: {
-            contentBase: basePath,
-            compress: true,
+            static: {
+                directory: path.join(basePath, "src"),
+            },
             port: 8080,
         },
 
