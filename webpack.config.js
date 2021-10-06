@@ -80,6 +80,7 @@ module.exports = async (env, argv) => {
                     developerURL: "https://livesplit.org",
                     background: "#171717",
                     theme_color: "#232323",
+                    appleStatusBarStyle: "black-translucent",
                     icons: {
                         coast: false,
                         yandex: false,

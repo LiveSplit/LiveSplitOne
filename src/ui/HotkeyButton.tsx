@@ -97,7 +97,7 @@ export default class HotkeyButton extends React.Component<Props, State> {
                 handleEvent: (ev: KeyboardEvent) => this.props.setValue(ev.code),
             };
 
-            window.addEventListener("keypress", listener);
+            window.addEventListener("keydown", listener);
         }
 
         if (intervalHandle === null) {
@@ -138,7 +138,7 @@ export default class HotkeyButton extends React.Component<Props, State> {
 
     private blurButton() {
         if (this.state.listener != null) {
-            window.removeEventListener("keypress", this.state.listener);
+            window.removeEventListener("keydown", this.state.listener);
         }
         if (this.state.intervalHandle != null) {
             window.clearTimeout(this.state.intervalHandle);
