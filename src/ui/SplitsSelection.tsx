@@ -292,7 +292,7 @@ export class SplitsSelection extends React.Component<Props, State> {
         const splits = await openFileAsArrayBuffer();
         try {
             await this.importSplitsFromArrayBuffer(splits);
-        } catch (err) {
+        } catch (err: any) {
             toast.error(err.message);
         }
     }
