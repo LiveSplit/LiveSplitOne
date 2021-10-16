@@ -16,7 +16,7 @@ execSync(
         stdio: "inherit",
         env: {
             ...process.env,
-            'RUSTFLAGS': '-C target-feature=+sign-ext',
+            'RUSTFLAGS': '-C target-feature=+bulk-memory,+mutable-globals,+nontrapping-fptoint,+sign-ext',
         },
     },
 );
