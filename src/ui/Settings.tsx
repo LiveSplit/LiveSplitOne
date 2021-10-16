@@ -744,7 +744,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 );
                             }}
                         >
-                            <option value="DontUpdate">Dont Update</option>
+                            <option value="DontUpdate">Don't Update</option>
                             <option value="SplitTime">Split Time</option>
                             <option value="Delta">Time Ahead / Behind</option>
                             <option value="DeltaWithFallback">Time Ahead / Behind or Split Time If Empty</option>
