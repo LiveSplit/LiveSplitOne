@@ -41,6 +41,7 @@
     "resize-observer": "^1.0.2"
   },
   "devDependencies": {
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.1",
     "@types/node": "^16.10.3",
     "chromedriver": "^94.0.0",
     "clean-webpack-plugin": "^3.0.0",
@@ -58,6 +59,8 @@
     "node-fetch": "^2.6.1",
     "pixelmatch": "^5.2.1",
     "pngjs": "^6.0.0",
+    "react-refresh": "^0.10.0",
+    "react-refresh-typescript": "^2.0.2",
     "sass": "^1.38.2",
     "sass-loader": "^12.1.0",
     "selenium-webdriver": "^4.0.0-beta.4",
