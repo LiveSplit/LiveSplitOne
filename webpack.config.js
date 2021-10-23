@@ -4,6 +4,8 @@ module.exports = async (env, argv) => {
     const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
     const { CleanWebpackPlugin } = require("clean-webpack-plugin");
     const WorkboxPlugin = require("workbox-webpack-plugin");
+    const ReactRefreshTypeScript = require('react-refresh-typescript');
+    const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
     const webpack = require("webpack");
     const { execSync } = require("child_process");
     const fetch = require("node-fetch");
@@ -58,10 +60,8 @@ module.exports = async (env, argv) => {
         devtool: isProduction ? undefined : "source-map",
 
         devServer: {
-            static: {
-                directory: path.join(basePath, "src"),
-            },
             port: 8080,
+            hot: true
         },
 
         resolve: {
@@ -116,6 +116,7 @@ module.exports = async (env, argv) => {
                     }],
                 })
             ] : []),
+            ...(!isProduction ? [new ReactRefreshWebpackPlugin()] : [])
         ],
 
         module: {
@@ -123,8 +124,16 @@ module.exports = async (env, argv) => {
                 {
                     test: /\.tsx?$/,
                     use: [
-                        "ts-loader",
-                    ],
+                        {
+                          loader: "ts-loader",
+                          options: {
+                            getCustomTransformers: () => ({
+                              before: [!isProduction && ReactRefreshTypeScript()].filter(Boolean),
+                            }),
+                            transpileOnly: !isProduction,
+                          },
+                        },
+                      ],
                     exclude: "/node_modules",
                 },
                 {
