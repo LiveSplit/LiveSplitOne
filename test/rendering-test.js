@@ -1,6 +1,6 @@
 const fs = require("fs");
 const path = require("path");
-const { fork } = require("child_process");
+const { createServer } = require('http-server');
 const {
     Builder,
     By,
@@ -25,11 +25,9 @@ describe("Layout Rendering Tests", function () {
 
     const startServer = async () => {
         return new Promise((resolve) => {
-            serverProcess = fork("./node_modules/webpack/bin/webpack.js", ["serve"], { silent: true });
-            serverProcess.stdout.on("data", (data) => {
-                if (data.toString().includes(" compiled ")) {
-                    resolve();
-                }
+            serverProcess = createServer({ root: "./dist" });
+            serverProcess.listen(8080, () => {
+                resolve();
             });
         });
     };
@@ -165,6 +163,6 @@ describe("Layout Rendering Tests", function () {
 
     after(async () => {
         await driver.quit();
-        serverProcess.kill();
+        serverProcess.close();
     });
 });
