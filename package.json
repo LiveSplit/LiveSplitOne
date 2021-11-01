@@ -50,7 +50,7 @@
     "favicons-webpack-plugin": "^5.0.2",
     "file-loader": "^6.2.0",
     "hex64": "^0.4.0",
-    "html-inline-script-webpack-plugin": "^2.0.2",
+    "html-inline-script-webpack-plugin": "^2.0.3",
     "html-webpack-plugin": "^5.3.2",
     "http-server": "^14.0.0",
     "imghash": "0.0.9",
