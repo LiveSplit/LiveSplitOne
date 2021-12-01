@@ -21,7 +21,7 @@
     "@types/react-color": "^3.0.5",
     "@types/react-dom": "^17.0.10",
     "@types/react-resizable": "^1.7.3",
-    "@types/react-sidebar": "^3.0.1",
+    "@types/react-sidebar": "^3.0.2",
     "@types/react-toastify": "^4.1.0",
     "@types/react-toggle": "^4.0.3",
     "commonmark": "^0.30.0",
