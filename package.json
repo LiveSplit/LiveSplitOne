@@ -41,7 +41,7 @@
     "resize-observer": "^1.0.4"
   },
   "devDependencies": {
-    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.1",
+    "@pmmmwh/react-refresh-webpack-plugin": "^0.5.4",
     "@types/node": "^17.0.5",
     "chromedriver": "^96.0.0",
     "clean-webpack-plugin": "^4.0.0",
