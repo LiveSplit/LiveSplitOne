@@ -61,7 +61,7 @@
     "pixelmatch": "^5.2.1",
     "pngjs": "^6.0.0",
     "react-refresh-typescript": "^2.0.2",
-    "sass": "^1.43.4",
+    "sass": "^1.45.2",
     "sass-loader": "^12.3.0",
     "selenium-webdriver": "^4.1.0",
     "source-map-loader": "^3.0.0",
