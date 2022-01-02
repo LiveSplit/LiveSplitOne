@@ -20,7 +20,7 @@
     "@types/react": "^17.0.37",
     "@types/react-color": "^3.0.5",
     "@types/react-dom": "^17.0.10",
-    "@types/react-resizable": "^1.7.3",
+    "@types/react-resizable": "^1.7.4",
     "@types/react-sidebar": "^3.0.2",
     "@types/react-toastify": "^4.1.0",
     "@types/react-toggle": "^4.0.3",
