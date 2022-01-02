@@ -51,6 +51,10 @@ export class TimerView extends React.Component<Props, State> {
         };
     }
 
+    componentWillUnmount() {
+        this.connection?.close();
+    }
+
     public render() {
         const renderedView = this.renderView();
         if (this.props.renderWithSidebar) {
