@@ -10,7 +10,7 @@ execSync(
 );
 
 execSync(
-    "cargo build -p cdylib --features wasm-web --target wasm32-unknown-unknown --release",
+    "cargo build -p cdylib --features \"wasm-web software-rendering\" --target wasm32-unknown-unknown --release",
     {
         cwd: "livesplit-core",
         stdio: "inherit",

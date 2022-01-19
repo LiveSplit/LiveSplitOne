@@ -1,10 +1,11 @@
 import * as React from "react";
-import { LayoutStateJson } from "../livesplit-core";
+import { LayoutStateJson, LayoutStateRef } from "../livesplit-core";
 import AutoRefresh from "../util/AutoRefresh";
 import Layout from "./Layout";
 
 export interface Props {
     getState: () => LayoutStateJson,
+    stateRef: LayoutStateRef,
     allowResize: boolean,
     width: number,
     onResize(width: number): void,
@@ -34,6 +35,7 @@ export default class AutoRefreshLayout extends React.Component<Props, State> {
             <AutoRefresh update={() => this.refreshLayout()} >
                 <Layout
                     state={this.state.layoutState}
+                    stateRef={this.props.stateRef}
                     allowResize={this.props.allowResize}
                     width={this.props.width}
                     onResize={this.props.onResize}

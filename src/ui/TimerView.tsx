@@ -82,6 +82,7 @@ export class TimerView extends React.Component<Props, State> {
                         getState={() => this.readWith(
                             (t) => this.props.layout.updateStateAsJson(this.props.layoutState, t),
                         )}
+                        stateRef={this.props.layoutState}
                         allowResize={this.props.isDesktop}
                         width={this.props.layoutWidth}
                         onResize={(width) => this.props.callbacks.onResize(width)}
