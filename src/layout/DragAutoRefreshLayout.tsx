@@ -61,7 +61,10 @@ export default class DragAutoRefreshLayout extends React.Component<Props, State>
                         counts.set(componentType, id + 1);
 
                         const key = `${componentType}${id}`;
-
+                        // TODO right now this component still uses the old HTML/CSS renderer instead of the livesplit software rendering.
+                        // This isn't a huge problem as the majority of the user's time and therefore performance concerns are spent in the actual
+                        // timer rather than the layout editor. However, this still means we have to double maintain every component. 
+                        // Fixing this will be much more difficult as it's no longer as simple as "just create a u8 array and write to it"
                         return <div
                             key={key}
                             onClick={(_) => this.props.onClick(i)}

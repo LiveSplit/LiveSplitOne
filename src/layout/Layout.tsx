@@ -1,7 +1,7 @@
 import * as React from "react";
-import { Font, FontStretch, FontStyle, FontWeight, LayoutStateJson } from "../livesplit-core";
+import { Font, FontStretch, FontStyle, FontWeight, LayoutStateJson, LayoutStateRef, SoftwareRenderer } from "../livesplit-core";
 import { colorToCss, gradientToCss } from "../util/ColorUtil";
-import Component from "./Component";
+import {memory, alloc, dealloc} from "../livesplit-core/livesplit_core_bg.wasm";
 import { ResizableBox, ResizeCallbackData } from "react-resizable";
 
 import "../css/Layout.scss";
@@ -28,15 +28,78 @@ interface LayoutStateStyle {
 
 export interface Props {
     state: LayoutStateJson,
+    stateRef: LayoutStateRef,
     allowResize: boolean,
     width: number,
     onResize(width: number): void,
 }
 
-export default class Layout extends React.Component<Props> {
+export interface State {
+    softwareRenderer: SoftwareRenderer,
+    imageDataPtr: number
+}
+
+const BITS_PER_PIXEL = 4;
+
+function getBufferSize(width: number, height: number) {
+    return width * height * BITS_PER_PIXEL;
+}
+export default class Layout extends React.Component<Props, State> {
+    private canvasRef = React.createRef<HTMLCanvasElement>();
+
+    private height(): number {
+        //TODO we need to get the ideal height from the software renderer and return that instead
+        // this requires livesplit_core bindgen changes to do. This can't merge until those bindgen changes are made.
+
+        return 600;
+    }
+    constructor(props: Props) {
+        super(props);
+        let softwareRenderer = SoftwareRenderer.new()
+
+        let imageDataPtr = alloc(getBufferSize(this.props.width, this.height()));
+        
+        // force a preliminary render so that later renders can just update
+        softwareRenderer.render(this.props.stateRef, imageDataPtr, this.props.width, this.height(), this.props.width, true)
+
+        this.state = {
+            softwareRenderer,
+            imageDataPtr
+        }
+    }
+
+
+    public componentWillUnmount() {
+        dealloc(this.state.imageDataPtr, getBufferSize(this.props.width, this.height()));
+    }
+
+    private onResize(data: ResizeCallbackData) {
+        dealloc(this.state.imageDataPtr, getBufferSize(this.props.width, this.height()));
+        this.props.onResize(data.size.width);
+        this.setState({
+            ...this.state,
+            imageDataPtr: alloc(getBufferSize(data.size.width, this.height())),
+        })
+    }
+
     public render() {
         const layoutState = getLayoutStateStyle(this.props.state);
-        const counts = new Map<string, number>();
+
+        if(this.canvasRef.current) {
+            
+            console.log(this.state.imageDataPtr)
+
+            this.state.softwareRenderer.render(this.props.stateRef, this.state.imageDataPtr, this.props.width, this.height(), this.props.width, false)
+            
+            let imageDataArray = new Uint8ClampedArray(memory.buffer, this.state.imageDataPtr, getBufferSize(this.props.width, this.height()));
+
+
+            const imageData = imageDataArray.length > 0 ? new ImageData(imageDataArray, this.props.width, this.height()) : undefined;
+
+
+            if(imageData)
+                this.canvasRef.current.getContext("2d")?.putImageData(imageData, 0, 0);
+        }
 
         return (
             <div
@@ -59,27 +122,12 @@ export default class Layout extends React.Component<Props> {
                             (
                                 _event: React.SyntheticEvent,
                                 data: ResizeCallbackData,
-                            ) => this.props.onResize(data.size.width)
+                            ) => this.onResize(data)
                         }
                         axis="x"
                     />
                 }
-                {
-                    this.props.state.components.map((c) => {
-                        const componentType = Object.keys(c)[0];
-                        const id = counts.get(componentType) || 0;
-                        counts.set(componentType, id + 1);
-
-                        const key = `${componentType}${id}`;
-
-                        return <Component
-                            key={key}
-                            state={c}
-                            componentId={key}
-                            layoutWidth={this.props.width}
-                        />;
-                    })
-                }
+                <canvas width={this.props.width} height={this.height()} ref={this.canvasRef}></canvas>
             </div>
         );
     }
