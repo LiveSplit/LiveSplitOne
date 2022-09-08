@@ -12,7 +12,7 @@ The web version of LiveSplit One is available [here](https://one.livesplit.org/)
 ## Build Instructions
 
 In order to build LiveSplit One, you need to install
-[npm](https://www.npmjs.com/get-npm) and the [Rust
+[npm](https://nodejs.org/en/download/) and the [Rust
 compiler](https://www.rust-lang.org/). Make sure to recursively clone the
 repository so that all git submodules are cloned as well:
 
