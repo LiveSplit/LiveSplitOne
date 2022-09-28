@@ -12,23 +12,23 @@
 
     .table-row-even {
       display: table-row;
-      background: $dark-row-color !important;
+      background: $dark-row-color  !important;
     }
 
     .table-row-odd {
       display: table-row;
-      background: $light-row-color !important;
+      background: $light-row-color  !important;
     }
   }
 
   .table-body {
     display: table-row-group;
 
-    > tr {
+    >tr {
       display: table-row;
       background: $dark-row-color;
 
-      > td {
+      >td {
         padding: math.div($ui-margin, 2) math.div($ui-margin, 2);
         display: table-cell;
 
@@ -54,10 +54,10 @@
   }
 
   .selected {
-    background: $selected-row-color !important;
+    background: $selected-row-color  !important;
   }
 
-  .tab-bar > button {
+  .tab-bar>button {
     font-size: 15px;
     height: 30px;
     border-bottom-right-radius: 0px;
@@ -66,7 +66,7 @@
     border-bottom: 0px;
   }
 
-  tr > td > input {
+  tr>td>input {
     margin-right: -40px;
 
     &:focus {
@@ -125,6 +125,7 @@
 
         select {
           height: $settings-row-height;
+          min-width: 80px;
         }
 
         &.optional-value {

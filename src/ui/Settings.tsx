@@ -56,15 +56,17 @@ export interface SettingValueFactory<T> {
         r2: number, g2: number, b2: number, a2: number,
     ): T;
     fromAlignment(value: string): T | null;
+    fromColumnKind(value: string): T | null;
     fromColumnStartWith(value: string): T | null;
     fromColumnUpdateWith(value: string): T | null;
     fromColumnUpdateTrigger(value: string): T | null;
     fromLayoutDirection(value: string): T | null;
     fromFont(name: string, style: string, weight: string, stretch: string): T | null;
     fromEmptyFont(): T;
+    fromDeltaGradient(value: string): T | null;
 }
 
-export class JsonSettingValueFactory {
+export class JsonSettingValueFactory implements SettingValueFactory<ExtendedSettingsDescriptionValueJson> {
     public fromBool(v: boolean): ExtendedSettingsDescriptionValueJson {
         return { Bool: v };
     }
@@ -125,6 +127,9 @@ export class JsonSettingValueFactory {
     public fromAlignment(_: string): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
+    public fromColumnKind(_: string): ExtendedSettingsDescriptionValueJson | null {
+        throw new Error("Not implemented");
+    }
     public fromColumnStartWith(_: string): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
@@ -146,6 +151,9 @@ export class JsonSettingValueFactory {
         throw new Error("Not implemented");
     }
     public fromEmptyFont(): ExtendedSettingsDescriptionValueJson {
+        throw new Error("Not implemented");
+    }
+    public fromDeltaGradient(_: string): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
 }
@@ -707,6 +715,26 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                         </select>
                     </div>
                 );
+            } else if ("ColumnKind" in value) {
+                component = (
+                    <div className="settings-value-box">
+                        <select
+                            value={value.ColumnKind}
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    expect(
+                                        factory.fromColumnKind(e.target.value),
+                                        "Unexpected Column Kind value",
+                                    ),
+                                );
+                            }}
+                        >
+                            <option value="Time">Time</option>
+                            <option value="Variable">Variable</option>
+                        </select>
+                    </div>
+                );
             } else if ("ColumnStartWith" in value) {
                 component = (
                     <div className="settings-value-box">
@@ -950,6 +978,126 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                         {children}
                     </div>
                 );
+            } else if ("DeltaGradient" in value) {
+                let type: string;
+                let color1: Option<Color> = null;
+                let color2: Option<Color> = null;
+                const gradient = value.DeltaGradient;
+
+                if (typeof gradient !== "string") {
+                    [type] = Object.keys(gradient);
+                    if ("Plain" in gradient) {
+                        color1 = gradient.Plain;
+                    } else if ("Vertical" in gradient) {
+                        [color1, color2] = gradient.Vertical;
+                    } else if ("Horizontal" in gradient) {
+                        [color1, color2] = gradient.Horizontal;
+                    } else {
+                        assertNever(gradient);
+                    }
+                } else {
+                    type = gradient;
+                }
+
+                const colorsToValue = (
+                    type: string,
+                    color1: Option<Color>,
+                    color2: Option<Color>,
+                ) => {
+                    color1 = color1 ? color1 : [0.0, 0.0, 0.0, 0.0];
+                    color2 = color2 ? color2 : color1;
+                    switch (type) {
+                        case "Transparent":
+                            return factory.fromTransparentGradient();
+                        case "Plain":
+                            return factory.fromColor(
+                                color1[0], color1[1], color1[2], color1[3],
+                            );
+                        case "Vertical":
+                            return factory.fromVerticalGradient(
+                                color1[0], color1[1], color1[2], color1[3],
+                                color2[0], color2[1], color2[2], color2[3],
+                            );
+                        case "Horizontal":
+                            return factory.fromHorizontalGradient(
+                                color1[0], color1[1], color1[2], color1[3],
+                                color2[0], color2[1], color2[2], color2[3],
+                            );
+                        default:
+                            return expect(
+                                factory.fromDeltaGradient(type),
+                                "Unexpected Gradient Type",
+                            );
+                    }
+                };
+
+                const children: JSX.Element[] = [
+                    <select
+                        value={type}
+                        onChange={(e) => {
+                            this.props.setValue(
+                                valueIndex,
+                                colorsToValue(e.target.value, color1, color2),
+                            );
+                        }}
+                    >
+                        <option value="Transparent">Transparent</option>
+                        <option value="Plain">Plain</option>
+                        <option value="Vertical">Vertical</option>
+                        <option value="Horizontal">Horizontal</option>
+                        <option value="DeltaPlain">Plain Delta</option>
+                        <option value="DeltaVertical">Vertical Delta</option>
+                        <option value="DeltaHorizontal">Horizontal Delta</option>
+                    </select>,
+                ];
+
+                if (color1) {
+                    children.push(
+                        <ColorPicker
+                            color={color1}
+                            setColor={(color) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    colorsToValue(type, color, color2),
+                                );
+                            }}
+                        />,
+                    );
+                }
+
+                if (color2) {
+                    children.push(
+                        <ColorPicker
+                            color={color2}
+                            setColor={(color) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    colorsToValue(type, color1, color),
+                                );
+                            }}
+                        />,
+                    );
+                }
+
+                if (color2) {
+                    component = (
+                        <div className="settings-value-box two-colors">
+                            {children}
+                        </div>
+                    );
+                } else if (color1) {
+                    component = (
+                        <div className="settings-value-box one-color">
+                            {children}
+                        </div>
+                    );
+                } else {
+                    component = (
+                        <div className="settings-value-box">
+                            {children}
+                        </div>
+                    );
+                }
             } else {
                 assertNever(value);
             }

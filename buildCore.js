@@ -1,6 +1,13 @@
 const { execSync } = require("child_process");
 const fs = require("fs");
 
+let buildFlags = "";
+let targetFolder = "debug";
+if (process.argv.some((v) => v === "--production")) {
+    buildFlags = "--release";
+    targetFolder = "release";
+}
+
 execSync(
     "cargo run",
     {
@@ -10,7 +17,7 @@ execSync(
 );
 
 execSync(
-    "cargo build -p cdylib --features wasm-web --target wasm32-unknown-unknown --release",
+    `cargo rustc -p livesplit-core-capi --crate-type cdylib --features wasm-web --target wasm32-unknown-unknown ${buildFlags}`,
     {
         cwd: "livesplit-core",
         stdio: "inherit",
@@ -22,7 +29,7 @@ execSync(
 );
 
 execSync(
-    "wasm-bindgen livesplit-core/target/wasm32-unknown-unknown/release/livesplit_core.wasm --out-dir src/livesplit-core",
+    `wasm-bindgen livesplit-core/target/wasm32-unknown-unknown/${targetFolder}/livesplit_core.wasm --out-dir src/livesplit-core`,
     {
         stdio: "inherit",
     },
