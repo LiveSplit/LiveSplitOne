@@ -63,7 +63,7 @@ jobs:
     - name: Install wasm-bindgen
       run: |
         set -e
-        cargo install wasm-bindgen-cli
+        cargo install wasm-bindgen-cli --debug
 
     - name: Install npm packages
       run: |
@@ -75,7 +75,7 @@ jobs:
     - name: Build Core
       run: |
         set -e
-        npm run build:core
+        npm run build:core:production
 
     - name: Set up tslint matcher
       run: echo "::add-matcher::.github/workflows/tslint.json"

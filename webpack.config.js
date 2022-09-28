@@ -22,7 +22,7 @@ module.exports = async (env, argv) => {
 
     const coreContributorsMap = {};
     for (const coreContributor of coreContributorsList) {
-        if (coreContributor.type === "User") {
+        if (coreContributor.type === "User" && !coreContributor.login.includes("dependabot")) {
             coreContributorsMap[coreContributor.login] = coreContributor;
         }
     }
@@ -31,7 +31,7 @@ module.exports = async (env, argv) => {
         const existingContributor = coreContributorsMap[lsoContributor.login];
         if (existingContributor) {
             existingContributor.contributions += lsoContributor.contributions;
-        } else if (lsoContributor.type === "User") {
+        } else if (lsoContributor.type === "User" && !lsoContributor.login.includes("dependabot")) {
             coreContributorsMap[lsoContributor.login] = lsoContributor;
         }
     }
@@ -125,15 +125,15 @@ module.exports = async (env, argv) => {
                     test: /\.tsx?$/,
                     use: [
                         {
-                          loader: "ts-loader",
-                          options: {
-                            getCustomTransformers: () => ({
-                              before: [!isProduction && ReactRefreshTypeScript()].filter(Boolean),
-                            }),
-                            transpileOnly: !isProduction,
-                          },
+                            loader: "ts-loader",
+                            options: {
+                                getCustomTransformers: () => ({
+                                    before: [!isProduction && ReactRefreshTypeScript()].filter(Boolean),
+                                }),
+                                transpileOnly: !isProduction,
+                            },
                         },
-                      ],
+                    ],
                     exclude: "/node_modules",
                 },
                 {
