@@ -1,18 +1,18 @@
-const fs = require("fs");
-const path = require("path");
-const { createServer } = require('http-server');
-const {
+import fs from "fs";
+import path from "path";
+import { createServer } from 'http-server';
+import {
     Builder,
     By,
     until,
-} = require("selenium-webdriver");
-const chrome = require("selenium-webdriver/chrome");
-const chromedriver = require("chromedriver");
-const imghash = require("imghash");
-const hex64 = require("hex64");
-const leven = require("leven");
-const pixelmatch = require("pixelmatch");
-const PNG = require("pngjs").PNG;
+} from "selenium-webdriver";
+import chrome from "selenium-webdriver/chrome.js";
+import chromedriver from "chromedriver";
+import imghash from "imghash";
+import hex64 from "hex64";
+import leven from "leven";
+import pixelmatch from "pixelmatch";
+import { PNG } from "pngjs";
 
 describe("Layout Rendering Tests", function () {
     this.timeout(90000);
