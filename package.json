@@ -61,7 +61,7 @@
     "node-fetch": "^3.2.10",
     "pixelmatch": "^5.2.1",
     "pngjs": "^6.0.0",
-    "react-refresh-typescript": "^2.0.2",
+    "react-refresh-typescript": "^2.0.7",
     "sass": "^1.45.2",
     "sass-loader": "^12.3.0",
     "selenium-webdriver": "^4.1.0",
