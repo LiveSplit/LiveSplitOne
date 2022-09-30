@@ -1,17 +1,19 @@
-module.exports = async (env, argv) => {
-    const HtmlWebpackPlugin = require("html-webpack-plugin");
-    const HtmlInlineScriptPlugin = require('html-inline-script-webpack-plugin');
-    const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
-    const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-    const WorkboxPlugin = require("workbox-webpack-plugin");
-    const ReactRefreshTypeScript = require('react-refresh-typescript');
-    const ReactRefreshWebpackPlugin = require('@pmmmwh/react-refresh-webpack-plugin');
-    const webpack = require("webpack");
-    const { execSync } = require("child_process");
-    const fetch = require("node-fetch");
-    const moment = require("moment");
-    const path = require("path");
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import HtmlInlineScriptPlugin from 'html-inline-script-webpack-plugin';
+import FaviconsWebpackPlugin from "favicons-webpack-plugin";
+import { CleanWebpackPlugin } from "clean-webpack-plugin";
+import WorkboxPlugin from "workbox-webpack-plugin";
+import ReactRefreshTypeScript from 'react-refresh-typescript';
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+import webpack from "webpack";
+import { execSync } from "child_process";
+import moment from "moment";
+import path from "path";
+import fetch from "node-fetch";
+import { fileURLToPath } from 'url';
+import sass from "sass";
 
+export default async (env, argv) => {
     const getContributorsForRepo = async (repoName) => {
         const contributorsData = await fetch(`https://api.github.com/repos/LiveSplit/${repoName}/contributors`);
         return contributorsData.json();
@@ -42,7 +44,7 @@ module.exports = async (env, argv) => {
     const commitHash = execSync("git rev-parse --short HEAD").toString();
     const date = moment.utc().format("YYYY-MM-DD kk:mm:ss");
 
-    const basePath = __dirname;
+    const basePath = path.dirname(fileURLToPath(import.meta.url));
 
     const isProduction = argv.mode === "production";
     const distPath = path.join(basePath, "dist");
@@ -151,7 +153,7 @@ module.exports = async (env, argv) => {
                             loader: "sass-loader",
                             options: {
                                 // Prefer `dart-sass`
-                                implementation: require("sass"),
+                                implementation: sass,
                             },
                         },
                     ],
