@@ -46,7 +46,7 @@
     "@types/node": "^17.0.5",
     "chromedriver": "^105.0.1",
     "clean-webpack-plugin": "^4.0.0",
-    "css-loader": "^6.2.0",
+    "css-loader": "^6.7.1",
     "favicons": "^6.2.2",
     "favicons-webpack-plugin": "^5.0.2",
     "file-loader": "^6.2.0",
