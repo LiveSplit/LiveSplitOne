@@ -7,7 +7,7 @@ import {
     until,
 } from "selenium-webdriver";
 import chrome from "selenium-webdriver/chrome.js";
-import chromedriver from "chromedriver";
+import { } from "chromedriver";
 import imghash from "imghash";
 import hex64 from "hex64";
 import leven from "leven";
@@ -26,7 +26,7 @@ describe("Layout Rendering Tests", function () {
     const startServer = async () => {
         return new Promise((resolve) => {
             serverProcess = createServer({ root: "./dist" });
-            serverProcess.listen(8080, () => {
+            serverProcess.listen(8081, () => {
                 resolve();
             });
         });
@@ -61,12 +61,10 @@ describe("Layout Rendering Tests", function () {
         console.log('Server started!');
         console.log('Preparing WebDriver for tests...');
 
-        const service = new chrome.ServiceBuilder(chromedriver.path).build();
-        chrome.setDefaultService(service);
         const options = new chrome.Options().windowSize({ width: 1200, height: 2400 }).headless();
         driver = await new Builder().forBrowser("chrome").setChromeOptions(options).build();
 
-        await driver.get("http://localhost:8080");
+        await driver.get("http://localhost:8081");
 
         await driver.executeScript(() => {
             HTMLInputElement.prototype.click = function () {

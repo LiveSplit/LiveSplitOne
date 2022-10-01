@@ -99,7 +99,9 @@ export default async (env, argv) => {
                 CONTRIBUTORS_LIST: JSON.stringify(contributorsList),
             }),
             ...(isProduction ? [
-                new HtmlInlineScriptPlugin(['bundle.js']),
+                new HtmlInlineScriptPlugin({
+                    scriptMatchPattern: ['^bundle.js$'],
+                }),
                 new WorkboxPlugin.GenerateSW({
                     clientsClaim: true,
                     skipWaiting: true,
