@@ -351,7 +351,7 @@ export class LiveSplit extends React.Component<Props, State> {
         try {
             this.importLayoutFromString(file);
         } catch (err) {
-            toast.error(err.message);
+            toast.error((err as Error).message);
         }
     }
 
