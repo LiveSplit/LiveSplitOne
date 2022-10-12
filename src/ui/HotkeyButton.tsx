@@ -48,7 +48,12 @@ export default class HotkeyButton extends React.Component<Props, State> {
         const value = this.props.value;
         let buttonText = null;
         if (value != null) {
-            buttonText = resolveKey(value);
+            const matches = value.match(/(.+)\+\s*(.+)$/);
+            if (matches != null) {
+                buttonText = `${matches[1]}+ ${resolveKey(matches[2])}`;
+            } else {
+                buttonText = resolveKey(value);
+            }
         } else if (this.state.listener != null) {
             buttonText = <i className="fa fa-circle" aria-hidden="true" />;
         }
@@ -94,7 +99,26 @@ export default class HotkeyButton extends React.Component<Props, State> {
 
         if (listener === null) {
             listener = {
-                handleEvent: (ev: KeyboardEvent) => this.props.setValue(ev.code),
+                handleEvent: (ev: KeyboardEvent) => {
+                    if (ev.repeat) {
+                        return;
+                    }
+                    let text = "";
+                    if (ev.ctrlKey && ev.code !== "ControlLeft" && ev.code !== "ControlRight") {
+                        text += "Ctrl + ";
+                    }
+                    if (ev.altKey && ev.code !== "AltLeft" && ev.code !== "AltRight") {
+                        text += "Alt + ";
+                    }
+                    if (ev.metaKey && ev.code !== "MetaLeft" && ev.code !== "MetaRight") {
+                        text += "Meta + ";
+                    }
+                    if (ev.shiftKey && ev.code !== "ShiftLeft" && ev.code !== "ShiftRight") {
+                        text += "Shift + ";
+                    }
+                    text += ev.code;
+                    this.props.setValue(text);
+                }
             };
 
             window.addEventListener("keydown", listener);
