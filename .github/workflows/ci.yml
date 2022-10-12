@@ -68,7 +68,7 @@ jobs:
     - name: Install npm packages
       run: |
         set -e
-        npm install
+        npm ci
       env:
         DETECT_CHROMEDRIVER_VERSION: true
 
