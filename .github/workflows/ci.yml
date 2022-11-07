@@ -45,6 +45,9 @@ jobs:
 
     - name: Install Rust
       uses: hecrj/setup-rust-action@v1
+      with:
+        rust-version: nightly
+        components: rust-src
 
     - name: Install target
       run: rustup target add wasm32-unknown-unknown
@@ -75,7 +78,7 @@ jobs:
     - name: Build Core
       run: |
         set -e
-        npm run build:core:production
+        npm run build:core:deploy
 
     - name: Set up tslint matcher
       run: echo "::add-matcher::.github/workflows/tslint.json"
