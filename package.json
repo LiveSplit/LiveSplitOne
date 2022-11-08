@@ -7,8 +7,8 @@
   "scripts": {
     "build": "webpack",
     "build:core": "node buildCore.js",
-    "build:core:production": "node buildCore.js --production",
-    "build:core:deploy": "node buildCore.js --production --nightly",
+    "build:core:release": "node buildCore.js --release",
+    "build:core:deploy": "node buildCore.js --max-opt --nightly",
     "lint": "tslint --project tsconfig.json",
     "publish": "webpack --mode production",
     "serve": "webpack serve",

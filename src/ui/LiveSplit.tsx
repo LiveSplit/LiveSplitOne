@@ -63,6 +63,8 @@ export interface State {
     timer: SharedTimer,
 }
 
+export let hotkeySystem: Option<HotkeySystem> = null;
+
 export class LiveSplit extends React.Component<Props, State> {
     public static async loadStoredData() {
         const splitsKey = await Storage.loadSplitsKey();
@@ -95,7 +97,6 @@ export class LiveSplit extends React.Component<Props, State> {
             "The Default Run should be a valid Run",
         ).intoShared();
 
-        let hotkeySystem: Option<HotkeySystem> = null;
         const hotkeys = props.hotkeys;
         try {
             if (hotkeys !== undefined) {
