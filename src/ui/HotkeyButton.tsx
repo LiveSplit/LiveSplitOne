@@ -1,27 +1,11 @@
 import * as React from "react";
-import { Option, map } from "../util/OptionUtil";
+import { Option, map, expect } from "../util/OptionUtil";
+import { hotkeySystem } from "./LiveSplit";
 
 import "../css/HotkeyButton.scss";
 
-let layoutMap: { get: (keyCode: string) => string | undefined; } | null = null;
-
-(navigator as any).keyboard?.getLayoutMap()?.then((m: any) => {
-    layoutMap = m;
-});
-
 function resolveKey(keyCode: string): string {
-    if (layoutMap == null) {
-        return keyCode;
-    }
-    const lowercase = layoutMap.get(keyCode);
-    if (lowercase === undefined) {
-        return keyCode;
-    }
-    if (lowercase === "ß") {
-        // ß uppercases to SS, but that's not what's on the keyboard.
-        return lowercase;
-    }
-    return lowercase.toUpperCase();
+    return expect(hotkeySystem, "The Hotkey System should always be initialized.").resolve(keyCode);
 }
 
 export interface Props {

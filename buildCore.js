@@ -1,16 +1,42 @@
 import { execSync } from "child_process";
 import fs from "fs";
 
-let buildFlags = "";
 let toolchain = "";
 let targetFolder = "debug";
-if (process.argv.some((v) => v === "--production")) {
-    buildFlags = "--release";
+let cargoFlags = "";
+let rustFlags = "-C target-feature=+bulk-memory,+mutable-globals,+nontrapping-fptoint,+sign-ext";
+
+// Do an optimized build.
+if (process.argv.some((v) => v === "--release")) {
     targetFolder = "release";
+    cargoFlags = "--release";
 }
+
+// Do a fully optimized build ready for deployment.
+if (process.argv.some((v) => v === "--max-opt")) {
+    targetFolder = "max-opt";
+    cargoFlags = "--profile max-opt";
+}
+
+// Use the nightly toolchain, which enables some more optimizations.
 if (process.argv.some((v) => v === "--nightly")) {
     toolchain = "+nightly";
-    buildFlags += " -Z build-std=std,panic_abort -Z build-std-features=panic_immediate_abort";
+    cargoFlags += " -Z build-std=std,panic_abort -Z build-std-features=panic_immediate_abort";
+
+    // Virtual function elimination requires LTO, so we can only do it for
+    // max-opt builds.
+    if (targetFolder == "max-opt") {
+        // Seems like cargo itself calls rustc to check for file name patterns,
+        // but it forgets to pass the LTO flag that we specified in the
+        // Cargo.toml, so the virtual-function-elimination complains that it's
+        // only compatible with LTO, so we have to specify lto here too.
+        rustFlags += " -Z virtual-function-elimination -C lto";
+    }
+}
+
+// Activate SIMD support. This works on every browser other than Safari.
+if (process.argv.some((v) => v === "--simd")) {
+    rustFlags += " -C target-feature=+simd128";
 }
 
 execSync(
@@ -22,13 +48,13 @@ execSync(
 );
 
 execSync(
-    `cargo ${toolchain} rustc -p livesplit-core-capi --crate-type cdylib --features wasm-web --target wasm32-unknown-unknown ${buildFlags}`,
+    `cargo ${toolchain} rustc -p livesplit-core-capi --crate-type cdylib --features wasm-web --target wasm32-unknown-unknown ${cargoFlags}`,
     {
         cwd: "livesplit-core",
         stdio: "inherit",
         env: {
             ...process.env,
-            'RUSTFLAGS': '-C target-feature=+bulk-memory,+mutable-globals,+nontrapping-fptoint,+sign-ext',
+            'RUSTFLAGS': rustFlags,
         },
     },
 );
