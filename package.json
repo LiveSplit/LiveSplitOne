@@ -45,7 +45,7 @@
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
     "@types/node": "^18.7.23",
-    "chromedriver": "^106.0.1",
+    "chromedriver": "^108.0.0",
     "clean-webpack-plugin": "^4.0.0",
     "css-loader": "^6.7.1",
     "favicons-webpack-plugin": "^6.0.0-alpha.1",
