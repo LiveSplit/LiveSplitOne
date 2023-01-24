@@ -1,10 +1,11 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit-core";
-import { gradientToCss } from "../util/ColorUtil";
+import { colorToCss, gradientToCss } from "../util/ColorUtil";
 import { renderToSVG } from "./Timer";
 
 import "../css/DetailedTimer.scss";
 import variables from "../css/variables.scss";
+import { map } from "../util/OptionUtil";
 
 const fontSizeToLineHeightRatio = parseFloat(variables.fontSizeToLineHeightRatio);
 const lineHeightToComponentHeightRatio = parseFloat(variables.lineHeightToComponentHeightRatio);
@@ -34,6 +35,9 @@ export default class DetailedTimer extends React.Component<Props> {
         const bottomRowHeight = totalHeight - topRowHeight;
         const topRowFontSize = topRowHeight * 0.5 * fontSizeToLineHeightRatio;
         const bottomRowFontSize = bottomRowHeight * 0.5 * lineHeightToComponentHeightRatio * fontSizeToLineHeightRatio;
+
+        const comparisonNamesColor = map(this.props.state.comparison_names_color, colorToCss);
+        const comparisonTimesColor = map(this.props.state.comparison_times_color, colorToCss);
 
         return (
             <div
@@ -71,7 +75,11 @@ export default class DetailedTimer extends React.Component<Props> {
                             this.props.state.segment_name !== null &&
                             <div
                                 className="detailed-timer-segment-name"
-                                style={{ height: topRowHeight, fontSize: topRowFontSize }}
+                                style={{
+                                    color: map(this.props.state.segment_name_color, colorToCss),
+                                    height: topRowHeight,
+                                    fontSize: topRowFontSize,
+                                }}
                             >
                                 {this.props.state.segment_name}
                             </div>
@@ -83,11 +91,19 @@ export default class DetailedTimer extends React.Component<Props> {
                             <tbody>
                                 {
                                     this.props.state.comparison1 !== null &&
-                                    formatComparison(this.props.state.comparison1)
+                                    formatComparison(
+                                        this.props.state.comparison1,
+                                        comparisonNamesColor,
+                                        comparisonTimesColor,
+                                    )
                                 }
                                 {
                                     this.props.state.comparison2 !== null &&
-                                    formatComparison(this.props.state.comparison2)
+                                    formatComparison(
+                                        this.props.state.comparison2,
+                                        comparisonNamesColor,
+                                        comparisonTimesColor,
+                                    )
                                 }
                             </tbody>
                         </table>
@@ -98,11 +114,18 @@ export default class DetailedTimer extends React.Component<Props> {
     }
 }
 
-function formatComparison(comparison: LiveSplit.DetailedTimerComponentComparisonStateJson) {
+function formatComparison(
+    comparison: LiveSplit.DetailedTimerComponentComparisonStateJson,
+    comparisonNamesColor?: string,
+    comparisonTimesColor?: string,
+) {
     return (
         <tr>
-            <td style={{ padding: 0 }}>{comparison.name + ":"}</td>
+            <td style={{ color: comparisonNamesColor, padding: 0 }}>
+                {comparison.name + ":"}
+            </td>
             <td className="time" style={{
+                color: comparisonTimesColor,
                 padding: 0,
                 paddingLeft: sidePadding,
             }}>
