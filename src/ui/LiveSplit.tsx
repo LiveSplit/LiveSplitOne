@@ -124,7 +124,7 @@ export class LiveSplit extends React.Component<Props, State> {
             );
             this.loadFromSplitsIO(window.location.hash.substr("#/splits-io/".length));
         } else if (props.splits !== undefined) {
-            Run.parseArray(props.splits, "", false).with((result) => {
+            Run.parseArray(props.splits, "").with((result) => {
                 if (result.parsedSuccessfully()) {
                     result.unwrap().with((r) => timer.writeWith((t) => t.setRun(r)))?.dispose();
                 }
@@ -541,7 +541,7 @@ export class LiveSplit extends React.Component<Props, State> {
 
     private importSplitsFromArrayBuffer(buffer: [ArrayBuffer, File]) {
         const [file] = buffer;
-        Run.parseArray(new Uint8Array(file), "", false).with((result) => {
+        Run.parseArray(new Uint8Array(file), "").with((result) => {
             if (result.parsedSuccessfully()) {
                 const run = result.unwrap();
                 this.setRun(run, () => { throw Error("Empty Splits are not supported."); });
