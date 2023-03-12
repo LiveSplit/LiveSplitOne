@@ -19,13 +19,6 @@ jobs:
     - name: Set CURRENT_TWO_WEEKS for use in cache keys
       run: echo "CURRENT_TWO_WEEKS=$(($(date +%-V) / 2))" >> $GITHUB_ENV
 
-    - name: Cache binaryen
-      if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
-      uses: actions/cache@v1
-      with:
-        path: ~/binaryen
-        key: ${{ runner.os }}-binaryen-${{ env.CURRENT_TWO_WEEKS }}
-
     - name: Cache target
       uses: actions/cache@v1
       with:
@@ -44,14 +37,21 @@ jobs:
         components: rust-src
         targets: wasm32-unknown-unknown
 
-    - name: Install optimizers
+    - name: Download binaryen
+      if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
+      uses: robinraju/release-downloader@v1.7
+      with:
+        repository: "WebAssembly/binaryen"
+        latest: true
+        fileName: "binaryen-*-x86_64-linux.tar.gz"
+        out-file-path: "/home/runner/.cargo/bin"
+
+    - name: Install binaryen
       if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
       run: |
-        cd $HOME
-        git -C binaryen pull || git clone --recursive https://github.com/WebAssembly/binaryen binaryen
-        cd binaryen
-        cmake .
-        make -j2 wasm-opt
+        cd ~/.cargo/bin
+        tar -xzf binaryen-*-x86_64-linux.tar.gz
+        mv binaryen*/bin/wasm* .
 
     - name: Choose wasm-bindgen-cli version
       run: echo "version=$(cd livesplit-core && cargo tree -i wasm-bindgen --features wasm-web --target wasm32-unknown-unknown --depth 0 | sed 's/.* v//g')" >> $GITHUB_OUTPUT
@@ -111,7 +111,7 @@ jobs:
       if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
       run: |
         WASM_FILE=$(ls dist/*.wasm)
-        ~/binaryen/bin/wasm-opt -O4 "$WASM_FILE" -o "$WASM_FILE"
+        wasm-opt -O4 "$WASM_FILE" -o "$WASM_FILE"
 
     - name: Add CNAME file
       if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
