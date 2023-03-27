@@ -4,7 +4,7 @@ import fs from "fs";
 let toolchain = "";
 let targetFolder = "debug";
 let cargoFlags = "";
-let rustFlags = "-C target-feature=+bulk-memory,+mutable-globals,+nontrapping-fptoint,+sign-ext";
+let rustFlags = "-C target-feature=+bulk-memory,+mutable-globals,+nontrapping-fptoint,+sign-ext,+simd128";
 
 // Do an optimized build.
 if (process.argv.some((v) => v === "--release")) {
@@ -32,11 +32,6 @@ if (process.argv.some((v) => v === "--nightly")) {
         // only compatible with LTO, so we have to specify lto here too.
         rustFlags += " -Z virtual-function-elimination -C lto";
     }
-}
-
-// Activate SIMD support. This works on every browser other than Safari.
-if (process.argv.some((v) => v === "--simd")) {
-    rustFlags += " -C target-feature=+simd128";
 }
 
 execSync(
