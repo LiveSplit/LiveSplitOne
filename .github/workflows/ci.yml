@@ -16,15 +16,6 @@ jobs:
       with:
         submodules: recursive
 
-    - name: Set CURRENT_TWO_WEEKS for use in cache keys
-      run: echo "CURRENT_TWO_WEEKS=$(($(date +%-V) / 2))" >> $GITHUB_ENV
-
-    - name: Cache target
-      uses: actions/cache@v1
-      with:
-        path: livesplit-core/target
-        key: ${{ runner.os }}-target-${{ env.CURRENT_TWO_WEEKS }}
-
     - name: Install Node
       uses: actions/setup-node@v2.3.0
       with:
