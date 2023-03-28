@@ -27,6 +27,22 @@ try {
             layoutWidth,
         } = await LiveSplit.loadStoredData();
 
+        function requestWakeLock() {
+            try {
+                (navigator as any)?.wakeLock?.request("screen");
+            } catch {
+                // It's fine if it fails.
+            }
+        }
+
+        requestWakeLock();
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                requestWakeLock();
+            }
+        });
+
         ReactDOM.render(
             <div>
                 <LiveSplit
