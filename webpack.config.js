@@ -11,7 +11,7 @@ import moment from "moment";
 import path from "path";
 import fetch from "node-fetch";
 import { fileURLToPath } from 'url';
-import sass from "sass";
+import * as sass from "sass";
 
 export default async (env, argv) => {
     const getContributorsForRepo = async (repoName) => {
