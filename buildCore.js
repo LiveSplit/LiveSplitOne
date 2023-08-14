@@ -18,10 +18,21 @@ if (process.argv.some((v) => v === "--max-opt")) {
     cargoFlags = "--profile max-opt";
 }
 
+// Use WASM features that may not be supported by all the browsers.
+if (process.argv.some((v) => v === "--unstable")) {
+    // Extended const is not supported by Safari yet.
+    // Relaxed SIMD is not supported by any browser yet.
+    // Tail calls are not supported by Firefox, Safari and wasm-bindgen yet.
+    rustFlags += ",+extended-const,+relaxed-simd"; //,+tail-call";
+}
+
 // Use the nightly toolchain, which enables some more optimizations.
 if (process.argv.some((v) => v === "--nightly")) {
     toolchain = "+nightly";
     cargoFlags += " -Z build-std=std,panic_abort -Z build-std-features=panic_immediate_abort";
+    // Multivalue is not supported by wasm-bindgen yet:
+    // https://github.com/rustwasm/wasm-bindgen/issues/3552
+    // rustFlags += ",+multivalue";
 
     // Virtual function elimination requires LTO, so we can only do it for
     // max-opt builds.
