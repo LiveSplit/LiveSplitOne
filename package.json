@@ -23,7 +23,7 @@
     "@types/react": "^16.14.32",
     "@types/react-color": "^3.0.6",
     "@types/react-dom": "^16.9.16",
-    "@types/react-resizable": "^3.0.3",
+    "@types/react-resizable": "^3.0.5",
     "@types/react-sidebar": "^3.0.2",
     "@types/react-toggle": "^4.0.3",
     "commonmark": "^0.27.0",
