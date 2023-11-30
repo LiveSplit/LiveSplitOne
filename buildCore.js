@@ -5,11 +5,14 @@ let toolchain = "";
 let targetFolder = "debug";
 let cargoFlags = "";
 let rustFlags = "-C target-feature=+bulk-memory,+mutable-globals,+nontrapping-fptoint,+sign-ext,+simd128";
+let wasmBindgenFlags = "";
 
 // Do an optimized build.
 if (process.argv.some((v) => v === "--release")) {
     targetFolder = "release";
     cargoFlags = "--release";
+} else {
+    wasmBindgenFlags += " --keep-debug";
 }
 
 // Do a fully optimized build ready for deployment.
@@ -66,7 +69,7 @@ execSync(
 );
 
 execSync(
-    `wasm-bindgen livesplit-core/target/wasm32-unknown-unknown/${targetFolder}/livesplit_core.wasm --out-dir src/livesplit-core`,
+    `wasm-bindgen ${wasmBindgenFlags} livesplit-core/target/wasm32-unknown-unknown/${targetFolder}/livesplit_core.wasm --out-dir src/livesplit-core`,
     {
         stdio: "inherit",
     },
