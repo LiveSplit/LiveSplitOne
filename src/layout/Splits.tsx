@@ -6,27 +6,19 @@ import { Option, map } from "../util/OptionUtil";
 import SplitLabels from "./SplitLabels";
 
 import "../css/Splits.scss";
+import { UrlCache } from "../util/UrlCache";
 
 export interface Props {
     state: LiveSplit.SplitsComponentStateJson,
+    layoutUrlCache: UrlCache,
 }
 
 export default class Splits extends React.Component<Props> {
-    private iconUrls: string[];
-
     constructor(props: Props) {
         super(props);
-        this.iconUrls = [];
     }
 
     public render() {
-        for (const iconChange of this.props.state.icon_changes) {
-            while (iconChange.segment_index >= this.iconUrls.length) {
-                this.iconUrls.push("");
-            }
-            this.iconUrls[iconChange.segment_index] = iconChange.icon;
-        }
-
         const background = this.props.state.background;
         const style: any = {};
         let evenOdd: [Option<string>, Option<string>] = [null, null];
@@ -62,7 +54,7 @@ export default class Splits extends React.Component<Props> {
                             evenOdd={evenOdd}
                             split={s}
                             splitsState={splitsState}
-                            icon={this.iconUrls[s.index]}
+                            layoutUrlCache={this.props.layoutUrlCache}
                             key={s.index.toString()}
                             separatorInFrontOfSplit={
                                 (this.props.state.show_final_separator &&

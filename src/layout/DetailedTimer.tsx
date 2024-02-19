@@ -6,6 +6,7 @@ import { renderToSVG } from "./Timer";
 import "../css/DetailedTimer.scss";
 import variables from "../css/variables.scss";
 import { map } from "../util/OptionUtil";
+import { UrlCache } from "../util/UrlCache";
 
 const fontSizeToLineHeightRatio = parseFloat(variables.fontSizeToLineHeightRatio);
 const lineHeightToComponentHeightRatio = parseFloat(variables.lineHeightToComponentHeightRatio);
@@ -13,22 +14,17 @@ const sidePadding = parseFloat(variables.sidePadding);
 
 export interface Props {
     state: LiveSplit.DetailedTimerComponentStateJson,
+    layoutUrlCache: UrlCache,
     layoutWidth: number,
 }
 
 export default class DetailedTimer extends React.Component<Props> {
-    private icon: string;
-
     constructor(props: Props) {
         super(props);
-        this.icon = "";
     }
 
     public render() {
-        const iconChange = this.props.state.icon_change;
-        if (iconChange !== null) {
-            this.icon = iconChange;
-        }
+        const icon = this.props.layoutUrlCache.cache(this.props.state.icon);
 
         const totalHeight = this.props.state.timer.height + this.props.state.segment_timer.height;
         const topRowHeight = totalHeight * 0.55;
@@ -63,10 +59,10 @@ export default class DetailedTimer extends React.Component<Props> {
                 }
                 <div className="detailed-timer-left-side">
                     {
-                        this.icon &&
+                        icon !== undefined &&
                         <div className="detailed-timer-icon-container" style={{ width: totalHeight }}>
                             <div className="detailed-timer-icon-inner-container">
-                                <img className="detailed-timer-icon" src={this.icon} />
+                                <img className="detailed-timer-icon" src={icon} />
                             </div>
                         </div>
                     }

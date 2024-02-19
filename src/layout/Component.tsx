@@ -11,9 +11,11 @@ import Splits from "./Splits";
 import Text from "./Text";
 import Timer from "./Timer";
 import Title from "./Title";
+import { UrlCache } from "../util/UrlCache";
 
 export interface Props {
     state: ComponentStateJson,
+    layoutUrlCache: UrlCache,
     layoutWidth: number,
     componentId: string,
 }
@@ -28,6 +30,7 @@ export default class Component extends React.Component<Props> {
         } else if ("DetailedTimer" in state) {
             return <DetailedTimer
                 state={state.DetailedTimer}
+                layoutUrlCache={this.props.layoutUrlCache}
                 layoutWidth={this.props.layoutWidth}
             />;
         } else if ("Graph" in state) {
@@ -38,6 +41,7 @@ export default class Component extends React.Component<Props> {
         } else if ("Splits" in state) {
             return <Splits
                 state={state.Splits}
+                layoutUrlCache={this.props.layoutUrlCache}
             />;
         } else if ("Text" in state) {
             return <Text
@@ -50,7 +54,10 @@ export default class Component extends React.Component<Props> {
                 componentId={this.props.componentId}
             />;
         } else if ("Title" in state) {
-            return <Title state={state.Title} />;
+            return <Title
+                state={state.Title}
+                layoutUrlCache={this.props.layoutUrlCache}
+            />;
         } else if ("Separator" in state) {
             return <Separator />;
         } else if ("BlankSpace" in state) {

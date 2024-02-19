@@ -20,6 +20,7 @@ import * as Storage from "../storage";
 
 import "react-toastify/dist/ReactToastify.css";
 import "../css/LiveSplit.scss";
+import { UrlCache } from "../util/UrlCache";
 
 export enum MenuKind {
     Timer,
@@ -54,6 +55,9 @@ export interface State {
     isDesktop: boolean,
     layout: Layout,
     layoutState: LayoutState,
+    layoutUrlCache: UrlCache,
+    runEditorUrlCache: UrlCache,
+    layoutEditorUrlCache: UrlCache,
     layoutWidth: number,
     menu: Menu,
     openedSplitsKey?: number,
@@ -150,6 +154,9 @@ export class LiveSplit extends React.Component<Props, State> {
             isBrowserSource,
             layout,
             layoutState: LayoutState.new(),
+            layoutUrlCache: new UrlCache(),
+            runEditorUrlCache: new UrlCache(),
+            layoutEditorUrlCache: new UrlCache(),
             layoutWidth: props.layoutWidth,
             menu: { kind: MenuKind.Timer },
             sidebarOpen: false,
@@ -220,10 +227,13 @@ export class LiveSplit extends React.Component<Props, State> {
             return <RunEditorComponent
                 editor={this.state.menu.editor}
                 callbacks={this}
+                runEditorUrlCache={this.state.runEditorUrlCache}
             />;
         } else if (this.state.menu.kind === MenuKind.LayoutEditor) {
             return <LayoutEditorComponent
                 editor={this.state.menu.editor}
+                layoutEditorUrlCache={this.state.layoutEditorUrlCache}
+                layoutUrlCache={this.state.layoutUrlCache}
                 layoutWidth={this.state.layoutWidth}
                 timer={this.state.timer}
                 callbacks={this}
@@ -231,6 +241,7 @@ export class LiveSplit extends React.Component<Props, State> {
         } else if (this.state.menu.kind === MenuKind.SettingsEditor) {
             return <SettingsEditorComponent
                 hotkeyConfig={this.state.menu.config}
+                urlCache={this.state.layoutUrlCache}
                 callbacks={this}
             />;
         } else if (this.state.menu.kind === MenuKind.About) {
@@ -245,6 +256,7 @@ export class LiveSplit extends React.Component<Props, State> {
             return <TimerView
                 layout={this.state.layout}
                 layoutState={this.state.layoutState}
+                layoutUrlCache={this.state.layoutUrlCache}
                 layoutWidth={this.state.layoutWidth}
                 isDesktop={this.state.isDesktop}
                 renderWithSidebar={true}
@@ -256,6 +268,7 @@ export class LiveSplit extends React.Component<Props, State> {
             return <LayoutView
                 layout={this.state.layout}
                 layoutState={this.state.layoutState}
+                layoutUrlCache={this.state.layoutUrlCache}
                 layoutWidth={this.state.layoutWidth}
                 isDesktop={this.state.isDesktop}
                 renderWithSidebar={true}
@@ -306,7 +319,6 @@ export class LiveSplit extends React.Component<Props, State> {
             menu: { kind: MenuKind.Timer },
             sidebarOpen: false,
         });
-        layout.remount();
         this.state.hotkeySystem.activate();
     }
 
@@ -322,7 +334,6 @@ export class LiveSplit extends React.Component<Props, State> {
         this.setState({
             menu: { kind: MenuKind.Layout },
         });
-        this.state.layout.remount();
     }
 
     public openAboutView() {
@@ -528,7 +539,6 @@ export class LiveSplit extends React.Component<Props, State> {
         this.setState({
             layout,
         });
-        layout.remount();
     }
 
     private setRun(run: Run, callback: () => void) {

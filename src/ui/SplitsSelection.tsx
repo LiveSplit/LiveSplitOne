@@ -369,7 +369,7 @@ export class SplitsSelection extends React.Component<Props, State> {
             return;
         }
         if (id.indexOf("https://splits.io/") === 0) {
-            id = id.substr("https://splits.io/".length);
+            id = id.substring("https://splits.io/".length);
         }
         try {
             const run = await SplitsIO.downloadById(id);

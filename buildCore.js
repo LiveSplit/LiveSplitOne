@@ -24,8 +24,8 @@ if (process.argv.some((v) => v === "--max-opt")) {
 // Use WASM features that may not be supported by all the browsers.
 if (process.argv.some((v) => v === "--unstable")) {
     // Extended const is not supported by Safari yet.
-    // Relaxed SIMD is not supported by any browser yet.
-    // Tail calls are not supported by Firefox, Safari and wasm-bindgen yet.
+    // Relaxed SIMD is not supported by Firefox and Safari yet.
+    // Tail calls are not supported by Safari and wasm-bindgen yet.
     rustFlags += ",+extended-const,+relaxed-simd"; //,+tail-call";
 }
 

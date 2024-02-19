@@ -3,6 +3,7 @@ import deepEqual from "fast-deep-equal";
 import * as LiveSplit from "../livesplit-core";
 import { colorToCss, gradientToCss } from "../util/ColorUtil";
 import { Option } from "../util/OptionUtil";
+import { UrlCache } from "../util/UrlCache";
 
 export interface Props {
     splitsState: {
@@ -13,9 +14,9 @@ export interface Props {
     },
     evenOdd: [Option<string>, Option<string>],
     split: LiveSplit.SplitStateJson,
-    icon?: string,
     separatorInFrontOfSplit: boolean,
     visualSplitIndex: number,
+    layoutUrlCache: UrlCache,
 }
 
 export default class Split extends React.Component<Props> {
@@ -28,7 +29,9 @@ export default class Split extends React.Component<Props> {
         const twoRows = this.props.splitsState.display_two_rows ? "two-rows" : "";
 
         const splitsHaveIcons = this.props.splitsState.has_icons;
-        const hasIcon = this.props.icon !== undefined && this.props.icon !== "";
+        const icon = splitsHaveIcons
+            ? this.props.layoutUrlCache.cache(this.props.split.icon)
+            : undefined;
 
         const innerStyle: any = {};
         const outerStyle: any = {};
@@ -81,8 +84,8 @@ export default class Split extends React.Component<Props> {
                     className={splitsHaveIcons ? "split-icon-container" : "split-icon-container-empty"}
                 >
                     {
-                        splitsHaveIcons && hasIcon &&
-                        <img className="split-icon" src={this.props.icon} />
+                        splitsHaveIcons && icon !== undefined &&
+                        <img className="split-icon" src={icon} />
                     }
                 </div>
                 <div className="split-rows">
@@ -124,7 +127,6 @@ export default class Split extends React.Component<Props> {
         return !deepEqual(nextProps.splitsState, this.props.splitsState) ||
             !deepEqual(nextProps.evenOdd, this.props.evenOdd) ||
             !deepEqual(nextProps.split, this.props.split) ||
-            nextProps.icon !== this.props.icon ||
             nextProps.separatorInFrontOfSplit !== this.props.separatorInFrontOfSplit ||
             nextProps.visualSplitIndex !== this.props.visualSplitIndex;
     }
