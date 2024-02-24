@@ -61,7 +61,7 @@ describe("Layout Rendering Tests", function () {
         console.log('Server started!');
         console.log('Preparing WebDriver for tests...');
 
-        const options = new chrome.Options().windowSize({ width: 1200, height: 2400 }).headless();
+        const options = new chrome.Options().windowSize({ width: 1200, height: 2400 }).addArguments("--headless");
         driver = await new Builder().forBrowser("chrome").setChromeOptions(options).build();
 
         await driver.get("http://localhost:8081");

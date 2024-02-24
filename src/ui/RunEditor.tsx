@@ -21,10 +21,12 @@ import {
 import { renderMarkdown, replaceFlag } from "../util/Markdown";
 
 import "../css/RunEditor.scss";
+import { UrlCache } from "../util/UrlCache";
 
 export interface Props {
     editor: LiveSplit.RunEditor,
     callbacks: Callbacks,
+    runEditorUrlCache: UrlCache,
 }
 export interface State {
     editor: LiveSplit.RunEditorStateJson,
@@ -68,8 +70,6 @@ interface Filters {
 }
 
 export class RunEditor extends React.Component<Props, State> {
-    private gameIcon: string;
-    private segmentIconUrls: string[];
     private dragIndex: number = 0;
     private expandedLeaderboardRows: Map<number, boolean> = new Map();
     private filters: Filters = { variables: new Map(), showObsolete: false };
@@ -77,7 +77,9 @@ export class RunEditor extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
 
-        const state = props.editor.stateAsJson() as LiveSplit.RunEditorStateJson;
+        const state = props.editor.stateAsJson(props.runEditorUrlCache.imageCache) as LiveSplit.RunEditorStateJson;
+        props.runEditorUrlCache.collect();
+
         this.state = {
             attemptCountIsValid: true,
             editor: state,
@@ -96,12 +98,6 @@ export class RunEditor extends React.Component<Props, State> {
             tab: state.timing_method === "RealTime" ? Tab.RealTime : Tab.GameTime,
         };
 
-        this.gameIcon = "";
-        this.segmentIconUrls = [];
-
-        this.processIconChanges(state);
-
-        // TODO Handle closing the Run Editor
         this.refreshGameList();
         this.refreshGameInfo(state.game);
         this.refreshCategoryList(state.game);
@@ -144,7 +140,7 @@ export class RunEditor extends React.Component<Props, State> {
                             ref={(c) => gameIconContextTrigger = c}
                         >
                             {
-                                gameIcon !== "" &&
+                                gameIcon !== undefined &&
                                 <img
                                     src={gameIcon}
                                     className="game-icon-image"
@@ -163,7 +159,7 @@ export class RunEditor extends React.Component<Props, State> {
                             Download Icon
                         </MenuItem>
                         {
-                            gameIcon !== "" &&
+                            gameIcon !== undefined &&
                             <MenuItem onClick={(_) => this.removeGameIcon()}>
                                 Remove Icon
                             </MenuItem>
@@ -627,7 +623,7 @@ export class RunEditor extends React.Component<Props, State> {
                 <button
                     onClick={(_) => {
                         if (category != null) {
-                            window.open(category.weblink, "_blank");
+                            window.open(`${gameInfo.weblink}?x=${category.id}`, "_blank");
                         }
                     }}
                     className={category == null ? "disabled" : ""}
@@ -782,6 +778,7 @@ export class RunEditor extends React.Component<Props, State> {
                     context="run-editor-variables"
                     factory={new JsonSettingValueFactory()}
                     state={{ fields }}
+                    editorUrlCache={this.props.runEditorUrlCache}
                     setValue={(index, value) => {
                         function unwrapString(value: ExtendedSettingsDescriptionValueJson): string {
                             if ("String" in value) {
@@ -1216,7 +1213,7 @@ export class RunEditor extends React.Component<Props, State> {
                                     <td
                                         className="segment-icon-container"
                                         onClick={(e) => {
-                                            if (segmentIcon !== "") {
+                                            if (segmentIcon !== undefined) {
                                                 segmentIconToggleMenu(e);
                                             } else {
                                                 this.changeSegmentIcon(segmentIndex);
@@ -1228,7 +1225,7 @@ export class RunEditor extends React.Component<Props, State> {
                                             ref={(c) => segmentIconContextTrigger = c}
                                         >
                                             {
-                                                segmentIcon !== "" &&
+                                                segmentIcon !== undefined &&
                                                 <img
                                                     className="segment-icon"
                                                     src={segmentIcon}
@@ -1460,31 +1457,14 @@ export class RunEditor extends React.Component<Props, State> {
         this.props.editor.activeRemoveIcon();
     }
 
-    private processIconChanges(state: LiveSplit.RunEditorStateJson) {
-        let index = 0;
-        for (const segment of state.segments) {
-            while (index >= this.segmentIconUrls.length) {
-                this.segmentIconUrls.push("");
-            }
-            const iconChange = segment.icon_change;
-            if (iconChange !== null) {
-                this.segmentIconUrls[index] = iconChange;
-            }
-            index += 1;
-        }
-        if (state.icon_change !== null) {
-            this.gameIcon = state.icon_change;
-        }
-    }
-
-    private getSegmentIconUrl(index: number): string {
-        return this.segmentIconUrls[index];
+    private getSegmentIconUrl(index: number): string | undefined {
+        return this.props.runEditorUrlCache.cache(this.state.editor.segments[index].icon);
     }
 
     private async changeGameIcon() {
         const [file] = await openFileAsArrayBuffer();
         this.props.editor.setGameIconFromArray(new Uint8Array(file));
-        this.update();
+        this.maybeUpdate();
     }
 
     private removeGameIcon() {
@@ -1492,8 +1472,22 @@ export class RunEditor extends React.Component<Props, State> {
         this.update();
     }
 
-    private getGameIcon(): string {
-        return this.gameIcon;
+    private getGameIcon(): string | undefined {
+        return this.props.runEditorUrlCache.cache(this.state.editor.icon);
+    }
+
+    /**
+     * This method is explicitly to be called from asynchronous functions. It
+     * ensures that the editor only gets updated if it still exists. The problem
+     * is that asynchronous functions may take a long time, such as refreshing
+     * the leaderboards. We don't want to update the editor if it has been
+     * disposed in the meantime.
+     */
+    private maybeUpdate() {
+        if (this.props.editor.ptr === 0) {
+            return;
+        }
+        this.update();
     }
 
     private update(switchTab?: Tab) {
@@ -1501,8 +1495,8 @@ export class RunEditor extends React.Component<Props, State> {
         const shouldShowTab = this.shouldShowTab(intendedTab);
         const newActiveTab = shouldShowTab ? intendedTab : Tab.RealTime;
 
-        const state = this.props.editor.stateAsJson();
-        this.processIconChanges(state);
+        const state = this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache);
+        this.props.runEditorUrlCache.collect();
         this.setState({
             ...this.state,
             editor: state,
@@ -1543,9 +1537,10 @@ export class RunEditor extends React.Component<Props, State> {
     private handleOffsetBlur() {
         this.setState({
             ...this.state,
-            editor: this.props.editor.stateAsJson(),
+            editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
             offsetIsValid: true,
         });
+        this.props.runEditorUrlCache.collect();
     }
 
     private handleAttemptsChange(event: any) {
@@ -1564,14 +1559,19 @@ export class RunEditor extends React.Component<Props, State> {
         this.setState({
             ...this.state,
             attemptCountIsValid: true,
-            editor: this.props.editor.stateAsJson(),
+            editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
         });
+        this.props.runEditorUrlCache.collect();
     }
 
     private focusSegment(i: number) {
         this.props.editor.selectOnly(i);
 
-        const editor: LiveSplit.RunEditorStateJson = this.props.editor.stateAsJson();
+        const editor: LiveSplit.RunEditorStateJson = this.props.editor.stateAsJson(
+            this.props.runEditorUrlCache.imageCache,
+        );
+        this.props.runEditorUrlCache.collect();
+
         const comparisonTimes = editor.segments[i].comparison_times;
         const rowState = {
             ...this.state.rowState,
@@ -1652,12 +1652,14 @@ export class RunEditor extends React.Component<Props, State> {
 
         this.setState({
             ...this.state,
-            editor: this.props.editor.stateAsJson(),
+            editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
             rowState: {
                 ...this.state.rowState,
                 splitTimeChanged: false,
             },
         });
+
+        this.props.runEditorUrlCache.collect();
     }
 
     private handleSegmentTimeBlur() {
@@ -1667,12 +1669,14 @@ export class RunEditor extends React.Component<Props, State> {
 
         this.setState({
             ...this.state,
-            editor: this.props.editor.stateAsJson(),
+            editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
             rowState: {
                 ...this.state.rowState,
                 segmentTimeChanged: false,
             },
         });
+
+        this.props.runEditorUrlCache.collect();
     }
 
     private handleBestSegmentTimeBlur() {
@@ -1682,12 +1686,14 @@ export class RunEditor extends React.Component<Props, State> {
 
         this.setState({
             ...this.state,
-            editor: this.props.editor.stateAsJson(),
+            editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
             rowState: {
                 ...this.state.rowState,
                 bestSegmentTimeChanged: false,
             },
         });
+
+        this.props.runEditorUrlCache.collect();
     }
 
     private handleComparisonTimeBlur(comparisonIndex: number) {
@@ -1701,12 +1707,14 @@ export class RunEditor extends React.Component<Props, State> {
 
         this.setState({
             ...this.state,
-            editor: this.props.editor.stateAsJson(),
+            editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
             rowState: {
                 ...this.state.rowState,
                 comparisonTimesChanged,
             },
         });
+
+        this.props.runEditorUrlCache.collect();
     }
 
     private insertSegmentAbove() {
@@ -1800,9 +1808,8 @@ export class RunEditor extends React.Component<Props, State> {
             if (uri.startsWith("https://")) {
                 const response = await fetch(uri);
                 const buffer = await response.arrayBuffer();
-                // TODO Racy situation with Run Editor closing
                 this.props.editor.setGameIconFromArray(new Uint8Array(buffer));
-                this.update();
+                this.maybeUpdate();
             }
         }
     }
@@ -1816,41 +1823,40 @@ export class RunEditor extends React.Component<Props, State> {
             if (uri.startsWith("https://")) {
                 const response = await fetch(uri);
                 const buffer = await response.arrayBuffer();
-                // TODO Racy situation with Run Editor closing
                 this.props.editor.setGameIconFromArray(new Uint8Array(buffer));
-                this.update();
+                this.maybeUpdate();
             }
         }
     }
 
     private async refreshGameList() {
         await downloadGameList();
-        this.update();
+        this.maybeUpdate();
     }
 
     private async refreshPlatformList() {
         await downloadPlatformList();
-        this.update();
+        this.maybeUpdate();
     }
 
     private async refreshRegionList() {
         await downloadRegionList();
-        this.update();
+        this.maybeUpdate();
     }
 
     private async refreshGameInfo(gameName: string) {
         await downloadGameInfo(gameName);
-        this.update();
+        this.maybeUpdate();
     }
 
     private async refreshCategoryList(gameName: string) {
         await downloadCategories(gameName);
-        this.update();
+        this.maybeUpdate();
     }
 
     private async refreshLeaderboard(gameName: string, categoryName: string) {
         await downloadLeaderboard(gameName, categoryName);
-        this.update();
+        this.maybeUpdate();
     }
 
     private getTab(): Tab {
@@ -1872,7 +1878,6 @@ export class RunEditor extends React.Component<Props, State> {
             await platformListDownload;
             await regionListDownload;
             const run = await runDownload;
-            // TODO Race Condition with the Run Editor closing (and probably others)
             run.with((run) => {
                 const newEditor = LiveSplit.RunEditor.new(run);
                 if (newEditor !== null) {
@@ -1969,7 +1974,7 @@ export class RunEditor extends React.Component<Props, State> {
 
         this.refreshLeaderboard(gameName, categoryName);
         this.resetTotalLeaderboardState();
-        this.update();
+        this.maybeUpdate();
     }
 }
 

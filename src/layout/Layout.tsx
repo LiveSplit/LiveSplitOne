@@ -1,10 +1,11 @@
 import * as React from "react";
 import { Font, FontStretch, FontStyle, FontWeight, LayoutStateJson } from "../livesplit-core";
-import { colorToCss, gradientToCss } from "../util/ColorUtil";
+import { backgroundToCss, colorToCss } from "../util/ColorUtil";
 import Component from "./Component";
 import { ResizableBox, ResizeCallbackData } from "react-resizable";
 
 import "../css/Layout.scss";
+import { UrlCache } from "../util/UrlCache";
 
 interface LayoutStateStyle {
     "--thin-separators-color": string,
@@ -28,6 +29,7 @@ interface LayoutStateStyle {
 
 export interface Props {
     state: LayoutStateJson,
+    layoutUrlCache: UrlCache,
     allowResize: boolean,
     width: number,
     onResize(width: number): void,
@@ -38,16 +40,29 @@ export default class Layout extends React.Component<Props> {
         const layoutState = getLayoutStateStyle(this.props.state);
         const counts = new Map<string, number>();
 
+        const background = backgroundToCss(
+            this.props.state.background,
+            this.props.layoutUrlCache,
+            this.props.width,
+        );
+
         return (
             <div
                 className="layout"
                 style={{
-                    background: gradientToCss(this.props.state.background),
+                    overflow: "hidden",
                     color: colorToCss(this.props.state.text_color),
                     width: this.props.width,
                     ...layoutState
                 }}
             >
+                <div style={{
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                    zIndex: -1,
+                    ...background,
+                }} />
                 {this.props.allowResize &&
                     <ResizableBox
                         className="resizable-layout"
@@ -75,6 +90,7 @@ export default class Layout extends React.Component<Props> {
                         return <Component
                             key={key}
                             state={c}
+                            layoutUrlCache={this.props.layoutUrlCache}
                             componentId={key}
                             layoutWidth={this.props.width}
                         />;

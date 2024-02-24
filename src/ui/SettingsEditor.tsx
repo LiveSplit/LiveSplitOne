@@ -3,11 +3,13 @@ import * as React from "react";
 import { SettingsComponent } from "./Settings";
 import { SettingsDescriptionJson, SettingValue, HotkeyConfig } from "../livesplit-core";
 import { toast } from "react-toastify";
+import { UrlCache } from "../util/UrlCache";
 
 import "../css/SettingsEditor.scss";
 
 export interface Props {
     hotkeyConfig: HotkeyConfig,
+    urlCache: UrlCache,
     callbacks: Callbacks,
 }
 
@@ -42,6 +44,7 @@ export class SettingsEditor extends React.Component<Props, State> {
                     context="settings-editor"
                     factory={SettingValue}
                     state={this.state.settings}
+                    editorUrlCache={this.props.urlCache}
                     setValue={(index, value) => {
                         if (!this.props.hotkeyConfig.setValue(index, value)) {
                             toast.error("The hotkey is already in use.");

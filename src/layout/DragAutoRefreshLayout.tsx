@@ -1,13 +1,15 @@
 import * as React from "react";
 import { LayoutStateJson } from "../livesplit-core";
 import AutoRefresh from "../util/AutoRefresh";
-import { colorToCss, gradientToCss } from "../util/ColorUtil";
+import { backgroundToCss, colorToCss } from "../util/ColorUtil";
 import { Option } from "../util/OptionUtil";
 import Component from "./Component";
 import { getLayoutStateStyle } from "./Layout";
+import { UrlCache } from "../util/UrlCache";
 
 export interface Props {
     getState: () => LayoutStateJson,
+    layoutUrlCache: UrlCache,
     layoutWidth: number,
     onClick: (componentIndex: number) => void,
     onDrag: (componentIndex: number) => void,
@@ -44,16 +46,29 @@ export default class DragAutoRefreshLayout extends React.Component<Props, State>
         const layoutStateStyle = getLayoutStateStyle(layoutState);
         const counts = new Map<string, number>();
 
+        const background = backgroundToCss(
+            layoutState.background,
+            this.props.layoutUrlCache,
+            this.props.layoutWidth,
+        );
+
         const dragLayout = (
             <div
                 className="layout"
                 style={{
-                    background: gradientToCss(layoutState.background),
+                    overflow: "hidden",
                     color: colorToCss(layoutState.text_color),
                     width: this.props.layoutWidth,
                     ...layoutStateStyle
                 }}
             >
+                <div style={{
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                    zIndex: -1,
+                    ...background,
+                }} />
                 {
                     layoutState.components.map((c, i) => {
                         const componentType = Object.keys(c)[0];
@@ -112,6 +127,7 @@ export default class DragAutoRefreshLayout extends React.Component<Props, State>
                             }
                             <Component
                                 state={c}
+                                layoutUrlCache={this.props.layoutUrlCache}
                                 layoutWidth={this.props.layoutWidth}
                                 componentId={key}
                             />

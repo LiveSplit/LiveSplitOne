@@ -5,12 +5,15 @@ import ColorPicker from "./ColorPicker";
 
 import HotkeyButton from "./HotkeyButton";
 import ToggleCheckbox from "./ToggleCheckbox";
+import { UrlCache } from "../util/UrlCache";
+import { openFileAsArrayBuffer } from "../util/FileUtil";
 
 export interface Props<T> {
     context: string,
     setValue: (index: number, value: T) => void,
     state: ExtendedSettingsDescriptionJson,
     factory: SettingValueFactory<T>,
+    editorUrlCache: UrlCache,
 }
 
 export interface ExtendedSettingsDescriptionJson {
@@ -64,6 +67,12 @@ export interface SettingValueFactory<T> {
     fromFont(name: string, style: string, weight: string, stretch: string): T | null;
     fromEmptyFont(): T;
     fromDeltaGradient(value: string): T | null;
+    fromBackgroundImage(
+        imageId: string,
+        brightness: number,
+        opacity: number,
+        blur: number,
+    ): T | null;
 }
 
 export class JsonSettingValueFactory implements SettingValueFactory<ExtendedSettingsDescriptionValueJson> {
@@ -154,6 +163,14 @@ export class JsonSettingValueFactory implements SettingValueFactory<ExtendedSett
         throw new Error("Not implemented");
     }
     public fromDeltaGradient(_: string): ExtendedSettingsDescriptionValueJson | null {
+        throw new Error("Not implemented");
+    }
+    public fromBackgroundImage(
+        _imageId: string,
+        _brightness: number,
+        _opacity: number,
+        _blur: number,
+    ): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
 }
@@ -1086,6 +1103,207 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                         </div>
                     );
                 } else if (color1) {
+                    component = (
+                        <div className="settings-value-box one-color">
+                            {children}
+                        </div>
+                    );
+                } else {
+                    component = (
+                        <div className="settings-value-box">
+                            {children}
+                        </div>
+                    );
+                }
+            } else if ("LayoutBackground" in value) {
+                let type: string;
+                let color1: Option<Color> = null;
+                let color2: Option<Color> = null;
+                let imageId = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+                let brightness = 100;
+                let opacity = 100;
+                let blur = 0;
+                const gradient = value.LayoutBackground;
+
+                let children: JSX.Element[] = [];
+
+                const colorsToValue = (
+                    type: string,
+                    color1: Option<Color>,
+                    color2: Option<Color>,
+                ) => {
+                    color1 = color1 ? color1 : [0.0, 0.0, 0.0, 0.0];
+                    color2 = color2 ? color2 : color1;
+                    switch (type) {
+                        case "Transparent":
+                            return factory.fromTransparentGradient();
+                        case "Plain":
+                            return factory.fromColor(
+                                color1[0], color1[1], color1[2], color1[3],
+                            );
+                        case "Vertical":
+                            return factory.fromVerticalGradient(
+                                color1[0], color1[1], color1[2], color1[3],
+                                color2[0], color2[1], color2[2], color2[3],
+                            );
+                        case "Horizontal":
+                            return factory.fromHorizontalGradient(
+                                color1[0], color1[1], color1[2], color1[3],
+                                color2[0], color2[1], color2[2], color2[3],
+                            );
+                        default:
+                            return expect(
+                                factory.fromBackgroundImage(imageId, brightness / 100, opacity / 100, blur / 100),
+                                "Unexpected layout background",
+                            );
+                    }
+                };
+
+                if (typeof gradient !== "string") {
+                    [type] = Object.keys(gradient);
+                    if ("Plain" in gradient) {
+                        color1 = gradient.Plain;
+                    } else if ("Vertical" in gradient) {
+                        [color1, color2] = gradient.Vertical;
+                    } else if ("Horizontal" in gradient) {
+                        [color1, color2] = gradient.Horizontal;
+                    } else if ("image" in gradient) {
+                        imageId = gradient.image;
+                        brightness = 100 * gradient.brightness;
+                        opacity = 100 * gradient.opacity;
+                        blur = 100 * gradient.blur;
+                        type = "Image";
+                        const imageUrl = this.props.editorUrlCache.cache(imageId);
+                        children.push(
+                            <div
+                                className="color-picker-button"
+                                style={{
+                                    background: `url("${imageUrl}") center / cover`,
+                                }}
+                                onClick={async (_) => {
+                                    const [file] = await openFileAsArrayBuffer();
+                                    const imageId = this.props.editorUrlCache.imageCache.cacheFromArray(
+                                        new Uint8Array(file),
+                                        true,
+                                    );
+                                    console.log(`new image id: ${imageId}`);
+                                    this.props.editorUrlCache.cache(imageId);
+                                    const value = expect(
+                                        factory.fromBackgroundImage(imageId, brightness / 100, opacity / 100, blur / 100),
+                                        "Unexpected layout background",
+                                    )
+                                    this.props.setValue(valueIndex, value);
+                                }}
+                            />,
+                            <div style={{
+                                gridTemplateColumns: "max-content 1fr",
+                                columnGap: "8px",
+                                rowGap: "8px",
+                                alignItems: "center",
+                                display: "grid",
+                                gridColumn: "1 / 3",
+                            }}>
+                                Brightness
+                                <input
+                                    type="range"
+                                    min="0" max="100"
+                                    value={brightness}
+                                    onChange={(e) => {
+                                        brightness = Number(e.target.value);
+                                        this.props.setValue(
+                                            valueIndex,
+                                            colorsToValue(type, color1, color2),
+                                        );
+                                    }}
+                                />
+                                Opacity
+                                <input
+                                    type="range"
+                                    min="0" max="100"
+                                    value={opacity}
+                                    onChange={(e) => {
+                                        opacity = Number(e.target.value);
+                                        this.props.setValue(
+                                            valueIndex,
+                                            colorsToValue(type, color1, color2),
+                                        );
+                                    }}
+                                />
+                                Blur
+                                <input
+                                    type="range"
+                                    min="0" max="100"
+                                    value={blur}
+                                    onChange={(e) => {
+                                        blur = Number(e.target.value);
+                                        this.props.setValue(
+                                            valueIndex,
+                                            colorsToValue(type, color1, color2),
+                                        );
+                                    }}
+                                />
+                            </div>
+                        );
+                    } else {
+                        assertNever(gradient);
+                    }
+                } else {
+                    type = gradient;
+                }
+
+                children.splice(0, 0,
+                    <select
+                        value={type}
+                        onChange={(e) => {
+                            this.props.setValue(
+                                valueIndex,
+                                colorsToValue(e.target.value, color1, color2),
+                            );
+                        }}
+                    >
+                        <option value="Transparent">Transparent</option>
+                        <option value="Plain">Plain</option>
+                        <option value="Vertical">Vertical</option>
+                        <option value="Horizontal">Horizontal</option>
+                        <option value="Image">Image</option>
+                    </select>,
+                );
+
+                if (color1) {
+                    children.push(
+                        <ColorPicker
+                            color={color1}
+                            setColor={(color) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    colorsToValue(type, color, color2),
+                                );
+                            }}
+                        />,
+                    );
+                }
+
+                if (color2) {
+                    children.push(
+                        <ColorPicker
+                            color={color2}
+                            setColor={(color) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    colorsToValue(type, color1, color),
+                                );
+                            }}
+                        />,
+                    );
+                }
+
+                if (color2) {
+                    component = (
+                        <div className="settings-value-box two-colors">
+                            {children}
+                        </div>
+                    );
+                } else if (color1 || type === "Image") {
                     component = (
                         <div className="settings-value-box one-color">
                             {children}

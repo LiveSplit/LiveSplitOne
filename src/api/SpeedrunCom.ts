@@ -265,9 +265,13 @@ export class Page<T> {
         const elements = this.elements;
         let next = this.next;
         while (next != null) {
-            const page = await next();
-            elements.push(...page.elements);
-            next = page.next;
+            try {
+                const page = await next();
+                elements.push(...page.elements);
+                next = page.next;
+            } catch {
+                break;
+            }
         }
         return elements;
     }
@@ -410,6 +414,7 @@ export async function getRuns(
     if (status !== undefined) {
         parameters.push(`status=${status}`);
     }
+    parameters.push("orderby=submitted", "direction=desc");
     const uri = getRunsUri(evaluateParameters(parameters));
     return executePaginatedRequest<Run<PlayersEmbedded | PlayersNotEmbedded>>(uri);
 }

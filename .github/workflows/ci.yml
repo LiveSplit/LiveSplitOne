@@ -12,7 +12,7 @@ jobs:
 
     steps:
     - name: Checkout commit
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: recursive
 
@@ -22,7 +22,7 @@ jobs:
         node-version: 'lts/*'
 
     - name: Install Rust
-      uses: hecrj/setup-rust-action@v1
+      uses: hecrj/setup-rust-action@v2
       with:
         rust-version: nightly
         components: rust-src
@@ -49,7 +49,7 @@ jobs:
       id: wasm-bindgen
 
     - name: Download wasm-bindgen-cli
-      uses: robinraju/release-downloader@v1.7
+      uses: robinraju/release-downloader@v1.9
       with:
         repository: "rustwasm/wasm-bindgen"
         tag: ${{ steps.wasm-bindgen.outputs.version }}
@@ -73,14 +73,15 @@ jobs:
     - name: Set up tslint matcher
       run: echo "::add-matcher::.github/workflows/tslint.json"
 
-    - name: Run tslint
-      run: npm run lint
+    # FIXME: Switch to eslint
+    # - name: Run tslint
+    #   run: npm run lint
 
     - name: Build Frontend
       run: npm run publish
 
     - name: Cache screenshots
-      uses: actions/cache@v1
+      uses: actions/cache@v4
       with:
         path: test/screenshots
         key: ${{ runner.os }}-screenshots-${{ hashFiles('test/rendering-test.js') }}
@@ -93,7 +94,7 @@ jobs:
 
     - name: Upload screenshots
       if: success() || failure()
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
       with:
         name: Screenshots
         path: test/screenshots

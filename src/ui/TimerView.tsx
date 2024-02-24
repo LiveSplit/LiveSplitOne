@@ -12,11 +12,13 @@ import AutoRefreshLayout from "../layout/AutoRefreshLayout";
 import LiveSplitIcon from "../assets/icon_small.png";
 
 import "../css/TimerView.scss";
+import { UrlCache } from "../util/UrlCache";
 
 export interface Props {
     isDesktop: boolean,
     layout: Layout,
     layoutState: LayoutStateRefMut,
+    layoutUrlCache: UrlCache,
     layoutWidth: number,
     renderWithSidebar: boolean,
     sidebarOpen: boolean,
@@ -80,8 +82,13 @@ export class TimerView extends React.Component<Props, State> {
                 >
                     <AutoRefreshLayout
                         getState={() => this.readWith(
-                            (t) => this.props.layout.updateStateAsJson(this.props.layoutState, t),
+                            (t) => {
+                                const result = this.props.layout.updateStateAsJson(this.props.layoutState, this.props.layoutUrlCache.imageCache, t);
+                                this.props.layoutUrlCache.collect();
+                                return result;
+                            },
                         )}
+                        layoutUrlCache={this.props.layoutUrlCache}
                         allowResize={this.props.isDesktop}
                         width={this.props.layoutWidth}
                         onResize={(width) => this.props.callbacks.onResize(width)}

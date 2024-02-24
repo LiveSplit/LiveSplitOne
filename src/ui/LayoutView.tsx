@@ -1,11 +1,13 @@
 import * as React from "react";
 import { SharedTimer, Layout, LayoutStateRefMut } from "../livesplit-core";
 import { TimerView } from "./TimerView";
+import { UrlCache } from "../util/UrlCache";
 
 export interface Props {
     isDesktop: boolean,
     layout: Layout,
     layoutState: LayoutStateRefMut,
+    layoutUrlCache: UrlCache,
     layoutWidth: number,
     renderWithSidebar: boolean,
     sidebarOpen: boolean,
@@ -35,6 +37,7 @@ export class LayoutView extends React.Component<Props> {
         const renderedView = <TimerView
             layout={this.props.layout}
             layoutState={this.props.layoutState}
+            layoutUrlCache={this.props.layoutUrlCache}
             layoutWidth={this.props.layoutWidth}
             isDesktop={this.props.isDesktop}
             renderWithSidebar={false}
