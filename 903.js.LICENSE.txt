@@ -1,0 +1,22 @@
+/*!
+	Copyright (c) 2018 Jed Watson.
+	Licensed under the MIT License (MIT), see
+	http://jedwatson.github.io/classnames
+*/
+
+/*!
+ * Linkifier Component
+ * Copyright 2017 Pedro Ladaria <pedro.ladaria@gmail.com>
+ * License: MIT
+ */
+
+/*!
+ * pascalcase <https://github.com/jonschlinkert/pascalcase>
+ *
+ * Copyright (c) 2015, Jon Schlinkert.
+ * Licensed under the MIT License.
+ */
+
+/*! http://mths.be/fromcodepoint v0.2.1 by @mathias */
+
+/*! http://mths.be/repeat v0.2.0 by @mathias */
