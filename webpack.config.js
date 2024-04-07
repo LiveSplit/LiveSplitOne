@@ -73,7 +73,7 @@ export default async (env, argv) => {
         plugins: [
             ...(isProduction ? [new CleanWebpackPlugin()] : []),
             new FaviconsWebpackPlugin({
-                logo: path.resolve("src/assets/icon.png"),
+                logo: path.resolve("src/assets/icon.svg"),
                 inject: true,
                 favicons: {
                     appName: "LiveSplit One",
@@ -161,7 +161,7 @@ export default async (env, argv) => {
                     ],
                 },
                 {
-                    test: /\.(png|jpg|gif|woff|ico)$/,
+                    test: /\.(png|jpg|gif|woff|ico|svg)$/,
                     type: 'asset/resource'
                 },
             ],

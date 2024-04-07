@@ -9,7 +9,7 @@ import DragUpload from "./DragUpload";
 import AutoRefresh from "../util/AutoRefresh";
 import AutoRefreshLayout from "../layout/AutoRefreshLayout";
 
-import LiveSplitIcon from "../assets/icon_small.png";
+import LiveSplitIcon from "../assets/icon.svg";
 
 import "../css/TimerView.scss";
 import { UrlCache } from "../util/UrlCache";

@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/LiveSplit/LiveSplit/master/LiveSplit/Resources/Icon.png" alt="LiveSplit" height="42" width="45" align="top"/> LiveSplit One
+# <img src="https://raw.githubusercontent.com/LiveSplit/LiveSplitOne/master/src/assets/icon.svg" alt="LiveSplit" height="42" align="top"/> LiveSplit One
 
 [![Build Status](https://github.com/LiveSplit/LiveSplitOne/workflows/CI/badge.svg)](https://github.com/LiveSplit/LiveSplitOne/actions)
 
