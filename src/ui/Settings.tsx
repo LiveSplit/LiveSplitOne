@@ -1186,7 +1186,6 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                         new Uint8Array(file),
                                         true,
                                     );
-                                    console.log(`new image id: ${imageId}`);
                                     this.props.editorUrlCache.cache(imageId);
                                     const value = expect(
                                         factory.fromBackgroundImage(imageId, brightness / 100, opacity / 100, blur / 100),

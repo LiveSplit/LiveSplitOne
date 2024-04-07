@@ -4,29 +4,27 @@ import fs from "fs";
 let toolchain = "";
 let targetFolder = "debug";
 let cargoFlags = "";
-let rustFlags = "-C target-feature=+bulk-memory,+mutable-globals,+nontrapping-fptoint,+sign-ext,+simd128";
+let rustFlags = "-C target-feature=+bulk-memory,+mutable-globals,+nontrapping-fptoint,+sign-ext,+simd128,+extended-const";
 let wasmBindgenFlags = "";
 
-// Do an optimized build.
-if (process.argv.some((v) => v === "--release")) {
+if (process.argv.some((v) => v === "--max-opt")) {
+    // Do a fully optimized build ready for deployment.
+    targetFolder = "max-opt";
+    cargoFlags = "--profile max-opt";
+} else if (process.argv.some((v) => v === "--release")) {
+    // Do an optimized build.
     targetFolder = "release";
     cargoFlags = "--release";
 } else {
+    // Do a debug build.
     wasmBindgenFlags += " --keep-debug";
-}
-
-// Do a fully optimized build ready for deployment.
-if (process.argv.some((v) => v === "--max-opt")) {
-    targetFolder = "max-opt";
-    cargoFlags = "--profile max-opt";
 }
 
 // Use WASM features that may not be supported by all the browsers.
 if (process.argv.some((v) => v === "--unstable")) {
-    // Extended const is not supported by Safari yet.
     // Relaxed SIMD is not supported by Firefox and Safari yet.
     // Tail calls are not supported by Safari and wasm-bindgen yet.
-    rustFlags += ",+extended-const,+relaxed-simd"; //,+tail-call";
+    rustFlags += ",+relaxed-simd"; //,+tail-call";
 }
 
 // Use the nightly toolchain, which enables some more optimizations.
