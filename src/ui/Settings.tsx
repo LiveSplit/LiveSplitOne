@@ -5,12 +5,15 @@ import ColorPicker from "./ColorPicker";
 
 import HotkeyButton from "./HotkeyButton";
 import ToggleCheckbox from "./ToggleCheckbox";
+import { UrlCache } from "../util/UrlCache";
+import { openFileAsArrayBuffer } from "../util/FileUtil";
 
 export interface Props<T> {
     context: string,
     setValue: (index: number, value: T) => void,
     state: ExtendedSettingsDescriptionJson,
     factory: SettingValueFactory<T>,
+    editorUrlCache: UrlCache,
 }
 
 export interface ExtendedSettingsDescriptionJson {
@@ -35,7 +38,6 @@ export interface SettingValueFactory<T> {
     fromOptionalEmptyString(): T;
     fromRemovableString?(value: string): T;
     fromRemovableEmptyString?(): T;
-    fromFloat(value: number): T;
     fromAccuracy(value: string): T | null;
     fromDigitsFormat(value: string): T | null;
     fromOptionalTimingMethod(value: string): T | null;
@@ -57,13 +59,23 @@ export interface SettingValueFactory<T> {
         r2: number, g2: number, b2: number, a2: number,
     ): T;
     fromAlignment(value: string): T | null;
+    fromColumnKind(value: string): T | null;
     fromColumnStartWith(value: string): T | null;
     fromColumnUpdateWith(value: string): T | null;
     fromColumnUpdateTrigger(value: string): T | null;
     fromLayoutDirection(value: string): T | null;
+    fromFont(name: string, style: string, weight: string, stretch: string): T | null;
+    fromEmptyFont(): T;
+    fromDeltaGradient(value: string): T | null;
+    fromBackgroundImage(
+        imageId: string,
+        brightness: number,
+        opacity: number,
+        blur: number,
+    ): T | null;
 }
 
-export class JsonSettingValueFactory {
+export class JsonSettingValueFactory implements SettingValueFactory<ExtendedSettingsDescriptionValueJson> {
     public fromBool(v: boolean): ExtendedSettingsDescriptionValueJson {
         return { Bool: v };
     }
@@ -87,9 +99,6 @@ export class JsonSettingValueFactory {
     }
     public fromRemovableEmptyString(): ExtendedSettingsDescriptionValueJson {
         return { RemovableString: null };
-    }
-    public fromFloat(_: number): ExtendedSettingsDescriptionValueJson {
-        throw new Error("Not implemented");
     }
     public fromAccuracy(_: string): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
@@ -127,6 +136,9 @@ export class JsonSettingValueFactory {
     public fromAlignment(_: string): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
+    public fromColumnKind(_: string): ExtendedSettingsDescriptionValueJson | null {
+        throw new Error("Not implemented");
+    }
     public fromColumnStartWith(_: string): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
@@ -137,6 +149,28 @@ export class JsonSettingValueFactory {
         throw new Error("Not implemented");
     }
     public fromLayoutDirection(_: string): ExtendedSettingsDescriptionValueJson | null {
+        throw new Error("Not implemented");
+    }
+    public fromFont(
+        _name: string,
+        _style: string,
+        _weight: string,
+        _stretch: string,
+    ): ExtendedSettingsDescriptionValueJson | null {
+        throw new Error("Not implemented");
+    }
+    public fromEmptyFont(): ExtendedSettingsDescriptionValueJson {
+        throw new Error("Not implemented");
+    }
+    public fromDeltaGradient(_: string): ExtendedSettingsDescriptionValueJson | null {
+        throw new Error("Not implemented");
+    }
+    public fromBackgroundImage(
+        _imageId: string,
+        _brightness: number,
+        _opacity: number,
+        _blur: number,
+    ): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
 }
@@ -279,22 +313,6 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                         >
                             <i className="fa fa-trash" aria-hidden="true" />
                         </button>
-                    </div>
-                );
-            } else if ("Float" in value) {
-                component = (
-                    <div className="settings-value-box">
-                        <input
-                            type="number"
-                            value={value.Float}
-                            className="number"
-                            onChange={(e) => {
-                                this.props.setValue(
-                                    valueIndex,
-                                    factory.fromFloat(e.target.valueAsNumber),
-                                );
-                            }}
-                        />
                     </div>
                 );
             } else if ("Accuracy" in value) {
@@ -714,6 +732,26 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                         </select>
                     </div>
                 );
+            } else if ("ColumnKind" in value) {
+                component = (
+                    <div className="settings-value-box">
+                        <select
+                            value={value.ColumnKind}
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    expect(
+                                        factory.fromColumnKind(e.target.value),
+                                        "Unexpected Column Kind value",
+                                    ),
+                                );
+                            }}
+                        >
+                            <option value="Time">Time</option>
+                            <option value="Variable">Variable</option>
+                        </select>
+                    </div>
+                );
             } else if ("ColumnStartWith" in value) {
                 component = (
                     <div className="settings-value-box">
@@ -751,7 +789,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 );
                             }}
                         >
-                            <option value="DontUpdate">Dont Update</option>
+                            <option value="DontUpdate">Don't Update</option>
                             <option value="SplitTime">Split Time</option>
                             <option value="Delta">Time Ahead / Behind</option>
                             <option value="DeltaWithFallback">Time Ahead / Behind or Split Time If Empty</option>
@@ -846,6 +884,437 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                         </select>
                     </div>
                 );
+            } else if ("Font" in value) {
+                const children = [
+                    <ToggleCheckbox
+                        value={value.Font !== null}
+                        setValue={(value) => {
+                            if (value) {
+                                this.props.setValue(
+                                    valueIndex,
+                                    expect(
+                                        factory.fromFont("", "normal", "normal", "normal"),
+                                        "Unexpected Font",
+                                    ),
+                                );
+                            } else {
+                                this.props.setValue(
+                                    valueIndex,
+                                    factory.fromEmptyFont(),
+                                );
+                            }
+                        }}
+                    />,
+                ];
+
+                if (value.Font !== null) {
+                    const { family, style, weight, stretch } = value.Font;
+
+                    children.push(
+                        <input
+                            value={family}
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    expect(
+                                        factory.fromFont(e.target.value, style, weight, stretch),
+                                        "Unexpected Font",
+                                    ),
+                                );
+                            }}
+                        />,
+                        <>Style</>,
+                        <select
+                            value={style}
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    expect(
+                                        factory.fromFont(family, e.target.value, weight, stretch),
+                                        "Unexpected Font",
+                                    ),
+                                );
+                            }}
+                        >
+                            <option value="normal">Normal</option>
+                            <option value="italic">Italic</option>
+                        </select>,
+                        <>Weight</>,
+                        <select
+                            value={weight}
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    expect(
+                                        factory.fromFont(family, style, e.target.value, stretch),
+                                        "Unexpected Font",
+                                    ),
+                                );
+                            }}
+                        >
+                            <option value="thin">Thin</option>
+                            <option value="extra-light">Extra Light</option>
+                            <option value="light">Light</option>
+                            <option value="semi-light">Semi Light</option>
+                            <option value="normal">Normal</option>
+                            <option value="medium">Medium</option>
+                            <option value="semi-bold">Semi Bold</option>
+                            <option value="bold">Bold</option>
+                            <option value="extra-bold">Extra Bold</option>
+                            <option value="black">Black</option>
+                            <option value="extra-black">Extra Black</option>
+                        </select>,
+                        <>Stretch</>,
+                        <select
+                            value={stretch}
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    expect(
+                                        factory.fromFont(family, style, weight, e.target.value),
+                                        "Unexpected Font",
+                                    ),
+                                );
+                            }}
+                        >
+                            <option value="ultra-condensed">Ultra Condensed</option>
+                            <option value="extra-condensed">Extra Condensed</option>
+                            <option value="condensed">Condensed</option>
+                            <option value="semi-condensed">Semi Condensed</option>
+                            <option value="normal">Normal</option>
+                            <option value="semi-expanded">Semi Expanded</option>
+                            <option value="expanded">Expanded</option>
+                            <option value="extra-expanded">Extra Expanded</option>
+                            <option value="ultra-expanded">Ultra Expanded</option>
+                        </select>,
+                    );
+                }
+
+                component = (
+                    <div className="settings-value-box optional-value">
+                        {children}
+                    </div>
+                );
+            } else if ("DeltaGradient" in value) {
+                let type: string;
+                let color1: Option<Color> = null;
+                let color2: Option<Color> = null;
+                const gradient = value.DeltaGradient;
+
+                if (typeof gradient !== "string") {
+                    [type] = Object.keys(gradient);
+                    if ("Plain" in gradient) {
+                        color1 = gradient.Plain;
+                    } else if ("Vertical" in gradient) {
+                        [color1, color2] = gradient.Vertical;
+                    } else if ("Horizontal" in gradient) {
+                        [color1, color2] = gradient.Horizontal;
+                    } else {
+                        assertNever(gradient);
+                    }
+                } else {
+                    type = gradient;
+                }
+
+                const colorsToValue = (
+                    type: string,
+                    color1: Option<Color>,
+                    color2: Option<Color>,
+                ) => {
+                    color1 = color1 ? color1 : [0.0, 0.0, 0.0, 0.0];
+                    color2 = color2 ? color2 : color1;
+                    switch (type) {
+                        case "Transparent":
+                            return factory.fromTransparentGradient();
+                        case "Plain":
+                            return factory.fromColor(
+                                color1[0], color1[1], color1[2], color1[3],
+                            );
+                        case "Vertical":
+                            return factory.fromVerticalGradient(
+                                color1[0], color1[1], color1[2], color1[3],
+                                color2[0], color2[1], color2[2], color2[3],
+                            );
+                        case "Horizontal":
+                            return factory.fromHorizontalGradient(
+                                color1[0], color1[1], color1[2], color1[3],
+                                color2[0], color2[1], color2[2], color2[3],
+                            );
+                        default:
+                            return expect(
+                                factory.fromDeltaGradient(type),
+                                "Unexpected Gradient Type",
+                            );
+                    }
+                };
+
+                const children: JSX.Element[] = [
+                    <select
+                        value={type}
+                        onChange={(e) => {
+                            this.props.setValue(
+                                valueIndex,
+                                colorsToValue(e.target.value, color1, color2),
+                            );
+                        }}
+                    >
+                        <option value="Transparent">Transparent</option>
+                        <option value="Plain">Plain</option>
+                        <option value="Vertical">Vertical</option>
+                        <option value="Horizontal">Horizontal</option>
+                        <option value="DeltaPlain">Plain Delta</option>
+                        <option value="DeltaVertical">Vertical Delta</option>
+                        <option value="DeltaHorizontal">Horizontal Delta</option>
+                    </select>,
+                ];
+
+                if (color1) {
+                    children.push(
+                        <ColorPicker
+                            color={color1}
+                            setColor={(color) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    colorsToValue(type, color, color2),
+                                );
+                            }}
+                        />,
+                    );
+                }
+
+                if (color2) {
+                    children.push(
+                        <ColorPicker
+                            color={color2}
+                            setColor={(color) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    colorsToValue(type, color1, color),
+                                );
+                            }}
+                        />,
+                    );
+                }
+
+                if (color2) {
+                    component = (
+                        <div className="settings-value-box two-colors">
+                            {children}
+                        </div>
+                    );
+                } else if (color1) {
+                    component = (
+                        <div className="settings-value-box one-color">
+                            {children}
+                        </div>
+                    );
+                } else {
+                    component = (
+                        <div className="settings-value-box">
+                            {children}
+                        </div>
+                    );
+                }
+            } else if ("LayoutBackground" in value) {
+                let type: string;
+                let color1: Option<Color> = null;
+                let color2: Option<Color> = null;
+                let imageId = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+                let brightness = 100;
+                let opacity = 100;
+                let blur = 0;
+                const gradient = value.LayoutBackground;
+
+                let children: JSX.Element[] = [];
+
+                const colorsToValue = (
+                    type: string,
+                    color1: Option<Color>,
+                    color2: Option<Color>,
+                ) => {
+                    color1 = color1 ? color1 : [0.0, 0.0, 0.0, 0.0];
+                    color2 = color2 ? color2 : color1;
+                    switch (type) {
+                        case "Transparent":
+                            return factory.fromTransparentGradient();
+                        case "Plain":
+                            return factory.fromColor(
+                                color1[0], color1[1], color1[2], color1[3],
+                            );
+                        case "Vertical":
+                            return factory.fromVerticalGradient(
+                                color1[0], color1[1], color1[2], color1[3],
+                                color2[0], color2[1], color2[2], color2[3],
+                            );
+                        case "Horizontal":
+                            return factory.fromHorizontalGradient(
+                                color1[0], color1[1], color1[2], color1[3],
+                                color2[0], color2[1], color2[2], color2[3],
+                            );
+                        default:
+                            return expect(
+                                factory.fromBackgroundImage(imageId, brightness / 100, opacity / 100, blur / 100),
+                                "Unexpected layout background",
+                            );
+                    }
+                };
+
+                if (typeof gradient !== "string") {
+                    [type] = Object.keys(gradient);
+                    if ("Plain" in gradient) {
+                        color1 = gradient.Plain;
+                    } else if ("Vertical" in gradient) {
+                        [color1, color2] = gradient.Vertical;
+                    } else if ("Horizontal" in gradient) {
+                        [color1, color2] = gradient.Horizontal;
+                    } else if ("image" in gradient) {
+                        imageId = gradient.image;
+                        brightness = 100 * gradient.brightness;
+                        opacity = 100 * gradient.opacity;
+                        blur = 100 * gradient.blur;
+                        type = "Image";
+                        const imageUrl = this.props.editorUrlCache.cache(imageId);
+                        children.push(
+                            <div
+                                className="color-picker-button"
+                                style={{
+                                    background: `url("${imageUrl}") center / cover`,
+                                }}
+                                onClick={async (_) => {
+                                    const [file] = await openFileAsArrayBuffer();
+                                    const imageId = this.props.editorUrlCache.imageCache.cacheFromArray(
+                                        new Uint8Array(file),
+                                        true,
+                                    );
+                                    this.props.editorUrlCache.cache(imageId);
+                                    const value = expect(
+                                        factory.fromBackgroundImage(imageId, brightness / 100, opacity / 100, blur / 100),
+                                        "Unexpected layout background",
+                                    )
+                                    this.props.setValue(valueIndex, value);
+                                }}
+                            />,
+                            <div style={{
+                                gridTemplateColumns: "max-content 1fr",
+                                columnGap: "8px",
+                                rowGap: "8px",
+                                alignItems: "center",
+                                display: "grid",
+                                gridColumn: "1 / 3",
+                            }}>
+                                Brightness
+                                <input
+                                    type="range"
+                                    min="0" max="100"
+                                    value={brightness}
+                                    onChange={(e) => {
+                                        brightness = Number(e.target.value);
+                                        this.props.setValue(
+                                            valueIndex,
+                                            colorsToValue(type, color1, color2),
+                                        );
+                                    }}
+                                />
+                                Opacity
+                                <input
+                                    type="range"
+                                    min="0" max="100"
+                                    value={opacity}
+                                    onChange={(e) => {
+                                        opacity = Number(e.target.value);
+                                        this.props.setValue(
+                                            valueIndex,
+                                            colorsToValue(type, color1, color2),
+                                        );
+                                    }}
+                                />
+                                Blur
+                                <input
+                                    type="range"
+                                    min="0" max="100"
+                                    value={blur}
+                                    onChange={(e) => {
+                                        blur = Number(e.target.value);
+                                        this.props.setValue(
+                                            valueIndex,
+                                            colorsToValue(type, color1, color2),
+                                        );
+                                    }}
+                                />
+                            </div>
+                        );
+                    } else {
+                        assertNever(gradient);
+                    }
+                } else {
+                    type = gradient;
+                }
+
+                children.splice(0, 0,
+                    <select
+                        value={type}
+                        onChange={(e) => {
+                            this.props.setValue(
+                                valueIndex,
+                                colorsToValue(e.target.value, color1, color2),
+                            );
+                        }}
+                    >
+                        <option value="Transparent">Transparent</option>
+                        <option value="Plain">Plain</option>
+                        <option value="Vertical">Vertical</option>
+                        <option value="Horizontal">Horizontal</option>
+                        <option value="Image">Image</option>
+                    </select>,
+                );
+
+                if (color1) {
+                    children.push(
+                        <ColorPicker
+                            color={color1}
+                            setColor={(color) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    colorsToValue(type, color, color2),
+                                );
+                            }}
+                        />,
+                    );
+                }
+
+                if (color2) {
+                    children.push(
+                        <ColorPicker
+                            color={color2}
+                            setColor={(color) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    colorsToValue(type, color1, color),
+                                );
+                            }}
+                        />,
+                    );
+                }
+
+                if (color2) {
+                    component = (
+                        <div className="settings-value-box two-colors">
+                            {children}
+                        </div>
+                    );
+                } else if (color1 || type === "Image") {
+                    component = (
+                        <div className="settings-value-box one-color">
+                            {children}
+                        </div>
+                    );
+                } else {
+                    component = (
+                        <div className="settings-value-box">
+                            {children}
+                        </div>
+                    );
+                }
             } else {
                 assertNever(value);
             }

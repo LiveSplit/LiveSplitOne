@@ -214,7 +214,7 @@ export class SplitsSelection extends React.Component<Props, State> {
             throw Error("The splits key is invalid.");
         }
 
-        return Run.parseArray(new Uint8Array(splitsData), "", false).with((result) => {
+        return Run.parseArray(new Uint8Array(splitsData), "").with((result) => {
             if (result.parsedSuccessfully()) {
                 return result.unwrap();
             } else {
@@ -301,7 +301,7 @@ export class SplitsSelection extends React.Component<Props, State> {
         const splits = await openFileAsArrayBuffer();
         try {
             await this.importSplitsFromArrayBuffer(splits);
-        } catch (err) {
+        } catch (err: any) {
             toast.error(err.message);
         }
     }
@@ -313,7 +313,7 @@ export class SplitsSelection extends React.Component<Props, State> {
 
     private async importSplitsFromArrayBuffer(buffer: [ArrayBuffer, File]) {
         const [file] = buffer;
-        const result = Run.parseArray(new Uint8Array(file), "", false);
+        const result = Run.parseArray(new Uint8Array(file), "");
         try {
             if (result.parsedSuccessfully()) {
                 await this.storeRun(result.unwrap());
@@ -378,7 +378,7 @@ export class SplitsSelection extends React.Component<Props, State> {
             return;
         }
         if (id.indexOf("https://splits.io/") === 0) {
-            id = id.substr("https://splits.io/".length);
+            id = id.substring("https://splits.io/".length);
         }
         try {
             const run = await SplitsIO.downloadById(id);

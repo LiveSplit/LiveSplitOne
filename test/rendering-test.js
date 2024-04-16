@@ -1,20 +1,20 @@
-const fs = require("fs");
-const path = require("path");
-const { fork } = require("child_process");
-const {
+import fs from "fs";
+import path from "path";
+import { createServer } from 'http-server';
+import {
     Builder,
     By,
     until,
-} = require("selenium-webdriver");
-const chrome = require("selenium-webdriver/chrome");
-const chromedriver = require("chromedriver");
-const imghash = require("imghash");
-const hex64 = require("hex64");
-const leven = require("leven");
-const pixelmatch = require("pixelmatch");
-const PNG = require("pngjs").PNG;
+} from "selenium-webdriver";
+import chrome from "selenium-webdriver/chrome.js";
+import { } from "chromedriver";
+import imghash from "imghash";
+import hex64 from "hex64";
+import leven from "leven";
+import pixelmatch from "pixelmatch";
+import { PNG } from "pngjs";
 
-describe("Layout Rendering Tests", function() {
+describe("Layout Rendering Tests", function () {
     this.timeout(90000);
 
     let driver, serverProcess;
@@ -25,11 +25,9 @@ describe("Layout Rendering Tests", function() {
 
     const startServer = async () => {
         return new Promise((resolve) => {
-            serverProcess = fork("./node_modules/webpack-dev-server/bin/webpack-dev-server.js", [], { silent: true });
-            serverProcess.stdout.on("data", (data) => {
-                if (data.toString().includes("Compiled successfully.")) {
-                    resolve();
-                }
+            serverProcess = createServer({ root: "./dist" });
+            serverProcess.listen(8081, () => {
+                resolve();
             });
         });
     };
@@ -63,15 +61,13 @@ describe("Layout Rendering Tests", function() {
         console.log('Server started!');
         console.log('Preparing WebDriver for tests...');
 
-        const service = new chrome.ServiceBuilder(chromedriver.path).build();
-        chrome.setDefaultService(service);
-        const options = new chrome.Options().windowSize({ width: 1200, height: 2400 }).headless();
+        const options = new chrome.Options().windowSize({ width: 1200, height: 2400 }).addArguments("--headless");
         driver = await new Builder().forBrowser("chrome").setChromeOptions(options).build();
 
-        await driver.get("http://localhost:8080");
+        await driver.get("http://localhost:8081");
 
         await driver.executeScript(() => {
-            HTMLInputElement.prototype.click = function() {
+            HTMLInputElement.prototype.click = function () {
                 const existingFileInput = document.getElementById("file-input");
                 if (existingFileInput) {
                     existingFileInput.remove();
@@ -90,7 +86,7 @@ describe("Layout Rendering Tests", function() {
     });
 
     const testRendering = (layoutName, splitsName, expectedHash) => {
-        it(`Renders the ${layoutName} layout with the ${splitsName} splits correctly`, async function() {
+        it(`Renders the ${layoutName} layout with the ${splitsName} splits correctly`, async function () {
             this.timeout(10000);
 
             await clickElement(By.xpath(".//button[contains(text(), 'Layout')]"));
@@ -103,7 +99,7 @@ describe("Layout Rendering Tests", function() {
             await loadFile(`${SPLITS_FOLDER}/${splitsName}.lss`);
             await clickElement(By.xpath("(.//button[contains(@aria-label, 'Open Splits')])[last()]"));
             await clickElement(By.xpath(".//button[contains(text(), 'Back')]"));
-    
+
             const layoutElement = await findElement(By.className("layout"));
             const layoutScreenshot = await layoutElement.takeScreenshot();
 
@@ -130,13 +126,13 @@ describe("Layout Rendering Tests", function() {
                         const expectedImage = PNG.sync.read(fs.readFileSync(expectedScreenshotPath));
                         const { width, height } = actualImage;
                         const diff = new PNG({ width, height });
-        
+
                         const numPixelsDifferent = pixelmatch(actualImage.data, expectedImage.data, diff.data, width, height, { threshold: 0.2 });
 
                         if (numPixelsDifferent === 0) {
                             showWarning = true;
                         }
-        
+
                         fs.writeFileSync(`${SCREENSHOTS_FOLDER}/${layoutName}_${splitsName}_diff.png`, PNG.sync.write(diff));
                     }
                 }
@@ -153,18 +149,18 @@ describe("Layout Rendering Tests", function() {
         });
     }
 
-    testRendering("all_components", "default", "f4H-QgAAAAAaAAAO____________________AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA__wCAAAAAABv______4Hb4AG");
-    testRendering("all_components", "pmw3", "f4H-QgAAAAAaAAAO________fmAOf6AAX4AG3_gH3_AOX_APVkgOX-AOVvAPX_AeX_AeWrAebvgfAAAAAABvf_5_f___JIBO");
-    testRendering("default", "default", "________8AAD8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADgAAD_________");
-    testRendering("default", "pmw3", "f_wAb__mX2AG3-gGUdgGSkgOX3AOW9gOX-APVlwOH_APX8AO1uAPUnAOX1AOXLAeHvAeX_wf__AfAAAAAABgAAD_AAB_____");
+    testRendering("all_components", "default", "f4G-QgAAAAAeAAAO____________________AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA__wCAAAAAABv______4PZ4AG");
+    testRendering("all_components", "pmw3", "f4G-QgAAAAAeAAAO________fmAOf6AAX4AG3_gH3_AOX_APVkgOX-AOVvAPX_AeX_AeWrAeb_gfAAAAAABv__x-____JABO");
+    testRendering("default", "default", "____________AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADgAAD_________");
+    testRendering("default", "pmw3", "__wA___GX-AG3-gGUNgGQkAOXnAOW9gOX-APVtwOH_APX8AOX_APRnAOXVAOXJAeHvAeX_wf__AfAAAAAABgAAD_Pz9_____");
     testRendering("splits_two_rows", "celeste", "f8AAcAAHf8AA____d4AAcAAHf_gAcAAPd_AAYAAHf4AA____f4AAYAAH__AA____Z_gAYAAHf_8A9VVfb_wAcAAPf_AAYAAP");
-    testRendering("splits_with_labels", "celeste", "AABAAABMAADPAADPAADP____7AAP_wAP_wAP_wAPwgAA____QAAH2oAP_4AH34APX4AA____wAAP9EAP38AP38AP38AAAAAA");
+    testRendering("splits_with_labels", "celeste", "AABEAADPAADPAADPAADA____fAAH_wAP_wAP_wAPxgAA____wgAH34AP_4AH34APQYAA____0EAP_8AP38AP38APQAAAAAAA");
     testRendering("title_centered_no_game_icon", "celeste", "________AAAAADQAAHQAAH4A______3_____AAAAAAAAAAAA____AAkAAL8DAP8DAP8DAP8D_________-n9AAAAAAAAAAAA");
-    testRendering("title_centered_with_game_icon", "celeste", "________AAAAIB0AIB8AYB8A________cB8AcAAAcAAAcAAAcAAAcAZAcC_DcD_DcD_DcD_D_________9Z9cAAAAAAAAAAA");
-    testRendering("title_left_no_attempt_count", "celeste", "________AAAA-AAA-AAA-AAA____________AAAAAAAAAAAA____CQAA_wAA_4AA_4AA_4AA________qf__AAAAAAAAAAAA");
+    testRendering("title_centered_with_game_icon", "celeste", "________AAAAQBoAQBoAYB8A________9V-U4AAA4AAA4AAA4AAA4ASA4H_D4H_D4H_D4H_D_________9T84AAAAAAAAAAA");
+    testRendering("title_left_no_attempt_count", "celeste", "________AAAA-AAA-AAA-AAA____________AAAAAAAAAAAA____rVKV_wAA_4AA_4AA_4AA________qf__AAAAAAAAAAAA");
 
     after(async () => {
         await driver.quit();
-        serverProcess.kill();
+        serverProcess.close();
     });
 });

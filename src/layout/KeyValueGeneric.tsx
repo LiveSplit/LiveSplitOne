@@ -3,9 +3,9 @@ import * as LiveSplit from "../livesplit-core";
 
 import { colorToCss, gradientToCss } from "../util/ColorUtil";
 import { map } from "../util/OptionUtil";
+import Abbreviated from "./Abbreviated";
 
 import "../css/KeyValue.scss";
-import Abbreviated from "./Abbreviated";
 
 export enum KeyValueDisplay {
     Center,
@@ -26,7 +26,7 @@ export interface Props {
 export default class KeyValueGeneric extends React.Component<Props> {
     public render() {
         const keyCell = <div
-            className="key-value-key"
+            className="key-value-key text-font"
             style={{
                 color: map(this.props.keyColor, colorToCss),
             }}
@@ -35,7 +35,7 @@ export default class KeyValueGeneric extends React.Component<Props> {
         </div>;
 
         const valueCell = <div
-            className="key-value-value time"
+            className="key-value-value time times-font"
             style={{
                 color: map(this.props.valueColor, colorToCss),
             }}

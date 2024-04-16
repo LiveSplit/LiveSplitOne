@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import LiveSplitIcon from "../assets/icon_small.png";
+import LiveSplitIcon from "../assets/icon.svg";
 
 import "../css/About.scss";
 
@@ -36,7 +36,7 @@ export class About extends React.Component<Props> {
                         </a>
                     </p>
                     <p>LiveSplit One is a multiplatform version of LiveSplit, the sleek,
-                    highly-customizable timer for speedrunners.</p>
+                        highly-customizable timer for speedrunners.</p>
                     <p>
                         <a href="https://github.com/LiveSplit/LiveSplitOne" target="_blank">
                             View Source Code on GitHub

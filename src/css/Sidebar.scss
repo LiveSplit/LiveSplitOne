@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 @import 'Toggle';
 @import 'variables';
 
@@ -23,7 +25,7 @@ $header-font-size: 24px;
   .sidebar-buttons {
     hr {
       border-color: $border-color;
-      margin: ($ui-large-margin - $ui-margin / 2) 0;
+      margin: ($ui-large-margin - math.div($ui-margin, 2)) 0;
 
       &.livesplit-title-separator {
         margin-top: 0;
@@ -38,7 +40,7 @@ $header-font-size: 24px;
     }
 
     h2 {
-      margin-bottom: $ui-large-margin - $ui-margin / 2;
+      margin-bottom: $ui-large-margin - math.div($ui-margin, 2);
     }
 
     > button {

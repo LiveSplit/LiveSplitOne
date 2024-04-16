@@ -33,7 +33,7 @@ function getSplitsInfo(run: RunRef): SplitsInfo {
 }
 
 function parseSplitsAndGetInfo(splits: Uint8Array): Option<SplitsInfo> {
-    return Run.parseArray(splits, "", false).with((r) => {
+    return Run.parseArray(splits, "").with((r) => {
         if (r.parsedSuccessfully()) {
             return r.unwrap();
         }

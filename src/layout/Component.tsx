@@ -1,6 +1,6 @@
 import * as React from "react";
 import deepEqual from "fast-deep-equal";
-import { ComponentStateJson, Color } from "../livesplit-core";
+import { ComponentStateJson } from "../livesplit-core";
 import { assertNever } from "../util/OptionUtil";
 import BlankSpace from "./BlankSpace";
 import KeyValue from "./KeyValue";
@@ -11,25 +11,26 @@ import Splits from "./Splits";
 import Text from "./Text";
 import Timer from "./Timer";
 import Title from "./Title";
+import { UrlCache } from "../util/UrlCache";
 
 export interface Props {
     state: ComponentStateJson,
-    layoutState: {
-        thin_separators_color: Color,
-        separators_color: Color,
-    },
+    layoutUrlCache: UrlCache,
     layoutWidth: number,
     componentId: string,
 }
 
 export default class Component extends React.Component<Props> {
     public render() {
-        const { state, layoutState } = this.props;
+        const { state } = this.props;
         if ("KeyValue" in state) {
-            return <KeyValue state={state.KeyValue} />;
+            return <KeyValue
+                state={state.KeyValue}
+            />;
         } else if ("DetailedTimer" in state) {
             return <DetailedTimer
                 state={state.DetailedTimer}
+                layoutUrlCache={this.props.layoutUrlCache}
                 layoutWidth={this.props.layoutWidth}
             />;
         } else if ("Graph" in state) {
@@ -40,10 +41,12 @@ export default class Component extends React.Component<Props> {
         } else if ("Splits" in state) {
             return <Splits
                 state={state.Splits}
-                layoutState={layoutState}
+                layoutUrlCache={this.props.layoutUrlCache}
             />;
         } else if ("Text" in state) {
-            return <Text state={state.Text} />;
+            return <Text
+                state={state.Text}
+            />;
         } else if ("Timer" in state) {
             return <Timer
                 state={state.Timer}
@@ -51,9 +54,12 @@ export default class Component extends React.Component<Props> {
                 componentId={this.props.componentId}
             />;
         } else if ("Title" in state) {
-            return <Title state={state.Title} />;
+            return <Title
+                state={state.Title}
+                layoutUrlCache={this.props.layoutUrlCache}
+            />;
         } else if ("Separator" in state) {
-            return <Separator layoutState={layoutState} />;
+            return <Separator />;
         } else if ("BlankSpace" in state) {
             return <BlankSpace state={state.BlankSpace} />;
         } else {
@@ -63,7 +69,6 @@ export default class Component extends React.Component<Props> {
 
     public shouldComponentUpdate(nextProps: Readonly<Props>): boolean {
         return !deepEqual(nextProps.state, this.props.state) ||
-            !deepEqual(nextProps.layoutState, this.props.layoutState) ||
             nextProps.layoutWidth !== this.props.layoutWidth ||
             nextProps.componentId !== this.props.componentId;
     }

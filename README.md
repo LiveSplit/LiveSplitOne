@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/LiveSplit/LiveSplit/master/LiveSplit/Resources/Icon.png" alt="LiveSplit" height="42" width="45" align="top"/> LiveSplit One
+# <img src="https://raw.githubusercontent.com/LiveSplit/LiveSplitOne/master/src/assets/icon.svg" alt="LiveSplit" height="42" align="top"/> LiveSplit One
 
 [![Build Status](https://github.com/LiveSplit/LiveSplitOne/workflows/CI/badge.svg)](https://github.com/LiveSplit/LiveSplitOne/actions)
 
@@ -12,7 +12,7 @@ The web version of LiveSplit One is available [here](https://one.livesplit.org/)
 ## Build Instructions
 
 In order to build LiveSplit One, you need to install
-[npm](https://www.npmjs.com/get-npm) and the [Rust
+[npm](https://nodejs.org/en/download/) and the [Rust
 compiler](https://www.rust-lang.org/). Make sure to recursively clone the
 repository so that all git submodules are cloned as well:
 
@@ -55,16 +55,16 @@ run serve` to just host it without opening a browser tab.
 
 ## Browser Support
 
-| Browser           | Compatibility | Known Issues                                                                                                                                                                                                            |
-| ----------------- | ------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Chrome            | ≥57           | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/Chromium.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3A"Chromium")         |
-| Firefox           | ≥52           | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/Firefox.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3AFirefox)                           |
-| Edge              | ≥79           | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/Chromium.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3A"Chromium")       |
-| Safari            | ≥11           |                                                                                                                                                                                                                         |
-| Opera             | ≥44           | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/Chromium.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3A"Chromium")         |
-| iOS               | ≥11.2         | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/iOS.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3AiOS)                                   |
-| Android WebView   | ≥62           | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/Android.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3AAndroid)                           |
-| Chrome Android    | ≥66           | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/Android.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3AAndroid)                           |
-| Firefox Android   | ≥60           | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/Android.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3AAndroid)                           |
-| Internet Explorer | Unsupported   |                                                                                                                                                                                                                         |
-| Opera Mini        | Unsupported   |                                                                                                                                                                                                                         |
+| Browser           | Compatibility | Known Issues                                                                                                                                                                                      |
+| ----------------- | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Chrome            | ≥91           | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/Chromium.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3A"Chromium") |
+| Firefox           | ≥89           | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/Firefox.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3AFirefox)     |
+| Edge              | ≥91           | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/Chromium.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3A"Chromium") |
+| Safari            | ≥16.4         |                                                                                                                                                                                                   |
+| Opera             | ≥77           | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/Chromium.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3A"Chromium") |
+| iOS               | ≥16.4         | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/iOS.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3AiOS)             |
+| Android WebView   | ≥91           | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/Android.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3AAndroid)     |
+| Chrome Android    | ≥91           | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/Android.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3AAndroid)     |
+| Firefox Android   | ≥89           | [![GitHub issues by-label](https://img.shields.io/github/issues/LiveSplit/LiveSplitOne/Android.svg)](https://github.com/LiveSplit/LiveSplitOne/issues?q=is%3Aissue+is%3Aopen+label%3AAndroid)     |
+| Internet Explorer | Unsupported   |                                                                                                                                                                                                   |
+| Opera Mini        | Unsupported   |                                                                                                                                                                                                   |

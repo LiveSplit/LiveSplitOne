@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 @import 'mobile';
 @import 'variables';
 
@@ -10,24 +12,24 @@
 
     .table-row-even {
       display: table-row;
-      background: $dark-row-color !important;
+      background: $dark-row-color  !important;
     }
 
     .table-row-odd {
       display: table-row;
-      background: $light-row-color !important;
+      background: $light-row-color  !important;
     }
   }
 
   .table-body {
     display: table-row-group;
 
-    > tr {
+    >tr {
       display: table-row;
       background: $dark-row-color;
 
-      > td {
-        padding: $ui-margin/2 $ui-margin/2;
+      >td {
+        padding: math.div($ui-margin, 2) math.div($ui-margin, 2);
         display: table-cell;
 
         &:first-child {
@@ -52,10 +54,10 @@
   }
 
   .selected {
-    background: $selected-row-color !important;
+    background: $selected-row-color  !important;
   }
 
-  .tab-bar > button {
+  .tab-bar>button {
     font-size: 15px;
     height: 30px;
     border-bottom-right-radius: 0px;
@@ -64,14 +66,14 @@
     border-bottom: 0px;
   }
 
-  tr > td > input {
+  tr>td>input {
     margin-right: -40px;
 
     &:focus {
       outline: 0;
     }
   }
-  
+
   input {
     font-size: 15px;
     border: none;
@@ -81,7 +83,7 @@
     text-overflow: ellipsis;
     font-family: "fira", sans-serif;
   }
-  
+
   input[Type="text"] {
     font-family: inherit;
   }
@@ -106,9 +108,10 @@
       }
 
       .settings-value-box {
-        width: $settings-table-width/2 - 2*$ui-margin;
+        width: math.div($settings-table-width, 2) - 2*$ui-margin;
         display: grid;
         column-gap: $ui-margin;
+        row-gap: $ui-margin;
         grid-template-columns: 100%;
 
         input {
@@ -122,10 +125,11 @@
 
         select {
           height: $settings-row-height;
+          min-width: 80px;
         }
 
         &.optional-value {
-          grid-template-columns: 36px 1fr;
+          grid-template-columns: max-content 1fr;
         }
 
         &.two-colors {

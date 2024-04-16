@@ -1,27 +1,11 @@
 import * as React from "react";
-import { Option, map } from "../util/OptionUtil";
+import { Option, map, expect } from "../util/OptionUtil";
+import { hotkeySystem } from "./LiveSplit";
 
 import "../css/HotkeyButton.scss";
 
-let layoutMap: { get: (keyCode: string) => string | undefined; } | null = null;
-
-(navigator as any).keyboard?.getLayoutMap()?.then((m: any) => {
-    layoutMap = m;
-});
-
 function resolveKey(keyCode: string): string {
-    if (layoutMap == null) {
-        return keyCode;
-    }
-    const lowercase = layoutMap.get(keyCode);
-    if (lowercase === undefined) {
-        return keyCode;
-    }
-    if (lowercase === "ß") {
-        // ß uppercases to SS, but that's not what's on the keyboard.
-        return lowercase;
-    }
-    return lowercase.toUpperCase();
+    return expect(hotkeySystem, "The Hotkey System should always be initialized.").resolve(keyCode);
 }
 
 export interface Props {
@@ -48,7 +32,12 @@ export default class HotkeyButton extends React.Component<Props, State> {
         const value = this.props.value;
         let buttonText = null;
         if (value != null) {
-            buttonText = resolveKey(value);
+            const matches = value.match(/(.+)\+\s*(.+)$/);
+            if (matches != null) {
+                buttonText = `${matches[1]}+ ${resolveKey(matches[2])}`;
+            } else {
+                buttonText = resolveKey(value);
+            }
         } else if (this.state.listener != null) {
             buttonText = <i className="fa fa-circle" aria-hidden="true" />;
         }
@@ -79,6 +68,7 @@ export default class HotkeyButton extends React.Component<Props, State> {
                             position: "fixed",
                             right: "0px",
                             top: "0px",
+                            zIndex: 5,
                         }}
                         onClick={() => this.blurButton()}
                     />
@@ -93,10 +83,29 @@ export default class HotkeyButton extends React.Component<Props, State> {
 
         if (listener === null) {
             listener = {
-                handleEvent: (ev: KeyboardEvent) => this.props.setValue(ev.code),
+                handleEvent: (ev: KeyboardEvent) => {
+                    if (ev.repeat) {
+                        return;
+                    }
+                    let text = "";
+                    if (ev.ctrlKey && ev.code !== "ControlLeft" && ev.code !== "ControlRight") {
+                        text += "Ctrl + ";
+                    }
+                    if (ev.altKey && ev.code !== "AltLeft" && ev.code !== "AltRight") {
+                        text += "Alt + ";
+                    }
+                    if (ev.metaKey && ev.code !== "MetaLeft" && ev.code !== "MetaRight") {
+                        text += "Meta + ";
+                    }
+                    if (ev.shiftKey && ev.code !== "ShiftLeft" && ev.code !== "ShiftRight") {
+                        text += "Shift + ";
+                    }
+                    text += ev.code;
+                    this.props.setValue(text);
+                }
             };
 
-            window.addEventListener("keypress", listener);
+            window.addEventListener("keydown", listener);
         }
 
         if (intervalHandle === null) {
@@ -137,7 +146,7 @@ export default class HotkeyButton extends React.Component<Props, State> {
 
     private blurButton() {
         if (this.state.listener != null) {
-            window.removeEventListener("keypress", this.state.listener);
+            window.removeEventListener("keydown", this.state.listener);
         }
         if (this.state.intervalHandle != null) {
             window.clearTimeout(this.state.intervalHandle);

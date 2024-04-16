@@ -5,9 +5,12 @@ import * as LiveSplit from "../livesplit-core";
 import { SettingsComponent } from "./Settings";
 
 import "../css/LayoutEditor.scss";
+import { UrlCache } from "../util/UrlCache";
 
 export interface Props {
     editor: LiveSplit.LayoutEditor,
+    layoutEditorUrlCache: UrlCache,
+    layoutUrlCache: UrlCache,
     layoutWidth: number,
     timer: LiveSplit.SharedTimerRef,
     callbacks: Callbacks,
@@ -27,9 +30,11 @@ export class LayoutEditor extends React.Component<Props, State> {
         super(props);
 
         this.state = {
-            editor: props.editor.stateAsJson(),
+            editor: props.editor.stateAsJson(props.layoutEditorUrlCache.imageCache),
             showComponentSettings: true,
         };
+
+        props.layoutEditorUrlCache.collect();
     }
 
     public render() {
@@ -88,6 +93,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                     context={`component-settings$${this.state.editor.selected_component}`}
                     factory={LiveSplit.SettingValue}
                     state={this.state.editor.component_settings}
+                    editorUrlCache={this.props.layoutEditorUrlCache}
                     setValue={(index, value) => {
                         this.props.editor.setComponentSettingsValue(index, value);
                         this.update();
@@ -98,8 +104,13 @@ export class LayoutEditor extends React.Component<Props, State> {
                     context={`layout-settings`}
                     factory={LiveSplit.SettingValue}
                     state={this.state.editor.general_settings}
+                    editorUrlCache={this.props.layoutEditorUrlCache}
                     setValue={(index, value) => {
-                        this.props.editor.setGeneralSettingsValue(index, value);
+                        this.props.editor.setGeneralSettingsValue(
+                            index,
+                            value,
+                            this.props.layoutEditorUrlCache.imageCache,
+                        );
                         this.update();
                     }}
                 />
@@ -245,8 +256,13 @@ export class LayoutEditor extends React.Component<Props, State> {
                 <div className="layout-container">
                     <DragAutoRefreshLayout
                         getState={() => this.props.timer.readWith(
-                            (t) => this.props.editor.layoutStateAsJson(t),
+                            (t) => {
+                                const result = this.props.editor.layoutStateAsJson(this.props.layoutUrlCache.imageCache, t);
+                                this.props.layoutUrlCache.collect();
+                                return result;
+                            }
                         )}
+                        layoutUrlCache={this.props.layoutUrlCache}
                         layoutWidth={this.props.layoutWidth}
                         onClick={(i) => this.selectComponent(i)}
                         onDrag={(i) => {
@@ -288,8 +304,9 @@ export class LayoutEditor extends React.Component<Props, State> {
     private update() {
         this.setState({
             ...this.state,
-            editor: this.props.editor.stateAsJson(),
+            editor: this.props.editor.stateAsJson(this.props.layoutEditorUrlCache.imageCache),
         });
+        this.props.layoutEditorUrlCache.collect();
     }
 
     private selectComponent(i: number) {

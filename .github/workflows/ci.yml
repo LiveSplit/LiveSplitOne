@@ -12,84 +12,76 @@ jobs:
 
     steps:
     - name: Checkout commit
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         submodules: recursive
 
-    - name: Set CURRENT_TWO_WEEKS for use in cache keys
-      run: echo "::set-env name=CURRENT_TWO_WEEKS::$(($(date +%-V) / 2))"
-
-    - name: Cache Cargo
-      uses: actions/cache@v1
-      with:
-        path: ~/.cargo
-        key: ${{ runner.os }}-cargo-${{ env.CURRENT_TWO_WEEKS }}
-
-    - name: Cache binaryen
-      if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
-      uses: actions/cache@v1
-      with:
-        path: ~/binaryen
-        key: ${{ runner.os }}-binaryen-${{ env.CURRENT_TWO_WEEKS }}
-
-    - name: Cache target
-      uses: actions/cache@v1
-      with:
-        path: livesplit-core/target
-        key: ${{ runner.os }}-target-${{ env.CURRENT_TWO_WEEKS }}
-
     - name: Install Node
-      uses: actions/setup-node@v1
+      uses: actions/setup-node@v2.3.0
       with:
-        node-version: '12.x' # FIXME: https://github.com/actions/setup-node/issues/26
+        node-version: 'lts/*'
 
     - name: Install Rust
-      uses: hecrj/setup-rust-action@v1
+      uses: hecrj/setup-rust-action@v2
+      with:
+        rust-version: nightly
+        components: rust-src
+        targets: wasm32-unknown-unknown
 
-    - name: Install target
-      run: rustup target add wasm32-unknown-unknown
+    - name: Download binaryen
+      if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
+      uses: robinraju/release-downloader@v1.7
+      with:
+        repository: "WebAssembly/binaryen"
+        latest: true
+        fileName: "binaryen-*-x86_64-linux.tar.gz"
+        out-file-path: "/home/runner/.cargo/bin"
 
-    - name: Install optimizers
+    - name: Install binaryen
       if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
       run: |
-        set -e
-        cd $HOME
-        git -C binaryen pull || git clone https://github.com/WebAssembly/binaryen binaryen
-        cd binaryen
-        cmake .
-        make wasm-opt
+        cd ~/.cargo/bin
+        tar -xzf binaryen-*-x86_64-linux.tar.gz
+        mv binaryen*/bin/wasm* .
 
-    # FIXME: Use actions-rs/install@v0.1 again once it can handle wasm-bindgen
-    - name: Install wasm-bindgen
+    - name: Choose wasm-bindgen-cli version
+      run: echo "version=$(cd livesplit-core && cargo tree -i wasm-bindgen --features wasm-web --target wasm32-unknown-unknown --depth 0 | sed 's/.* v//g')" >> $GITHUB_OUTPUT
+      id: wasm-bindgen
+
+    - name: Download wasm-bindgen-cli
+      uses: robinraju/release-downloader@v1.9
+      with:
+        repository: "rustwasm/wasm-bindgen"
+        tag: ${{ steps.wasm-bindgen.outputs.version }}
+        fileName: "wasm-bindgen-${{ steps.wasm-bindgen.outputs.version }}-x86_64-unknown-linux-musl.tar.gz"
+        out-file-path: "/home/runner/.cargo/bin"
+
+    - name: Install wasm-bindgen-cli
       run: |
-        set -e
-        cargo install wasm-bindgen-cli
+        cd ~/.cargo/bin
+        tar -xzf wasm-bindgen-${{ steps.wasm-bindgen.outputs.version }}-x86_64-unknown-linux-musl.tar.gz
+        mv wasm-bindgen-${{ steps.wasm-bindgen.outputs.version }}-x86_64-unknown-linux-musl/wasm* .
 
     - name: Install npm packages
-      run: |
-        set -e
-        npm install
+      run: npm ci
       env:
         DETECT_CHROMEDRIVER_VERSION: true
 
     - name: Build Core
-      run: |
-        set -e
-        npm run build:core
+      run: npm run build:core:deploy
 
     - name: Set up tslint matcher
       run: echo "::add-matcher::.github/workflows/tslint.json"
 
-    - name: Run tslint
-      run: npm run lint
+    # FIXME: Switch to eslint
+    # - name: Run tslint
+    #   run: npm run lint
 
     - name: Build Frontend
-      run: |
-        set -e
-        npm run publish
+      run: npm run publish
 
     - name: Cache screenshots
-      uses: actions/cache@v1
+      uses: actions/cache@v4
       with:
         path: test/screenshots
         key: ${{ runner.os }}-screenshots-${{ hashFiles('test/rendering-test.js') }}
@@ -102,7 +94,7 @@ jobs:
 
     - name: Upload screenshots
       if: success() || failure()
-      uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v4
       with:
         name: Screenshots
         path: test/screenshots
@@ -110,14 +102,12 @@ jobs:
     - name: Optimize
       if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
       run: |
-        set -e
         WASM_FILE=$(ls dist/*.wasm)
-        ~/binaryen/bin/wasm-opt -O4 "$WASM_FILE" -o "$WASM_FILE"
+        wasm-opt -O4 "$WASM_FILE" -o "$WASM_FILE"
 
     - name: Add CNAME file
       if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
-      run: |
-        cp ./.github/workflows/CNAME ./dist/CNAME
+      run: cp ./.github/workflows/CNAME ./dist/CNAME
 
     - name: Deploy
       if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'

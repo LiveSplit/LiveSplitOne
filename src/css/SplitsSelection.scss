@@ -1,3 +1,5 @@
+@use 'sass:math';
+
 @import 'mobile';
 @import 'variables';
 @import 'Loading';
@@ -21,7 +23,7 @@ $splits-row-height: 40px;
 
       button {
         margin-top: 0;
-        margin-bottom: $ui-large-margin / 2;
+        margin-bottom: math.div($ui-large-margin, 2);
         margin-right: $ui-margin;
       }
 
@@ -34,7 +36,7 @@ $splits-row-height: 40px;
     .splits-table {
       background-color: $dark-row-color;
       border: 1px solid $border-color;
-      margin: $ui-large-margin/2 0;
+      margin: math.div($ui-large-margin, 2) 0;
       width: fit-content;
 
       .splits-row {

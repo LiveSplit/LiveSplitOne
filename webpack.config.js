@@ -1,14 +1,19 @@
-module.exports = async (env, argv) => {
-    const HtmlWebpackPlugin = require("html-webpack-plugin");
-    const FaviconsWebpackPlugin = require("favicons-webpack-plugin");
-    const { CleanWebpackPlugin } = require("clean-webpack-plugin");
-    const WorkboxPlugin = require("workbox-webpack-plugin");
-    const webpack = require("webpack");
-    const { execSync } = require("child_process");
-    const fetch = require("node-fetch");
-    const moment = require("moment");
-    const path = require("path");
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import HtmlInlineScriptPlugin from 'html-inline-script-webpack-plugin';
+import FaviconsWebpackPlugin from "favicons-webpack-plugin";
+import { CleanWebpackPlugin } from "clean-webpack-plugin";
+import WorkboxPlugin from "workbox-webpack-plugin";
+import ReactRefreshTypeScript from 'react-refresh-typescript';
+import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
+import webpack from "webpack";
+import { execSync } from "child_process";
+import moment from "moment";
+import path from "path";
+import fetch from "node-fetch";
+import { fileURLToPath } from 'url';
+import * as sass from "sass";
 
+export default async (env, argv) => {
     const getContributorsForRepo = async (repoName) => {
         const contributorsData = await fetch(`https://api.github.com/repos/LiveSplit/${repoName}/contributors`);
         return contributorsData.json();
@@ -19,7 +24,7 @@ module.exports = async (env, argv) => {
 
     const coreContributorsMap = {};
     for (const coreContributor of coreContributorsList) {
-        if (coreContributor.type === "User") {
+        if (coreContributor.type === "User" && !coreContributor.login.includes("dependabot")) {
             coreContributorsMap[coreContributor.login] = coreContributor;
         }
     }
@@ -28,7 +33,7 @@ module.exports = async (env, argv) => {
         const existingContributor = coreContributorsMap[lsoContributor.login];
         if (existingContributor) {
             existingContributor.contributions += lsoContributor.contributions;
-        } else if (lsoContributor.type === "User") {
+        } else if (lsoContributor.type === "User" && !lsoContributor.login.includes("dependabot")) {
             coreContributorsMap[lsoContributor.login] = lsoContributor;
         }
     }
@@ -39,7 +44,7 @@ module.exports = async (env, argv) => {
     const commitHash = execSync("git rev-parse --short HEAD").toString();
     const date = moment.utc().format("YYYY-MM-DD kk:mm:ss");
 
-    const basePath = __dirname;
+    const basePath = path.dirname(fileURLToPath(import.meta.url));
 
     const isProduction = argv.mode === "production";
     const distPath = path.join(basePath, "dist");
@@ -51,14 +56,14 @@ module.exports = async (env, argv) => {
         output: {
             filename: "[name].js",
             path: distPath,
+            publicPath: '',
         },
 
         devtool: isProduction ? undefined : "source-map",
 
         devServer: {
-            contentBase: basePath,
-            compress: true,
             port: 8080,
+            hot: true
         },
 
         resolve: {
@@ -68,7 +73,7 @@ module.exports = async (env, argv) => {
         plugins: [
             ...(isProduction ? [new CleanWebpackPlugin()] : []),
             new FaviconsWebpackPlugin({
-                logo: path.resolve("src/assets/icon.png"),
+                logo: path.resolve("src/assets/icon.svg"),
                 inject: true,
                 favicons: {
                     appName: "LiveSplit One",
@@ -77,6 +82,7 @@ module.exports = async (env, argv) => {
                     developerURL: "https://livesplit.org",
                     background: "#171717",
                     theme_color: "#232323",
+                    appleStatusBarStyle: "black-translucent",
                     icons: {
                         coast: false,
                         yandex: false,
@@ -92,21 +98,29 @@ module.exports = async (env, argv) => {
                 COMMIT_HASH: JSON.stringify(commitHash),
                 CONTRIBUTORS_LIST: JSON.stringify(contributorsList),
             }),
-            ...(isProduction ? [new WorkboxPlugin.GenerateSW({
-                clientsClaim: true,
-                skipWaiting: true,
-                maximumFileSizeToCacheInBytes: 100 * 1024 * 1024,
-                exclude: [
-                    /^assets\//,
-                ],
-                runtimeCaching: [{
-                    urlPattern: (context) => {
-                        return self.origin === context.url.origin &&
-                            context.url.pathname.startsWith("/assets/");
-                    },
-                    handler: "CacheFirst",
-                }],
-            })] : []),
+            ...(isProduction ? [
+                new HtmlInlineScriptPlugin({
+                    scriptMatchPattern: ['^bundle.js$'],
+                }),
+                new WorkboxPlugin.GenerateSW({
+                    clientsClaim: true,
+                    skipWaiting: true,
+                    maximumFileSizeToCacheInBytes: 100 * 1024 * 1024,
+                    exclude: [
+                        /^assets/,
+                        /\.LICENSE\.txt$/,
+                    ],
+
+                    runtimeCaching: [{
+                        urlPattern: (context) => {
+                            return self.origin === context.url.origin &&
+                                context.url.pathname.startsWith("/assets/");
+                        },
+                        handler: "CacheFirst",
+                    }],
+                })
+            ] : []),
+            ...(!isProduction ? [new ReactRefreshWebpackPlugin()] : [])
         ],
 
         module: {
@@ -114,36 +128,48 @@ module.exports = async (env, argv) => {
                 {
                     test: /\.tsx?$/,
                     use: [
-                        "ts-loader",
+                        {
+                            loader: "ts-loader",
+                            options: {
+                                getCustomTransformers: () => ({
+                                    before: [!isProduction && ReactRefreshTypeScript()].filter(Boolean),
+                                }),
+                                transpileOnly: !isProduction,
+                            },
+                        },
                     ],
                     exclude: "/node_modules",
                 },
                 {
-                    test: /\.(s*)css$/,
-                    use: ["style-loader", "css-loader", {
-                        loader: "sass-loader",
-                        options: {
-                            // Prefer `dart-sass`
-                            implementation: require("sass"),
-                        },
-                    }],
-                },
-                {
-                    test: /\.(png|jpg|gif|woff|ico)$/,
+                    test: /\.(s?)css$/,
                     use: [
+                        "style-loader",
                         {
-                            loader: "url-loader",
+                            loader: "css-loader",
                             options: {
-                                limit: 8192,
+                                importLoaders: 1,
+                                modules: "icss",
+                            },
+                        },
+                        {
+                            loader: "sass-loader",
+                            options: {
+                                // Prefer `dart-sass`
+                                implementation: sass,
                             },
                         },
                     ],
                 },
+                {
+                    test: /\.(png|jpg|gif|woff|ico|svg)$/,
+                    type: 'asset/resource'
+                },
             ],
         },
 
-        node: {
-            fs: "empty",
+        experiments: {
+            syncWebAssembly: true,
+            topLevelAwait: true,
         },
 
         mode: isProduction ? "production" : "development",

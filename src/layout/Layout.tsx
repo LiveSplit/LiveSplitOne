@@ -1,13 +1,35 @@
 import * as React from "react";
-import { LayoutStateJson } from "../livesplit-core";
-import { colorToCss, gradientToCss } from "../util/ColorUtil";
+import { Font, FontStretch, FontStyle, FontWeight, LayoutStateJson } from "../livesplit-core";
+import { backgroundToCss, colorToCss } from "../util/ColorUtil";
 import Component from "./Component";
 import { ResizableBox, ResizeCallbackData } from "react-resizable";
 
 import "../css/Layout.scss";
+import { UrlCache } from "../util/UrlCache";
+
+interface LayoutStateStyle {
+    "--thin-separators-color": string,
+    "--separators-color": string,
+
+    "--timer-font-family"?: string,
+    "--timer-font-style"?: FontStyle,
+    "--timer-font-weight"?: string | number,
+    "--timer-font-stretch"?: FontStretch,
+
+    "--times-font-family"?: string,
+    "--times-font-style"?: FontStyle,
+    "--times-font-weight"?: string | number,
+    "--times-font-stretch"?: FontStretch,
+
+    "--text-font-family"?: string,
+    "--text-font-style"?: FontStyle,
+    "--text-font-weight"?: string | number,
+    "--text-font-stretch"?: FontStretch,
+}
 
 export interface Props {
     state: LayoutStateJson,
+    layoutUrlCache: UrlCache,
     allowResize: boolean,
     width: number,
     onResize(width: number): void,
@@ -15,21 +37,32 @@ export interface Props {
 
 export default class Layout extends React.Component<Props> {
     public render() {
-        const layoutState = {
-            thin_separators_color: this.props.state.thin_separators_color,
-            separators_color: this.props.state.separators_color,
-        };
+        const layoutState = getLayoutStateStyle(this.props.state);
         const counts = new Map<string, number>();
+
+        const background = backgroundToCss(
+            this.props.state.background,
+            this.props.layoutUrlCache,
+            this.props.width,
+        );
 
         return (
             <div
                 className="layout"
                 style={{
-                    background: gradientToCss(this.props.state.background),
+                    overflow: "hidden",
                     color: colorToCss(this.props.state.text_color),
                     width: this.props.width,
+                    ...layoutState
                 }}
             >
+                <div style={{
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                    zIndex: -1,
+                    ...background,
+                }} />
                 {this.props.allowResize &&
                     <ResizableBox
                         className="resizable-layout"
@@ -57,13 +90,56 @@ export default class Layout extends React.Component<Props> {
                         return <Component
                             key={key}
                             state={c}
+                            layoutUrlCache={this.props.layoutUrlCache}
                             componentId={key}
-                            layoutState={layoutState}
                             layoutWidth={this.props.width}
                         />;
                     })
                 }
             </div>
         );
+    }
+}
+
+export function getLayoutStateStyle(state: LayoutStateJson): LayoutStateStyle {
+    const style = {
+        "--thin-separators-color": colorToCss(state.thin_separators_color),
+        "--separators-color": colorToCss(state.separators_color),
+        "--times-font-weight": "bold",
+    };
+
+    fillFont(style, "timer", state.timer_font, "timer, sans-serif");
+    fillFont(style, "times", state.times_font, "fira, sans-serif");
+    fillFont(style, "text", state.text_font, "fira, sans-serif");
+
+    return style;
+}
+
+function fillFont(style: any, prefix: string, font: Font | null, defaultName: string) {
+    if (font == null) {
+        style[`--${prefix}-font-family`] = defaultName;
+        return;
+    }
+    style[`--${prefix}-font-family`] = `"${font.family}", ${defaultName}`;
+    style[`--${prefix}-font-style`] = font.style;
+    style[`--${prefix}-font-weight`] = translateWeight(font.weight);
+    style[`--${prefix}-font-stretch`] = font.stretch;
+}
+
+function translateWeight(weight: FontWeight): string | number {
+    switch (weight) {
+        case "bold":
+        case "normal": return weight;
+        case "thin": return 100;
+        case "extra-light": return 200;
+        case "light": return 300;
+        case "semi-light": return 350;
+        case "normal": return 400;
+        case "medium": return 500;
+        case "semi-bold": return 600;
+        case "bold": return 700;
+        case "extra-bold": return 800;
+        case "black": return 900;
+        case "extra-black": return 950;
     }
 }

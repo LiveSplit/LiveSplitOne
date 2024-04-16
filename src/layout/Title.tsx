@@ -5,26 +5,26 @@ import { map } from "../util/OptionUtil";
 
 import "../css/Title.scss";
 import Abbreviated from "./Abbreviated";
+import { UrlCache } from "../util/UrlCache";
 
-export interface Props { state: LiveSplit.TitleComponentStateJson }
+export interface Props {
+    state: LiveSplit.TitleComponentStateJson,
+    layoutUrlCache: UrlCache,
+}
 
 export default class Title extends React.Component<Props> {
-    private iconUrl: string;
-
     constructor(props: Props) {
         super(props);
-
-        this.iconUrl = "";
     }
 
     public render() {
-        const iconUrl = this.getIconUrl();
+        const iconUrl = this.props.layoutUrlCache.cache(this.props.state.icon);
 
         const finishedRunsExist = this.props.state.finished_runs !== null;
         const attemptsExist = this.props.state.attempts !== null;
         const line2 = this.props.state.line2;
         const twoLines = line2.length !== 0;
-        const showIcon = iconUrl !== "";
+        const showIcon = iconUrl !== undefined;
         const showAttempts = attemptsExist || finishedRunsExist;
 
         let attemptsLabel = "";
@@ -56,14 +56,14 @@ export default class Title extends React.Component<Props> {
                     </div>
                 }
                 <div
-                    className={`run-info ${alignmentClass} ${iconClass}`}
+                    className={`run-info text-font ${alignmentClass} ${iconClass}`}
                 >
                     {
                         twoLines && <span className={`title-game ${alignmentClass}`}>
                             <Abbreviated abbreviations={this.props.state.line1} />
                         </span>
                     }
-                    <div className={`lower-row ${numLinesClass} ${alignmentClass}`}>
+                    <div className={`lower-row ${numLinesClass} ${alignmentClass}`} >
                         {
                             this.props.state.is_centered && showAttempts &&
                             <div className={`title-attempts-invisible ${numLinesClass}`}>
@@ -85,12 +85,5 @@ export default class Title extends React.Component<Props> {
                 </div>
             </div>
         );
-    }
-
-    private getIconUrl(): string {
-        if (this.props.state.icon_change !== null) {
-            this.iconUrl = this.props.state.icon_change;
-        }
-        return this.iconUrl;
     }
 }
