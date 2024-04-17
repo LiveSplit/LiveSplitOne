@@ -73,9 +73,8 @@ jobs:
     - name: Set up tslint matcher
       run: echo "::add-matcher::.github/workflows/tslint.json"
 
-    # FIXME: Switch to eslint
-    # - name: Run tslint
-    #   run: npm run lint
+    - name: Run eslint
+      run: npm run lint
 
     - name: Build Frontend
       run: npm run publish

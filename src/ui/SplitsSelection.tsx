@@ -173,7 +173,7 @@ export class SplitsSelection extends React.Component<Props, State> {
                 <hr />
                 <button onClick={(_) => {
                     const run = this.props.timer.readWith((t) => {
-                        if (t.currentPhase() === TimerPhase.NotRunning) {
+                        if ((t.currentPhase() as TimerPhase) === TimerPhase.NotRunning) {
                             return t.getRun().clone();
                         } else {
                             return null;
