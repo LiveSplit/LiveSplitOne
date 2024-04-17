@@ -219,7 +219,7 @@ export class TimerView extends React.Component<Props, State> {
                 ];
             });
 
-            if (comparison !== this.state.comparison || timingMethod !== this.state.timingMethod) {
+            if (comparison !== this.state.comparison || (timingMethod as TimingMethod) !== this.state.timingMethod) {
                 this.setState({
                     ...this.state,
                     comparison,
@@ -243,7 +243,7 @@ export class TimerView extends React.Component<Props, State> {
         }
         try {
             this.connection = new WebSocket(url);
-        } catch (e) {
+        } catch (e: any) {
             toast.error(`Failed to connect: ${e}`);
             throw e;
         }
