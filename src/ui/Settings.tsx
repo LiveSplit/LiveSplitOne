@@ -1125,7 +1125,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                 let blur = 0;
                 const gradient = value.LayoutBackground;
 
-                let children: JSX.Element[] = [];
+                const children: JSX.Element[] = [];
 
                 const colorsToValue = (
                     type: string,
@@ -1190,7 +1190,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                     const value = expect(
                                         factory.fromBackgroundImage(imageId, brightness / 100, opacity / 100, blur / 100),
                                         "Unexpected layout background",
-                                    )
+                                    );
                                     this.props.setValue(valueIndex, value);
                                 }}
                             />,

@@ -2,8 +2,8 @@ import { Option } from "./OptionUtil";
 
 // Workaround for Chrome sometimes garbage collecting the input element while it
 // is being used, preventing the onchange event from triggering.
-// @ts-ignore
-let fileInputElement = null;
+// @ts-expect-error Unused variable due to above issue
+let fileInputElement = null; // eslint-disable-line
 
 function openFile(): Promise<File> {
     return new Promise((resolve, reject) => {

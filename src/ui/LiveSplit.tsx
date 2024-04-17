@@ -189,6 +189,8 @@ export class LiveSplit extends React.Component<Props, State> {
             return null;
         };
 
+        // This is bound in the constructor
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         this.isDesktopQuery.addEventListener("change", this.mediaQueryChanged);
 
         if (this.state.isBrowserSource) {
@@ -219,6 +221,9 @@ export class LiveSplit extends React.Component<Props, State> {
         this.state.layout.dispose();
         this.state.layoutState.dispose();
         this.state.hotkeySystem?.dispose();
+
+        // This is bound in the constructor
+        // eslint-disable-next-line @typescript-eslint/unbound-method
         this.isDesktopQuery.removeEventListener("change", this.mediaQueryChanged);
     }
 
@@ -277,6 +282,8 @@ export class LiveSplit extends React.Component<Props, State> {
                 callbacks={this}
             />;
         }
+        // Only get here if the type is invalid
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         throw Error(`Invalid menu: ${this.state.menu}`);
     }
 
