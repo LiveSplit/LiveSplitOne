@@ -1497,11 +1497,11 @@ export class RunEditor extends React.Component<Props, State> {
      * the leaderboards. We don't want to update the editor if it has been
      * disposed in the meantime.
      */
-    private maybeUpdate() {
+    private maybeUpdate(switchTab?: Tab) {
         if (this.props.editor.ptr === 0) {
             return;
         }
-        this.update();
+        this.update(switchTab);
     }
 
     private update(switchTab?: Tab) {
@@ -1905,6 +1905,11 @@ export class RunEditor extends React.Component<Props, State> {
             await platformListDownload;
             await regionListDownload;
             const run = await runDownload;
+
+            if (this.props.editor.ptr === 0) {
+                // Old editor is already disposed, so do not continue
+                return;
+            }
             run.with((run) => {
                 const newEditor = LiveSplit.RunEditor.new(run);
                 if (newEditor !== null) {
@@ -1916,7 +1921,6 @@ export class RunEditor extends React.Component<Props, State> {
                     );
 
                     this.props.callbacks.replaceRunEditor(newEditor);
-                    this.update();
                 } else {
                     toast.error("The downloaded splits are not suitable for being edited.");
                 }
@@ -1929,7 +1933,7 @@ export class RunEditor extends React.Component<Props, State> {
             ...this.state,
             isLoading: false,
         });
-        this.update(Tab.RealTime);
+        this.maybeUpdate(Tab.RealTime);
     }
 
     private toggleExpandLeaderboardRow(rowIndex: number) {
