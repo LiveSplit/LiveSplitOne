@@ -2,7 +2,6 @@ import * as React from "react";
 import { Parser as CommonMarkParser } from "commonmark";
 import CommonMarkRenderer from "commonmark-react-renderer";
 import { emoteList } from "../api/EmoteList";
-import Twemoji from "react-twemoji";
 import Linkifier from "react-linkifier";
 
 export function replaceTwitchEmotes(text: string): string {
@@ -19,7 +18,7 @@ export function replaceTwitchEmotes(text: string): string {
 
 export function replaceFlag(text: string): JSX.Element {
     return (
-        <Twemoji className="inline-div" options={{ className: "flag" }}>
+        <div className="inline-div flag">
             {
                 text.replace(/\[([a-z]{2})[a-z/]*\]/g, (_, countryCode: string) => {
                     // We don't do any additional bounds checks, because we
@@ -33,7 +32,7 @@ export function replaceFlag(text: string): JSX.Element {
                     );
                 })
             }
-        </Twemoji>
+        </div>
     );
 }
 
@@ -47,10 +46,8 @@ export function renderMarkdown(markdown: string): JSX.Element {
     }).render(parsed);
 
     return (
-        <Twemoji options={{}}>
-            <Linkifier target="_blank">
-                {renderedMarkdown}
-            </Linkifier>
-        </Twemoji>
+        <Linkifier target="_blank">
+            {renderedMarkdown}
+        </Linkifier>
     );
 }
