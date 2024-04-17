@@ -401,6 +401,13 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     public replaceRunEditor(editor: RunEditor) {
+        const { menu } = this.state;
+
+        if (menu.kind === MenuKind.RunEditor) {
+            const { editor: oldEditor } = menu;
+            oldEditor.dispose();
+        }
+
         this.setState({
             menu: {
                 kind: MenuKind.RunEditor,
