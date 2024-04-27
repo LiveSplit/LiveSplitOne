@@ -17,10 +17,11 @@ import { SplitsSelection, EditingInfo } from "./SplitsSelection";
 import { LayoutView } from "./LayoutView";
 import { toast } from "react-toastify";
 import * as Storage from "../storage";
+import { UrlCache } from "../util/UrlCache";
+import { WebRenderer } from "../livesplit-core/livesplit_core";
 
 import "react-toastify/dist/ReactToastify.css";
 import "../css/LiveSplit.scss";
-import { UrlCache } from "../util/UrlCache";
 
 export enum MenuKind {
     Timer,
@@ -46,6 +47,7 @@ export interface Props {
     layout?: Storage.LayoutSettings,
     hotkeys?: Storage.HotkeyConfigSettings,
     layoutWidth: number,
+    layoutHeight: number,
     splitsKey?: number,
 }
 
@@ -59,12 +61,15 @@ export interface State {
     runEditorUrlCache: UrlCache,
     layoutEditorUrlCache: UrlCache,
     layoutWidth: number,
+    layoutHeight: number,
     menu: Menu,
     openedSplitsKey?: number,
     sidebarOpen: boolean,
     sidebarTransitionsEnabled: boolean,
     storedLayoutWidth: number,
+    storedLayoutHeight: number,
     timer: SharedTimer,
+    renderer: WebRenderer,
 }
 
 export let hotkeySystem: Option<HotkeySystem> = null;
@@ -75,7 +80,7 @@ export class LiveSplit extends React.Component<Props, State> {
         const splits = splitsKey !== undefined ? await Storage.loadSplits(splitsKey) : undefined;
         const layout = await Storage.loadLayout();
         const hotkeys = await Storage.loadHotkeys();
-        const layoutWidth = await Storage.loadLayoutWidth();
+        const [layoutWidth, layoutHeight] = await Storage.loadLayoutDims();
 
         return {
             splits,
@@ -83,6 +88,7 @@ export class LiveSplit extends React.Component<Props, State> {
             layout,
             hotkeys,
             layoutWidth,
+            layoutHeight,
         };
     }
 
@@ -149,6 +155,9 @@ export class LiveSplit extends React.Component<Props, State> {
         const isDesktop = this.isDesktopQuery.matches;
         const isBrowserSource = !!(window as any).obsstudio;
 
+        const renderer = WebRenderer.new();
+        renderer.element().setAttribute("style", "width: inherit; height: inherit;");
+
         this.state = {
             isDesktop: isDesktop && !isBrowserSource,
             isBrowserSource,
@@ -158,13 +167,16 @@ export class LiveSplit extends React.Component<Props, State> {
             runEditorUrlCache: new UrlCache(),
             layoutEditorUrlCache: new UrlCache(),
             layoutWidth: props.layoutWidth,
+            layoutHeight: props.layoutHeight,
             menu: { kind: MenuKind.Timer },
             sidebarOpen: false,
             sidebarTransitionsEnabled: false,
             storedLayoutWidth: props.layoutWidth,
+            storedLayoutHeight: props.layoutHeight,
             timer,
             hotkeySystem,
             openedSplitsKey: props.splitsKey,
+            renderer,
         };
 
         this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
@@ -237,10 +249,13 @@ export class LiveSplit extends React.Component<Props, State> {
         } else if (this.state.menu.kind === MenuKind.LayoutEditor) {
             return <LayoutEditorComponent
                 editor={this.state.menu.editor}
+                layoutState={this.state.layoutState}
                 layoutEditorUrlCache={this.state.layoutEditorUrlCache}
                 layoutUrlCache={this.state.layoutUrlCache}
                 layoutWidth={this.state.layoutWidth}
+                layoutHeight={this.state.layoutHeight}
                 timer={this.state.timer}
+                renderer={this.state.renderer}
                 callbacks={this}
             />;
         } else if (this.state.menu.kind === MenuKind.SettingsEditor) {
@@ -263,10 +278,12 @@ export class LiveSplit extends React.Component<Props, State> {
                 layoutState={this.state.layoutState}
                 layoutUrlCache={this.state.layoutUrlCache}
                 layoutWidth={this.state.layoutWidth}
+                layoutHeight={this.state.layoutHeight}
                 isDesktop={this.state.isDesktop}
                 renderWithSidebar={true}
                 sidebarOpen={this.state.sidebarOpen}
                 timer={this.state.timer}
+                renderer={this.state.renderer}
                 callbacks={this}
             />;
         } else if (this.state.menu.kind === MenuKind.Layout) {
@@ -275,10 +292,12 @@ export class LiveSplit extends React.Component<Props, State> {
                 layoutState={this.state.layoutState}
                 layoutUrlCache={this.state.layoutUrlCache}
                 layoutWidth={this.state.layoutWidth}
+                layoutHeight={this.state.layoutHeight}
                 isDesktop={this.state.isDesktop}
                 renderWithSidebar={true}
                 sidebarOpen={this.state.sidebarOpen}
                 timer={this.state.timer}
+                renderer={this.state.renderer}
                 callbacks={this}
             />;
         }
@@ -492,12 +511,14 @@ export class LiveSplit extends React.Component<Props, State> {
         this.openTimerView();
     }
 
-    public async onResize(width: number) {
+    public async onResize(width: number, height: number) {
         this.setState({
             layoutWidth: width,
+            layoutHeight: height,
             storedLayoutWidth: width,
+            storedLayoutHeight: height,
         });
-        await Storage.storeLayoutWidth(width);
+        await Storage.storeLayoutDims(width, height);
     }
 
     private getDefaultRun() {

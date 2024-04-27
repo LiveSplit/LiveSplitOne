@@ -2,6 +2,7 @@ import * as React from "react";
 import { SharedTimer, Layout, LayoutStateRefMut } from "../livesplit-core";
 import { TimerView } from "./TimerView";
 import { UrlCache } from "../util/UrlCache";
+import { WebRenderer } from "../livesplit-core/livesplit_core";
 
 export interface Props {
     isDesktop: boolean,
@@ -9,9 +10,11 @@ export interface Props {
     layoutState: LayoutStateRefMut,
     layoutUrlCache: UrlCache,
     layoutWidth: number,
+    layoutHeight: number,
     renderWithSidebar: boolean,
     sidebarOpen: boolean,
     timer: SharedTimer,
+    renderer: WebRenderer,
     callbacks: Callbacks,
 }
 
@@ -21,7 +24,7 @@ interface Callbacks {
     importLayoutFromFile(file: File): Promise<void>,
     importSplitsFromFile(file: File): Promise<void>,
     loadDefaultLayout(): void,
-    onResize(width: number): Promise<void>,
+    onResize(width: number, height: number): Promise<void>,
     openAboutView(): void,
     openLayoutEditor(): void,
     openLayoutView(): void,
@@ -39,10 +42,12 @@ export class LayoutView extends React.Component<Props> {
             layoutState={this.props.layoutState}
             layoutUrlCache={this.props.layoutUrlCache}
             layoutWidth={this.props.layoutWidth}
+            layoutHeight={this.props.layoutHeight}
             isDesktop={this.props.isDesktop}
             renderWithSidebar={false}
             sidebarOpen={this.props.sidebarOpen}
             timer={this.props.timer}
+            renderer={this.props.renderer}
             callbacks={this.props.callbacks}
         />;
         const sidebarContent = this.renderSidebarContent();
