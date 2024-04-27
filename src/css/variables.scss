@@ -26,9 +26,3 @@ $light-row-color: #121212;
 
 $selected-row-color: linear-gradient(rgb(51, 115, 244) 0%, rgb(21, 53, 116) 100%);
 $selected-row-hover-color: linear-gradient(hsl(220, 90%, 70%) 0%, hsl(220, 69%, 40%) 100%);
-
-:export {
-  fontSizeToLineHeightRatio: $font-size-to-line-height-ratio;
-  lineHeightToComponentHeightRatio: $line-height-to-component-height-ratio;
-  sidePadding: $side-padding;
-}
