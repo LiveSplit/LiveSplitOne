@@ -254,6 +254,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 layoutUrlCache={this.state.layoutUrlCache}
                 layoutWidth={this.state.layoutWidth}
                 layoutHeight={this.state.layoutHeight}
+                isDesktop={this.state.isDesktop}
                 timer={this.state.timer}
                 renderer={this.state.renderer}
                 callbacks={this}

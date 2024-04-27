@@ -15,6 +15,7 @@ export interface Props {
     layoutUrlCache: UrlCache,
     layoutWidth: number,
     layoutHeight: number,
+    isDesktop: boolean,
     timer: LiveSplit.SharedTimerRef,
     renderer: WebRenderer,
     callbacks: Callbacks,
@@ -268,7 +269,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                             },
                         )}
                         layoutUrlCache={this.props.layoutUrlCache}
-                        allowResize={true}
+                        allowResize={this.props.isDesktop}
                         width={this.props.layoutWidth}
                         height={this.props.layoutHeight}
                         renderer={this.props.renderer}
