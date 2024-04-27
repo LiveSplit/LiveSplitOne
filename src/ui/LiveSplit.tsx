@@ -3,7 +3,7 @@ import Sidebar from "react-sidebar";
 import {
     HotkeySystem, Layout, LayoutEditor, Run, RunEditor,
     Segment, SharedTimer, Timer, TimerRef, TimerRefMut,
-    HotkeyConfig, LayoutState,
+    HotkeyConfig, LayoutState, LayoutStateJson
 } from "../livesplit-core";
 import { convertFileToArrayBuffer, convertFileToString, exportFile, openFileAsString } from "../util/FileUtil";
 import { Option, assertNull, expect, maybeDisposeAndThen, panic } from "../util/OptionUtil";
@@ -19,9 +19,12 @@ import { toast } from "react-toastify";
 import * as Storage from "../storage";
 import { UrlCache } from "../util/UrlCache";
 import { WebRenderer } from "../livesplit-core/livesplit_core";
+import variables from "../css/variables.scss";
 
 import "react-toastify/dist/ReactToastify.css";
 import "../css/LiveSplit.scss";
+
+const buttonHeight = parseFloat(variables.buttonHeight);
 
 export enum MenuKind {
     Timer,
@@ -530,11 +533,28 @@ export class LiveSplit extends React.Component<Props, State> {
 
     private handleAutomaticResize() {
         if (!this.state.isDesktop) {
+            const layoutDirection = (this.state.layoutState.asJson() as LayoutStateJson).direction;
+            if (layoutDirection !== "Vertical") {
+                return;
+            }
+
             const fullWidth = this.containerRef.current?.clientWidth;
             if (fullWidth && fullWidth !== this.state.layoutWidth) {
                 this.setState({
                     layoutWidth: fullWidth,
                 });
+            }
+
+            // Only auto adjust height in Timer view because other views can
+            // have scrolling, so the container height is more than screen height
+            if (this.state.menu.kind === MenuKind.Timer) {
+                const fullHeight = this.containerRef.current?.clientHeight;
+                const newHeight = fullHeight ? fullHeight - 2 * buttonHeight : null;
+                if (newHeight && newHeight !== this.state.layoutHeight) {
+                    this.setState({
+                        layoutHeight: newHeight,
+                    });
+                }
             }
         }
     }

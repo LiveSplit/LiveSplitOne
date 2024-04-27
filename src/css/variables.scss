@@ -16,6 +16,7 @@ $button-disabled-text-color: #666;
 $button-hover-color: linear-gradient(hsl(0, 0%, 14%) 0%, hsl(0, 0%, 9%) 100%);
 $button-text-color: #eee;
 $button-max-width: 300px;
+$button-height: 40px;
 
 $main-background-color: #171717;
 $sidebar-background-color: #1A1A1A;
@@ -27,3 +28,7 @@ $light-row-color: #121212;
 
 $selected-row-color: linear-gradient(rgb(51, 115, 244) 0%, rgb(21, 53, 116) 100%);
 $selected-row-hover-color: linear-gradient(hsl(220, 90%, 70%) 0%, hsl(220, 69%, 40%) 100%);
+
+:export {
+  buttonHeight: $button-height;
+}
