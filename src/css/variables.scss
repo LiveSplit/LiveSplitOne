@@ -7,17 +7,6 @@ $main-content-margin: 24px;
 $settings-table-width: 500px;
 $settings-row-height: 19px;
 
-$default-component-height: 24px;
-$line-height-to-component-height-ratio: 0.8;
-$default-line-height: $default-component-height * $line-height-to-component-height-ratio;
-$font-size-to-line-height-ratio: 0.85;
-$default-font-size: $default-line-height * $font-size-to-line-height-ratio;
-$two-row-height: $default-line-height + $default-component-height;
-$side-padding: $default-component-height * 0.35;
-$vertical-padding: math.div($default-component-height - $default-line-height, 2);
-$thick-separator-width: $default-component-height * 0.1;
-$thin-separator-width: math.div($thick-separator-width, 2);
-
 $border-color: #404040;
 
 $button-active-color: linear-gradient(hsl(0, 0%, 13%) 0%, hsl(0, 0%, 23%) 100%);
@@ -26,6 +15,8 @@ $button-disabled-color: #222;
 $button-disabled-text-color: #666;
 $button-hover-color: linear-gradient(hsl(0, 0%, 14%) 0%, hsl(0, 0%, 9%) 100%);
 $button-text-color: #eee;
+$button-max-width: 300px;
+$button-height: 40px;
 
 $main-background-color: #171717;
 $sidebar-background-color: #1A1A1A;
@@ -39,7 +30,5 @@ $selected-row-color: linear-gradient(rgb(51, 115, 244) 0%, rgb(21, 53, 116) 100%
 $selected-row-hover-color: linear-gradient(hsl(220, 90%, 70%) 0%, hsl(220, 69%, 40%) 100%);
 
 :export {
-  fontSizeToLineHeightRatio: $font-size-to-line-height-ratio;
-  lineHeightToComponentHeightRatio: $line-height-to-component-height-ratio;
-  sidePadding: $side-padding;
+  buttonHeight: $button-height;
 }

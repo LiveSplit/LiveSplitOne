@@ -42,7 +42,8 @@ if (process.argv.some((v) => v === "--nightly")) {
         // but it forgets to pass the LTO flag that we specified in the
         // Cargo.toml, so the virtual-function-elimination complains that it's
         // only compatible with LTO, so we have to specify lto here too.
-        rustFlags += " -Z virtual-function-elimination -C lto";
+        // FIXME: Seems to be broken at the moment.
+        // rustFlags += " -Z virtual-function-elimination -C lto";
     }
 }
 
@@ -55,7 +56,7 @@ execSync(
 );
 
 execSync(
-    `cargo ${toolchain} rustc -p livesplit-core-capi --crate-type cdylib --features wasm-web --target wasm32-unknown-unknown ${cargoFlags}`,
+    `cargo ${toolchain} rustc -p livesplit-core-capi --crate-type cdylib --features wasm-web,web-rendering --target wasm32-unknown-unknown ${cargoFlags}`,
     {
         cwd: "livesplit-core",
         stdio: "inherit",

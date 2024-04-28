@@ -1,18 +1,23 @@
 import * as React from "react";
 import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
-import DragAutoRefreshLayout from "../layout/DragAutoRefreshLayout";
 import * as LiveSplit from "../livesplit-core";
 import { SettingsComponent } from "./Settings";
+import { UrlCache } from "../util/UrlCache";
+import Layout from "../layout/Layout";
+import { WebRenderer } from "../livesplit-core/livesplit_core";
 
 import "../css/LayoutEditor.scss";
-import { UrlCache } from "../util/UrlCache";
 
 export interface Props {
     editor: LiveSplit.LayoutEditor,
+    layoutState: LiveSplit.LayoutStateRefMut,
     layoutEditorUrlCache: UrlCache,
     layoutUrlCache: UrlCache,
     layoutWidth: number,
+    layoutHeight: number,
+    isDesktop: boolean,
     timer: LiveSplit.SharedTimerRef,
+    renderer: WebRenderer,
     callbacks: Callbacks,
 }
 export interface State {
@@ -21,6 +26,7 @@ export interface State {
 }
 
 interface Callbacks {
+    onResize(width: number, height: number): Promise<void>,
     renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
     closeLayoutEditor(save: boolean): void,
 }
@@ -254,24 +260,20 @@ export class LayoutEditor extends React.Component<Props, State> {
                     </div>
                 </div>
                 <div className="layout-container">
-                    <DragAutoRefreshLayout
+                    <Layout
                         getState={() => this.props.timer.readWith(
                             (t) => {
-                                const result = this.props.editor.layoutStateAsJson(this.props.layoutUrlCache.imageCache, t);
+                                this.props.editor.updateLayoutState(this.props.layoutState, this.props.layoutUrlCache.imageCache, t);
                                 this.props.layoutUrlCache.collect();
-                                return result;
-                            }
+                                return this.props.layoutState;
+                            },
                         )}
                         layoutUrlCache={this.props.layoutUrlCache}
-                        layoutWidth={this.props.layoutWidth}
-                        onClick={(i) => this.selectComponent(i)}
-                        onDrag={(i) => {
-                            this.props.editor.select(i);
-                            this.update();
-                        }}
-                        onDragEnd={(_) => this.update()}
-                        onDrop={(i) => this.props.editor.moveComponent(i)}
-                        isSelected={(i) => this.state.editor.selected_component === i}
+                        allowResize={this.props.isDesktop}
+                        width={this.props.layoutWidth}
+                        height={this.props.layoutHeight}
+                        renderer={this.props.renderer}
+                        onResize={(width, height) => this.props.callbacks.onResize(width, height)}
                     />
                 </div>
             </div>

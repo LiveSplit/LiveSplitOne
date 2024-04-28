@@ -101,6 +101,10 @@ describe("Layout Rendering Tests", function () {
             await clickElement(By.xpath(".//button[contains(text(), 'Back')]"));
 
             const layoutElement = await findElement(By.className("layout"));
+
+            // The icons load asynchronously, so we need to wait for them to load.
+            await driver.sleep(500);
+
             const layoutScreenshot = await layoutElement.takeScreenshot();
 
             const tempFilePath = `${SCREENSHOTS_FOLDER}/${layoutName}.png`;
@@ -149,15 +153,15 @@ describe("Layout Rendering Tests", function () {
         });
     }
 
-    testRendering("all_components", "default", "f4G-QgAAAAAeAAAO____________________AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA__wCAAAAAABv______4PZ4AG");
-    testRendering("all_components", "pmw3", "f4G-QgAAAAAeAAAO________fmAOf6AAX4AG3_gH3_AOX_APVkgOX-AOVvAPX_AeX_AeWrAeb_gfAAAAAABv__x-____JABO");
-    testRendering("default", "default", "____________AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADgAAD_________");
-    testRendering("default", "pmw3", "__wA___GX-AG3-gGUNgGQkAOXnAOW9gOX-APVtwOH_APX8AOX_APRnAOXVAOXJAeHvAeX_wf__AfAAAAAABgAAD_Pz9_____");
-    testRendering("splits_two_rows", "celeste", "f8AAcAAHf8AA____d4AAcAAHf_gAcAAPd_AAYAAHf4AA____f4AAYAAH__AA____Z_gAYAAHf_8A9VVfb_wAcAAPf_AAYAAP");
-    testRendering("splits_with_labels", "celeste", "AABEAADPAADPAADPAADA____fAAH_wAP_wAP_wAPxgAA____wgAH34AP_4AH34APQYAA____0EAP_8AP38AP38APQAAAAAAA");
-    testRendering("title_centered_no_game_icon", "celeste", "________AAAAADQAAHQAAH4A______3_____AAAAAAAAAAAA____AAkAAL8DAP8DAP8DAP8D_________-n9AAAAAAAAAAAA");
-    testRendering("title_centered_with_game_icon", "celeste", "________AAAAQBoAQBoAYB8A________9V-U4AAA4AAA4AAA4AAA4ASA4H_D4H_D4H_D4H_D_________9T84AAAAAAAAAAA");
-    testRendering("title_left_no_attempt_count", "celeste", "________AAAA-AAA-AAA-AAA____________AAAAAAAAAAAA____rVKV_wAA_4AA_4AA_4AA________qf__AAAAAAAAAAAA");
+    testRendering("all_components", "default", "PwD-XAAAAAA2AAAO____________________AAAAAAAAAAAA____AAAA____AAAA____AAAAf_AAd_AAAAD-Nz___34HbwAG");
+    testRendering("all_components", "pmw3", "PwD-XAAAAAA2AAAO_________sAPf8AAf4AC3_AH_-AOX-APXfAGX-AP18AOf-APXeAOX-AOD7AOQIAIAAD-b_j_____LwBs");
+    testRendering("default", "default", "________8AADVVVVAAAAAAAAAAAA____________AAAAAAAAAAAA____VVVVAAAA____AAAAVVVVAAAAAADgAAD_________");
+    testRendering("default", "pmw3", "b_gAb9-HV8AG__AHV_AG7kAGX-AGV-AOX8APX_gOX-AP28AO_-APX-APXeAOUQAOX-AOX_gP_-AfAAAAAADgAAD_q97_____");
+    testRendering("splits_two_rows", "celeste", "b4AAYAAH________bwAA4AAHb-AA4AAHb-AAYAAHbwAA____bwAAYAAH_9VV____b_AAYAAH__wA____b_AAYAAPb8AAYAAP");
+    testRendering("splits_with_labels", "celeste", "AAAAAABMAADnAADnAABH________WAAHfwAHfwAHTwAHVVVVAAAA0gAH_wAH_wAH3wAH_________IAP34AP34AP38APAAAA");
+    testRendering("title_centered_no_game_icon", "celeste", "________MzMzADAAADwAADwA________VX1VADwAAAAAAAAA____ABkAAP8DAP8DAP8DAP8D________V_1XAGAAAAAAAAAA");
+    testRendering("title_centered_with_game_icon", "celeste", "________AiIiQDAAYDwAYDwA________YDwAYDwAYAAAYAAAd393YBkAYL8DYP8DYP8DYP8D________d_1XYGAAAAAAAAAA");
+    testRendering("title_left_no_attempt_count", "celeste", "________MzMz4AAA8AAA-AAA_________VVV-AAAAAAAAAAA____GQAA_wAA_wAA_wAA_wAA________f_1XIAAAAAAAAAAA");
 
     after(async () => {
         await driver.quit();

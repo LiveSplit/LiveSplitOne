@@ -1,28 +1,32 @@
 import * as React from "react";
 import { toast } from "react-toastify";
 import {
-    SharedTimer, TimerRef, TimerRefMut, Layout,
+    SharedTimer, TimerRef, TimerRefMut,
     TimingMethod, TimeSpan, LayoutStateRefMut,
 } from "../livesplit-core";
+import * as LiveSplit from "../livesplit-core";
 import { Option } from "../util/OptionUtil";
 import DragUpload from "./DragUpload";
 import AutoRefresh from "../util/AutoRefresh";
-import AutoRefreshLayout from "../layout/AutoRefreshLayout";
+import Layout from "../layout/Layout";
+import { UrlCache } from "../util/UrlCache";
+import { WebRenderer } from "../livesplit-core/livesplit_core";
 
 import LiveSplitIcon from "../assets/icon.svg";
 
 import "../css/TimerView.scss";
-import { UrlCache } from "../util/UrlCache";
 
 export interface Props {
     isDesktop: boolean,
-    layout: Layout,
+    layout: LiveSplit.Layout,
     layoutState: LayoutStateRefMut,
     layoutUrlCache: UrlCache,
     layoutWidth: number,
+    layoutHeight: number,
     renderWithSidebar: boolean,
     sidebarOpen: boolean,
     timer: SharedTimer,
+    renderer: WebRenderer,
     callbacks: Callbacks,
 }
 export interface State {
@@ -33,7 +37,7 @@ export interface State {
 interface Callbacks {
     importLayoutFromFile(file: File): Promise<void>,
     importSplitsFromFile(file: File): Promise<void>,
-    onResize(width: number): Promise<void>,
+    onResize(width: number, height: number): Promise<void>,
     openAboutView(): void,
     openLayoutView(): void,
     openSplitsView(): void,
@@ -80,36 +84,38 @@ export class TimerView extends React.Component<Props, State> {
                         cursor: "pointer",
                     }}
                 >
-                    <AutoRefreshLayout
+                    <Layout
                         getState={() => this.readWith(
                             (t) => {
-                                const result = this.props.layout.updateStateAsJson(this.props.layoutState, this.props.layoutUrlCache.imageCache, t);
+                                this.props.layout.updateState(this.props.layoutState, this.props.layoutUrlCache.imageCache, t);
                                 this.props.layoutUrlCache.collect();
-                                return result;
+                                return this.props.layoutState;
                             },
                         )}
                         layoutUrlCache={this.props.layoutUrlCache}
                         allowResize={this.props.isDesktop}
                         width={this.props.layoutWidth}
-                        onResize={(width) => this.props.callbacks.onResize(width)}
+                        height={this.props.layoutHeight}
+                        renderer={this.props.renderer}
+                        onResize={(width, height) => this.props.callbacks.onResize(width, height)}
                     />
                 </div>
-                <div className="buttons" style={{ width: this.props.layoutWidth }}>
-                    <div className="small">
-                        <button aria-label="Undo Split" onClick={(_) => this.undoSplit()}>
-                            <i className="fa fa-arrow-up" aria-hidden="true" /></button>
-                        <button aria-label="Pause" onClick={(_) => this.togglePauseOrStart()}>
-                            <i className="fa fa-pause" aria-hidden="true" />
-                        </button>
-                    </div>
-                    <div className="small">
-                        <button aria-label="Skip Split" onClick={(_) => this.skipSplit()}>
-                            <i className="fa fa-arrow-down" aria-hidden="true" />
-                        </button>
-                        <button aria-label="Reset" onClick={(_) => this.reset()}>
-                            <i className="fa fa-times" aria-hidden="true" />
-                        </button>
-                    </div>
+            </div>
+            <div className="buttons" style={{ width: this.props.layoutWidth }}>
+                <div className="small">
+                    <button aria-label="Undo Split" onClick={(_) => this.undoSplit()}>
+                        <i className="fa fa-arrow-up" aria-hidden="true" /></button>
+                    <button aria-label="Pause" onClick={(_) => this.togglePauseOrStart()}>
+                        <i className="fa fa-pause" aria-hidden="true" />
+                    </button>
+                </div>
+                <div className="small">
+                    <button aria-label="Skip Split" onClick={(_) => this.skipSplit()}>
+                        <i className="fa fa-arrow-down" aria-hidden="true" />
+                    </button>
+                    <button aria-label="Reset" onClick={(_) => this.reset()}>
+                        <i className="fa fa-times" aria-hidden="true" />
+                    </button>
                 </div>
             </div>
         </DragUpload>;

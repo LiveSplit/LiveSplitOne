@@ -6,6 +6,7 @@ export type HotkeyConfigSettings = unknown;
 export type LayoutSettings = unknown;
 
 const DEFAULT_LAYOUT_WIDTH = 300;
+const DEFAULT_LAYOUT_HEIGHT = 500;
 
 let db: Option<IDBPDatabase<unknown>> = null;
 
@@ -206,16 +207,20 @@ export async function loadHotkeys(): Promise<HotkeyConfigSettings | undefined> {
     return await db.get("settings", "hotkeys");
 }
 
-export async function storeLayoutWidth(layoutWidth: number) {
+export async function storeLayoutDims(layoutWidth: number, layoutHeight: number) {
     const db = await getDb();
 
     await db.put("settings", layoutWidth, "layoutWidth");
+    await db.put("settings", layoutHeight, "layoutHeight");
 }
 
-export async function loadLayoutWidth(): Promise<number> {
+export async function loadLayoutDims(): Promise<[number, number]> {
     const db = await getDb();
 
-    return await db.get("settings", "layoutWidth") ?? DEFAULT_LAYOUT_WIDTH;
+    return [
+        await db.get("settings", "layoutWidth") ?? DEFAULT_LAYOUT_WIDTH,
+        await db.get("settings", "layoutHeight") ?? DEFAULT_LAYOUT_HEIGHT,
+    ];
 }
 
 export async function storeSplitsKey(splitsKey?: number) {

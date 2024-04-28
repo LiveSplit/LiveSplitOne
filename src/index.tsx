@@ -25,6 +25,7 @@ try {
             layout,
             hotkeys,
             layoutWidth,
+            layoutHeight,
         } = await LiveSplit.loadStoredData();
 
         function requestWakeLock() {
@@ -43,6 +44,10 @@ try {
             }
         });
 
+        // The renderer requires the fonts to be loaded before it gets created
+        // as otherwise information may be cached incorrectly.
+        await document.fonts.ready;
+
         ReactDOM.render(
             <div>
                 <LiveSplit
@@ -51,6 +56,7 @@ try {
                     hotkeys={hotkeys}
                     splitsKey={splitsKey}
                     layoutWidth={layoutWidth}
+                    layoutHeight={layoutHeight}
                 />
                 <ToastContainer
                     position={toast.POSITION.BOTTOM_RIGHT}
