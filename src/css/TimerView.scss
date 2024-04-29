@@ -8,7 +8,8 @@
 
   .small {
     button {
-      width: calc(50% - #{math.div($ui-margin, 2)})
+      width: calc(50% - #{math.div($ui-margin, 2)});
+      max-width: $button-max-width;
     }
 
     button:first-child {

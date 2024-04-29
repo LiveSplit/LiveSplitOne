@@ -1,17 +1,10 @@
 @import 'variables';
 
 @mixin markdown {
-  img.emoji {
-    height: 28px;
-  }
-  
-  img.flag {
-    height: 15px;
-    top: 2px;
-    position: relative;
+  .flag {
     padding-right: 4px;
   }
-  
+
   .inline-div {
     display: inline;
   }

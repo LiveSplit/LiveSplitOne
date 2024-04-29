@@ -70,9 +70,6 @@ jobs:
     - name: Build Core
       run: npm run build:core:deploy
 
-    - name: Set up tslint matcher
-      run: echo "::add-matcher::.github/workflows/tslint.json"
-
     - name: Run eslint
       run: npm run lint
 
@@ -102,7 +99,7 @@ jobs:
       if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
       run: |
         WASM_FILE=$(ls dist/*.wasm)
-        wasm-opt -O4 "$WASM_FILE" -o "$WASM_FILE"
+        wasm-opt --all-features -O4 "$WASM_FILE" -o "$WASM_FILE"
 
     - name: Add CNAME file
       if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
