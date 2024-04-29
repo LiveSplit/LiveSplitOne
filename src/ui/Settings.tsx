@@ -7,6 +7,7 @@ import HotkeyButton from "./HotkeyButton";
 import ToggleCheckbox from "./ToggleCheckbox";
 import { UrlCache } from "../util/UrlCache";
 import { openFileAsArrayBuffer } from "../util/FileUtil";
+import * as FontList from "../util/FontList";
 
 export interface Props<T> {
     context: string,
@@ -174,6 +175,7 @@ export class JsonSettingValueFactory implements SettingValueFactory<ExtendedSett
         throw new Error("Not implemented");
     }
 }
+
 
 export class SettingsComponent<T> extends React.Component<Props<T>> {
     public render() {
@@ -908,21 +910,55 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                 ];
 
                 if (value.Font !== null) {
+                    FontList.load(() => this.setState({}));
+
                     const { family, style, weight, stretch } = value.Font;
 
+                    const styles = FontList.knownStyles.get(family);
+
+                    if (FontList.knownFamilies.length > 0) {
+                        children.push(
+                            <select
+                                style={{
+                                    fontFamily: family,
+                                }}
+                                value={family}
+                                onChange={(e) => {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        expect(
+                                            factory.fromFont(e.target.value, style, weight, stretch),
+                                            "Unexpected Font",
+                                        ),
+                                    );
+                                }}
+                            >
+                                <option value=""></option>
+                                {
+                                    FontList.knownFamilies.map((n) =>
+                                        <option value={n} style={{ fontFamily: n }}>{n}</option>
+                                    )
+                                }
+                            </select>
+                        );
+                    } else {
+                        children.push(
+                            <input
+                                value={family}
+                                onChange={(e) => {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        expect(
+                                            factory.fromFont(e.target.value, style, weight, stretch),
+                                            "Unexpected Font",
+                                        ),
+                                    );
+                                }}
+                            />
+                        );
+                    }
+
                     children.push(
-                        <input
-                            value={family}
-                            onChange={(e) => {
-                                this.props.setValue(
-                                    valueIndex,
-                                    expect(
-                                        factory.fromFont(e.target.value, style, weight, stretch),
-                                        "Unexpected Font",
-                                    ),
-                                );
-                            }}
-                        />,
                         <>Style</>,
                         <select
                             value={style}
@@ -952,17 +988,13 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 );
                             }}
                         >
-                            <option value="thin">Thin</option>
-                            <option value="extra-light">Extra Light</option>
-                            <option value="light">Light</option>
-                            <option value="semi-light">Semi Light</option>
-                            <option value="normal">Normal</option>
-                            <option value="medium">Medium</option>
-                            <option value="semi-bold">Semi Bold</option>
-                            <option value="bold">Bold</option>
-                            <option value="extra-bold">Extra Bold</option>
-                            <option value="black">Black</option>
-                            <option value="extra-black">Extra Black</option>
+                            {
+                                FontList.FONT_WEIGHTS.map(([_, value, name]) => (
+                                    <option style={{
+                                        color: styles?.has(value) ? "white" : "grey"
+                                    }} value={value}>{name}</option>
+                                ))
+                            }
                         </select>,
                         <>Stretch</>,
                         <select
@@ -977,15 +1009,13 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 );
                             }}
                         >
-                            <option value="ultra-condensed">Ultra Condensed</option>
-                            <option value="extra-condensed">Extra Condensed</option>
-                            <option value="condensed">Condensed</option>
-                            <option value="semi-condensed">Semi Condensed</option>
-                            <option value="normal">Normal</option>
-                            <option value="semi-expanded">Semi Expanded</option>
-                            <option value="expanded">Expanded</option>
-                            <option value="extra-expanded">Extra Expanded</option>
-                            <option value="ultra-expanded">Ultra Expanded</option>
+                            {
+                                FontList.FONT_STRETCHES.map(([_, value, name]) => (
+                                    <option style={{
+                                        color: styles?.has(value) ? "white" : "grey"
+                                    }} value={value}>{name}</option>
+                                ))
+                            }
                         </select>,
                     );
                 }
