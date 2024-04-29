@@ -31,7 +31,7 @@ export default class AutoRefresh extends React.Component<Props> {
     }
 
     private startAnimation() {
-        this.previousTime = Date.now();
+        this.previousTime = performance.now();
         this.animate();
     }
 
@@ -40,7 +40,7 @@ export default class AutoRefresh extends React.Component<Props> {
 
         assert(this.previousTime !== undefined, "Previous time must be defined");
 
-        const currentTime = Date.now();
+        const currentTime = performance.now();
         const elapsed = currentTime - this.previousTime;
 
         if (elapsed > this.fpsInterval) {
