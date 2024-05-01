@@ -70,7 +70,7 @@
     "sass": "^1.57.1",
     "sass-loader": "^14.1.1",
     "selenium-webdriver": "^4.18.1",
-    "sharp": "^0.33.2",
+    "sharp": "^0.33.3",
     "source-map-loader": "^5.0.0",
     "style-loader": "^3.3.1",
     "ts-loader": "^9.4.2",
