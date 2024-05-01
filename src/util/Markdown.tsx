@@ -16,24 +16,10 @@ export function replaceTwitchEmotes(text: string): string {
     });
 }
 
-export function replaceFlag(text: string): JSX.Element {
-    return (
-        <div className="inline-div flag">
-            {
-                text.replace(/\[([a-z]{2})[a-z/]*\]/g, (_, countryCode: string) => {
-                    // We don't do any additional bounds checks, because we
-                    // already ensured that there's exactly two lowercase
-                    // codepoints in the range a - z via the regex, which moves
-                    // them exactly in the correct regional indicator range in
-                    // Unicode.
-                    return String.fromCodePoint(
-                        countryCode.codePointAt(0) as number + 127365,
-                        countryCode.codePointAt(1) as number + 127365,
-                    );
-                })
-            }
-        </div>
-    );
+export function replaceFlag(countryCode: string): JSX.Element {
+    const url = `https://www.speedrun.com/images/flags/${countryCode}.png`;
+
+    return <img className="flag" src={url} alt={countryCode} />;
 }
 
 export function renderMarkdown(markdown: string): JSX.Element {

@@ -876,7 +876,7 @@ export class RunEditor extends React.Component<Props, State> {
                         <th>Rank</th>
                         <th>Player</th>
                         <th>Time</th>
-                        {variableColumns && variableColumns.map((variable) => <th>{variable.name}</th>)}
+                        {variableColumns?.map((variable) => <th>{variable.name}</th>)}
                         <th>Splits</th>
                     </tr>
                 </thead>
@@ -1019,7 +1019,7 @@ export class RunEditor extends React.Component<Props, State> {
                                                 }
                                                 const flag = map(
                                                     p.location,
-                                                    (l) => replaceFlag(`[${l.country.code}]`),
+                                                    (l) => replaceFlag(l.country.code),
                                                 );
                                                 return [
                                                     i !== 0 ? ", " : null,
@@ -1033,8 +1033,10 @@ export class RunEditor extends React.Component<Props, State> {
                                                     </a>,
                                                 ];
                                             } else {
-                                                const withFlags = replaceFlag(p.name);
-                                                return [i !== 0 ? ", " : null, withFlags];
+                                                return [
+                                                    i !== 0 ? ", " : null,
+                                                    <span className="unregistered-user">{p.name}</span>
+                                                ];
                                             }
                                         })
                                     }
