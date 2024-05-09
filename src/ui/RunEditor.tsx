@@ -696,6 +696,7 @@ export class RunEditor extends React.Component<Props, State> {
                 if (this.variableIsValidForCategory(variable, category)) {
                     speedrunComVariables.push({
                         text: variable.name,
+                        tooltip: "A variable on speedrun.com specific to the game.",
                         value: {
                             CustomCombobox: {
                                 value: metadata.speedrun_com_variables[variable.name] || "",
@@ -711,6 +712,7 @@ export class RunEditor extends React.Component<Props, State> {
                 regionOffset = fields.length;
                 fields.push({
                     text: "Region",
+                    tooltip: "The region of the game that is being played.",
                     value: {
                         CustomCombobox: {
                             value: metadata.region_name,
@@ -724,6 +726,7 @@ export class RunEditor extends React.Component<Props, State> {
                 platformOffset = fields.length;
                 fields.push({
                     text: "Platform",
+                    tooltip: "The platform that the game is being played on.",
                     value: {
                         CustomCombobox: {
                             value: metadata.platform_name,
@@ -737,6 +740,7 @@ export class RunEditor extends React.Component<Props, State> {
                 emulatorOffset = fields.length;
                 fields.push({
                     text: "Uses Emulator",
+                    tooltip: "Whether an emulator is being used to play the game.",
                     value: {
                         Bool: metadata.uses_emulator,
                     },
@@ -749,6 +753,7 @@ export class RunEditor extends React.Component<Props, State> {
             if (customVariableValue && customVariableValue.is_permanent) {
                 customVariables.push({
                     text: customVariableName,
+                    tooltip: "A custom variable specified by you. These can be displayed with the text component.",
                     value: {
                         RemovableString: customVariableValue.value,
                     },
@@ -1106,7 +1111,7 @@ export class RunEditor extends React.Component<Props, State> {
                 if (this.variableIsValidForCategory(variable, category) && variable["is-subcategory"]) {
                     const currentValue = this.state.editor.metadata.speedrun_com_variables[variable.name];
                     const foundValue = Object.values(variable.values.values).find((v) => v.label === currentValue);
-                    if (foundValue !== undefined && foundValue.rules !== undefined) {
+                    if (foundValue?.rules != null) {
                         subcategoryRules.push(renderMarkdown(`## ${foundValue.label} Rules\n${foundValue.rules}`));
                     }
                 }

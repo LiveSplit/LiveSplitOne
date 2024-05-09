@@ -52,7 +52,7 @@ export interface VariableValues {
 
 export interface VariableValue {
     label: string,
-    rules?: string,
+    rules?: Option<string>,
 }
 
 export interface GameHeader {
