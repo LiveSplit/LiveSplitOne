@@ -9,6 +9,8 @@ import { UrlCache } from "../util/UrlCache";
 import { openFileAsArrayBuffer } from "../util/FileUtil";
 import * as FontList from "../util/FontList";
 
+import "../css/Tooltip.scss";
+
 export interface Props<T> {
     context: string,
     setValue: (index: number, value: T) => void,
@@ -23,6 +25,7 @@ export interface ExtendedSettingsDescriptionJson {
 
 export interface ExtendedSettingsDescriptionFieldJson {
     text: string,
+    tooltip: string,
     value: ExtendedSettingsDescriptionValueJson,
 }
 
@@ -1351,7 +1354,10 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
 
             settingsRows.push(
                 <tr key={`${this.props.context}$${valueIndex}`}>
-                    <td>{field.text}</td>
+                    <td className="tooltip">
+                        {field.text}
+                        <span className="tooltip-text">{field.tooltip}</span>
+                    </td>
                     <td>{component}</td>
                 </tr>,
             );
