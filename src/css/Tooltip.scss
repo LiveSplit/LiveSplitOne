@@ -1,3 +1,4 @@
+@import 'mobile';
 @import 'variables';
 
 .tooltip {
@@ -22,6 +23,11 @@
     opacity: 0;
     transition: opacity 0.25s;
     transition-delay: 0.5s;
+
+    @include mobile {
+        left: 0;
+        margin-left: 0;
+    }
 }
 
 .tooltip:hover .tooltip-text {
