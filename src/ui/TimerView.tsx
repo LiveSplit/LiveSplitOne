@@ -11,6 +11,7 @@ import AutoRefresh from "../util/AutoRefresh";
 import Layout from "../layout/Layout";
 import { UrlCache } from "../util/UrlCache";
 import { WebRenderer } from "../livesplit-core/livesplit_core";
+import { GeneralSettings } from "./SettingsEditor";
 
 import LiveSplitIcon from "../assets/icon.svg";
 
@@ -23,6 +24,7 @@ export interface Props {
     layoutUrlCache: UrlCache,
     layoutWidth: number,
     layoutHeight: number,
+    generalSettings: GeneralSettings,
     renderWithSidebar: boolean,
     sidebarOpen: boolean,
     timer: SharedTimer,
@@ -78,10 +80,14 @@ export class TimerView extends React.Component<Props, State> {
         >
             <div>
                 <div
-                    onClick={(_) => this.splitOrStart()}
+                    onClick={(_) => {
+                        if (this.props.generalSettings.showControlButtons) {
+                            this.splitOrStart();
+                        }
+                    }}
                     style={{
                         display: "inline-block",
-                        cursor: "pointer",
+                        cursor: this.props.generalSettings.showControlButtons ? "pointer" : undefined,
                     }}
                 >
                     <Layout
@@ -96,34 +102,37 @@ export class TimerView extends React.Component<Props, State> {
                         allowResize={this.props.isDesktop}
                         width={this.props.layoutWidth}
                         height={this.props.layoutHeight}
+                        generalSettings={this.props.generalSettings}
                         renderer={this.props.renderer}
                         onResize={(width, height) => this.props.callbacks.onResize(width, height)}
                     />
                 </div>
             </div>
-            <div className="buttons" style={{ width: this.props.layoutWidth }}>
-                <div className="small">
-                    <button aria-label="Undo Split" onClick={(_) => this.undoSplit()}>
-                        <i className="fa fa-arrow-up" aria-hidden="true" /></button>
-                    <button aria-label="Pause" onClick={(_) => this.togglePauseOrStart()}>
-                        <i className="fa fa-pause" aria-hidden="true" />
-                    </button>
-                </div>
-                <div className="small">
-                    <button aria-label="Skip Split" onClick={(_) => this.skipSplit()}>
-                        <i className="fa fa-arrow-down" aria-hidden="true" />
-                    </button>
-                    <button aria-label="Reset" onClick={(_) => this.reset()}>
-                        <i className="fa fa-times" aria-hidden="true" />
-                    </button>
-                </div>
-            </div>
+            {
+                this.props.generalSettings.showControlButtons ? <div className="buttons" style={{ width: this.props.layoutWidth }}>
+                    <div className="small">
+                        <button aria-label="Undo Split" onClick={(_) => this.undoSplit()}>
+                            <i className="fa fa-arrow-up" aria-hidden="true" /></button>
+                        <button aria-label="Pause" onClick={(_) => this.togglePauseOrStart()}>
+                            <i className="fa fa-pause" aria-hidden="true" />
+                        </button>
+                    </div>
+                    <div className="small">
+                        <button aria-label="Skip Split" onClick={(_) => this.skipSplit()}>
+                            <i className="fa fa-arrow-down" aria-hidden="true" />
+                        </button>
+                        <button aria-label="Reset" onClick={(_) => this.reset()}>
+                            <i className="fa fa-times" aria-hidden="true" />
+                        </button>
+                    </div>
+                </div> : null
+            }
         </DragUpload>;
     }
 
     private renderSidebarContent() {
         return (
-            <AutoRefresh update={() => this.updateSidebar()}>
+            <AutoRefresh frameRate={10} update={() => this.updateSidebar()}>
                 <div className="sidebar-buttons">
                     <div className="livesplit-title">
                         <span className="livesplit-icon">

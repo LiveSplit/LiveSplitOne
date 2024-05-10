@@ -5,6 +5,7 @@ import { WebRenderer } from "../livesplit-core/livesplit_core";
 import AutoRefresh from "../util/AutoRefresh";
 import { UrlCache } from "../util/UrlCache";
 import "../css/Layout.scss";
+import { GeneralSettings } from "../ui/SettingsEditor";
 
 export interface Props {
     getState: () => LayoutStateRef,
@@ -12,6 +13,7 @@ export interface Props {
     allowResize: boolean,
     width: number,
     height: number,
+    generalSettings: GeneralSettings,
     renderer: WebRenderer,
     onResize(width: number, height: number): void,
 }
@@ -27,7 +29,10 @@ export default class Layout extends React.Component<Props, unknown> {
 
     public render() {
         return (
-            <AutoRefresh update={() => this.refreshLayout()} >
+            <AutoRefresh
+                frameRate={this.props.generalSettings.frameRate}
+                update={() => this.refreshLayout()}
+            >
                 <div className="layout" style={{ width: this.props.width, height: this.props.height }}>
                     <div
                         style={{ width: "inherit", height: "inherit" }}
