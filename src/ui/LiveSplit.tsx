@@ -10,7 +10,7 @@ import { Option, assertNull, expect, maybeDisposeAndThen, panic } from "../util/
 import * as SplitsIO from "../util/SplitsIO";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
-import { SettingsEditor as SettingsEditorComponent } from "./SettingsEditor";
+import { GeneralSettings, SettingsEditor as SettingsEditorComponent } from "./SettingsEditor";
 import { TimerView } from "./TimerView";
 import { About } from "./About";
 import { SplitsSelection, EditingInfo } from "./SplitsSelection";
@@ -51,6 +51,7 @@ export interface Props {
     hotkeys?: Storage.HotkeyConfigSettings,
     layoutWidth: number,
     layoutHeight: number,
+    generalSettings: GeneralSettings,
     splitsKey?: number,
 }
 
@@ -73,17 +74,20 @@ export interface State {
     storedLayoutHeight: number,
     timer: SharedTimer,
     renderer: WebRenderer,
+    generalSettings: GeneralSettings,
 }
 
 export let hotkeySystem: Option<HotkeySystem> = null;
 
 export class LiveSplit extends React.Component<Props, State> {
     public static async loadStoredData() {
+        // FIXME: We should probably request all of these concurrently.
         const splitsKey = await Storage.loadSplitsKey();
         const splits = splitsKey !== undefined ? await Storage.loadSplits(splitsKey) : undefined;
         const layout = await Storage.loadLayout();
         const hotkeys = await Storage.loadHotkeys();
         const [layoutWidth, layoutHeight] = await Storage.loadLayoutDims();
+        const generalSettings = await Storage.loadGeneralSettings();
 
         return {
             splits,
@@ -92,6 +96,7 @@ export class LiveSplit extends React.Component<Props, State> {
             hotkeys,
             layoutWidth,
             layoutHeight,
+            generalSettings,
         };
     }
 
@@ -180,6 +185,7 @@ export class LiveSplit extends React.Component<Props, State> {
             hotkeySystem,
             openedSplitsKey: props.splitsKey,
             renderer,
+            generalSettings: props.generalSettings,
         };
 
         this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
@@ -257,6 +263,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 layoutUrlCache={this.state.layoutUrlCache}
                 layoutWidth={this.state.layoutWidth}
                 layoutHeight={this.state.layoutHeight}
+                generalSettings={this.state.generalSettings}
                 isDesktop={this.state.isDesktop}
                 timer={this.state.timer}
                 renderer={this.state.renderer}
@@ -264,6 +271,7 @@ export class LiveSplit extends React.Component<Props, State> {
             />;
         } else if (this.state.menu.kind === MenuKind.SettingsEditor) {
             return <SettingsEditorComponent
+                generalSettings={this.state.generalSettings}
                 hotkeyConfig={this.state.menu.config}
                 urlCache={this.state.layoutUrlCache}
                 callbacks={this}
@@ -283,6 +291,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 layoutUrlCache={this.state.layoutUrlCache}
                 layoutWidth={this.state.layoutWidth}
                 layoutHeight={this.state.layoutHeight}
+                generalSettings={this.state.generalSettings}
                 isDesktop={this.state.isDesktop}
                 renderWithSidebar={true}
                 sidebarOpen={this.state.sidebarOpen}
@@ -297,6 +306,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 layoutUrlCache={this.state.layoutUrlCache}
                 layoutWidth={this.state.layoutWidth}
                 layoutHeight={this.state.layoutHeight}
+                generalSettings={this.state.generalSettings}
                 isDesktop={this.state.isDesktop}
                 renderWithSidebar={true}
                 sidebarOpen={this.state.sidebarOpen}
@@ -493,7 +503,7 @@ export class LiveSplit extends React.Component<Props, State> {
         });
     }
 
-    public async closeSettingsEditor(save: boolean) {
+    public async closeSettingsEditor(save: boolean, generalSettings: GeneralSettings) {
         const menu = this.state.menu;
 
         if (menu.kind !== MenuKind.SettingsEditor) {
@@ -504,10 +514,18 @@ export class LiveSplit extends React.Component<Props, State> {
             try {
                 const hotkeys = menu.config.asJson();
                 await Storage.storeHotkeys(hotkeys);
-            } catch (_) {
-                toast.error("Failed to save the settings.");
+            } catch {
+                toast.error("Failed to save the hotkey settings.");
             }
+
+            try {
+                await Storage.storeGeneralSettings(generalSettings);
+            } catch {
+                toast.error("Failed to save the general settings.");
+            }
+
             this.state.hotkeySystem.setConfig(menu.config);
+            this.setState({ generalSettings });
         } else {
             menu.config.dispose();
         }

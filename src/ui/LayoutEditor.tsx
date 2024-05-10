@@ -5,6 +5,7 @@ import { SettingsComponent } from "./Settings";
 import { UrlCache } from "../util/UrlCache";
 import Layout from "../layout/Layout";
 import { WebRenderer } from "../livesplit-core/livesplit_core";
+import { GeneralSettings } from "./SettingsEditor";
 
 import "../css/LayoutEditor.scss";
 
@@ -15,6 +16,7 @@ export interface Props {
     layoutUrlCache: UrlCache,
     layoutWidth: number,
     layoutHeight: number,
+    generalSettings: GeneralSettings,
     isDesktop: boolean,
     timer: LiveSplit.SharedTimerRef,
     renderer: WebRenderer,
@@ -272,6 +274,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                         allowResize={this.props.isDesktop}
                         width={this.props.layoutWidth}
                         height={this.props.layoutHeight}
+                        generalSettings={this.props.generalSettings}
                         renderer={this.props.renderer}
                         onResize={(width, height) => this.props.callbacks.onResize(width, height)}
                     />
