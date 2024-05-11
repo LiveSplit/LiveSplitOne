@@ -249,7 +249,8 @@ export async function loadGeneralSettings(): Promise<GeneralSettings> {
     const generalSettings = await db.get("settings", "generalSettings") ?? {};
 
     return {
-        showControlButtons: generalSettings.showControlButtons ?? true,
         frameRate: generalSettings.frameRate ?? FRAME_RATE_AUTOMATIC,
+        showControlButtons: generalSettings.showControlButtons ?? true,
+        showManualGameTime: generalSettings.showManualGameTime ?? false,
     };
 }
