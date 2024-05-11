@@ -5,7 +5,7 @@ import {
     TimingMethod, TimeSpan, LayoutStateRefMut,
 } from "../livesplit-core";
 import * as LiveSplit from "../livesplit-core";
-import { Option } from "../util/OptionUtil";
+import { Option, expect } from "../util/OptionUtil";
 import DragUpload from "./DragUpload";
 import AutoRefresh from "../util/AutoRefresh";
 import Layout from "../layout/Layout";
@@ -34,6 +34,7 @@ export interface Props {
 export interface State {
     comparison: Option<string>,
     timingMethod: Option<TimingMethod>,
+    manualGameTime: string,
 }
 
 interface Callbacks {
@@ -56,6 +57,7 @@ export class TimerView extends React.Component<Props, State> {
         this.state = {
             comparison: null,
             timingMethod: null,
+            manualGameTime: "",
         };
     }
 
@@ -125,6 +127,44 @@ export class TimerView extends React.Component<Props, State> {
                             <i className="fa fa-times" aria-hidden="true" />
                         </button>
                     </div>
+                </div> : null
+            }
+            {
+                this.props.generalSettings.showManualGameTime ? <div className="buttons" style={{ width: this.props.layoutWidth }}>
+                    <input
+                        type="text"
+                        className="manual-game-time"
+                        value={this.state.manualGameTime}
+                        placeholder="Manual Game Time"
+                        onChange={(e) => {
+                            this.setState({
+                                manualGameTime: e.target.value,
+                            });
+                        }}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                this.props.timer.writeWith((t) => {
+                                    if ((t.currentPhase() as LiveSplit.TimerPhase) === LiveSplit.TimerPhase.NotRunning) {
+                                        t.start();
+                                        t.pauseGameTime();
+                                        const gameTime = TimeSpan.parse(this.state.manualGameTime)
+                                            ?? expect(TimeSpan.parse("0"), "Failed to parse TimeSpan");
+                                        gameTime.with((gameTime) => t.setGameTime(gameTime));
+                                        this.setState({ manualGameTime: "" });
+                                    } else {
+                                        const gameTime = TimeSpan.parse(this.state.manualGameTime);
+                                        if (gameTime !== null) {
+                                            gameTime.with((gameTime) => {
+                                                t.setGameTime(gameTime);
+                                                t.split();
+                                            });
+                                            this.setState({ manualGameTime: "" });
+                                        }
+                                    }
+                                });
+                            }
+                        }}
+                    />
                 </div> : null
             }
         </DragUpload>;
@@ -236,7 +276,6 @@ export class TimerView extends React.Component<Props, State> {
 
             if (comparison !== this.state.comparison || (timingMethod as TimingMethod) !== this.state.timingMethod) {
                 this.setState({
-                    ...this.state,
                     comparison,
                     timingMethod,
                 });

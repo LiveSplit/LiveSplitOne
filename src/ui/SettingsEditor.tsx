@@ -9,8 +9,9 @@ import { FRAME_RATE_AUTOMATIC as FRAME_RATE_BATTERY_AWARE, FRAME_RATE_MATCH_SCRE
 import "../css/SettingsEditor.scss";
 
 export interface GeneralSettings {
-    showControlButtons: boolean,
     frameRate: FrameRateSetting,
+    showControlButtons: boolean,
+    showManualGameTime: boolean,
 }
 
 export interface Props {
@@ -70,11 +71,6 @@ export class SettingsEditor extends React.Component<Props, State> {
                     state={{
                         fields: [
                             {
-                                text: "Show Control Buttons",
-                                tooltip: "Determines whether to show buttons beneath the timer that allow controlling it. When disabled, you have to use the hotkeys instead.",
-                                value: { Bool: this.state.generalSettings.showControlButtons },
-                            },
-                            {
                                 text: "Frame Rate",
                                 tooltip: "Determines the frame rate at which to display the timer. \"Battery Aware\" tries determining the type of device and charging status to select a good frame rate. \"Match Screen\" makes the timer match the screen's refresh rate.",
                                 value: {
@@ -85,22 +81,22 @@ export class SettingsEditor extends React.Component<Props, State> {
                                     }
                                 },
                             },
+                            {
+                                text: "Show Control Buttons",
+                                tooltip: "Determines whether to show buttons beneath the timer that allow controlling it. When disabled, you have to use the hotkeys instead.",
+                                value: { Bool: this.state.generalSettings.showControlButtons },
+                            },
+                            {
+                                text: "Show Manual Game Time Input",
+                                tooltip: "Shows a text box beneath the timer that allows you to manually input the game time. You start the timer and do splits by pressing the Enter key in the text box. Make sure to compare against \"Game Time\".",
+                                value: { Bool: this.state.generalSettings.showManualGameTime },
+                            },
                         ],
                     }}
                     editorUrlCache={this.props.urlCache}
                     setValue={(index, value) => {
                         switch (index) {
                             case 0:
-                                if ("Bool" in value) {
-                                    this.setState({
-                                        generalSettings: {
-                                            ...this.state.generalSettings,
-                                            showControlButtons: value.Bool,
-                                        },
-                                    });
-                                }
-                                break;
-                            case 1:
                                 if ("String" in value) {
                                     this.setState({
                                         generalSettings: {
@@ -110,6 +106,26 @@ export class SettingsEditor extends React.Component<Props, State> {
                                                 : value.String === FRAME_RATE_BATTERY_AWARE
                                                     ? FRAME_RATE_BATTERY_AWARE
                                                     : parseInt(value.String.split(' ')[0], 10) as FrameRateSetting,
+                                        },
+                                    });
+                                }
+                                break;
+                            case 1:
+                                if ("Bool" in value) {
+                                    this.setState({
+                                        generalSettings: {
+                                            ...this.state.generalSettings,
+                                            showControlButtons: value.Bool,
+                                        },
+                                    });
+                                }
+                                break;
+                            case 2:
+                                if ("Bool" in value) {
+                                    this.setState({
+                                        generalSettings: {
+                                            ...this.state.generalSettings,
+                                            showManualGameTime: value.Bool,
                                         },
                                     });
                                 }
