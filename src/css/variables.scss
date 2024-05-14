@@ -18,6 +18,8 @@ $button-text-color: #eee;
 $button-max-width: 300px;
 $button-height: 40px;
 
+$manual-game-time-height: 25px;
+
 $main-background-color: #171717;
 $sidebar-background-color: #1A1A1A;
 
@@ -31,4 +33,6 @@ $selected-row-hover-color: linear-gradient(hsl(220, 90%, 70%) 0%, hsl(220, 69%, 
 
 :export {
   buttonHeight: $button-height;
+  largeMargin: $ui-large-margin;
+  manualGameTimeHeight: $manual-game-time-height;
 }

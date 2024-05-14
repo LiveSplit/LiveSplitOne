@@ -25,6 +25,8 @@ import "react-toastify/dist/ReactToastify.css";
 import "../css/LiveSplit.scss";
 
 const buttonHeight = parseFloat(variables.buttonHeight);
+const largeMargin = parseFloat(variables.largeMargin);
+const manualGameTimeHeight = parseFloat(variables.manualGameTimeHeight);
 
 export enum MenuKind {
     Timer,
@@ -101,7 +103,6 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     private isDesktopQuery = window.matchMedia("(min-width: 600px)");
-    private containerRef: React.RefObject<HTMLDivElement>;
     private scrollEvent: Option<EventListenerObject>;
     private rightClickEvent: Option<EventListenerObject>;
     private resizeEvent: Option<EventListenerObject>;
@@ -189,8 +190,6 @@ export class LiveSplit extends React.Component<Props, State> {
         };
 
         this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
-
-        this.containerRef = React.createRef();
     }
 
     public componentDidMount() {
@@ -342,10 +341,7 @@ export class LiveSplit extends React.Component<Props, State> {
                             onClick={(() => this.onSetSidebarOpen(true)) as any}
                         />
                     }
-                    <div
-                        className="view-container"
-                        ref={this.containerRef}
-                    >
+                    <div className="view-container">
                         {renderedView}
                     </div>
                 </Sidebar>
@@ -556,23 +552,28 @@ export class LiveSplit extends React.Component<Props, State> {
                 return;
             }
 
-            const fullWidth = this.containerRef.current?.clientWidth;
-            if (fullWidth && fullWidth !== this.state.layoutWidth) {
+            const fullWidth = window.innerWidth;
+            if (fullWidth !== this.state.layoutWidth) {
                 this.setState({
                     layoutWidth: fullWidth,
                 });
             }
 
-            // Only auto adjust height in Timer view because other views can
-            // have scrolling, so the container height is more than screen height
-            if (this.state.menu.kind === MenuKind.Timer) {
-                const fullHeight = this.containerRef.current?.clientHeight;
-                const newHeight = fullHeight ? fullHeight - 2 * buttonHeight : null;
-                if (newHeight && newHeight !== this.state.layoutHeight) {
-                    this.setState({
-                        layoutHeight: newHeight,
-                    });
-                }
+            const showControlButtons = this.state.generalSettings.showControlButtons;
+            const showManualGameTime = this.state.generalSettings.showManualGameTime;
+            let newHeight = window.innerHeight - largeMargin;
+            if (showControlButtons && showManualGameTime) {
+                newHeight -= 2 * buttonHeight + manualGameTimeHeight + 3 * largeMargin;
+            } else if (showControlButtons) {
+                newHeight -= 2 * buttonHeight + 2 * largeMargin;
+            } else if (showManualGameTime) {
+                newHeight -= manualGameTimeHeight + largeMargin;
+            }
+
+            if (newHeight !== this.state.layoutHeight) {
+                this.setState({
+                    layoutHeight: newHeight,
+                });
             }
         }
     }
