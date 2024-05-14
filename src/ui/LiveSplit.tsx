@@ -582,6 +582,7 @@ export class LiveSplit extends React.Component<Props, State> {
         this.setState({
             isDesktop,
             layoutWidth: isDesktop ? this.state.storedLayoutWidth : this.state.layoutWidth,
+            layoutHeight: isDesktop ? this.state.storedLayoutHeight : this.state.layoutHeight,
             sidebarTransitionsEnabled: false,
         });
     }
