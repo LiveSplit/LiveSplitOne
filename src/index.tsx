@@ -1,3 +1,23 @@
+// FIXME: Remove the polyfill later.
+
+if (typeof Symbol.dispose !== "symbol") {
+    Object.defineProperty(Symbol, "dispose", {
+        configurable: false,
+        enumerable: false,
+        writable: false,
+        value: Symbol.for("dispose")
+    });
+}
+
+if (typeof Symbol.asyncDispose !== "symbol") {
+    Object.defineProperty(Symbol, "asyncDispose", {
+        configurable: false,
+        enumerable: false,
+        writable: false,
+        value: Symbol.for("asyncDispose")
+    });
+}
+
 if (process.env.NODE_ENV === "production" && "serviceWorker" in navigator) {
     navigator.serviceWorker.register("/service-worker.js");
 }
