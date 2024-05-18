@@ -36,12 +36,12 @@ function getSplitsInfo(run: RunRef): SplitsInfo {
 }
 
 function parseSplitsAndGetInfo(splits: Uint8Array): Option<SplitsInfo> {
-    return Run.parseArray(splits, "").with((r) => {
-        if (r.parsedSuccessfully()) {
-            return r.unwrap();
-        }
+    using parseRunResult = Run.parseArray(splits, "");
+    if (!parseRunResult.parsedSuccessfully()) {
         return undefined;
-    })?.with(getSplitsInfo);
+    }
+    using run = parseRunResult.unwrap();
+    return getSplitsInfo(run);
 }
 
 function getDb(): Promise<IDBPDatabase<unknown>> {
@@ -118,7 +118,7 @@ export async function storeRunAndDispose(run: Run, key: number | undefined) {
     try {
         await storeRunWithoutDisposing(run, key);
     } finally {
-        run.dispose();
+        run[Symbol.dispose]();
     }
 }
 

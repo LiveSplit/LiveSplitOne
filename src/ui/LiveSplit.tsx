@@ -3,7 +3,7 @@ import Sidebar from "react-sidebar";
 import {
     HotkeySystem, Layout, LayoutEditor, Run, RunEditor,
     Segment, SharedTimer, Timer, TimerRef, TimerRefMut,
-    HotkeyConfig, LayoutState, LayoutStateJson
+    HotkeyConfig, LayoutState, LayoutStateJson,
 } from "../livesplit-core";
 import { convertFileToArrayBuffer, convertFileToString, exportFile, openFileAsString } from "../util/FileUtil";
 import { Option, assertNull, expect, maybeDisposeAndThen, panic } from "../util/OptionUtil";
@@ -141,13 +141,13 @@ export class LiveSplit extends React.Component<Props, State> {
                 timer.writeWith((t) => t.setRun(loadingRun)),
                 "The Default Loading Run should be a valid Run",
             );
-            this.loadFromSplitsIO(window.location.hash.substr("#/splits-io/".length));
+            this.loadFromSplitsIO(window.location.hash.substring("#/splits-io/".length));
         } else if (props.splits !== undefined) {
-            Run.parseArray(props.splits, "").with((result) => {
-                if (result.parsedSuccessfully()) {
-                    result.unwrap().with((r) => timer.writeWith((t) => t.setRun(r)))?.dispose();
-                }
-            });
+            using result = Run.parseArray(props.splits, "");
+            if (result.parsedSuccessfully()) {
+                using r = result.unwrap();
+                timer.writeWith((t) => t.setRun(r))?.[Symbol.dispose]();
+            }
         }
 
         let layout: Option<Layout> = null;
@@ -237,10 +237,10 @@ export class LiveSplit extends React.Component<Props, State> {
             "resize",
             expect(this.resizeEvent, "A Resize Event should exist"),
         );
-        this.state.timer.dispose();
-        this.state.layout.dispose();
-        this.state.layoutState.dispose();
-        this.state.hotkeySystem?.dispose();
+        this.state.timer[Symbol.dispose]();
+        this.state.layout[Symbol.dispose]();
+        this.state.layoutState[Symbol.dispose]();
+        this.state.hotkeySystem?.[Symbol.dispose]();
 
         // This is bound in the constructor
         // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -445,7 +445,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 Storage.storeRunAndDispose(run, splitsKey);
             }
         } else {
-            run.dispose();
+            run[Symbol.dispose]();
         }
         this.openSplitsView();
     }
@@ -480,10 +480,10 @@ export class LiveSplit extends React.Component<Props, State> {
         const layoutEditor = this.state.menu.editor;
         const layout = layoutEditor.close();
         if (save) {
-            this.state.layout.dispose();
+            this.state.layout[Symbol.dispose]();
             this.openTimerView(layout);
         } else {
-            layout.dispose();
+            layout[Symbol.dispose]();
             this.openTimerView();
         }
     }
@@ -523,7 +523,7 @@ export class LiveSplit extends React.Component<Props, State> {
             this.state.hotkeySystem.setConfig(menu.config);
             this.setState({ generalSettings });
         } else {
-            menu.config.dispose();
+            menu.config[Symbol.dispose]();
         }
 
         this.openTimerView();
@@ -604,7 +604,7 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     private setLayout(layout: Layout) {
-        this.state.layout.dispose();
+        this.state.layout[Symbol.dispose]();
         this.setState({
             layout,
         });
@@ -620,14 +620,13 @@ export class LiveSplit extends React.Component<Props, State> {
 
     private importSplitsFromArrayBuffer(buffer: [ArrayBuffer, File]) {
         const [file] = buffer;
-        Run.parseArray(new Uint8Array(file), "").with((result) => {
-            if (result.parsedSuccessfully()) {
-                const run = result.unwrap();
-                this.setRun(run, () => { throw Error("Empty Splits are not supported."); });
-            } else {
-                throw Error("Couldn't parse the splits.");
-            }
-        });
+        using result = Run.parseArray(new Uint8Array(file), "");
+        if (result.parsedSuccessfully()) {
+            const run = result.unwrap();
+            this.setRun(run, () => { throw Error("Empty Splits are not supported."); });
+        } else {
+            throw Error("Couldn't parse the splits.");
+        }
     }
 
     private async loadFromSplitsIO(id: string) {

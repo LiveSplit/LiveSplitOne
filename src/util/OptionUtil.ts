@@ -10,7 +10,7 @@ export function expect<T>(obj: Option<T>, message: string): T {
 }
 
 interface Disposable {
-    dispose(): void,
+    [Symbol.dispose](): void,
 }
 
 export function panic(message: string): never {
@@ -28,14 +28,14 @@ export function assert(condition: boolean, message: string): asserts condition {
 
 export function assertNull<T>(obj: Option<T | Disposable>, message: string): asserts obj is null | undefined {
     if (obj != null) {
-        (obj as any).dispose?.();
+        (obj as any)[Symbol.dispose]?.();
         panic(message);
     }
 }
 
 export function maybeDisposeAndThen(obj: Option<Disposable>, f: () => void) {
     if (obj != null) {
-        obj.dispose();
+        obj[Symbol.dispose]();
         f();
     }
 }

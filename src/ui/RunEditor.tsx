@@ -1374,20 +1374,19 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private cleanSumOfBest() {
-        this.props.editor.cleanSumOfBest().with((cleaner) => {
+        {
+            using cleaner = this.props.editor.cleanSumOfBest();
             while (true) {
-                const potentialCleanUp = cleaner.nextPotentialCleanUp();
+                using potentialCleanUp = cleaner.nextPotentialCleanUp();
                 if (!potentialCleanUp) {
                     break;
                 }
-                potentialCleanUp.with((potentialCleanUp) => {
-                    const message = potentialCleanUp.message();
-                    if (confirm(message)) {
-                        cleaner.apply(potentialCleanUp);
-                    }
-                });
+                const message = potentialCleanUp.message();
+                if (confirm(message)) {
+                    cleaner.apply(potentialCleanUp);
+                }
             }
-        });
+        }
         this.update();
     }
 
@@ -1403,24 +1402,22 @@ export class RunEditor extends React.Component<Props, State> {
 
     private async importComparison() {
         const [data, file] = await openFileAsArrayBuffer();
-        LiveSplit.Run.parseArray(new Uint8Array(data), "").with((result) => {
-            if (!result.parsedSuccessfully()) {
-                toast.error("Couldn't parse the splits.");
-                return;
-            }
-            result.unwrap().with((run) => {
-                const comparisonName = prompt("Comparison Name:", file.name.replace(/\.[^/.]+$/, ""));
-                if (!comparisonName) {
-                    return;
-                }
-                const valid = this.props.editor.importComparison(run, comparisonName);
-                if (!valid) {
-                    toast.error("The comparison could not be added. It may be a duplicate or a reserved name.");
-                } else {
-                    this.update();
-                }
-            });
-        });
+        using result = LiveSplit.Run.parseArray(new Uint8Array(data), "");
+        if (!result.parsedSuccessfully()) {
+            toast.error("Couldn't parse the splits.");
+            return;
+        }
+        using run = result.unwrap();
+        const comparisonName = prompt("Comparison Name:", file.name.replace(/\.[^/.]+$/, ""));
+        if (!comparisonName) {
+            return;
+        }
+        const valid = this.props.editor.importComparison(run, comparisonName);
+        if (!valid) {
+            toast.error("The comparison could not be added. It may be a duplicate or a reserved name.");
+        } else {
+            this.update();
+        }
     }
 
     private addComparison() {
@@ -1884,26 +1881,24 @@ export class RunEditor extends React.Component<Props, State> {
             await gameInfoDownload;
             await platformListDownload;
             await regionListDownload;
-            const run = await runDownload;
-            run.with((run) => {
-                const newEditor = LiveSplit.RunEditor.new(run);
-                if (newEditor !== null) {
-                    associateRun(
-                        newEditor,
-                        gameName,
-                        categoryName,
-                        apiRun,
-                    );
+            using run = await runDownload;
+            const newEditor = LiveSplit.RunEditor.new(run);
+            if (newEditor !== null) {
+                associateRun(
+                    newEditor,
+                    gameName,
+                    categoryName,
+                    apiRun,
+                );
 
-                    // TODO Oh no, not internal pointer stuff
-                    this.props.editor.dispose();
-                    this.props.editor.ptr = newEditor.ptr;
+                // TODO Oh no, not internal pointer stuff
+                this.props.editor[Symbol.dispose]();
+                this.props.editor.ptr = newEditor.ptr;
 
-                    this.update();
-                } else {
-                    toast.error("The downloaded splits are not suitable for being edited.");
-                }
-            });
+                this.update();
+            } else {
+                toast.error("The downloaded splits are not suitable for being edited.");
+            }
         } catch (_) {
             toast.error("Failed to download the splits.");
         }
