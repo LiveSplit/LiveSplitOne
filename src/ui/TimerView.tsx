@@ -147,17 +147,15 @@ export class TimerView extends React.Component<Props, State> {
                                     if ((t.currentPhase() as LiveSplit.TimerPhase) === LiveSplit.TimerPhase.NotRunning) {
                                         t.start();
                                         t.pauseGameTime();
-                                        const gameTime = TimeSpan.parse(this.state.manualGameTime)
+                                        using gameTime = TimeSpan.parse(this.state.manualGameTime)
                                             ?? expect(TimeSpan.parse("0"), "Failed to parse TimeSpan");
-                                        gameTime.with((gameTime) => t.setGameTime(gameTime));
+                                        t.setGameTime(gameTime);
                                         this.setState({ manualGameTime: "" });
                                     } else {
-                                        const gameTime = TimeSpan.parse(this.state.manualGameTime);
+                                        using gameTime = TimeSpan.parse(this.state.manualGameTime);
                                         if (gameTime !== null) {
-                                            gameTime.with((gameTime) => {
-                                                t.setGameTime(gameTime);
-                                                t.split();
-                                            });
+                                            t.setGameTime(gameTime);
+                                            t.split();
                                             this.setState({ manualGameTime: "" });
                                         }
                                     }
@@ -394,20 +392,16 @@ export class TimerView extends React.Component<Props, State> {
     }
 
     private setGameTime(gameTime: string) {
-        const time = TimeSpan.parse(gameTime);
+        using time = TimeSpan.parse(gameTime);
         if (time !== null) {
-            time.with((time) => {
-                this.writeWith((t) => t.setGameTime(time));
-            });
+            this.writeWith((t) => t.setGameTime(time));
         }
     }
 
     private setLoadingTimes(loadingTimes: string) {
-        const time = TimeSpan.parse(loadingTimes);
+        using time = TimeSpan.parse(loadingTimes);
         if (time !== null) {
-            time.with((time) => {
-                this.writeWith((t) => t.setLoadingTimes(time));
-            });
+            this.writeWith((t) => t.setLoadingTimes(time));
         }
     }
 

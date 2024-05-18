@@ -209,13 +209,13 @@ export class SplitsSelection extends React.Component<Props, State> {
             throw Error("The splits key is invalid.");
         }
 
-        return Run.parseArray(new Uint8Array(splitsData), "").with((result) => {
-            if (result.parsedSuccessfully()) {
-                return result.unwrap();
-            } else {
-                throw Error("Couldn't parse the splits.");
-            }
-        });
+        using result = Run.parseArray(new Uint8Array(splitsData), "");
+
+        if (result.parsedSuccessfully()) {
+            return result.unwrap();
+        } else {
+            throw Error("Couldn't parse the splits.");
+        }
     }
 
     private async openSplits(key: number) {
@@ -226,13 +226,11 @@ export class SplitsSelection extends React.Component<Props, State> {
             return;
         }
 
-        const run = await this.getRunFromKey(key);
-        run.with((run) => {
-            maybeDisposeAndThen(
-                this.props.timer.writeWith((timer) => timer.setRun(run)),
-                () => toast.error("The loaded splits are invalid."),
-            );
-        });
+        using run = await this.getRunFromKey(key);
+        maybeDisposeAndThen(
+            this.props.timer.writeWith((timer) => timer.setRun(run)),
+            () => toast.error("The loaded splits are invalid."),
+        );
         this.props.callbacks.setSplitsKey(key);
     }
 
@@ -312,7 +310,7 @@ export class SplitsSelection extends React.Component<Props, State> {
                 throw Error("Couldn't parse the splits.");
             }
         } finally {
-            result.dispose();
+            result[Symbol.dispose]();
         }
     }
 
@@ -394,7 +392,7 @@ export class SplitsSelection extends React.Component<Props, State> {
             await storeRunWithoutDisposing(run, undefined);
             await this.refreshDb();
         } finally {
-            run.dispose();
+            run[Symbol.dispose]();
         }
     }
 }
