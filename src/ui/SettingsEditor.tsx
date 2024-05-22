@@ -12,6 +12,8 @@ export interface GeneralSettings {
     frameRate: FrameRateSetting,
     showControlButtons: boolean,
     showManualGameTime: boolean,
+    speedrunComIntegration: boolean,
+    splitsIoIntegration: boolean,
 }
 
 export interface Props {
@@ -126,6 +128,50 @@ export class SettingsEditor extends React.Component<Props, State> {
                                         generalSettings: {
                                             ...this.state.generalSettings,
                                             showManualGameTime: value.Bool,
+                                        },
+                                    });
+                                }
+                                break;
+                        }
+                    }}
+                />
+                <h2>Network</h2>
+                <SettingsComponent
+                    context="settings-editor-general"
+                    factory={new JsonSettingValueFactory()}
+                    state={{
+                        fields: [
+                            {
+                                text: "Speedrun.com Integration",
+                                tooltip: "Queries the list of games, categories, and the leaderboards from speedrun.com.",
+                                value: { Bool: this.state.generalSettings.speedrunComIntegration },
+                            },
+                            {
+                                text: "Splits.io Integration",
+                                tooltip: "Allows you to upload splits to and download splits from splits.io.",
+                                value: { Bool: this.state.generalSettings.splitsIoIntegration },
+                            },
+                        ],
+                    }}
+                    editorUrlCache={this.props.urlCache}
+                    setValue={(index, value) => {
+                        switch (index) {
+                            case 0:
+                                if ("Bool" in value) {
+                                    this.setState({
+                                        generalSettings: {
+                                            ...this.state.generalSettings,
+                                            speedrunComIntegration: value.Bool,
+                                        },
+                                    });
+                                }
+                                break;
+                            case 1:
+                                if ("Bool" in value) {
+                                    this.setState({
+                                        generalSettings: {
+                                            ...this.state.generalSettings,
+                                            splitsIoIntegration: value.Bool,
                                         },
                                     });
                                 }
