@@ -111,7 +111,7 @@ export class TimerView extends React.Component<Props, State> {
                 </div>
             </div>
             {
-                this.props.generalSettings.showControlButtons ? <div className="buttons" style={{ width: this.props.layoutWidth }}>
+                this.props.generalSettings.showControlButtons && <div className="buttons" style={{ width: this.props.layoutWidth }}>
                     <div className="small">
                         <button aria-label="Undo Split" onClick={(_) => this.undoSplit()}>
                             <i className="fa fa-arrow-up" aria-hidden="true" /></button>
@@ -127,10 +127,10 @@ export class TimerView extends React.Component<Props, State> {
                             <i className="fa fa-times" aria-hidden="true" />
                         </button>
                     </div>
-                </div> : null
+                </div>
             }
             {
-                this.props.generalSettings.showManualGameTime ? <div className="buttons" style={{ width: this.props.layoutWidth }}>
+                this.props.generalSettings.showManualGameTime && <div className="buttons" style={{ width: this.props.layoutWidth }}>
                     <input
                         type="text"
                         className="manual-game-time"
@@ -163,7 +163,7 @@ export class TimerView extends React.Component<Props, State> {
                             }
                         }}
                     />
-                </div> : null
+                </div>
             }
         </DragUpload>;
     }

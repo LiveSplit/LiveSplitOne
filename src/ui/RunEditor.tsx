@@ -19,14 +19,16 @@ import {
     ExtendedSettingsDescriptionValueJson,
 } from "./Settings";
 import { renderMarkdown, replaceFlag } from "../util/Markdown";
+import { UrlCache } from "../util/UrlCache";
+import { GeneralSettings } from "./SettingsEditor";
 
 import "../css/RunEditor.scss";
-import { UrlCache } from "../util/UrlCache";
 
 export interface Props {
     editor: LiveSplit.RunEditor,
     callbacks: Callbacks,
     runEditorUrlCache: UrlCache,
+    generalSettings: GeneralSettings,
 }
 export interface State {
     editor: LiveSplit.RunEditorStateJson,
@@ -98,12 +100,14 @@ export class RunEditor extends React.Component<Props, State> {
             tab: state.timing_method === "RealTime" ? Tab.RealTime : Tab.GameTime,
         };
 
-        this.refreshGameList();
-        this.refreshGameInfo(state.game);
-        this.refreshCategoryList(state.game);
-        this.refreshLeaderboard(state.game, state.category);
-        this.refreshPlatformList();
-        this.refreshRegionList();
+        if (props.generalSettings.speedrunComIntegration) {
+            this.refreshGameList();
+            this.refreshGameInfo(state.game);
+            this.refreshCategoryList(state.game);
+            this.refreshLeaderboard(state.game, state.category);
+            this.refreshPlatformList();
+            this.refreshRegionList();
+        }
     }
 
     public render() {
@@ -152,12 +156,16 @@ export class RunEditor extends React.Component<Props, State> {
                         <MenuItem onClick={(_) => this.changeGameIcon()}>
                             Set Icon
                         </MenuItem>
-                        <MenuItem onClick={(_) => this.downloadBoxArt()}>
-                            Download Box Art
-                        </MenuItem>
-                        <MenuItem onClick={(_) => this.downloadIcon()}>
-                            Download Icon
-                        </MenuItem>
+                        {
+                            this.props.generalSettings.speedrunComIntegration && <>
+                                <MenuItem onClick={(_) => this.downloadBoxArt()}>
+                                    Download Box Art
+                                </MenuItem>
+                                <MenuItem onClick={(_) => this.downloadIcon()}>
+                                    Download Icon
+                                </MenuItem>
+                            </>
+                        }
                         {
                             gameIcon !== undefined &&
                             <MenuItem onClick={(_) => this.removeGameIcon()}>
@@ -352,11 +360,15 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private renderAssociateRunButton(): JSX.Element {
-        return (
-            <button onClick={(_) => this.interactiveAssociateRunOrOpenPage()}>
-                {this.state.editor.metadata.run_id !== "" ? "Open PB Page" : "Associate Run"}
-            </button>
-        );
+        if (this.props.generalSettings.speedrunComIntegration) {
+            return (
+                <button onClick={(_) => this.interactiveAssociateRunOrOpenPage()}>
+                    {this.state.editor.metadata.run_id !== "" ? "Open PB Page" : "Associate Run"}
+                </button>
+            );
+        } else {
+            return <></>;
+        }
     }
 
     private renderRulesButtons(): JSX.Element {
@@ -774,7 +786,9 @@ export class RunEditor extends React.Component<Props, State> {
                     <table className="table">
                         <tbody className="table-body">
                             <tr><td><p>
-                                There are currently no Speedrun.com variables or custom variables for this game.
+                                {"There are currently no"}
+                                {this.props.generalSettings.speedrunComIntegration && " Speedrun.com variables or"}
+                                {" custom variables for this game."}
                             </p></td></tr>
                         </tbody>
                     </table>
@@ -882,7 +896,7 @@ export class RunEditor extends React.Component<Props, State> {
                         <th>Player</th>
                         <th>Time</th>
                         {variableColumns?.map((variable) => <th>{variable.name}</th>)}
-                        <th>Splits</th>
+                        {this.props.generalSettings.splitsIoIntegration && <th>Splits</th>}
                     </tr>
                 </thead>
                 <tbody className="table-body">
@@ -982,7 +996,7 @@ export class RunEditor extends React.Component<Props, State> {
                                                     (p) =>
                                                         <tr>
                                                             <td>Platform:</td>
-                                                            <td>{p}{run.system.emulated ? " Emulator" : null}</td>
+                                                            <td>{p}{run.system.emulated && " Emulator"}</td>
                                                         </tr>,
                                                 )}
                                             </tbody>
@@ -1057,19 +1071,21 @@ export class RunEditor extends React.Component<Props, State> {
                                     </a>
                                 </td>
                                 {renderedVariables}
-                                <td className="splits-download-column">
-                                    {
-                                        map(run.splits, (s) => <i
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                this.downloadSplits(run, s.uri);
-                                            }}
-                                            className="fa fa-download"
-                                            style={{ cursor: "pointer" }}
-                                            aria-hidden="true"
-                                        />)
-                                    }
-                                </td>
+                                {
+                                    this.props.generalSettings.splitsIoIntegration && <td className="splits-download-column">
+                                        {
+                                            map(run.splits, (s) => <i
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    this.downloadSplits(run, s.uri);
+                                                }}
+                                                className="fa fa-download"
+                                                style={{ cursor: "pointer" }}
+                                                aria-hidden="true"
+                                            />)
+                                        }
+                                    </td>
+                                }
                             </tr>,
                             expandedRow,
                         ];
@@ -1511,18 +1527,22 @@ export class RunEditor extends React.Component<Props, State> {
     private handleGameChange(event: any) {
         this.props.editor.clearMetadata();
         this.props.editor.setGameName(event.target.value);
-        this.refreshGameInfo(event.target.value);
-        this.refreshCategoryList(event.target.value);
-        this.refreshLeaderboard(event.target.value, this.state.editor.category);
-        this.resetTotalLeaderboardState();
+        if (this.props.generalSettings.speedrunComIntegration) {
+            this.refreshGameInfo(event.target.value);
+            this.refreshCategoryList(event.target.value);
+            this.refreshLeaderboard(event.target.value, this.state.editor.category);
+            this.resetTotalLeaderboardState();
+        }
         this.update();
     }
 
     private handleCategoryChange(event: any) {
         this.clearCategorySpecificVariables();
         this.props.editor.setCategoryName(event.target.value);
-        this.refreshLeaderboard(this.state.editor.game, event.target.value);
-        this.resetTotalLeaderboardState();
+        if (this.props.generalSettings.speedrunComIntegration) {
+            this.refreshLeaderboard(this.state.editor.game, event.target.value);
+            this.resetTotalLeaderboardState();
+        }
         this.update();
     }
 

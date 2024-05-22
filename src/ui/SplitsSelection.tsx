@@ -9,10 +9,11 @@ import { toast } from "react-toastify";
 import { openFileAsArrayBuffer, exportFile, convertFileToArrayBuffer } from "../util/FileUtil";
 import { Option, maybeDisposeAndThen } from "../util/OptionUtil";
 import * as Storage from "../storage";
-
-import "../css/SplitsSelection.scss";
 import DragUpload from "./DragUpload";
 import { ContextMenuTrigger, ContextMenu, MenuItem } from "react-contextmenu";
+import { GeneralSettings } from "./SettingsEditor";
+
+import "../css/SplitsSelection.scss";
 
 export interface EditingInfo {
     splitsKey?: number,
@@ -23,6 +24,7 @@ export interface Props {
     timer: SharedTimerRef,
     openedSplitsKey?: number,
     callbacks: Callbacks,
+    generalSettings: GeneralSettings,
 }
 
 interface State {
@@ -70,9 +72,11 @@ export class SplitsSelection extends React.Component<Props, State> {
                         <button onClick={() => this.importSplits()}>
                             <i className="fa fa-download" aria-hidden="true" /> Import
                         </button>
-                        <button onClick={() => this.importSplitsFromSplitsIO()}>
-                            <i className="fa fa-download" aria-hidden="true" /> From Splits.io
-                        </button>
+                        {
+                            this.props.generalSettings.splitsIoIntegration && <button onClick={() => this.importSplitsFromSplitsIO()}>
+                                <i className="fa fa-download" aria-hidden="true" /> From Splits.io
+                            </button>
+                        }
                     </div>
                     {
                         this.state.splitsInfos?.length > 0 &&
@@ -139,9 +143,11 @@ export class SplitsSelection extends React.Component<Props, State> {
                                     <MenuItem onClick={(_) => this.exportSplits(key, info)}>
                                         Export to File
                                     </MenuItem>
-                                    <MenuItem onClick={(_) => this.uploadSplitsToSplitsIO(key)}>
-                                        Upload to Splits.io
-                                    </MenuItem>
+                                    {
+                                        this.props.generalSettings.splitsIoIntegration && <MenuItem onClick={(_) => this.uploadSplitsToSplitsIO(key)}>
+                                            Upload to Splits.io
+                                        </MenuItem>
+                                    }
                                 </ContextMenu>
                             </>
                     }
@@ -192,9 +198,11 @@ export class SplitsSelection extends React.Component<Props, State> {
                 <button onClick={(_) => this.exportTimerSplits()}>
                     <i className="fa fa-upload" aria-hidden="true" /> Export
                 </button>
-                <button onClick={(_) => this.uploadTimerToSplitsIO()}>
-                    <i className="fa fa-upload" aria-hidden="true" /> Upload to Splits.io
-                </button>
+                {
+                    this.props.generalSettings.splitsIoIntegration && <button onClick={(_) => this.uploadTimerToSplitsIO()}>
+                        <i className="fa fa-upload" aria-hidden="true" /> Upload to Splits.io
+                    </button>
+                }
                 <hr />
                 <button onClick={(_) => this.props.callbacks.openTimerView()}>
                     <i className="fa fa-caret-left" aria-hidden="true" /> Back

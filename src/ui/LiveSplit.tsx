@@ -253,6 +253,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 editor={this.state.menu.editor}
                 callbacks={this}
                 runEditorUrlCache={this.state.runEditorUrlCache}
+                generalSettings={this.state.generalSettings}
             />;
         } else if (this.state.menu.kind === MenuKind.LayoutEditor) {
             return <LayoutEditorComponent
@@ -279,6 +280,7 @@ export class LiveSplit extends React.Component<Props, State> {
             return <About callbacks={this} />;
         } else if (this.state.menu.kind === MenuKind.Splits) {
             return <SplitsSelection
+                generalSettings={this.state.generalSettings}
                 timer={this.state.timer}
                 openedSplitsKey={this.state.openedSplitsKey}
                 callbacks={this}
