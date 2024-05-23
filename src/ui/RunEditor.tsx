@@ -153,23 +153,35 @@ export class RunEditor extends React.Component<Props, State> {
                         </ContextMenuTrigger>
                     </div>
                     <ContextMenu id="game-icon-context-menu">
-                        <MenuItem onClick={(_) => this.changeGameIcon()}>
+                        <MenuItem className="tooltip" onClick={(_) => this.changeGameIcon()}>
                             Set Icon
+                            <span className="tooltip-text">
+                                Allows you to choose an image file to set as the game's icon. Certain file formats may not work everywhere.
+                            </span>
                         </MenuItem>
                         {
                             this.props.generalSettings.speedrunComIntegration && <>
-                                <MenuItem onClick={(_) => this.downloadBoxArt()}>
+                                <MenuItem className="tooltip" onClick={(_) => this.downloadBoxArt()}>
                                     Download Box Art
+                                    <span className="tooltip-text">
+                                        Attempts to download the box art of the game from speedrun.com.
+                                    </span>
                                 </MenuItem>
-                                <MenuItem onClick={(_) => this.downloadIcon()}>
+                                <MenuItem className="tooltip" onClick={(_) => this.downloadIcon()}>
                                     Download Icon
+                                    <span className="tooltip-text">
+                                        Attempts to download the icon of the game from speedrun.com.
+                                    </span>
                                 </MenuItem>
                             </>
                         }
                         {
                             gameIcon !== undefined &&
-                            <MenuItem onClick={(_) => this.removeGameIcon()}>
+                            <MenuItem className="tooltip" onClick={(_) => this.removeGameIcon()}>
                                 Remove Icon
+                                <span className="tooltip-text">
+                                    Removes the icon of the game.
+                                </span>
                             </MenuItem>
                         }
                     </ContextMenu>
@@ -209,7 +221,7 @@ export class RunEditor extends React.Component<Props, State> {
                                     onBlur={(_) => this.handleOffsetBlur()}
                                     small
                                     invalid={!this.state.offsetIsValid}
-                                    label="Offset"
+                                    label="Start Timer At"
                                 />
                             </div>
                             <div className="info-table-cell">
@@ -342,17 +354,29 @@ export class RunEditor extends React.Component<Props, State> {
                     </ContextMenuTrigger>
                 </button>
                 <ContextMenu id="other-button-context-menu">
-                    <MenuItem onClick={(_) => this.clearHistory()}>
-                        Clear History
+                    <MenuItem className="tooltip" onClick={(_) => this.clearHistory()}>
+                        Clear Only History
+                        <span className="tooltip-text">
+                            Splits store the entire history of all runs, including every split time. This information is used by various components. You can clear the history with this. The personal best, the best segment times, and the comparisons will not be affected.
+                        </span>
                     </MenuItem>
-                    <MenuItem onClick={(_) => this.clearTimes()}>
-                        Clear Times
+                    <MenuItem className="tooltip" onClick={(_) => this.clearTimes()}>
+                        Clear All Times
+                        <span className="tooltip-text">
+                            This removes all the times from the splits, including all the history, such that they are completely empty, as if they were just created.
+                        </span>
                     </MenuItem>
-                    <MenuItem onClick={(_) => this.cleanSumOfBest()}>
+                    <MenuItem className="tooltip" onClick={(_) => this.cleanSumOfBest()}>
                         Clean Sum of Best
+                        <span className="tooltip-text">
+                            Allows you to interactively remove potential issues in the segment history that lead to an inaccurate Sum of Best. If you skip a split, whenever you will do the next split, the combined segment time might be faster than the sum of the individual best segments. This will point out all of these and allows you to delete them individually if any of them seem wrong.
+                        </span>
                     </MenuItem>
-                    <MenuItem onClick={(_) => this.generateGoalComparison()}>
+                    <MenuItem className="tooltip" onClick={(_) => this.generateGoalComparison()}>
                         Generate Goal Comparison
+                        <span className="tooltip-text">
+                            Generates a custom goal comparison based on a goal time that you can specify. The comparison's times are automatically balanced based on the segment history such that it roughly represents what the split times for the goal time would look like. Since it is populated by the segment history, only goal times within the sum of the best segments and the sum of the worst segments are supported. Everything else is automatically capped by that range. The comparison is only populated for the selected timing method. The other timing method's comparison times are not modified by this, so you can generate it again with the other timing method to generate the comparison times for both timing methods.
+                        </span>
                     </MenuItem>
                 </ContextMenu>
             </div>
@@ -1193,15 +1217,21 @@ export class RunEditor extends React.Component<Props, State> {
                                             {comparison}
                                         </ContextMenuTrigger>
                                         <ContextMenu id={id}>
-                                            <MenuItem onClick={(_) =>
+                                            <MenuItem className="tooltip" onClick={(_) =>
                                                 this.renameComparison(comparison)
                                             }>
                                                 Rename
+                                                <span className="tooltip-text">
+                                                    Choose a new name for the custom comparison. There are reserved names that can't be used. You also can't have duplicate names.
+                                                </span>
                                             </MenuItem>
-                                            <MenuItem onClick={(_) =>
+                                            <MenuItem className="tooltip" onClick={(_) =>
                                                 this.removeComparison(comparison)
                                             }>
                                                 Remove
+                                                <span className="tooltip-text">
+                                                    Removes the custom comparison.
+                                                </span>
                                             </MenuItem>
                                         </ContextMenu>
                                     </th>
@@ -1256,11 +1286,17 @@ export class RunEditor extends React.Component<Props, State> {
                                             }
                                         </ContextMenuTrigger>
                                         <ContextMenu id={segmentIconContextMenuId}>
-                                            <MenuItem onClick={(_) => this.changeSegmentIcon(segmentIndex)}>
+                                            <MenuItem className="tooltip" onClick={(_) => this.changeSegmentIcon(segmentIndex)}>
                                                 Set Icon
+                                                <span className="tooltip-text">
+                                                    Allows you to choose an image file to set as the segment's icon. Certain file formats may not work everywhere.
+                                                </span>
                                             </MenuItem>
-                                            <MenuItem onClick={(_) => this.removeSegmentIcon(segmentIndex)}>
+                                            <MenuItem className="tooltip" onClick={(_) => this.removeSegmentIcon(segmentIndex)}>
                                                 Remove Icon
+                                                <span className="tooltip-text">
+                                                    Removes the segment's icon.
+                                                </span>
                                             </MenuItem>
                                         </ContextMenu>
                                     </td>

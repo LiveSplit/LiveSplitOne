@@ -140,12 +140,18 @@ export class SplitsSelection extends React.Component<Props, State> {
                                     </ContextMenuTrigger>
                                 </button>
                                 <ContextMenu id={segmentIconContextMenuId}>
-                                    <MenuItem onClick={(_) => this.exportSplits(key, info)}>
+                                    <MenuItem className="tooltip" onClick={(_) => this.exportSplits(key, info)}>
                                         Export to File
+                                        <span className="tooltip-text">
+                                            Export the splits to a file on your computer.
+                                        </span>
                                     </MenuItem>
                                     {
-                                        this.props.generalSettings.splitsIoIntegration && <MenuItem onClick={(_) => this.uploadSplitsToSplitsIO(key)}>
+                                        this.props.generalSettings.splitsIoIntegration && <MenuItem className="tooltip" onClick={(_) => this.uploadSplitsToSplitsIO(key)}>
                                             Upload to Splits.io
+                                            <span className="tooltip-text">
+                                                Upload the splits to splits.io.
+                                            </span>
                                         </MenuItem>
                                     }
                                 </ContextMenu>

@@ -209,14 +209,12 @@ $small-button-padding: 1px 3px 1px 3px;
         cursor: pointer;
 
         div {
-          width: 100%;
           height: $segment-icon-size;
 
           .segment-icon {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            object-position: 100% 50%;
           }
         }
       }
