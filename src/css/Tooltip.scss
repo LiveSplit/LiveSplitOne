@@ -3,7 +3,6 @@
 
 .tooltip {
     position: relative;
-    display: inline-block;
 }
 
 .tooltip .tooltip-text {
@@ -22,12 +21,20 @@
     margin-left: -150px;
     opacity: 0;
     transition: opacity 0.25s;
-    transition-delay: 0.5s;
+    transition-delay: 0.25s;
+    text-wrap: initial;
 
     @include mobile {
         left: 0;
         margin-left: 0;
     }
+}
+
+.react-contextmenu-item.tooltip .tooltip-text {
+    bottom: initial;
+    left: calc(100% + $ui-margin);
+    margin-left: 0;
+    top: 0;
 }
 
 .tooltip:hover .tooltip-text {
