@@ -164,7 +164,7 @@ export class RunEditor extends React.Component<Props, State> {
                                 <MenuItem className="tooltip" onClick={(_) => this.downloadBoxArt()}>
                                     Download Box Art
                                     <span className="tooltip-text">
-                                        Attempts to download the box art of the game from speedrun.com.
+                                        Attempts to download the box art of the game from speedrun.com, to set as the game's icon.
                                     </span>
                                 </MenuItem>
                                 <MenuItem className="tooltip" onClick={(_) => this.downloadIcon()}>
@@ -357,25 +357,25 @@ export class RunEditor extends React.Component<Props, State> {
                     <MenuItem className="tooltip" onClick={(_) => this.clearHistory()}>
                         Clear Only History
                         <span className="tooltip-text">
-                            Splits store the entire history of all runs, including every split time. This information is used by various components. You can clear the history with this. The personal best, the best segment times, and the comparisons will not be affected.
+                            Splits store the entire history of all runs, including every segment time. This information is used by various components. You can clear the history with this. The personal best, the best segment times, and the comparisons will not be affected.
                         </span>
                     </MenuItem>
                     <MenuItem className="tooltip" onClick={(_) => this.clearTimes()}>
                         Clear All Times
                         <span className="tooltip-text">
-                            This removes all the times from the splits, including all the history, such that they are completely empty, as if they were just created.
+                            This removes all the times from the splits, including all the history, such that the splits are completely empty, as if they were just created.
                         </span>
                     </MenuItem>
                     <MenuItem className="tooltip" onClick={(_) => this.cleanSumOfBest()}>
                         Clean Sum of Best
                         <span className="tooltip-text">
-                            Allows you to interactively remove potential issues in the segment history that lead to an inaccurate Sum of Best. If you skip a split, whenever you will do the next split, the combined segment time might be faster than the sum of the individual best segments. This will point out all of these and allows you to delete them individually if any of them seem wrong.
+                            Allows you to interactively remove potential issues in the segment history that lead to an inaccurate Sum of Best. If you skip a split, whenever you will do the next split, the combined segment time might be faster than the sum of the individual best segments. This will point out all such occurrences and allow you to delete them individually if any of them seem wrong.
                         </span>
                     </MenuItem>
                     <MenuItem className="tooltip" onClick={(_) => this.generateGoalComparison()}>
                         Generate Goal Comparison
                         <span className="tooltip-text">
-                            Generates a custom goal comparison based on a goal time that you can specify. The comparison's times are automatically balanced based on the segment history such that it roughly represents what the split times for the goal time would look like. Since it is populated by the segment history, only goal times within the sum of the best segments and the sum of the worst segments are supported. Everything else is automatically capped by that range. The comparison is only populated for the selected timing method. The other timing method's comparison times are not modified by this, so you can generate it again with the other timing method to generate the comparison times for both timing methods.
+                            Generates a custom goal comparison based on a goal time that you can specify. The comparison's times are automatically balanced based on the segment history such that it roughly represents what the split times for the goal time would look like. Since it is populated by the segment history, the goal times are capped to a range between the sum of the best segments and the sum of the worst segments. The comparison is only populated for the selected timing method. The other timing method's comparison times are not modified by this, so you can generate it again with the other timing method to generate the comparison times for both timing methods.
                         </span>
                     </MenuItem>
                 </ContextMenu>

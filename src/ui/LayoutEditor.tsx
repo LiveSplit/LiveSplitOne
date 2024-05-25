@@ -147,7 +147,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                                 <MenuItem className="tooltip" onClick={(_) => this.addComponent(LiveSplit.GraphComponent)}>
                                     Graph
                                     <span className="tooltip-text">
-                                        Visualizes how far the current run has been ahead or behind the chosen comparison throughout the whole run. All the individual deltas are shown as points in a graph.
+                                        Visualizes how far the current run has been ahead or behind the chosen comparison throughout the whole run. All the individual deltas are shown as points on the graph.
                                     </span>
                                 </MenuItem>
                                 <MenuItem className="tooltip" onClick={(_) => this.addComponent(LiveSplit.SplitsComponent)}>
@@ -160,7 +160,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                                 <MenuItem className="tooltip" onClick={(_) => this.addComponent(LiveSplit.DetailedTimerComponent)}>
                                     Detailed Timer
                                     <span className="tooltip-text">
-                                        Shows two timers, one for the total time of the current run and one showing the time of just the current segment. Other information, like segment times of up to two comparisons, the segment icon, and the segment's name, can also be shown.
+                                        Shows two timers, one for the total time of the current run and one showing the time of just the current segment. Other information, like segment times of up to two comparisons, the segment icon, and the segment name, can also be shown.
                                     </span>
                                 </MenuItem>
                                 <MenuItem className="tooltip" onClick={(_) => this.addComponent(LiveSplit.TimerComponent)}>
@@ -179,7 +179,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                                 <MenuItem className="tooltip" onClick={(_) => this.addComponent(LiveSplit.CurrentPaceComponent)}>
                                     Current Pace
                                     <span className="tooltip-text">
-                                        Shows a prediction of the current run's final time. The remainder of the run is predicted based on the chosen comparison for the component.
+                                        Shows a prediction for the current run's final time. The remainder of the run is predicted based on the chosen comparison for the component. For example, the "Best Segments" comparison can be chosen to show the best possible final time for the current run based on the Sum of Best Segments.
                                     </span>
                                 </MenuItem>
                                 <MenuItem className="tooltip" onClick={(_) => this.addComponent(LiveSplit.DeltaComponent)}>
@@ -191,7 +191,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                                 <MenuItem className="tooltip" onClick={(_) => this.addComponent(LiveSplit.PbChanceComponent)}>
                                     PB Chance
                                     <span className="tooltip-text">
-                                        Shows how likely it is to beat the personal best. If there is no active run, it shows the general chance of beating the personal best. During a run it actively changes based on how well the run is going.
+                                        Shows how likely it is for the active run to beat the personal best. If there is no active run, it shows the general chance of beating the personal best. During a run, it actively changes based on how well the run is going.
                                     </span>
                                 </MenuItem>
                                 <MenuItem className="tooltip" onClick={(_) => this.addComponent(LiveSplit.PossibleTimeSaveComponent)}>
@@ -209,7 +209,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                                 <MenuItem className="tooltip" onClick={(_) => this.addComponent(LiveSplit.SegmentTimeComponent)}>
                                     Segment Time
                                     <span className="tooltip-text">
-                                        Shows the time for the current segment in a comparison of your choosing. If no comparison is specified it uses the timer's current comparison.
+                                        Shows the time for the current segment for the chosen comparison. If no comparison is specified it uses the timer's current comparison.
                                     </span>
                                 </MenuItem>
                                 <MenuItem className="tooltip" onClick={(_) => this.addComponent(LiveSplit.SumOfBestComponent)}>
@@ -240,7 +240,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                                 <MenuItem className="tooltip" onClick={(_) => this.addComponent(LiveSplit.SeparatorComponent)}>
                                     Separator
                                     <span className="tooltip-text">
-                                        A simple component that only serves to render separators between components.
+                                        A simple component that just renders a separator between components.
                                     </span>
                                 </MenuItem>
                             </ContextMenu>
