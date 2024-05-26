@@ -192,6 +192,17 @@ export class LiveSplit extends React.Component<Props, State> {
         this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
     }
 
+    private notifyAboutUpdate(this: void)
+    {
+        toast.warn(
+            'A new version of LiveSplit One is available! Click here to reload.',
+            {
+              closeOnClick: true,
+              onClick: () => window.location.reload(),
+            },
+        );
+    }
+
     public componentDidMount() {
         this.scrollEvent = { handleEvent: (e: WheelEvent) => this.onScroll(e) };
         window.addEventListener("wheel", this.scrollEvent);
@@ -218,6 +229,11 @@ export class LiveSplit extends React.Component<Props, State> {
         }
 
         this.handleAutomaticResize();
+
+        const { serviceWorker } = navigator;
+        if (serviceWorker) {
+          serviceWorker.addEventListener('controllerchange', this.notifyAboutUpdate);
+        }
     }
 
     public componentDidUpdate() {
@@ -245,6 +261,11 @@ export class LiveSplit extends React.Component<Props, State> {
         // This is bound in the constructor
         // eslint-disable-next-line @typescript-eslint/unbound-method
         this.isDesktopQuery.removeEventListener("change", this.mediaQueryChanged);
+
+        const { serviceWorker } = navigator;
+        if (serviceWorker) {
+            serviceWorker.removeEventListener('controllerchange', this.notifyAboutUpdate);
+        }
     }
 
     public render() {
