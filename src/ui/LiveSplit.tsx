@@ -190,10 +190,9 @@ export class LiveSplit extends React.Component<Props, State> {
         };
 
         this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
-        this.notifyAboutUpdate = this.notifyAboutUpdate.bind(this);
     }
 
-    private notifyAboutUpdate()
+    private notifyAboutUpdate(this: void)
     {
         toast.warn(
             'A new version of LiveSplit One is available! Click here to reload.',
