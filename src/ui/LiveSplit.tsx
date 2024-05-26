@@ -457,7 +457,7 @@ export class LiveSplit extends React.Component<Props, State> {
 
         if (menu.kind === MenuKind.RunEditor) {
             const { editor: oldEditor } = menu;
-            oldEditor.dispose();
+            oldEditor[Symbol.dispose]();
         }
 
         this.setState({
