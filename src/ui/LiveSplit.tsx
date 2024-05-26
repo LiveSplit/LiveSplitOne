@@ -3,14 +3,14 @@ import Sidebar from "react-sidebar";
 import {
     HotkeySystem, Layout, LayoutEditor, Run, RunEditor,
     Segment, SharedTimer, Timer, TimerRef, TimerRefMut,
-    HotkeyConfig, LayoutState, LayoutStateJson
+    HotkeyConfig, LayoutState, LayoutStateJson,
 } from "../livesplit-core";
 import { convertFileToArrayBuffer, convertFileToString, exportFile, openFileAsString } from "../util/FileUtil";
 import { Option, assertNull, expect, maybeDisposeAndThen, panic } from "../util/OptionUtil";
 import * as SplitsIO from "../util/SplitsIO";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
-import { SettingsEditor as SettingsEditorComponent } from "./SettingsEditor";
+import { GeneralSettings, SettingsEditor as SettingsEditorComponent } from "./SettingsEditor";
 import { TimerView } from "./TimerView";
 import { About } from "./About";
 import { SplitsSelection, EditingInfo } from "./SplitsSelection";
@@ -25,6 +25,8 @@ import "react-toastify/dist/ReactToastify.css";
 import "../css/LiveSplit.scss";
 
 const buttonHeight = parseFloat(variables.buttonHeight);
+const largeMargin = parseFloat(variables.largeMargin);
+const manualGameTimeHeight = parseFloat(variables.manualGameTimeHeight);
 
 export enum MenuKind {
     Timer,
@@ -51,6 +53,7 @@ export interface Props {
     hotkeys?: Storage.HotkeyConfigSettings,
     layoutWidth: number,
     layoutHeight: number,
+    generalSettings: GeneralSettings,
     splitsKey?: number,
 }
 
@@ -73,17 +76,20 @@ export interface State {
     storedLayoutHeight: number,
     timer: SharedTimer,
     renderer: WebRenderer,
+    generalSettings: GeneralSettings,
 }
 
 export let hotkeySystem: Option<HotkeySystem> = null;
 
 export class LiveSplit extends React.Component<Props, State> {
     public static async loadStoredData() {
+        // FIXME: We should probably request all of these concurrently.
         const splitsKey = await Storage.loadSplitsKey();
         const splits = splitsKey !== undefined ? await Storage.loadSplits(splitsKey) : undefined;
         const layout = await Storage.loadLayout();
         const hotkeys = await Storage.loadHotkeys();
         const [layoutWidth, layoutHeight] = await Storage.loadLayoutDims();
+        const generalSettings = await Storage.loadGeneralSettings();
 
         return {
             splits,
@@ -92,11 +98,11 @@ export class LiveSplit extends React.Component<Props, State> {
             hotkeys,
             layoutWidth,
             layoutHeight,
+            generalSettings,
         };
     }
 
     private isDesktopQuery = window.matchMedia("(min-width: 600px)");
-    private containerRef: React.RefObject<HTMLDivElement>;
     private scrollEvent: Option<EventListenerObject>;
     private rightClickEvent: Option<EventListenerObject>;
     private resizeEvent: Option<EventListenerObject>;
@@ -135,13 +141,13 @@ export class LiveSplit extends React.Component<Props, State> {
                 timer.writeWith((t) => t.setRun(loadingRun)),
                 "The Default Loading Run should be a valid Run",
             );
-            this.loadFromSplitsIO(window.location.hash.substr("#/splits-io/".length));
+            this.loadFromSplitsIO(window.location.hash.substring("#/splits-io/".length));
         } else if (props.splits !== undefined) {
-            Run.parseArray(props.splits, "").with((result) => {
-                if (result.parsedSuccessfully()) {
-                    result.unwrap().with((r) => timer.writeWith((t) => t.setRun(r)))?.dispose();
-                }
-            });
+            using result = Run.parseArray(props.splits, "");
+            if (result.parsedSuccessfully()) {
+                using r = result.unwrap();
+                timer.writeWith((t) => t.setRun(r))?.[Symbol.dispose]();
+            }
         }
 
         let layout: Option<Layout> = null;
@@ -180,11 +186,21 @@ export class LiveSplit extends React.Component<Props, State> {
             hotkeySystem,
             openedSplitsKey: props.splitsKey,
             renderer,
+            generalSettings: props.generalSettings,
         };
 
         this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
+    }
 
-        this.containerRef = React.createRef();
+    private notifyAboutUpdate(this: void)
+    {
+        toast.warn(
+            'A new version of LiveSplit One is available! Click here to reload.',
+            {
+              closeOnClick: true,
+              onClick: () => window.location.reload(),
+            },
+        );
     }
 
     public componentDidMount() {
@@ -213,6 +229,11 @@ export class LiveSplit extends React.Component<Props, State> {
         }
 
         this.handleAutomaticResize();
+
+        const { serviceWorker } = navigator;
+        if (serviceWorker) {
+          serviceWorker.addEventListener('controllerchange', this.notifyAboutUpdate);
+        }
     }
 
     public componentDidUpdate() {
@@ -232,14 +253,19 @@ export class LiveSplit extends React.Component<Props, State> {
             "resize",
             expect(this.resizeEvent, "A Resize Event should exist"),
         );
-        this.state.timer.dispose();
-        this.state.layout.dispose();
-        this.state.layoutState.dispose();
-        this.state.hotkeySystem?.dispose();
+        this.state.timer[Symbol.dispose]();
+        this.state.layout[Symbol.dispose]();
+        this.state.layoutState[Symbol.dispose]();
+        this.state.hotkeySystem?.[Symbol.dispose]();
 
         // This is bound in the constructor
         // eslint-disable-next-line @typescript-eslint/unbound-method
         this.isDesktopQuery.removeEventListener("change", this.mediaQueryChanged);
+
+        const { serviceWorker } = navigator;
+        if (serviceWorker) {
+            serviceWorker.removeEventListener('controllerchange', this.notifyAboutUpdate);
+        }
     }
 
     public render() {
@@ -248,6 +274,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 editor={this.state.menu.editor}
                 callbacks={this}
                 runEditorUrlCache={this.state.runEditorUrlCache}
+                generalSettings={this.state.generalSettings}
             />;
         } else if (this.state.menu.kind === MenuKind.LayoutEditor) {
             return <LayoutEditorComponent
@@ -257,6 +284,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 layoutUrlCache={this.state.layoutUrlCache}
                 layoutWidth={this.state.layoutWidth}
                 layoutHeight={this.state.layoutHeight}
+                generalSettings={this.state.generalSettings}
                 isDesktop={this.state.isDesktop}
                 timer={this.state.timer}
                 renderer={this.state.renderer}
@@ -264,6 +292,7 @@ export class LiveSplit extends React.Component<Props, State> {
             />;
         } else if (this.state.menu.kind === MenuKind.SettingsEditor) {
             return <SettingsEditorComponent
+                generalSettings={this.state.generalSettings}
                 hotkeyConfig={this.state.menu.config}
                 urlCache={this.state.layoutUrlCache}
                 callbacks={this}
@@ -272,6 +301,7 @@ export class LiveSplit extends React.Component<Props, State> {
             return <About callbacks={this} />;
         } else if (this.state.menu.kind === MenuKind.Splits) {
             return <SplitsSelection
+                generalSettings={this.state.generalSettings}
                 timer={this.state.timer}
                 openedSplitsKey={this.state.openedSplitsKey}
                 callbacks={this}
@@ -283,6 +313,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 layoutUrlCache={this.state.layoutUrlCache}
                 layoutWidth={this.state.layoutWidth}
                 layoutHeight={this.state.layoutHeight}
+                generalSettings={this.state.generalSettings}
                 isDesktop={this.state.isDesktop}
                 renderWithSidebar={true}
                 sidebarOpen={this.state.sidebarOpen}
@@ -297,6 +328,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 layoutUrlCache={this.state.layoutUrlCache}
                 layoutWidth={this.state.layoutWidth}
                 layoutHeight={this.state.layoutHeight}
+                generalSettings={this.state.generalSettings}
                 isDesktop={this.state.isDesktop}
                 renderWithSidebar={true}
                 sidebarOpen={this.state.sidebarOpen}
@@ -332,10 +364,7 @@ export class LiveSplit extends React.Component<Props, State> {
                             onClick={(() => this.onSetSidebarOpen(true)) as any}
                         />
                     }
-                    <div
-                        className="view-container"
-                        ref={this.containerRef}
-                    >
+                    <div className="view-container">
                         {renderedView}
                     </div>
                 </Sidebar>
@@ -458,7 +487,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 );
             }
         } else {
-            run.dispose();
+            run[Symbol.dispose]();
         }
         this.openSplitsView();
     }
@@ -493,10 +522,10 @@ export class LiveSplit extends React.Component<Props, State> {
         const layoutEditor = this.state.menu.editor;
         const layout = layoutEditor.close();
         if (save) {
-            this.state.layout.dispose();
+            this.state.layout[Symbol.dispose]();
             this.openTimerView(layout);
         } else {
-            layout.dispose();
+            layout[Symbol.dispose]();
             this.openTimerView();
         }
     }
@@ -512,7 +541,7 @@ export class LiveSplit extends React.Component<Props, State> {
         });
     }
 
-    public async closeSettingsEditor(save: boolean) {
+    public async closeSettingsEditor(save: boolean, generalSettings: GeneralSettings) {
         const menu = this.state.menu;
 
         if (menu.kind !== MenuKind.SettingsEditor) {
@@ -523,12 +552,20 @@ export class LiveSplit extends React.Component<Props, State> {
             try {
                 const hotkeys = menu.config.asJson();
                 await Storage.storeHotkeys(hotkeys);
-            } catch (_) {
-                toast.error("Failed to save the settings.");
+            } catch {
+                toast.error("Failed to save the hotkey settings.");
             }
+
+            try {
+                await Storage.storeGeneralSettings(generalSettings);
+            } catch {
+                toast.error("Failed to save the general settings.");
+            }
+
             this.state.hotkeySystem.setConfig(menu.config);
+            this.setState({ generalSettings });
         } else {
-            menu.config.dispose();
+            menu.config[Symbol.dispose]();
         }
 
         this.openTimerView();
@@ -557,23 +594,28 @@ export class LiveSplit extends React.Component<Props, State> {
                 return;
             }
 
-            const fullWidth = this.containerRef.current?.clientWidth;
-            if (fullWidth && fullWidth !== this.state.layoutWidth) {
+            const fullWidth = window.innerWidth;
+            if (fullWidth !== this.state.layoutWidth) {
                 this.setState({
                     layoutWidth: fullWidth,
                 });
             }
 
-            // Only auto adjust height in Timer view because other views can
-            // have scrolling, so the container height is more than screen height
-            if (this.state.menu.kind === MenuKind.Timer) {
-                const fullHeight = this.containerRef.current?.clientHeight;
-                const newHeight = fullHeight ? fullHeight - 2 * buttonHeight : null;
-                if (newHeight && newHeight !== this.state.layoutHeight) {
-                    this.setState({
-                        layoutHeight: newHeight,
-                    });
-                }
+            const showControlButtons = this.state.generalSettings.showControlButtons;
+            const showManualGameTime = this.state.generalSettings.showManualGameTime;
+            let newHeight = window.innerHeight - largeMargin;
+            if (showControlButtons && showManualGameTime) {
+                newHeight -= 2 * buttonHeight + manualGameTimeHeight + 3 * largeMargin;
+            } else if (showControlButtons) {
+                newHeight -= 2 * buttonHeight + 2 * largeMargin;
+            } else if (showManualGameTime) {
+                newHeight -= manualGameTimeHeight + largeMargin;
+            }
+
+            if (newHeight !== this.state.layoutHeight) {
+                this.setState({
+                    layoutHeight: newHeight,
+                });
             }
         }
     }
@@ -583,6 +625,7 @@ export class LiveSplit extends React.Component<Props, State> {
         this.setState({
             isDesktop,
             layoutWidth: isDesktop ? this.state.storedLayoutWidth : this.state.layoutWidth,
+            layoutHeight: isDesktop ? this.state.storedLayoutHeight : this.state.layoutHeight,
             sidebarTransitionsEnabled: false,
         });
     }
@@ -603,7 +646,7 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     private setLayout(layout: Layout) {
-        this.state.layout.dispose();
+        this.state.layout[Symbol.dispose]();
         this.setState({
             layout,
         });
@@ -619,14 +662,13 @@ export class LiveSplit extends React.Component<Props, State> {
 
     private importSplitsFromArrayBuffer(buffer: [ArrayBuffer, File]) {
         const [file] = buffer;
-        Run.parseArray(new Uint8Array(file), "").with((result) => {
-            if (result.parsedSuccessfully()) {
-                const run = result.unwrap();
-                this.setRun(run, () => { throw Error("Empty Splits are not supported."); });
-            } else {
-                throw Error("Couldn't parse the splits.");
-            }
-        });
+        using result = Run.parseArray(new Uint8Array(file), "");
+        if (result.parsedSuccessfully()) {
+            const run = result.unwrap();
+            this.setRun(run, () => { throw Error("Empty Splits are not supported."); });
+        } else {
+            throw Error("Couldn't parse the splits.");
+        }
     }
 
     private async loadFromSplitsIO(id: string) {

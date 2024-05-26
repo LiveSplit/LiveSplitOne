@@ -1,0 +1,43 @@
+@import 'mobile';
+@import 'variables';
+
+.tooltip {
+    position: relative;
+}
+
+.tooltip .tooltip-text {
+    visibility: hidden;
+    width: 300px;
+    background-color: $sidebar-background-color;
+    border: 1px solid $border-color;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: $ui-margin;
+    position: absolute;
+    z-index: 1;
+    bottom: calc(100% + $ui-margin);
+    left: 50%;
+    margin-left: -150px;
+    opacity: 0;
+    transition: opacity 0.25s;
+    transition-delay: 0.25s;
+    text-wrap: initial;
+
+    @include mobile {
+        left: 0;
+        margin-left: 0;
+    }
+}
+
+.react-contextmenu-item.tooltip .tooltip-text {
+    bottom: initial;
+    left: calc(100% + $ui-margin);
+    margin-left: 0;
+    top: 0;
+}
+
+.tooltip:hover .tooltip-text {
+    visibility: visible;
+    opacity: 1;
+}

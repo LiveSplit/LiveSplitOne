@@ -9,10 +9,11 @@ import { toast } from "react-toastify";
 import { openFileAsArrayBuffer, exportFile, convertFileToArrayBuffer } from "../util/FileUtil";
 import { Option, maybeDisposeAndThen } from "../util/OptionUtil";
 import * as Storage from "../storage";
-
-import "../css/SplitsSelection.scss";
 import DragUpload from "./DragUpload";
 import { ContextMenuTrigger, ContextMenu, MenuItem } from "react-contextmenu";
+import { GeneralSettings } from "./SettingsEditor";
+
+import "../css/SplitsSelection.scss";
 
 export interface EditingInfo {
     splitsKey: number | undefined,
@@ -24,6 +25,7 @@ export interface Props {
     timer: SharedTimerRef,
     openedSplitsKey?: number,
     callbacks: Callbacks,
+    generalSettings: GeneralSettings,
 }
 
 interface State {
@@ -71,9 +73,11 @@ export class SplitsSelection extends React.Component<Props, State> {
                         <button onClick={() => this.importSplits()}>
                             <i className="fa fa-download" aria-hidden="true" /> Import
                         </button>
-                        <button onClick={() => this.importSplitsFromSplitsIO()}>
-                            <i className="fa fa-download" aria-hidden="true" /> From Splits.io
-                        </button>
+                        {
+                            this.props.generalSettings.splitsIoIntegration && <button onClick={() => this.importSplitsFromSplitsIO()}>
+                                <i className="fa fa-download" aria-hidden="true" /> From Splits.io
+                            </button>
+                        }
                     </div>
                     {
                         this.state.splitsInfos?.length > 0 &&
@@ -137,12 +141,20 @@ export class SplitsSelection extends React.Component<Props, State> {
                                     </ContextMenuTrigger>
                                 </button>
                                 <ContextMenu id={segmentIconContextMenuId}>
-                                    <MenuItem onClick={(_) => this.exportSplits(key, info)}>
+                                    <MenuItem className="tooltip" onClick={(_) => this.exportSplits(key, info)}>
                                         Export to File
+                                        <span className="tooltip-text">
+                                            Export the splits to a file on your computer.
+                                        </span>
                                     </MenuItem>
-                                    <MenuItem onClick={(_) => this.uploadSplitsToSplitsIO(key)}>
-                                        Upload to Splits.io
-                                    </MenuItem>
+                                    {
+                                        this.props.generalSettings.splitsIoIntegration && <MenuItem className="tooltip" onClick={(_) => this.uploadSplitsToSplitsIO(key)}>
+                                            Upload to Splits.io
+                                            <span className="tooltip-text">
+                                                Upload the splits to splits.io.
+                                            </span>
+                                        </MenuItem>
+                                    }
                                 </ContextMenu>
                             </>
                     }
@@ -197,9 +209,11 @@ export class SplitsSelection extends React.Component<Props, State> {
                 <button onClick={(_) => this.exportTimerSplits()}>
                     <i className="fa fa-upload" aria-hidden="true" /> Export
                 </button>
-                <button onClick={(_) => this.uploadTimerToSplitsIO()}>
-                    <i className="fa fa-upload" aria-hidden="true" /> Upload to Splits.io
-                </button>
+                {
+                    this.props.generalSettings.splitsIoIntegration && <button onClick={(_) => this.uploadTimerToSplitsIO()}>
+                        <i className="fa fa-upload" aria-hidden="true" /> Upload to Splits.io
+                    </button>
+                }
                 <hr />
                 <button onClick={(_) => this.props.callbacks.openTimerView()}>
                     <i className="fa fa-caret-left" aria-hidden="true" /> Back
@@ -214,13 +228,13 @@ export class SplitsSelection extends React.Component<Props, State> {
             throw Error("The splits key is invalid.");
         }
 
-        return Run.parseArray(new Uint8Array(splitsData), "").with((result) => {
-            if (result.parsedSuccessfully()) {
-                return result.unwrap();
-            } else {
-                throw Error("Couldn't parse the splits.");
-            }
-        });
+        using result = Run.parseArray(new Uint8Array(splitsData), "");
+
+        if (result.parsedSuccessfully()) {
+            return result.unwrap();
+        } else {
+            throw Error("Couldn't parse the splits.");
+        }
     }
 
     private async openSplits(key: number) {
@@ -231,13 +245,11 @@ export class SplitsSelection extends React.Component<Props, State> {
             return;
         }
 
-        const run = await this.getRunFromKey(key);
-        run.with((run) => {
-            maybeDisposeAndThen(
-                this.props.timer.writeWith((timer) => timer.setRun(run)),
-                () => toast.error("The loaded splits are invalid."),
-            );
-        });
+        using run = await this.getRunFromKey(key);
+        maybeDisposeAndThen(
+            this.props.timer.writeWith((timer) => timer.setRun(run)),
+            () => toast.error("The loaded splits are invalid."),
+        );
         this.props.callbacks.setSplitsKey(key);
     }
 
@@ -321,7 +333,7 @@ export class SplitsSelection extends React.Component<Props, State> {
                 throw Error("Couldn't parse the splits.");
             }
         } finally {
-            result.dispose();
+            result[Symbol.dispose]();
         }
     }
 
@@ -403,7 +415,7 @@ export class SplitsSelection extends React.Component<Props, State> {
             await storeRunWithoutDisposing(run, undefined);
             await this.refreshDb();
         } finally {
-            run.dispose();
+            run[Symbol.dispose]();
         }
     }
 }

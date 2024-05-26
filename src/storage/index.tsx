@@ -1,6 +1,8 @@
 import { openDB, IDBPDatabase } from "idb";
 import { Option, assert } from "../util/OptionUtil";
 import { RunRef, Run } from "../livesplit-core";
+import { GeneralSettings } from "../ui/SettingsEditor";
+import { FRAME_RATE_AUTOMATIC } from "../util/FrameRate";
 
 export type HotkeyConfigSettings = unknown;
 export type LayoutSettings = unknown;
@@ -8,7 +10,7 @@ export type LayoutSettings = unknown;
 const DEFAULT_LAYOUT_WIDTH = 300;
 const DEFAULT_LAYOUT_HEIGHT = 500;
 
-let db: Option<IDBPDatabase<unknown>> = null;
+let db: Option<Promise<IDBPDatabase<unknown>>> = null;
 
 export interface SplitsInfo {
     game: string,
@@ -34,17 +36,17 @@ function getSplitsInfo(run: RunRef): SplitsInfo {
 }
 
 function parseSplitsAndGetInfo(splits: Uint8Array): Option<SplitsInfo> {
-    return Run.parseArray(splits, "").with((r) => {
-        if (r.parsedSuccessfully()) {
-            return r.unwrap();
-        }
+    using parseRunResult = Run.parseArray(splits, "");
+    if (!parseRunResult.parsedSuccessfully()) {
         return undefined;
-    })?.with(getSplitsInfo);
+    }
+    using run = parseRunResult.unwrap();
+    return getSplitsInfo(run);
 }
 
-async function getDb(): Promise<IDBPDatabase<unknown>> {
+function getDb(): Promise<IDBPDatabase<unknown>> {
     if (db == null) {
-        db = await openDB("LiveSplit", 2, {
+        db = openDB("LiveSplit", 2, {
             async upgrade(db, oldVersion, _newVersion, tx) {
                 const splitsDataStore = db.createObjectStore("splitsData", {
                     autoIncrement: true,
@@ -116,7 +118,7 @@ export async function storeRunAndDispose(run: Run, key: number | undefined) {
     try {
         await storeRunWithoutDisposing(run, key);
     } finally {
-        run.dispose();
+        run[Symbol.dispose]();
     }
 }
 
@@ -233,4 +235,24 @@ export async function loadSplitsKey(): Promise<number | undefined> {
     const db = await getDb();
 
     return await db.get("settings", "splitsKey");
+}
+
+export async function storeGeneralSettings(generalSettings: GeneralSettings) {
+    const db = await getDb();
+
+    await db.put("settings", generalSettings, "generalSettings");
+}
+
+export async function loadGeneralSettings(): Promise<GeneralSettings> {
+    const db = await getDb();
+
+    const generalSettings = await db.get("settings", "generalSettings") ?? {};
+
+    return {
+        frameRate: generalSettings.frameRate ?? FRAME_RATE_AUTOMATIC,
+        showControlButtons: generalSettings.showControlButtons ?? true,
+        showManualGameTime: generalSettings.showManualGameTime ?? false,
+        speedrunComIntegration: generalSettings.speedrunComIntegration ?? true,
+        splitsIoIntegration: generalSettings.splitsIoIntegration ?? true,
+    };
 }

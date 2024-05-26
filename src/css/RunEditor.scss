@@ -30,23 +30,23 @@ $small-button-padding: 1px 3px 1px 3px;
   }
 
   .table-header {
-    > tr > th {
+    >tr>th {
       font-weight: bold;
       text-align: center;
     }
 
-    > tr > th:nth-child(1):after {
+    >tr>th:nth-child(1):after {
       margin: 0;
       margin-left: -4px;
       margin-right: 7px;
     }
   }
 
-  .table > .table-header > tr {
+  .table>.table-header>tr {
     display: table-row;
     background: $header-row-color;
 
-    > th {
+    >th {
       padding: math.div($ui-margin, 2) math.div($ui-margin, 2);
       display: table-cell;
 
@@ -197,7 +197,7 @@ $small-button-padding: 1px 3px 1px 3px;
     td {
       overflow: hidden;
 
-      > input {
+      >input {
         width: 100%;
         text-overflow: ellipsis;
 
@@ -211,14 +211,12 @@ $small-button-padding: 1px 3px 1px 3px;
         cursor: pointer;
 
         div {
-          width: 100%;
           height: $segment-icon-size;
 
           .segment-icon {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            object-position: 100% 50%;
           }
         }
       }
@@ -322,7 +320,7 @@ $small-button-padding: 1px 3px 1px 3px;
     }
 
     .leaderboard-expanded-row {
-      & > td {
+      &>td {
         max-width: 0;
       }
 
@@ -330,6 +328,11 @@ $small-button-padding: 1px 3px 1px 3px;
         border-spacing: $ui-margin 2px;
         margin-left: -$ui-margin;
       }
+    }
+
+    .unregistered-user {
+      font-style: italic;
+      color: silver;
     }
 
     @include mobile {
@@ -341,7 +344,7 @@ $small-button-padding: 1px 3px 1px 3px;
     position: relative;
     border-bottom: 1px solid $border-color;
 
-    > input {
+    >input {
       font-size: 18px;
       padding: $label-size+$ui-margin 0 math.div($ui-margin, 2) math.div($ui-margin, 2);
       display: block;
@@ -352,11 +355,11 @@ $small-button-padding: 1px 3px 1px 3px;
       font-family: "fira", sans-serif;
     }
 
-    > input:focus {
+    >input:focus {
       outline: none;
     }
 
-    > label {
+    >label {
       color: hsla(50, 0%, 75%, 1);
       font-size: $label-size;
       font-weight: normal;
@@ -369,22 +372,22 @@ $small-button-padding: 1px 3px 1px 3px;
       -webkit-transition: 0.2s ease all;
     }
 
-    > input:focus ~ label {
+    >input:focus~label {
       color: hsla(50, 100%, 50%, 1);
     }
 
-    &.invalid > input:focus ~ label {
+    &.invalid>input:focus~label {
       color: hsla(0, 100%, 50%, 1);
     }
 
-    > .bar {
+    >.bar {
       position: relative;
       display: block;
       width: 100%;
     }
 
-    > .bar:before,
-    > .bar:after {
+    >.bar:before,
+    >.bar:after {
       content: "";
       height: 2px;
       width: 0;
@@ -396,21 +399,21 @@ $small-button-padding: 1px 3px 1px 3px;
       -webkit-transition: 0.2s ease all;
     }
 
-    > .bar:before {
+    >.bar:before {
       left: 50%;
     }
 
-    > .bar:after {
+    >.bar:after {
       right: 50%;
     }
 
-    &.invalid > .bar:before,
-    &.invalid > .bar:after {
+    &.invalid>.bar:before,
+    &.invalid>.bar:after {
       background: hsla(0, 100%, 50%, 1);
     }
 
-    > input:focus ~ .bar:before,
-    > input:focus ~ .bar:after {
+    >input:focus~.bar:before,
+    >input:focus~.bar:after {
       width: 50%;
     }
   }
@@ -425,43 +428,43 @@ $small-button-padding: 1px 3px 1px 3px;
         padding: math.div($ui-margin, 2) $ui-margin;
       }
 
-      tr:first-child > td {
+      tr:first-child>td {
         padding-top: $ui-margin;
       }
 
-      tr:last-child > td {
+      tr:last-child>td {
         padding-bottom: $ui-margin;
       }
 
-      > tbody.table-body > tr {
+      >tbody.table-body>tr {
         background-color: $light-row-color;
       }
 
-      > thead.table-header > tr {
+      >thead.table-header>tr {
         background-color: $header-row-color;
       }
 
       &.subcategory-table {
-        > tbody > tr {
+        >tbody>tr {
           border: 1px solid $border-color;
           text-align: center;
           cursor: pointer;
         }
 
-        tr:first-child > td {
+        tr:first-child>td {
           padding-top: math.div($ui-margin, 2);
         }
 
-        tr:last-child > td {
+        tr:last-child>td {
           padding-bottom: math.div($ui-margin, 2);
         }
 
-        > tbody.table-body > tr {
-          > td:hover {
+        >tbody.table-body>tr {
+          >td:hover {
             background: $hover-row-color;
           }
 
-          > td.selected:hover {
+          >td.selected:hover {
             background: $selected-row-hover-color !important;
           }
         }
@@ -469,8 +472,10 @@ $small-button-padding: 1px 3px 1px 3px;
     }
 
     @include mobile {
-      margin: 0 0 $ui-margin (-$ui-margin);
-      width: calc(100% + #{$ui-margin});
-    }
+      margin: 0 0 $ui-margin (
+        -$ui-margin
+      );
+    width: calc(100% + #{$ui-margin});
   }
+}
 }

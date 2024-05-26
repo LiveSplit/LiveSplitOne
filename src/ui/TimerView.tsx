@@ -5,12 +5,13 @@ import {
     TimingMethod, TimeSpan, LayoutStateRefMut,
 } from "../livesplit-core";
 import * as LiveSplit from "../livesplit-core";
-import { Option } from "../util/OptionUtil";
+import { Option, expect } from "../util/OptionUtil";
 import DragUpload from "./DragUpload";
 import AutoRefresh from "../util/AutoRefresh";
 import Layout from "../layout/Layout";
 import { UrlCache } from "../util/UrlCache";
 import { WebRenderer } from "../livesplit-core/livesplit_core";
+import { GeneralSettings } from "./SettingsEditor";
 
 import LiveSplitIcon from "../assets/icon.svg";
 
@@ -23,6 +24,7 @@ export interface Props {
     layoutUrlCache: UrlCache,
     layoutWidth: number,
     layoutHeight: number,
+    generalSettings: GeneralSettings,
     renderWithSidebar: boolean,
     sidebarOpen: boolean,
     timer: SharedTimer,
@@ -32,6 +34,7 @@ export interface Props {
 export interface State {
     comparison: Option<string>,
     timingMethod: Option<TimingMethod>,
+    manualGameTime: string,
 }
 
 interface Callbacks {
@@ -54,6 +57,7 @@ export class TimerView extends React.Component<Props, State> {
         this.state = {
             comparison: null,
             timingMethod: null,
+            manualGameTime: "",
         };
     }
 
@@ -78,10 +82,14 @@ export class TimerView extends React.Component<Props, State> {
         >
             <div>
                 <div
-                    onClick={(_) => this.splitOrStart()}
+                    onClick={(_) => {
+                        if (this.props.generalSettings.showControlButtons) {
+                            this.splitOrStart();
+                        }
+                    }}
                     style={{
                         display: "inline-block",
-                        cursor: "pointer",
+                        cursor: this.props.generalSettings.showControlButtons ? "pointer" : undefined,
                     }}
                 >
                     <Layout
@@ -96,34 +104,73 @@ export class TimerView extends React.Component<Props, State> {
                         allowResize={this.props.isDesktop}
                         width={this.props.layoutWidth}
                         height={this.props.layoutHeight}
+                        generalSettings={this.props.generalSettings}
                         renderer={this.props.renderer}
                         onResize={(width, height) => this.props.callbacks.onResize(width, height)}
                     />
                 </div>
             </div>
-            <div className="buttons" style={{ width: this.props.layoutWidth }}>
-                <div className="small">
-                    <button aria-label="Undo Split" onClick={(_) => this.undoSplit()}>
-                        <i className="fa fa-arrow-up" aria-hidden="true" /></button>
-                    <button aria-label="Pause" onClick={(_) => this.togglePauseOrStart()}>
-                        <i className="fa fa-pause" aria-hidden="true" />
-                    </button>
+            {
+                this.props.generalSettings.showControlButtons && <div className="buttons" style={{ width: this.props.layoutWidth }}>
+                    <div className="small">
+                        <button aria-label="Undo Split" onClick={(_) => this.undoSplit()}>
+                            <i className="fa fa-arrow-up" aria-hidden="true" /></button>
+                        <button aria-label="Pause" onClick={(_) => this.togglePauseOrStart()}>
+                            <i className="fa fa-pause" aria-hidden="true" />
+                        </button>
+                    </div>
+                    <div className="small">
+                        <button aria-label="Skip Split" onClick={(_) => this.skipSplit()}>
+                            <i className="fa fa-arrow-down" aria-hidden="true" />
+                        </button>
+                        <button aria-label="Reset" onClick={(_) => this.reset()}>
+                            <i className="fa fa-times" aria-hidden="true" />
+                        </button>
+                    </div>
                 </div>
-                <div className="small">
-                    <button aria-label="Skip Split" onClick={(_) => this.skipSplit()}>
-                        <i className="fa fa-arrow-down" aria-hidden="true" />
-                    </button>
-                    <button aria-label="Reset" onClick={(_) => this.reset()}>
-                        <i className="fa fa-times" aria-hidden="true" />
-                    </button>
+            }
+            {
+                this.props.generalSettings.showManualGameTime && <div className="buttons" style={{ width: this.props.layoutWidth }}>
+                    <input
+                        type="text"
+                        className="manual-game-time"
+                        value={this.state.manualGameTime}
+                        placeholder="Manual Game Time"
+                        onChange={(e) => {
+                            this.setState({
+                                manualGameTime: e.target.value,
+                            });
+                        }}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                this.props.timer.writeWith((t) => {
+                                    if ((t.currentPhase() as LiveSplit.TimerPhase) === LiveSplit.TimerPhase.NotRunning) {
+                                        t.start();
+                                        t.pauseGameTime();
+                                        using gameTime = TimeSpan.parse(this.state.manualGameTime)
+                                            ?? expect(TimeSpan.parse("0"), "Failed to parse TimeSpan");
+                                        t.setGameTime(gameTime);
+                                        this.setState({ manualGameTime: "" });
+                                    } else {
+                                        using gameTime = TimeSpan.parse(this.state.manualGameTime);
+                                        if (gameTime !== null) {
+                                            t.setGameTime(gameTime);
+                                            t.split();
+                                            this.setState({ manualGameTime: "" });
+                                        }
+                                    }
+                                });
+                            }
+                        }}
+                    />
                 </div>
-            </div>
+            }
         </DragUpload>;
     }
 
     private renderSidebarContent() {
         return (
-            <AutoRefresh update={() => this.updateSidebar()}>
+            <AutoRefresh frameRate={10} update={() => this.updateSidebar()}>
                 <div className="sidebar-buttons">
                     <div className="livesplit-title">
                         <span className="livesplit-icon">
@@ -227,7 +274,6 @@ export class TimerView extends React.Component<Props, State> {
 
             if (comparison !== this.state.comparison || (timingMethod as TimingMethod) !== this.state.timingMethod) {
                 this.setState({
-                    ...this.state,
                     comparison,
                     timingMethod,
                 });
@@ -346,20 +392,16 @@ export class TimerView extends React.Component<Props, State> {
     }
 
     private setGameTime(gameTime: string) {
-        const time = TimeSpan.parse(gameTime);
+        using time = TimeSpan.parse(gameTime);
         if (time !== null) {
-            time.with((time) => {
-                this.writeWith((t) => t.setGameTime(time));
-            });
+            this.writeWith((t) => t.setGameTime(time));
         }
     }
 
     private setLoadingTimes(loadingTimes: string) {
-        const time = TimeSpan.parse(loadingTimes);
+        using time = TimeSpan.parse(loadingTimes);
         if (time !== null) {
-            time.with((time) => {
-                this.writeWith((t) => t.setLoadingTimes(time));
-            });
+            this.writeWith((t) => t.setLoadingTimes(time));
         }
     }
 

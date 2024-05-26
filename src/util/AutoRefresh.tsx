@@ -1,20 +1,14 @@
 import * as React from "react";
-import { assert } from "./OptionUtil";
+import { FRAME_RATE_AUTOMATIC, FrameRateSetting, batteryAwareFrameRate } from "./FrameRate";
 
 export interface Props {
+    frameRate: FrameRateSetting,
     update(): void,
 }
 
 export default class AutoRefresh extends React.Component<Props> {
-    private readonly fpsInterval = 1000 / 30;
-    private reqId: number | null;
-    private previousTime: number | undefined;
-
-    constructor(props: Props) {
-        super(props);
-
-        this.reqId = null;
-    }
+    private reqId: number | null = null;
+    private previousTime: number = 0;
 
     public componentWillMount() {
         this.startAnimation();
@@ -31,21 +25,30 @@ export default class AutoRefresh extends React.Component<Props> {
     }
 
     private startAnimation() {
-        this.previousTime = Date.now();
+        this.previousTime = 0;
         this.animate();
     }
 
     private animate() {
         this.reqId = requestAnimationFrame(() => this.animate());
 
-        assert(this.previousTime !== undefined, "Previous time must be defined");
-
-        const currentTime = Date.now();
-        const elapsed = currentTime - this.previousTime;
-
-        if (elapsed > this.fpsInterval) {
-            this.previousTime = currentTime - (elapsed % this.fpsInterval);
-            this.props.update();
+        let frameRate = this.props.frameRate;
+        if (frameRate === FRAME_RATE_AUTOMATIC) {
+            frameRate = batteryAwareFrameRate;
         }
+
+        if (typeof frameRate === "number") {
+            const currentTime = performance.now();
+            const elapsed = currentTime - this.previousTime;
+
+            const refreshInterval = 1000 / frameRate;
+
+            if (elapsed < refreshInterval) {
+                return;
+            }
+            this.previousTime = currentTime - (elapsed % refreshInterval);
+        }
+
+        this.props.update();
     }
 }

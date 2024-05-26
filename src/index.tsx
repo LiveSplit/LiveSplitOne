@@ -1,3 +1,23 @@
+// FIXME: Remove the polyfill later.
+
+if (typeof Symbol.dispose !== "symbol") {
+    Object.defineProperty(Symbol, "dispose", {
+        configurable: false,
+        enumerable: false,
+        writable: false,
+        value: Symbol.for("dispose")
+    });
+}
+
+if (typeof Symbol.asyncDispose !== "symbol") {
+    Object.defineProperty(Symbol, "asyncDispose", {
+        configurable: false,
+        enumerable: false,
+        writable: false,
+        value: Symbol.for("asyncDispose")
+    });
+}
+
 if (process.env.NODE_ENV === "production" && "serviceWorker" in navigator) {
     navigator.serviceWorker.register("/service-worker.js");
 }
@@ -26,6 +46,7 @@ try {
             hotkeys,
             layoutWidth,
             layoutHeight,
+            generalSettings,
         } = await LiveSplit.loadStoredData();
 
         function requestWakeLock() {
@@ -46,7 +67,19 @@ try {
 
         // The renderer requires the fonts to be loaded before it gets created
         // as otherwise information may be cached incorrectly.
-        await document.fonts.ready;
+        try {
+            const promises = [];
+            // TypeScript doesn't seem to know that the fonts are iterable.
+            for (const fontFace of (document.fonts as any as Iterable<FontFace>)) {
+                if (fontFace.family === 'timer' || fontFace.family === 'fira') {
+                    promises.push(fontFace.load());
+                }
+            }
+            await Promise.all(promises);
+        } catch {
+            // If somehow something goes wrong, that's kind of bad, but we
+            // should still have the fallback fonts that we can fall back to.
+        }
 
         ReactDOM.render(
             <div>
@@ -57,6 +90,7 @@ try {
                     splitsKey={splitsKey}
                     layoutWidth={layoutWidth}
                     layoutHeight={layoutHeight}
+                    generalSettings={generalSettings}
                 />
                 <ToastContainer
                     position={toast.POSITION.BOTTOM_RIGHT}

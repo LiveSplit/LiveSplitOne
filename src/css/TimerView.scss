@@ -21,6 +21,28 @@
     }
   }
 
+  .manual-game-time {
+    width: calc(100% - math.div($ui-margin, 2));
+    max-width: 2 * $button-max-width + math.div($ui-margin, 2);
+    color: $button-text-color;
+    background-color: transparent;
+    border: none;
+    border-bottom: 2px solid #aaa;
+    text-align: right;
+    font-family: "fira", sans-serif;
+    font-weight: bold;
+    font-size: 25px;
+    height: $manual-game-time-height;
+  }
+
+  .manual-game-time:focus {
+    outline: none;
+  }
+
+  .manual-game-time::placeholder {
+    font-size: 15px;
+  }
+
   @include mobile {
     padding: 0 $ui-margin;
     width: calc(100% - #{2 * $ui-margin}) !important;

@@ -19,14 +19,16 @@ import {
     ExtendedSettingsDescriptionValueJson,
 } from "./Settings";
 import { renderMarkdown, replaceFlag } from "../util/Markdown";
+import { UrlCache } from "../util/UrlCache";
+import { GeneralSettings } from "./SettingsEditor";
 
 import "../css/RunEditor.scss";
-import { UrlCache } from "../util/UrlCache";
 
 export interface Props {
     editor: LiveSplit.RunEditor,
     callbacks: Callbacks,
     runEditorUrlCache: UrlCache,
+    generalSettings: GeneralSettings,
 }
 export interface State {
     editor: LiveSplit.RunEditorStateJson,
@@ -101,12 +103,14 @@ export class RunEditor extends React.Component<Props, State> {
             tab: state.timing_method === "RealTime" ? Tab.RealTime : Tab.GameTime,
         };
 
-        this.refreshGameList();
-        this.refreshGameInfo(state.game);
-        this.refreshCategoryList(state.game);
-        this.refreshLeaderboard(state.game, state.category);
-        this.refreshPlatformList();
-        this.refreshRegionList();
+        if (props.generalSettings.speedrunComIntegration) {
+            this.refreshGameList();
+            this.refreshGameInfo(state.game);
+            this.refreshCategoryList(state.game);
+            this.refreshLeaderboard(state.game, state.category);
+            this.refreshPlatformList();
+            this.refreshRegionList();
+        }
     }
 
     public render() {
@@ -163,19 +167,35 @@ export class RunEditor extends React.Component<Props, State> {
                         </ContextMenuTrigger>
                     </div>
                     <ContextMenu id="game-icon-context-menu">
-                        <MenuItem onClick={(_) => this.changeGameIcon()}>
+                        <MenuItem className="tooltip" onClick={(_) => this.changeGameIcon()}>
                             Set Icon
-                        </MenuItem>
-                        <MenuItem onClick={(_) => this.downloadBoxArt()}>
-                            Download Box Art
-                        </MenuItem>
-                        <MenuItem onClick={(_) => this.downloadIcon()}>
-                            Download Icon
+                            <span className="tooltip-text">
+                                Allows you to choose an image file to set as the game's icon. Certain file formats may not work everywhere.
+                            </span>
                         </MenuItem>
                         {
+                            this.props.generalSettings.speedrunComIntegration && <>
+                                <MenuItem className="tooltip" onClick={(_) => this.downloadBoxArt()}>
+                                    Download Box Art
+                                    <span className="tooltip-text">
+                                        Attempts to download the box art of the game from speedrun.com, to set as the game's icon.
+                                    </span>
+                                </MenuItem>
+                                <MenuItem className="tooltip" onClick={(_) => this.downloadIcon()}>
+                                    Download Icon
+                                    <span className="tooltip-text">
+                                        Attempts to download the icon of the game from speedrun.com.
+                                    </span>
+                                </MenuItem>
+                            </>
+                        }
+                        {
                             gameIcon !== undefined &&
-                            <MenuItem onClick={(_) => this.removeGameIcon()}>
+                            <MenuItem className="tooltip" onClick={(_) => this.removeGameIcon()}>
                                 Remove Icon
+                                <span className="tooltip-text">
+                                    Removes the icon of the game.
+                                </span>
                             </MenuItem>
                         }
                     </ContextMenu>
@@ -215,7 +235,7 @@ export class RunEditor extends React.Component<Props, State> {
                                     onBlur={(_) => this.handleOffsetBlur()}
                                     small
                                     invalid={!this.state.offsetIsValid}
-                                    label="Offset"
+                                    label="Start Timer At"
                                 />
                             </div>
                             <div className="info-table-cell">
@@ -348,17 +368,29 @@ export class RunEditor extends React.Component<Props, State> {
                     </ContextMenuTrigger>
                 </button>
                 <ContextMenu id="other-button-context-menu">
-                    <MenuItem onClick={(_) => this.clearHistory()}>
-                        Clear History
+                    <MenuItem className="tooltip" onClick={(_) => this.clearHistory()}>
+                        Clear Only History
+                        <span className="tooltip-text">
+                            Splits store the entire history of all runs, including every segment time. This information is used by various components. You can clear the history with this. The personal best, the best segment times, and the comparisons will not be affected.
+                        </span>
                     </MenuItem>
-                    <MenuItem onClick={(_) => this.clearTimes()}>
-                        Clear Times
+                    <MenuItem className="tooltip" onClick={(_) => this.clearTimes()}>
+                        Clear All Times
+                        <span className="tooltip-text">
+                            This removes all the times from the splits, including all the history, such that the splits are completely empty, as if they were just created.
+                        </span>
                     </MenuItem>
-                    <MenuItem onClick={(_) => this.cleanSumOfBest()}>
+                    <MenuItem className="tooltip" onClick={(_) => this.cleanSumOfBest()}>
                         Clean Sum of Best
+                        <span className="tooltip-text">
+                            Allows you to interactively remove potential issues in the segment history that lead to an inaccurate Sum of Best. If you skip a split, whenever you will do the next split, the combined segment time might be faster than the sum of the individual best segments. This will point out all such occurrences and allow you to delete them individually if any of them seem wrong.
+                        </span>
                     </MenuItem>
-                    <MenuItem onClick={(_) => this.generateGoalComparison()}>
+                    <MenuItem className="tooltip" onClick={(_) => this.generateGoalComparison()}>
                         Generate Goal Comparison
+                        <span className="tooltip-text">
+                            Generates a custom goal comparison based on a goal time that you can specify. The comparison's times are automatically balanced based on the segment history such that it roughly represents what the split times for the goal time would look like. Since it is populated by the segment history, the goal times are capped to a range between the sum of the best segments and the sum of the worst segments. The comparison is only populated for the selected timing method. The other timing method's comparison times are not modified by this, so you can generate it again with the other timing method to generate the comparison times for both timing methods.
+                        </span>
                     </MenuItem>
                 </ContextMenu>
             </div>
@@ -366,11 +398,15 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private renderAssociateRunButton(): JSX.Element {
-        return (
-            <button onClick={(_) => this.interactiveAssociateRunOrOpenPage()}>
-                {this.state.editor.metadata.run_id !== "" ? "Open PB Page" : "Associate Run"}
-            </button>
-        );
+        if (this.props.generalSettings.speedrunComIntegration) {
+            return (
+                <button onClick={(_) => this.interactiveAssociateRunOrOpenPage()}>
+                    {this.state.editor.metadata.run_id !== "" ? "Open PB Page" : "Associate Run"}
+                </button>
+            );
+        } else {
+            return <></>;
+        }
     }
 
     private renderRulesButtons(): JSX.Element {
@@ -710,6 +746,7 @@ export class RunEditor extends React.Component<Props, State> {
                 if (this.variableIsValidForCategory(variable, category)) {
                     speedrunComVariables.push({
                         text: variable.name,
+                        tooltip: "A variable on speedrun.com specific to the game.",
                         value: {
                             CustomCombobox: {
                                 value: metadata.speedrun_com_variables[variable.name] || "",
@@ -725,6 +762,7 @@ export class RunEditor extends React.Component<Props, State> {
                 regionOffset = fields.length;
                 fields.push({
                     text: "Region",
+                    tooltip: "The region of the game that is being played.",
                     value: {
                         CustomCombobox: {
                             value: metadata.region_name,
@@ -738,6 +776,7 @@ export class RunEditor extends React.Component<Props, State> {
                 platformOffset = fields.length;
                 fields.push({
                     text: "Platform",
+                    tooltip: "The platform that the game is being played on.",
                     value: {
                         CustomCombobox: {
                             value: metadata.platform_name,
@@ -751,6 +790,7 @@ export class RunEditor extends React.Component<Props, State> {
                 emulatorOffset = fields.length;
                 fields.push({
                     text: "Uses Emulator",
+                    tooltip: "Whether an emulator is being used to play the game.",
                     value: {
                         Bool: metadata.uses_emulator,
                     },
@@ -763,6 +803,7 @@ export class RunEditor extends React.Component<Props, State> {
             if (customVariableValue && customVariableValue.is_permanent) {
                 customVariables.push({
                     text: customVariableName,
+                    tooltip: "A custom variable specified by you. These can be displayed with the text component.",
                     value: {
                         RemovableString: customVariableValue.value,
                     },
@@ -783,7 +824,9 @@ export class RunEditor extends React.Component<Props, State> {
                     <table className="table">
                         <tbody className="table-body">
                             <tr><td><p>
-                                There are currently no Speedrun.com variables or custom variables for this game.
+                                {"There are currently no"}
+                                {this.props.generalSettings.speedrunComIntegration && " Speedrun.com variables or"}
+                                {" custom variables for this game."}
                             </p></td></tr>
                         </tbody>
                     </table>
@@ -890,8 +933,8 @@ export class RunEditor extends React.Component<Props, State> {
                         <th>Rank</th>
                         <th>Player</th>
                         <th>Time</th>
-                        {variableColumns && variableColumns.map((variable) => <th>{variable.name}</th>)}
-                        <th>Splits</th>
+                        {variableColumns?.map((variable) => <th>{variable.name}</th>)}
+                        {this.props.generalSettings.splitsIoIntegration && <th>Splits</th>}
                     </tr>
                 </thead>
                 <tbody className="table-body">
@@ -991,7 +1034,7 @@ export class RunEditor extends React.Component<Props, State> {
                                                     (p) =>
                                                         <tr>
                                                             <td>Platform:</td>
-                                                            <td>{p}{run.system.emulated ? " Emulator" : null}</td>
+                                                            <td>{p}{run.system.emulated && " Emulator"}</td>
                                                         </tr>,
                                                 )}
                                             </tbody>
@@ -1033,7 +1076,7 @@ export class RunEditor extends React.Component<Props, State> {
                                                 }
                                                 const flag = map(
                                                     p.location,
-                                                    (l) => replaceFlag(`[${l.country.code}]`),
+                                                    (l) => replaceFlag(l.country.code),
                                                 );
                                                 return [
                                                     i !== 0 ? ", " : null,
@@ -1047,8 +1090,10 @@ export class RunEditor extends React.Component<Props, State> {
                                                     </a>,
                                                 ];
                                             } else {
-                                                const withFlags = replaceFlag(p.name);
-                                                return [i !== 0 ? ", " : null, withFlags];
+                                                return [
+                                                    i !== 0 ? ", " : null,
+                                                    <span className="unregistered-user">{p.name}</span>
+                                                ];
                                             }
                                         })
                                     }
@@ -1064,19 +1109,21 @@ export class RunEditor extends React.Component<Props, State> {
                                     </a>
                                 </td>
                                 {renderedVariables}
-                                <td className="splits-download-column">
-                                    {
-                                        map(run.splits, (s) => <i
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                this.downloadSplits(run, s.uri);
-                                            }}
-                                            className="fa fa-download"
-                                            style={{ cursor: "pointer" }}
-                                            aria-hidden="true"
-                                        />)
-                                    }
-                                </td>
+                                {
+                                    this.props.generalSettings.splitsIoIntegration && <td className="splits-download-column">
+                                        {
+                                            map(run.splits, (s) => <i
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    this.downloadSplits(run, s.uri);
+                                                }}
+                                                className="fa fa-download"
+                                                style={{ cursor: "pointer" }}
+                                                aria-hidden="true"
+                                            />)
+                                        }
+                                    </td>
+                                }
                             </tr>,
                             expandedRow,
                         ];
@@ -1118,7 +1165,7 @@ export class RunEditor extends React.Component<Props, State> {
                 if (this.variableIsValidForCategory(variable, category) && variable["is-subcategory"]) {
                     const currentValue = this.state.editor.metadata.speedrun_com_variables[variable.name];
                     const foundValue = Object.values(variable.values.values).find((v) => v.label === currentValue);
-                    if (foundValue !== undefined && foundValue.rules !== undefined) {
+                    if (foundValue?.rules != null) {
                         subcategoryRules.push(renderMarkdown(`## ${foundValue.label} Rules\n${foundValue.rules}`));
                     }
                 }
@@ -1184,15 +1231,21 @@ export class RunEditor extends React.Component<Props, State> {
                                             {comparison}
                                         </ContextMenuTrigger>
                                         <ContextMenu id={id}>
-                                            <MenuItem onClick={(_) =>
+                                            <MenuItem className="tooltip" onClick={(_) =>
                                                 this.renameComparison(comparison)
                                             }>
                                                 Rename
+                                                <span className="tooltip-text">
+                                                    Choose a new name for the custom comparison. There are reserved names that can't be used. You also can't have duplicate names.
+                                                </span>
                                             </MenuItem>
-                                            <MenuItem onClick={(_) =>
+                                            <MenuItem className="tooltip" onClick={(_) =>
                                                 this.removeComparison(comparison)
                                             }>
                                                 Remove
+                                                <span className="tooltip-text">
+                                                    Removes the custom comparison.
+                                                </span>
                                             </MenuItem>
                                         </ContextMenu>
                                     </th>
@@ -1247,11 +1300,17 @@ export class RunEditor extends React.Component<Props, State> {
                                             }
                                         </ContextMenuTrigger>
                                         <ContextMenu id={segmentIconContextMenuId}>
-                                            <MenuItem onClick={(_) => this.changeSegmentIcon(segmentIndex)}>
+                                            <MenuItem className="tooltip" onClick={(_) => this.changeSegmentIcon(segmentIndex)}>
                                                 Set Icon
+                                                <span className="tooltip-text">
+                                                    Allows you to choose an image file to set as the segment's icon. Certain file formats may not work everywhere.
+                                                </span>
                                             </MenuItem>
-                                            <MenuItem onClick={(_) => this.removeSegmentIcon(segmentIndex)}>
+                                            <MenuItem className="tooltip" onClick={(_) => this.removeSegmentIcon(segmentIndex)}>
                                                 Remove Icon
+                                                <span className="tooltip-text">
+                                                    Removes the segment's icon.
+                                                </span>
                                             </MenuItem>
                                         </ContextMenu>
                                     </td>
@@ -1381,20 +1440,19 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private cleanSumOfBest() {
-        this.props.editor.cleanSumOfBest().with((cleaner) => {
+        {
+            using cleaner = this.props.editor.cleanSumOfBest();
             while (true) {
-                const potentialCleanUp = cleaner.nextPotentialCleanUp();
+                using potentialCleanUp = cleaner.nextPotentialCleanUp();
                 if (!potentialCleanUp) {
                     break;
                 }
-                potentialCleanUp.with((potentialCleanUp) => {
-                    const message = potentialCleanUp.message();
-                    if (confirm(message)) {
-                        cleaner.apply(potentialCleanUp);
-                    }
-                });
+                const message = potentialCleanUp.message();
+                if (confirm(message)) {
+                    cleaner.apply(potentialCleanUp);
+                }
             }
-        });
+        }
         this.update();
     }
 
@@ -1410,24 +1468,22 @@ export class RunEditor extends React.Component<Props, State> {
 
     private async importComparison() {
         const [data, file] = await openFileAsArrayBuffer();
-        LiveSplit.Run.parseArray(new Uint8Array(data), "").with((result) => {
-            if (!result.parsedSuccessfully()) {
-                toast.error("Couldn't parse the splits.");
-                return;
-            }
-            result.unwrap().with((run) => {
-                const comparisonName = prompt("Comparison Name:", file.name.replace(/\.[^/.]+$/, ""));
-                if (!comparisonName) {
-                    return;
-                }
-                const valid = this.props.editor.importComparison(run, comparisonName);
-                if (!valid) {
-                    toast.error("The comparison could not be added. It may be a duplicate or a reserved name.");
-                } else {
-                    this.update();
-                }
-            });
-        });
+        using result = LiveSplit.Run.parseArray(new Uint8Array(data), "");
+        if (!result.parsedSuccessfully()) {
+            toast.error("Couldn't parse the splits.");
+            return;
+        }
+        using run = result.unwrap();
+        const comparisonName = prompt("Comparison Name:", file.name.replace(/\.[^/.]+$/, ""));
+        if (!comparisonName) {
+            return;
+        }
+        const valid = this.props.editor.importComparison(run, comparisonName);
+        if (!valid) {
+            toast.error("The comparison could not be added. It may be a duplicate or a reserved name.");
+        } else {
+            this.update();
+        }
     }
 
     private addComparison() {
@@ -1521,18 +1577,22 @@ export class RunEditor extends React.Component<Props, State> {
     private handleGameChange(event: any) {
         this.props.editor.clearMetadata();
         this.props.editor.setGameName(event.target.value);
-        this.refreshGameInfo(event.target.value);
-        this.refreshCategoryList(event.target.value);
-        this.refreshLeaderboard(event.target.value, this.state.editor.category);
-        this.resetTotalLeaderboardState();
+        if (this.props.generalSettings.speedrunComIntegration) {
+            this.refreshGameInfo(event.target.value);
+            this.refreshCategoryList(event.target.value);
+            this.refreshLeaderboard(event.target.value, this.state.editor.category);
+            this.resetTotalLeaderboardState();
+        }
         this.update();
     }
 
     private handleCategoryChange(event: any) {
         this.clearCategorySpecificVariables();
         this.props.editor.setCategoryName(event.target.value);
-        this.refreshLeaderboard(this.state.editor.game, event.target.value);
-        this.resetTotalLeaderboardState();
+        if (this.props.generalSettings.speedrunComIntegration) {
+            this.refreshLeaderboard(this.state.editor.game, event.target.value);
+            this.resetTotalLeaderboardState();
+        }
         this.update();
     }
 
@@ -1904,27 +1964,25 @@ export class RunEditor extends React.Component<Props, State> {
             await gameInfoDownload;
             await platformListDownload;
             await regionListDownload;
-            const run = await runDownload;
+            using run = await runDownload;
 
             if (this.props.editor.ptr === 0) {
                 // Old editor is already disposed, so do not continue
                 return;
             }
-            run.with((run) => {
-                const newEditor = LiveSplit.RunEditor.new(run);
-                if (newEditor !== null) {
-                    associateRun(
-                        newEditor,
-                        gameName,
-                        categoryName,
-                        apiRun,
-                    );
+            const newEditor = LiveSplit.RunEditor.new(run);
+            if (newEditor !== null) {
+                associateRun(
+                    newEditor,
+                    gameName,
+                    categoryName,
+                    apiRun,
+                );
 
-                    this.props.callbacks.replaceRunEditor(newEditor);
-                } else {
-                    toast.error("The downloaded splits are not suitable for being edited.");
-                }
-            });
+                this.props.callbacks.replaceRunEditor(newEditor);
+            } else {
+                toast.error("The downloaded splits are not suitable for being edited.");
+            }
         } catch (_) {
             toast.error("Failed to download the splits.");
         }
