@@ -42,7 +42,7 @@ export default async (env, argv) => {
         .sort((user1, user2) => user2.contributions - user1.contributions)
         .map((user) => user.login);
     const commitHash = execSync("git rev-parse --short HEAD").toString();
-    const date = moment.utc().format("YYYY-MM-DD kk:mm:ss");
+    const date = moment.utc().format("YYYY-MM-DD kk:mm:ss z");
 
     const basePath = path.dirname(fileURLToPath(import.meta.url));
 

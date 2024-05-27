@@ -5,6 +5,8 @@ import { SettingsDescriptionJson, SettingValue, HotkeyConfig } from "../livespli
 import { toast } from "react-toastify";
 import { UrlCache } from "../util/UrlCache";
 import { FRAME_RATE_AUTOMATIC as FRAME_RATE_BATTERY_AWARE, FRAME_RATE_MATCH_SCREEN as FRAME_RATE_MATCH_SCREEN, FrameRateSetting } from "../util/FrameRate";
+import { LiveSplitServer } from "../api/LiveSplitServer";
+import { Option } from "../util/OptionUtil";
 
 import "../css/SettingsEditor.scss";
 
@@ -14,6 +16,7 @@ export interface GeneralSettings {
     showManualGameTime: boolean,
     speedrunComIntegration: boolean,
     splitsIoIntegration: boolean,
+    serverUrl: string | undefined,
 }
 
 export interface Props {
@@ -21,6 +24,7 @@ export interface Props {
     hotkeyConfig: HotkeyConfig,
     urlCache: UrlCache,
     callbacks: Callbacks,
+    serverConnection: Option<LiveSplitServer>,
 }
 
 export interface State {
@@ -31,6 +35,21 @@ export interface State {
 interface Callbacks {
     renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
     closeSettingsEditor(save: boolean, newGeneralSettings: GeneralSettings): void,
+    onServerConnectionOpened(serverConnection: LiveSplitServer): void,
+    onServerConnectionClosed(): void,
+    start(): void,
+    split(): void,
+    splitOrStart(): void,
+    reset(): void,
+    togglePauseOrStart(): void,
+    undoSplit(): void,
+    skipSplit(): void,
+    initializeGameTime(): void,
+    setGameTime(time: string): void,
+    setLoadingTimes(time: string): void,
+    pauseGameTime(): void,
+    resumeGameTime(): void,
+    forceUpdate(): void,
 }
 
 export class SettingsEditor extends React.Component<Props, State> {
@@ -151,6 +170,21 @@ export class SettingsEditor extends React.Component<Props, State> {
                                 tooltip: "Allows you to upload splits to and download splits from splits.io.",
                                 value: { Bool: this.state.generalSettings.splitsIoIntegration },
                             },
+                            {
+                                text: <>
+                                    Server Connection <i className="fa fa-flask" style={{ color: "#07bc0c" }} aria-hidden="true" />
+                                </>,
+                                tooltip: <>
+                                    Allows you to connect to a WebSocket server that can control the timer by sending various commands. The commands are currently a subset of the commands the original LiveSplit supports.<br /><br />
+                                    This feature is <b>experimental</b> and the protocol will likely change in the future.
+                                </>,
+                                value: {
+                                    ServerConnection: {
+                                        url: this.props.generalSettings.serverUrl,
+                                        connection: this.props.serverConnection,
+                                    },
+                                }
+                            },
                         ],
                     }}
                     editorUrlCache={this.props.urlCache}
@@ -172,6 +206,21 @@ export class SettingsEditor extends React.Component<Props, State> {
                                         generalSettings: {
                                             ...this.state.generalSettings,
                                             splitsIoIntegration: value.Bool,
+                                        },
+                                    });
+                                }
+                                break;
+                            case 2:
+                                if ("String" in value) {
+                                    try {
+                                        this.props.callbacks.onServerConnectionOpened(new LiveSplitServer(value.String, this.props.callbacks));
+                                    } catch {
+                                        // It's fine if it fails.
+                                    }
+                                    this.setState({
+                                        generalSettings: {
+                                            ...this.state.generalSettings,
+                                            serverUrl: value.String,
                                         },
                                     });
                                 }

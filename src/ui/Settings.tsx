@@ -2,14 +2,15 @@ import * as React from "react";
 import { Color, SettingsDescriptionValueJson } from "../livesplit-core";
 import { assertNever, expect, Option } from "../util/OptionUtil";
 import ColorPicker from "./ColorPicker";
-
 import HotkeyButton from "./HotkeyButton";
 import ToggleCheckbox from "./ToggleCheckbox";
 import { UrlCache } from "../util/UrlCache";
 import { openFileAsArrayBuffer } from "../util/FileUtil";
 import * as FontList from "../util/FontList";
+import { LiveSplitServer } from "../api/LiveSplitServer";
 
 import "../css/Tooltip.scss";
+import "../css/LiveSplitServerButton.scss";
 
 export interface Props<T> {
     context: string,
@@ -24,14 +25,20 @@ export interface ExtendedSettingsDescriptionJson {
 }
 
 export interface ExtendedSettingsDescriptionFieldJson {
-    text: string,
-    tooltip: string,
+    text: string | JSX.Element,
+    tooltip: string | JSX.Element,
     value: ExtendedSettingsDescriptionValueJson,
 }
 
 export type ExtendedSettingsDescriptionValueJson =
     SettingsDescriptionValueJson |
-    { RemovableString: string | null };
+    { RemovableString: string | null } |
+    {
+        ServerConnection: {
+            url: string | undefined,
+            connection: Option<LiveSplitServer>,
+        }
+    };
 
 export interface SettingValueFactory<T> {
     fromBool(v: boolean): T;
@@ -1348,6 +1355,27 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                         </div>
                     );
                 }
+            } else if ("ServerConnection" in value) {
+                component = <div className="settings-value-box">
+                    <button className="livesplit-server-button" onClick={(_) => this.connectToServerOrDisconnect(valueIndex, value.ServerConnection.url, value.ServerConnection.connection)}>
+                        {
+                            (() => {
+                                const connectionState = value.ServerConnection.connection?.getConnectionState() ?? WebSocket.CLOSED;
+                                switch (connectionState) {
+                                    case WebSocket.OPEN:
+                                        return <div>Disconnect</div>;
+                                    case WebSocket.CLOSED:
+                                        return <div>Connect</div>;
+                                    case WebSocket.CONNECTING:
+                                        return <div>Connecting...</div>;
+                                    case WebSocket.CLOSING:
+                                        return <div>Disconnecting...</div>;
+                                    default: throw new Error("Unknown WebSocket State");
+                                }
+                            })()
+                        }
+                    </button>
+                </div>;
             } else {
                 assertNever(value);
             }
@@ -1370,5 +1398,17 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                 </tbody>
             </table>
         );
+    }
+
+    private connectToServerOrDisconnect(valueIndex: number, serverUrl: string | undefined, connection: Option<LiveSplitServer>) {
+        if (connection) {
+            connection.close();
+            return;
+        }
+        const url = prompt("Specify the WebSocket URL:", serverUrl);
+        if (!url) {
+            return;
+        }
+        this.props.setValue(valueIndex, this.props.factory.fromString(url));
     }
 }

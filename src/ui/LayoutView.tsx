@@ -4,6 +4,8 @@ import { TimerView } from "./TimerView";
 import { UrlCache } from "../util/UrlCache";
 import { WebRenderer } from "../livesplit-core/livesplit_core";
 import { GeneralSettings } from "./SettingsEditor";
+import { LiveSplitServer } from "../api/LiveSplitServer";
+import { Option } from "../util/OptionUtil";
 
 export interface Props {
     isDesktop: boolean,
@@ -17,6 +19,7 @@ export interface Props {
     sidebarOpen: boolean,
     timer: SharedTimer,
     renderer: WebRenderer,
+    serverConnection: Option<LiveSplitServer>,
     callbacks: Callbacks,
 }
 
@@ -35,6 +38,8 @@ interface Callbacks {
     openTimerView(): void,
     renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
     saveLayout(): void,
+    onServerConnectionOpened(serverConnection: LiveSplitServer): void,
+    onServerConnectionClosed(): void,
 }
 
 export class LayoutView extends React.Component<Props> {
@@ -51,6 +56,7 @@ export class LayoutView extends React.Component<Props> {
             sidebarOpen={this.props.sidebarOpen}
             timer={this.props.timer}
             renderer={this.props.renderer}
+            serverConnection={this.props.serverConnection}
             callbacks={this.props.callbacks}
         />;
         const sidebarContent = this.renderSidebarContent();
