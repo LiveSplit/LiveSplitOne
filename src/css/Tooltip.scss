@@ -23,6 +23,7 @@
     transition: opacity 0.25s;
     transition-delay: 0.25s;
     text-wrap: initial;
+    font-weight: initial;
 
     @include mobile {
         left: 0;

@@ -4,6 +4,7 @@ import {
     HotkeySystem, Layout, LayoutEditor, Run, RunEditor,
     Segment, SharedTimer, Timer, TimerRef, TimerRefMut,
     HotkeyConfig, LayoutState, LayoutStateJson,
+    TimeSpan,
 } from "../livesplit-core";
 import { convertFileToArrayBuffer, convertFileToString, exportFile, openFileAsString } from "../util/FileUtil";
 import { Option, assertNull, expect, maybeDisposeAndThen, panic } from "../util/OptionUtil";
@@ -20,6 +21,7 @@ import * as Storage from "../storage";
 import { UrlCache } from "../util/UrlCache";
 import { WebRenderer } from "../livesplit-core/livesplit_core";
 import variables from "../css/variables.scss";
+import { LiveSplitServer } from "../api/LiveSplitServer";
 
 import "react-toastify/dist/ReactToastify.css";
 import "../css/LiveSplit.scss";
@@ -77,6 +79,7 @@ export interface State {
     timer: SharedTimer,
     renderer: WebRenderer,
     generalSettings: GeneralSettings,
+    serverConnection: Option<LiveSplitServer>,
 }
 
 export let hotkeySystem: Option<HotkeySystem> = null;
@@ -187,18 +190,18 @@ export class LiveSplit extends React.Component<Props, State> {
             openedSplitsKey: props.splitsKey,
             renderer,
             generalSettings: props.generalSettings,
+            serverConnection: null,
         };
 
         this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
     }
 
-    private notifyAboutUpdate(this: void)
-    {
+    private notifyAboutUpdate(this: void) {
         toast.warn(
             'A new version of LiveSplit One is available! Click here to reload.',
             {
-              closeOnClick: true,
-              onClick: () => window.location.reload(),
+                closeOnClick: true,
+                onClick: () => window.location.reload(),
             },
         );
     }
@@ -232,7 +235,7 @@ export class LiveSplit extends React.Component<Props, State> {
 
         const { serviceWorker } = navigator;
         if (serviceWorker) {
-          serviceWorker.addEventListener('controllerchange', this.notifyAboutUpdate);
+            serviceWorker.addEventListener('controllerchange', this.notifyAboutUpdate);
         }
     }
 
@@ -296,6 +299,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 hotkeyConfig={this.state.menu.config}
                 urlCache={this.state.layoutUrlCache}
                 callbacks={this}
+                serverConnection={this.state.serverConnection}
             />;
         } else if (this.state.menu.kind === MenuKind.About) {
             return <About callbacks={this} />;
@@ -319,6 +323,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 sidebarOpen={this.state.sidebarOpen}
                 timer={this.state.timer}
                 renderer={this.state.renderer}
+                serverConnection={this.state.serverConnection}
                 callbacks={this}
             />;
         } else if (this.state.menu.kind === MenuKind.Layout) {
@@ -334,6 +339,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 sidebarOpen={this.state.sidebarOpen}
                 timer={this.state.timer}
                 renderer={this.state.renderer}
+                serverConnection={this.state.serverConnection}
                 callbacks={this}
             />;
         }
@@ -690,5 +696,67 @@ export class LiveSplit extends React.Component<Props, State> {
 
     private readWith<T>(action: (timer: TimerRef) => T): T {
         return this.state.timer.readWith(action);
+    }
+
+    onServerConnectionOpened(serverConnection: LiveSplitServer): void {
+        this.setState({ serverConnection });
+    }
+
+    onServerConnectionClosed(): void {
+        this.setState({ serverConnection: null });
+    }
+
+    start() {
+        this.writeWith((t) => t.start());
+    }
+
+    split() {
+        this.writeWith((t) => t.split());
+    }
+
+    splitOrStart() {
+        this.writeWith((t) => t.splitOrStart());
+    }
+
+    reset() {
+        this.writeWith((t) => t.reset(true));
+    }
+
+    togglePauseOrStart() {
+        this.writeWith((t) => t.togglePauseOrStart());
+    }
+
+    undoSplit() {
+        this.writeWith((t) => t.undoSplit());
+    }
+
+    skipSplit() {
+        this.writeWith((t) => t.skipSplit());
+    }
+
+    initializeGameTime() {
+        this.writeWith((t) => t.initializeGameTime());
+    }
+
+    setGameTime(gameTime: string) {
+        using time = TimeSpan.parse(gameTime);
+        if (time !== null) {
+            this.writeWith((t) => t.setGameTime(time));
+        }
+    }
+
+    setLoadingTimes(loadingTimes: string) {
+        using time = TimeSpan.parse(loadingTimes);
+        if (time !== null) {
+            this.writeWith((t) => t.setLoadingTimes(time));
+        }
+    }
+
+    pauseGameTime() {
+        this.writeWith((t) => t.pauseGameTime());
+    }
+
+    resumeGameTime() {
+        this.writeWith((t) => t.resumeGameTime());
     }
 }

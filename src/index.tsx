@@ -96,9 +96,7 @@ try {
                     position={toast.POSITION.BOTTOM_RIGHT}
                     toastClassName="toast-class"
                     bodyClassName="toast-body"
-                    style={{
-                        textShadow: "none",
-                    }}
+                    theme="dark"
                 />
             </div>,
             document.getElementById("base"),

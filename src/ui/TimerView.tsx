@@ -1,5 +1,4 @@
 import * as React from "react";
-import { toast } from "react-toastify";
 import {
     SharedTimer, TimerRef, TimerRefMut,
     TimingMethod, TimeSpan, LayoutStateRefMut,
@@ -12,6 +11,7 @@ import Layout from "../layout/Layout";
 import { UrlCache } from "../util/UrlCache";
 import { WebRenderer } from "../livesplit-core/livesplit_core";
 import { GeneralSettings } from "./SettingsEditor";
+import { LiveSplitServer } from "../api/LiveSplitServer";
 
 import LiveSplitIcon from "../assets/icon.svg";
 
@@ -30,6 +30,7 @@ export interface Props {
     timer: SharedTimer,
     renderer: WebRenderer,
     callbacks: Callbacks,
+    serverConnection: Option<LiveSplitServer>,
 }
 export interface State {
     comparison: Option<string>,
@@ -46,11 +47,11 @@ interface Callbacks {
     openSplitsView(): void,
     openSettingsEditor(): void,
     renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
+    onServerConnectionClosed(): void,
+    onServerConnectionOpened(serverConnection: LiveSplitServer): void,
 }
 
 export class TimerView extends React.Component<Props, State> {
-    private connection: Option<WebSocket>;
-
     constructor(props: Props) {
         super(props);
 
@@ -59,10 +60,6 @@ export class TimerView extends React.Component<Props, State> {
             timingMethod: null,
             manualGameTime: "",
         };
-    }
-
-    componentWillUnmount() {
-        this.connection?.close();
     }
 
     public render() {
@@ -229,32 +226,9 @@ export class TimerView extends React.Component<Props, State> {
                         </button>
                     </div>
                     <hr />
-                    <button onClick={(_) => this.connectToServerOrDisconnect()}>
-                        {
-                            (() => {
-                                const connectionState = this.connection?.readyState ?? WebSocket.CLOSED;
-                                switch (connectionState) {
-                                    case WebSocket.OPEN:
-                                        return <div>
-                                            <i className="fa fa-power-off" aria-hidden="true" /> Disconnect
-                                        </div>;
-                                    case WebSocket.CLOSED:
-                                        return <div>
-                                            <i className="fa fa-desktop" aria-hidden="true" /> Connect to Server
-                                        </div>;
-                                    case WebSocket.CONNECTING:
-                                        return <div>Connecting...</div>;
-                                    case WebSocket.CLOSING:
-                                        return <div>Disconnecting...</div>;
-                                    default: throw new Error("Unknown WebSocket State");
-                                }
-                            })()
-                        }
-                    </button>
                     <button onClick={() => this.props.callbacks.openSettingsEditor()}>
                         <i className="fa fa-cog" aria-hidden="true" /> Settings
                     </button>
-                    <hr />
                     <button onClick={(_) => this.props.callbacks.openAboutView()}>
                         <i className="fa fa-info-circle" aria-hidden="true" /> About
                     </button>
@@ -281,64 +255,6 @@ export class TimerView extends React.Component<Props, State> {
         }
     }
 
-    private connectToServerOrDisconnect() {
-        if (this.connection) {
-            if (this.connection.readyState === WebSocket.OPEN) {
-                this.connection.close();
-                this.forceUpdate();
-            }
-            return;
-        }
-        const url = prompt("Specify the WebSocket URL:");
-        if (!url) {
-            return;
-        }
-        try {
-            this.connection = new WebSocket(url);
-        } catch (e: any) {
-            toast.error(`Failed to connect: ${e}`);
-            throw e;
-        }
-        this.forceUpdate();
-        let wasConnected = false;
-        this.connection.onopen = (_) => {
-            wasConnected = true;
-            toast.info("Connected to server");
-            this.forceUpdate();
-        };
-        this.connection.onerror = (e) => {
-            toast.error(e);
-        };
-        this.connection.onmessage = (e) => {
-            // FIXME: Clone the Shared Timer. This assumes that `this` is always
-            // mounted.
-            if (typeof e.data === "string") {
-                const [command, ...args] = e.data.split(" ");
-                switch (command) {
-                    case "start": this.start(); break;
-                    case "split": this.split(); break;
-                    case "splitorstart": this.splitOrStart(); break;
-                    case "reset": this.reset(); break;
-                    case "togglepause": this.togglePauseOrStart(); break;
-                    case "undo": this.undoSplit(); break;
-                    case "skip": this.skipSplit(); break;
-                    case "initgametime": this.initializeGameTime(); break;
-                    case "setgametime": this.setGameTime(args[0]); break;
-                    case "setloadingtimes": this.setLoadingTimes(args[0]); break;
-                    case "pausegametime": this.pauseGameTime(); break;
-                    case "resumegametime": this.resumeGameTime(); break;
-                }
-            }
-        };
-        this.connection.onclose = (_) => {
-            if (wasConnected) {
-                toast.info("Closed connection to server");
-            }
-            this.connection = null;
-            this.forceUpdate();
-        };
-    }
-
     private writeWith<T>(action: (timer: TimerRefMut) => T): T {
         return this.props.timer.writeWith(action);
     }
@@ -359,14 +275,6 @@ export class TimerView extends React.Component<Props, State> {
         this.writeWith((t) => t.setCurrentTimingMethod(timingMethod));
     }
 
-    private start() {
-        this.writeWith((t) => t.start());
-    }
-
-    private split() {
-        this.writeWith((t) => t.split());
-    }
-
     private splitOrStart() {
         this.writeWith((t) => t.splitOrStart());
     }
@@ -385,31 +293,5 @@ export class TimerView extends React.Component<Props, State> {
 
     private skipSplit() {
         this.writeWith((t) => t.skipSplit());
-    }
-
-    private initializeGameTime() {
-        this.writeWith((t) => t.initializeGameTime());
-    }
-
-    private setGameTime(gameTime: string) {
-        using time = TimeSpan.parse(gameTime);
-        if (time !== null) {
-            this.writeWith((t) => t.setGameTime(time));
-        }
-    }
-
-    private setLoadingTimes(loadingTimes: string) {
-        using time = TimeSpan.parse(loadingTimes);
-        if (time !== null) {
-            this.writeWith((t) => t.setLoadingTimes(time));
-        }
-    }
-
-    private pauseGameTime() {
-        this.writeWith((t) => t.pauseGameTime());
-    }
-
-    private resumeGameTime() {
-        this.writeWith((t) => t.resumeGameTime());
     }
 }

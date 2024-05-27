@@ -45,10 +45,11 @@ export default class HotkeyButton extends React.Component<Props, State> {
         return (
             <div className="hotkey-box">
                 <button
-                    className={`hotkey-button ${this.state.listener != null ? "focused" : ""}`}
+                    className={`hotkey-button tooltip ${this.state.listener != null ? "focused" : ""}`}
                     onClick={() => this.focusButton()}
                 >
                     {buttonText}
+                    <span className="tooltip-text">Click to record a hotkey. You may also use buttons on a gamepad.</span>
                 </button>
                 {
                     map(this.props.value, () => (
@@ -102,6 +103,7 @@ export default class HotkeyButton extends React.Component<Props, State> {
                     }
                     text += ev.code;
                     this.props.setValue(text);
+                    ev.preventDefault();
                 }
             };
 

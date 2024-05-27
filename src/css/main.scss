@@ -22,16 +22,21 @@ body {
   background: $main-background-color;
 }
 
-.toast-class {
-  border-radius: 2px !important;
-  min-height: 48px !important;
+.Toastify {
+  .toast-class {
+    font-family: "fira", sans-serif;
+    background: $sidebar-background-color !important;
+    border: 2px solid $border-color !important;
+    border-radius: 10px !important;
+    min-height: 48px !important;
+  }
 }
 
 .toast-body {
-  margin: 10px 5px 10px 5px !important;
+  margin: 5px 5px 5px 5px !important;
 }
 
-.toast-class > button {
+.toast-class>button {
   margin-bottom: initial;
   margin-top: initial;
 }

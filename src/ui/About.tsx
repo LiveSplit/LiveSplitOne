@@ -32,7 +32,7 @@ export class About extends React.Component<Props> {
                     </div>
                     <p className="build-version">
                         <a href={`https://github.com/LiveSplit/LiveSplitOne/commit/${COMMIT_HASH}`} target="_blank">
-                            Version: {COMMIT_HASH} ({BUILD_DATE})
+                            Version: {BUILD_DATE}
                         </a>
                     </p>
                     <p>LiveSplit One is a multiplatform version of LiveSplit, the sleek,
@@ -42,7 +42,7 @@ export class About extends React.Component<Props> {
                             View Source Code on GitHub
                         </a>
                     </p>
-                    <h1 className="contributors-header">Contributors</h1>
+                    <h2 className="contributors-header">Contributors</h2>
                     {
                         CONTRIBUTORS_LIST.map((contributor) => (
                             <p className="contributor">

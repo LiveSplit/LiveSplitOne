@@ -855,14 +855,14 @@ export class RunEditor extends React.Component<Props, State> {
                             this.props.editor.setEmulatorUsage(emulatorUsage);
                         } else if (index < customVariablesOffset) {
                             const stringValue = unwrapString(value);
-                            const key = speedrunComVariables[index - speedrunComVariablesOffset].text;
+                            const key = speedrunComVariables[index - speedrunComVariablesOffset].text as string;
                             if (stringValue !== "") {
                                 this.props.editor.setSpeedrunComVariable(key, stringValue);
                             } else {
                                 this.props.editor.removeSpeedrunComVariable(key);
                             }
                         } else {
-                            const key = customVariables[index - customVariablesOffset].text;
+                            const key = customVariables[index - customVariablesOffset].text as string;
                             const stringValue = unwrapRemovableString(value);
                             if (stringValue !== null) {
                                 this.props.editor.setCustomVariable(key, stringValue);
