@@ -7,6 +7,7 @@ import { UrlCache } from "../util/UrlCache";
 import { FRAME_RATE_AUTOMATIC as FRAME_RATE_BATTERY_AWARE, FRAME_RATE_MATCH_SCREEN as FRAME_RATE_MATCH_SCREEN, FrameRateSetting } from "../util/FrameRate";
 import { LiveSplitServer } from "../api/LiveSplitServer";
 import { Option } from "../util/OptionUtil";
+import { LSOEventSink } from "./LSOEventSink";
 
 import "../css/SettingsEditor.scss";
 
@@ -14,6 +15,7 @@ export interface GeneralSettings {
     frameRate: FrameRateSetting,
     showControlButtons: boolean,
     showManualGameTime: boolean,
+    // saveOnReset: boolean,
     speedrunComIntegration: boolean,
     splitsIoIntegration: boolean,
     serverUrl: string | undefined,
@@ -25,6 +27,7 @@ export interface Props {
     urlCache: UrlCache,
     callbacks: Callbacks,
     serverConnection: Option<LiveSplitServer>,
+    eventSink: LSOEventSink,
 }
 
 export interface State {
@@ -37,18 +40,6 @@ interface Callbacks {
     closeSettingsEditor(save: boolean, newGeneralSettings: GeneralSettings): void,
     onServerConnectionOpened(serverConnection: LiveSplitServer): void,
     onServerConnectionClosed(): void,
-    start(): void,
-    split(): void,
-    splitOrStart(): void,
-    reset(): void,
-    togglePauseOrStart(): void,
-    undoSplit(): void,
-    skipSplit(): void,
-    initializeGameTime(): void,
-    setGameTime(time: string): void,
-    setLoadingTimes(time: string): void,
-    pauseGameTime(): void,
-    resumeGameTime(): void,
     forceUpdate(): void,
 }
 
@@ -213,7 +204,12 @@ export class SettingsEditor extends React.Component<Props, State> {
                             case 2:
                                 if ("String" in value) {
                                     try {
-                                        this.props.callbacks.onServerConnectionOpened(new LiveSplitServer(value.String, this.props.callbacks));
+                                        this.props.callbacks.onServerConnectionOpened(new LiveSplitServer(
+                                            value.String,
+                                            () => this.forceUpdate(),
+                                            () => this.props.callbacks.onServerConnectionClosed(),
+                                            this.props.eventSink,
+                                        ));
                                     } catch {
                                         // It's fine if it fails.
                                     }

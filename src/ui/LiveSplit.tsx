@@ -1,10 +1,9 @@
 import * as React from "react";
 import Sidebar from "react-sidebar";
 import {
-    HotkeySystem, Layout, LayoutEditor, Run, RunEditor,
-    Segment, SharedTimer, Timer, TimerRef, TimerRefMut,
-    HotkeyConfig, LayoutState, LayoutStateJson,
-    TimeSpan,
+    HotkeySystem, Layout, LayoutEditor, Run, RunEditor, Segment,
+    Timer, HotkeyConfig, LayoutState, LayoutStateJson,
+    TimingMethod, TimerPhase,
 } from "../livesplit-core";
 import { convertFileToArrayBuffer, convertFileToString, exportFile, openFileAsString } from "../util/FileUtil";
 import { Option, assertNull, expect, maybeDisposeAndThen, panic } from "../util/OptionUtil";
@@ -22,6 +21,7 @@ import { UrlCache } from "../util/UrlCache";
 import { WebRenderer } from "../livesplit-core/livesplit_core";
 import variables from "../css/variables.scss";
 import { LiveSplitServer } from "../api/LiveSplitServer";
+import { LSOEventSink } from "./LSOEventSink";
 
 import "react-toastify/dist/ReactToastify.css";
 import "../css/LiveSplit.scss";
@@ -76,10 +76,14 @@ export interface State {
     sidebarTransitionsEnabled: boolean,
     storedLayoutWidth: number,
     storedLayoutHeight: number,
-    timer: SharedTimer,
+    eventSink: LSOEventSink,
     renderer: WebRenderer,
     generalSettings: GeneralSettings,
     serverConnection: Option<LiveSplitServer>,
+    currentComparison: string,
+    currentTimingMethod: TimingMethod,
+    currentPhase: TimerPhase,
+    currentSplitIndex: number,
 }
 
 export let hotkeySystem: Option<HotkeySystem> = null;
@@ -117,20 +121,28 @@ export class LiveSplit extends React.Component<Props, State> {
         const timer = expect(
             Timer.new(run),
             "The Default Run should be a valid Run",
-        ).intoShared();
+        );
+
+        const eventSink = new LSOEventSink(
+            timer,
+            () => this.currentComparisonChanged(),
+            () => this.currentTimingMethodChanged(),
+            () => this.currentPhaseChanged(),
+            () => this.currentSplitChanged(),
+        );
 
         const hotkeys = props.hotkeys;
         try {
             if (hotkeys !== undefined) {
                 const config = HotkeyConfig.parseJson(hotkeys);
                 if (config !== null) {
-                    hotkeySystem = HotkeySystem.withConfig(timer.share(), config);
+                    hotkeySystem = HotkeySystem.withConfig(eventSink.getEventSink(), config);
                 }
             }
         } catch (_) { /* Looks like the storage has no valid data */ }
         if (hotkeySystem == null) {
             hotkeySystem = expect(
-                HotkeySystem.new(timer.share()),
+                HotkeySystem.new(eventSink.getEventSink()),
                 "Couldn't initialize the hotkeys",
             );
         }
@@ -141,7 +153,7 @@ export class LiveSplit extends React.Component<Props, State> {
             loadingRun.setCategoryName("Loading...");
             loadingRun.pushSegment(Segment.new("Time"));
             assertNull(
-                timer.writeWith((t) => t.setRun(loadingRun)),
+                eventSink.setRun(loadingRun),
                 "The Default Loading Run should be a valid Run",
             );
             this.loadFromSplitsIO(window.location.hash.substring("#/splits-io/".length));
@@ -149,7 +161,7 @@ export class LiveSplit extends React.Component<Props, State> {
             using result = Run.parseArray(props.splits, "");
             if (result.parsedSuccessfully()) {
                 using r = result.unwrap();
-                timer.writeWith((t) => t.setRun(r))?.[Symbol.dispose]();
+                eventSink.setRun(r)?.[Symbol.dispose]();
             }
         }
 
@@ -167,7 +179,7 @@ export class LiveSplit extends React.Component<Props, State> {
         const isDesktop = this.isDesktopQuery.matches;
         const isBrowserSource = !!(window as any).obsstudio;
 
-        const renderer = WebRenderer.new();
+        const renderer = new WebRenderer();
         renderer.element().setAttribute("style", "width: inherit; height: inherit;");
 
         this.state = {
@@ -185,12 +197,16 @@ export class LiveSplit extends React.Component<Props, State> {
             sidebarTransitionsEnabled: false,
             storedLayoutWidth: props.layoutWidth,
             storedLayoutHeight: props.layoutHeight,
-            timer,
+            eventSink,
             hotkeySystem,
             openedSplitsKey: props.splitsKey,
             renderer,
             generalSettings: props.generalSettings,
             serverConnection: null,
+            currentComparison: eventSink.currentComparison(),
+            currentTimingMethod: eventSink.currentTimingMethod(),
+            currentPhase: eventSink.currentPhase(),
+            currentSplitIndex: eventSink.currentSplitIndex(),
         };
 
         this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
@@ -215,7 +231,7 @@ export class LiveSplit extends React.Component<Props, State> {
         window.addEventListener("resize", this.resizeEvent, false);
 
         window.onbeforeunload = (e: BeforeUnloadEvent) => {
-            const hasBeenModified = this.readWith((t) => t.getRun().hasBeenModified());
+            const hasBeenModified = this.state.eventSink.hasBeenModified();
             if (hasBeenModified) {
                 e.returnValue = "There are unsaved changes. Do you really want to close LiveSplit One?";
                 return e.returnValue;
@@ -256,7 +272,7 @@ export class LiveSplit extends React.Component<Props, State> {
             "resize",
             expect(this.resizeEvent, "A Resize Event should exist"),
         );
-        this.state.timer[Symbol.dispose]();
+        this.state.eventSink[Symbol.dispose]();
         this.state.layout[Symbol.dispose]();
         this.state.layoutState[Symbol.dispose]();
         this.state.hotkeySystem?.[Symbol.dispose]();
@@ -289,7 +305,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 layoutHeight={this.state.layoutHeight}
                 generalSettings={this.state.generalSettings}
                 isDesktop={this.state.isDesktop}
-                timer={this.state.timer}
+                eventSink={this.state.eventSink}
                 renderer={this.state.renderer}
                 callbacks={this}
             />;
@@ -299,6 +315,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 hotkeyConfig={this.state.menu.config}
                 urlCache={this.state.layoutUrlCache}
                 callbacks={this}
+                eventSink={this.state.eventSink}
                 serverConnection={this.state.serverConnection}
             />;
         } else if (this.state.menu.kind === MenuKind.About) {
@@ -306,7 +323,7 @@ export class LiveSplit extends React.Component<Props, State> {
         } else if (this.state.menu.kind === MenuKind.Splits) {
             return <SplitsSelection
                 generalSettings={this.state.generalSettings}
-                timer={this.state.timer}
+                eventSink={this.state.eventSink}
                 openedSplitsKey={this.state.openedSplitsKey}
                 callbacks={this}
             />;
@@ -321,10 +338,14 @@ export class LiveSplit extends React.Component<Props, State> {
                 isDesktop={this.state.isDesktop}
                 renderWithSidebar={true}
                 sidebarOpen={this.state.sidebarOpen}
-                timer={this.state.timer}
+                eventSink={this.state.eventSink}
                 renderer={this.state.renderer}
                 serverConnection={this.state.serverConnection}
                 callbacks={this}
+                currentComparison={this.state.currentComparison}
+                currentTimingMethod={this.state.currentTimingMethod}
+                currentPhase={this.state.currentPhase}
+                currentSplitIndex={this.state.currentSplitIndex}
             />;
         } else if (this.state.menu.kind === MenuKind.Layout) {
             return <LayoutView
@@ -337,10 +358,14 @@ export class LiveSplit extends React.Component<Props, State> {
                 isDesktop={this.state.isDesktop}
                 renderWithSidebar={true}
                 sidebarOpen={this.state.sidebarOpen}
-                timer={this.state.timer}
+                eventSink={this.state.eventSink}
                 renderer={this.state.renderer}
                 serverConnection={this.state.serverConnection}
                 callbacks={this}
+                currentComparison={this.state.currentComparison}
+                currentTimingMethod={this.state.currentTimingMethod}
+                currentPhase={this.state.currentPhase}
+                currentSplitIndex={this.state.currentSplitIndex}
             />;
         }
         // Only get here if the type is invalid
@@ -467,7 +492,7 @@ export class LiveSplit extends React.Component<Props, State> {
         if (save) {
             if (splitsKey == null) {
                 assertNull(
-                    this.writeWith((t) => t.setRun(run)),
+                    this.state.eventSink.setRun(run),
                     "The Run Editor should always return a valid Run.",
                 );
             } else {
@@ -641,7 +666,7 @@ export class LiveSplit extends React.Component<Props, State> {
 
     private setRun(run: Run, callback: () => void) {
         maybeDisposeAndThen(
-            this.writeWith((t) => t.setRun(run)),
+            this.state.eventSink.setRun(run),
             callback,
         );
         this.setSplitsKey(undefined);
@@ -690,14 +715,6 @@ export class LiveSplit extends React.Component<Props, State> {
         e.preventDefault();
     }
 
-    private writeWith<T>(action: (timer: TimerRefMut) => T): T {
-        return this.state.timer.writeWith(action);
-    }
-
-    private readWith<T>(action: (timer: TimerRef) => T): T {
-        return this.state.timer.readWith(action);
-    }
-
     onServerConnectionOpened(serverConnection: LiveSplitServer): void {
         this.setState({ serverConnection });
     }
@@ -706,57 +723,35 @@ export class LiveSplit extends React.Component<Props, State> {
         this.setState({ serverConnection: null });
     }
 
-    start() {
-        this.writeWith((t) => t.start());
-    }
-
-    split() {
-        this.writeWith((t) => t.split());
-    }
-
-    splitOrStart() {
-        this.writeWith((t) => t.splitOrStart());
-    }
-
-    reset() {
-        this.writeWith((t) => t.reset(true));
-    }
-
-    togglePauseOrStart() {
-        this.writeWith((t) => t.togglePauseOrStart());
-    }
-
-    undoSplit() {
-        this.writeWith((t) => t.undoSplit());
-    }
-
-    skipSplit() {
-        this.writeWith((t) => t.skipSplit());
-    }
-
-    initializeGameTime() {
-        this.writeWith((t) => t.initializeGameTime());
-    }
-
-    setGameTime(gameTime: string) {
-        using time = TimeSpan.parse(gameTime);
-        if (time !== null) {
-            this.writeWith((t) => t.setGameTime(time));
+    currentComparisonChanged(): void {
+        if (this.state != null) {
+            this.setState({
+                currentComparison: this.state.eventSink.currentComparison(),
+            });
         }
     }
 
-    setLoadingTimes(loadingTimes: string) {
-        using time = TimeSpan.parse(loadingTimes);
-        if (time !== null) {
-            this.writeWith((t) => t.setLoadingTimes(time));
+    currentTimingMethodChanged(): void {
+        if (this.state != null) {
+            this.setState({
+                currentTimingMethod: this.state.eventSink.currentTimingMethod(),
+            });
         }
     }
 
-    pauseGameTime() {
-        this.writeWith((t) => t.pauseGameTime());
+    currentPhaseChanged(): void {
+        if (this.state != null) {
+            this.setState({
+                currentPhase: this.state.eventSink.currentPhase(),
+            });
+        }
     }
 
-    resumeGameTime() {
-        this.writeWith((t) => t.resumeGameTime());
+    currentSplitChanged(): void {
+        if (this.state != null) {
+            this.setState({
+                currentSplitIndex: this.state.eventSink.currentSplitIndex(),
+            });
+        }
     }
 }
