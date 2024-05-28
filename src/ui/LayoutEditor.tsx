@@ -6,6 +6,7 @@ import { UrlCache } from "../util/UrlCache";
 import Layout from "../layout/Layout";
 import { WebRenderer } from "../livesplit-core/livesplit_core";
 import { GeneralSettings } from "./SettingsEditor";
+import { LSOEventSink } from "./LSOEventSink";
 
 import "../css/LayoutEditor.scss";
 
@@ -18,7 +19,7 @@ export interface Props {
     layoutHeight: number,
     generalSettings: GeneralSettings,
     isDesktop: boolean,
-    timer: LiveSplit.SharedTimerRef,
+    eventSink: LSOEventSink,
     renderer: WebRenderer,
     callbacks: Callbacks,
 }
@@ -247,7 +248,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                             <button
                                 aria-label="Remove Component"
                                 onClick={(_) => this.removeComponent()}
-                                className={this.state.editor.buttons.can_remove ? "" : "disabled"}
+                                disabled={!this.state.editor.buttons.can_remove}
                             >
                                 <i className="fa fa-minus" aria-hidden="true"></i>
                             </button>
@@ -260,14 +261,14 @@ export class LayoutEditor extends React.Component<Props, State> {
                             <button
                                 aria-label="Move Component Up"
                                 onClick={(_) => this.moveComponentUp()}
-                                className={this.state.editor.buttons.can_move_up ? "" : "disabled"}
+                                disabled={!this.state.editor.buttons.can_move_up}
                             >
                                 <i className="fa fa-arrow-up" aria-hidden="true"></i>
                             </button>
                             <button
                                 aria-label="Move Component Down"
                                 onClick={(_) => this.moveComponentDown()}
-                                className={this.state.editor.buttons.can_move_down ? "" : "disabled"}
+                                disabled={!this.state.editor.buttons.can_move_down}
                             >
                                 <i className="fa fa-arrow-down" aria-hidden="true"></i>
                             </button>
@@ -314,13 +315,15 @@ export class LayoutEditor extends React.Component<Props, State> {
                 </div>
                 <div className="layout-container">
                     <Layout
-                        getState={() => this.props.timer.readWith(
-                            (t) => {
-                                this.props.editor.updateLayoutState(this.props.layoutState, this.props.layoutUrlCache.imageCache, t);
-                                this.props.layoutUrlCache.collect();
-                                return this.props.layoutState;
-                            },
-                        )}
+                        getState={() => {
+                            this.props.eventSink.updateLayoutEditorLayoutState(
+                                this.props.editor,
+                                this.props.layoutState,
+                                this.props.layoutUrlCache.imageCache,
+                            );
+                            this.props.layoutUrlCache.collect();
+                            return this.props.layoutState;
+                        }}
                         layoutUrlCache={this.props.layoutUrlCache}
                         allowResize={this.props.isDesktop}
                         width={this.props.layoutWidth}

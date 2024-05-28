@@ -3,7 +3,7 @@ import {
     getSplitsInfos, SplitsInfo, deleteSplits, copySplits, loadSplits,
     storeRunWithoutDisposing, storeSplitsKey,
 } from "../storage";
-import { Run, Segment, SharedTimerRef, TimerPhase } from "../livesplit-core";
+import { Run, Segment, TimerPhase } from "../livesplit-core";
 import * as SplitsIO from "../util/SplitsIO";
 import { toast } from "react-toastify";
 import { openFileAsArrayBuffer, exportFile, convertFileToArrayBuffer } from "../util/FileUtil";
@@ -12,6 +12,7 @@ import * as Storage from "../storage";
 import DragUpload from "./DragUpload";
 import { ContextMenuTrigger, ContextMenu, MenuItem } from "react-contextmenu";
 import { GeneralSettings } from "./SettingsEditor";
+import { LSOEventSink } from "./LSOEventSink";
 
 import "../css/SplitsSelection.scss";
 
@@ -21,7 +22,7 @@ export interface EditingInfo {
 }
 
 export interface Props {
-    timer: SharedTimerRef,
+    eventSink: LSOEventSink,
     openedSplitsKey?: number,
     callbacks: Callbacks,
     generalSettings: GeneralSettings,
@@ -183,18 +184,12 @@ export class SplitsSelection extends React.Component<Props, State> {
                 <h1>Splits</h1>
                 <hr />
                 <button onClick={(_) => {
-                    const run = this.props.timer.readWith((t) => {
-                        if ((t.currentPhase() as TimerPhase) === TimerPhase.NotRunning) {
-                            return t.getRun().clone();
-                        } else {
-                            return null;
-                        }
-                    });
-                    if (run !== null) {
-                        this.props.callbacks.openRunEditor({ run });
-                    } else {
+                    if (this.props.eventSink.currentPhase() !== TimerPhase.NotRunning) {
                         toast.error("You can't edit your run while the timer is running.");
+                        return;
                     }
+                    const run = this.props.eventSink.getRun().clone();
+                    this.props.callbacks.openRunEditor({ run });
                 }}>
                     <i className="fa fa-edit" aria-hidden="true" /> Edit
                 </button>
@@ -233,7 +228,7 @@ export class SplitsSelection extends React.Component<Props, State> {
     }
 
     private async openSplits(key: number) {
-        const isModified = this.props.timer.readWith((t) => t.getRun().hasBeenModified());
+        const isModified = this.props.eventSink.hasBeenModified();
         if (isModified && !confirm(
             "Your current splits are modified and have unsaved changes. Do you want to continue and discard those changes?",
         )) {
@@ -242,7 +237,7 @@ export class SplitsSelection extends React.Component<Props, State> {
 
         using run = await this.getRunFromKey(key);
         maybeDisposeAndThen(
-            this.props.timer.writeWith((timer) => timer.setRun(run)),
+            this.props.eventSink.setRun(run),
             () => toast.error("The loaded splits are invalid."),
         );
         this.props.callbacks.setSplitsKey(key);
@@ -262,12 +257,9 @@ export class SplitsSelection extends React.Component<Props, State> {
     }
 
     private exportTimerSplits() {
-        const [lss, name] = this.props.timer.writeWith((t) => {
-            t.markAsUnmodified();
-            const name = t.getRun().extendedFileName(true);
-            const lss = t.saveAsLssBytes();
-            return [lss, name];
-        });
+        this.props.eventSink.markAsUnmodified();
+        const name = this.props.eventSink.extendedFileName(true);
+        const lss = this.props.eventSink.saveAsLssBytes();
         try {
             exportFile(name + ".lss", lss);
         } catch (_) {
@@ -332,10 +324,8 @@ export class SplitsSelection extends React.Component<Props, State> {
         try {
             const openedSplitsKey = await Storage.storeSplits(
                 (callback) => {
-                    this.props.timer.writeWith((timer) => {
-                        callback(timer.getRun(), timer.saveAsLssBytes());
-                        timer.markAsUnmodified();
-                    });
+                    callback(this.props.eventSink.getRun(), this.props.eventSink.saveAsLssBytes());
+                    this.props.eventSink.markAsUnmodified();
                 },
                 this.props.openedSplitsKey,
             );
@@ -364,7 +354,7 @@ export class SplitsSelection extends React.Component<Props, State> {
     }
 
     private async uploadTimerToSplitsIO(): Promise<Option<Window>> {
-        const lss = this.props.timer.readWith((t) => t.saveAsLssBytes());
+        const lss = this.props.eventSink.saveAsLssBytes();
 
         try {
             const claimUri = await SplitsIO.uploadLss(new Blob([lss]));

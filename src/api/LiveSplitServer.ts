@@ -1,21 +1,5 @@
 import { toast } from "react-toastify";
-
-interface Callbacks {
-    start(): void,
-    split(): void,
-    splitOrStart(): void,
-    reset(): void,
-    togglePauseOrStart(): void,
-    undoSplit(): void,
-    skipSplit(): void,
-    initializeGameTime(): void,
-    setGameTime(time: string): void,
-    setLoadingTimes(time: string): void,
-    pauseGameTime(): void,
-    resumeGameTime(): void,
-    forceUpdate(): void,
-    onServerConnectionClosed(): void;
-}
+import { LSOEventSink } from "../ui/LSOEventSink";
 
 export class LiveSplitServer {
     private connection: WebSocket;
@@ -23,7 +7,9 @@ export class LiveSplitServer {
 
     constructor(
         url: string,
-        private callbacks: Callbacks,
+        private forceUpdate: () => void,
+        onServerConnectionClosed: () => void,
+        eventSink: LSOEventSink,
     ) {
         try {
             this.connection = new WebSocket(url);
@@ -32,36 +18,48 @@ export class LiveSplitServer {
             throw e;
         }
 
-        callbacks.forceUpdate();
+        forceUpdate();
 
         let wasConnected = false;
 
         this.connection.onopen = (_) => {
             wasConnected = true;
             toast.info("Connected to the server.");
-            callbacks.forceUpdate();
+            forceUpdate();
         };
 
-        this.connection.onerror = (e) => {
-            toast.error(e);
+        this.connection.onerror = () => {
+            // The onerror event does not contain any useful information.
+            toast.error("An error while communicating with the server occurred.");
         };
 
         this.connection.onmessage = (e) => {
             if (typeof e.data === "string") {
-                const [command, ...args] = e.data.split(" ");
+                const index = e.data.indexOf(" ");
+                let command = e.data;
+                let arg = "";
+                if (index >= 0) {
+                    command = e.data.substring(0, index);
+                    arg = e.data.substring(index + 1);
+                }
                 switch (command) {
-                    case "start": callbacks.start(); break;
-                    case "split": callbacks.split(); break;
-                    case "splitorstart": callbacks.splitOrStart(); break;
-                    case "reset": callbacks.reset(); break;
-                    case "togglepause": callbacks.togglePauseOrStart(); break;
-                    case "undo": callbacks.undoSplit(); break;
-                    case "skip": callbacks.skipSplit(); break;
-                    case "initgametime": callbacks.initializeGameTime(); break;
-                    case "setgametime": callbacks.setGameTime(args[0]); break;
-                    case "setloadingtimes": callbacks.setLoadingTimes(args[0]); break;
-                    case "pausegametime": callbacks.pauseGameTime(); break;
-                    case "resumegametime": callbacks.resumeGameTime(); break;
+                    case "start": eventSink.start(); break;
+                    case "split": eventSink.split(); break;
+                    case "splitorstart": eventSink.splitOrStart(); break;
+                    case "reset": eventSink.reset(); break;
+                    case "togglepause": eventSink.togglePauseOrStart(); break;
+                    case "undo": eventSink.undoSplit(); break;
+                    case "skip": eventSink.skipSplit(); break;
+                    case "initgametime": eventSink.initializeGameTime(); break;
+                    case "setgametime": eventSink.setGameTimeString(arg ?? ""); break;
+                    case "setloadingtimes": eventSink.setLoadingTimesString(arg ?? ""); break;
+                    case "pausegametime": eventSink.pauseGameTime(); break;
+                    case "resumegametime": eventSink.resumeGameTime(); break;
+                    case "setvariable": {
+                        const [key, value] = JSON.parse(arg ?? "");
+                        eventSink.setCustomVariable(key, value);
+                        break;
+                    }
                 }
             }
         };
@@ -77,8 +75,8 @@ export class LiveSplitServer {
             } else {
                 toast.error(`Failed to connect to the server${reason}`);
             }
-            callbacks.onServerConnectionClosed();
-            callbacks.forceUpdate();
+            onServerConnectionClosed();
+            forceUpdate();
         };
     }
 
@@ -86,7 +84,7 @@ export class LiveSplitServer {
         if (this.connection.readyState === WebSocket.OPEN) {
             this.wasIntendingToDisconnect = true;
             this.connection.close();
-            this.callbacks.forceUpdate();
+            this.forceUpdate();
         }
     }
 

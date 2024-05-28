@@ -323,19 +323,19 @@ export class RunEditor extends React.Component<Props, State> {
                 </button>
                 <button
                     onClick={(_) => this.removeSegments()}
-                    className={this.state.editor.buttons.can_remove ? "" : "disabled"}
+                    disabled={!this.state.editor.buttons.can_remove}
                 >
                     Remove Segment
                 </button>
                 <button
                     onClick={(_) => this.moveSegmentsUp()}
-                    className={this.state.editor.buttons.can_move_up ? "" : "disabled"}
+                    disabled={!this.state.editor.buttons.can_move_up}
                 >
                     Move Up
                 </button>
                 <button
                     onClick={(_) => this.moveSegmentsDown()}
-                    className={this.state.editor.buttons.can_move_down ? "" : "disabled"}
+                    disabled={!this.state.editor.buttons.can_move_down}
                 >
                     Move Down
                 </button>
@@ -662,12 +662,9 @@ export class RunEditor extends React.Component<Props, State> {
                             window.open(`${gameInfo.weblink}?x=${category.id}`, "_blank");
                         }
                     }}
-                    className={category == null ? "disabled" : ""}
+                    disabled={category == null}
                 >
                     Open Leaderboard
-                </button>
-                <button className="disabled">
-                    Submit Run
                 </button>
                 <button onClick={(_) => this.interactiveAssociateRunOrOpenPage()}>
                     {this.state.editor.metadata.run_id !== "" ? "Open PB Page" : "Associate Run"}
