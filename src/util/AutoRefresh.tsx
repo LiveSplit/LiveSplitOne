@@ -4,6 +4,7 @@ import { FRAME_RATE_AUTOMATIC, FrameRateSetting, batteryAwareFrameRate } from ".
 export interface Props {
     frameRate: FrameRateSetting,
     update(): void,
+    children: React.ReactNode,
 }
 
 export default class AutoRefresh extends React.Component<Props> {
