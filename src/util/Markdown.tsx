@@ -22,13 +22,16 @@ export function replaceFlag(countryCode: string): JSX.Element {
     return <img className="flag" src={url} alt={countryCode} />;
 }
 
-export function renderMarkdown(markdown: string): JSX.Element {
+export function renderMarkdown(markdown: string, options: {
+    softBreak?: boolean,
+    escapeHtml?: boolean,
+} = {}): JSX.Element {
     const markdownWithEmotes = replaceTwitchEmotes(markdown);
     const parsed = new CommonMarkParser().parse(markdownWithEmotes);
     const renderedMarkdown = new CommonMarkRenderer({
-        escapeHtml: true,
+        escapeHtml: options.escapeHtml ?? true,
         linkTarget: "_blank",
-        softBreak: "br",
+        softBreak: options.softBreak === false ? undefined : "br",
     }).render(parsed);
 
     return (

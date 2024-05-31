@@ -13,6 +13,36 @@ import fetch from "node-fetch";
 import { fileURLToPath } from 'url';
 import * as sass from "sass";
 
+function parseChangelog() {
+    return execSync("git log --grep \"^Changelog: \" -10")
+        .toString()
+        .split(/^commit /)
+        .slice(1)
+        .map((commit) => {
+            const changelogIndex = commit.indexOf("    Changelog: ");
+            if (changelogIndex === -1) {
+                return {};
+            }
+            const dateIndex = commit.indexOf("Date:   ");
+            if (dateIndex === -1) {
+                return {};
+            }
+            const afterDate = commit.substring(dateIndex + 8);
+            const date = moment(new Date(afterDate.substring(0, afterDate.indexOf("\n")))).utc().format("YYYY-MM-DD");
+            const id = commit.substring(0, commit.indexOf("\n"));
+            const message = commit
+                .substring(changelogIndex + 15)
+                .replaceAll("\n    ", "\n")
+                .trim();
+            return {
+                id,
+                message,
+                date,
+            };
+        })
+        .filter((changelog) => changelog.message);
+}
+
 export default async (env, argv) => {
     const getContributorsForRepo = async (repoName) => {
         const contributorsData = await fetch(`https://api.github.com/repos/LiveSplit/${repoName}/contributors`);
@@ -40,9 +70,13 @@ export default async (env, argv) => {
 
     const contributorsList = Object.values(coreContributorsMap)
         .sort((user1, user2) => user2.contributions - user1.contributions)
-        .map((user) => user.login);
+        .map((user) => {
+            return { id: user.id, name: user.login };
+        });
     const commitHash = execSync("git rev-parse --short HEAD").toString();
     const date = moment.utc().format("YYYY-MM-DD kk:mm:ss z");
+
+    const changelog = parseChangelog();
 
     const basePath = path.dirname(fileURLToPath(import.meta.url));
 
@@ -97,6 +131,7 @@ export default async (env, argv) => {
                 BUILD_DATE: JSON.stringify(date),
                 COMMIT_HASH: JSON.stringify(commitHash),
                 CONTRIBUTORS_LIST: JSON.stringify(contributorsList),
+                CHANGELOG: JSON.stringify(changelog),
             }),
             ...(isProduction ? [
                 new HtmlInlineScriptPlugin({
