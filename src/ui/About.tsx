@@ -1,6 +1,8 @@
 import * as React from "react";
 
 import LiveSplitIcon from "../assets/icon.svg";
+import { renderMarkdown } from "../util/Markdown";
+import variables from "../css/variables.scss";
 
 import "../css/About.scss";
 
@@ -13,6 +15,13 @@ interface Callbacks {
     openTimerView(): void,
 }
 
+const changelogRenderSettings = {
+    softBreak: false,
+    escapeHtml: false,
+};
+
+const contributorAvatarSize = parseFloat(variables.contributorAvatarSize);
+
 export class About extends React.Component<Props> {
     public render() {
         const renderedView = this.renderView();
@@ -21,6 +30,8 @@ export class About extends React.Component<Props> {
     }
 
     private renderView() {
+        const idealAvatarResolution = Math.round(devicePixelRatio * contributorAvatarSize);
+
         return (
             <div className="about">
                 <div className="about-inner-container">
@@ -42,14 +53,35 @@ export class About extends React.Component<Props> {
                             View Source Code on GitHub
                         </a>
                     </p>
-                    <h2 className="contributors-header">Contributors</h2>
-                    {
-                        CONTRIBUTORS_LIST.map((contributor) => (
-                            <p className="contributor">
-                                <a href={`https://github.com/${contributor}`} target="_blank">{contributor}</a>
-                            </p>
-                        ))
-                    }
+                    <h2>Recent Changes</h2>
+                    <div className="changelog">
+                        {
+                            CHANGELOG.map((change) => (
+                                <>
+                                    <a href={`https://github.com/LiveSplit/LiveSplitOne/commit/${change.id}`} target="_blank">
+                                        {change.date}
+                                    </a>
+                                    <div>
+                                        {renderMarkdown(change.message, changelogRenderSettings)}
+                                    </div>
+                                </>
+                            ))
+                        }
+                    </div>
+                    <h2>Contributors</h2>
+                    <div className="contributors">
+                        {
+                            CONTRIBUTORS_LIST.map((contributor) => (
+                                <a href={`https://github.com/${contributor.name}`} target="_blank">
+                                    <img
+                                        src={`https://avatars.githubusercontent.com/u/${contributor.id}?s=${idealAvatarResolution}&v=4`}
+                                        onError={(e) => (e.target as any).remove()}
+                                    />
+                                    {contributor.name}
+                                </a>
+                            ))
+                        }
+                    </div>
                 </div>
             </div>
         );
