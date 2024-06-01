@@ -21,14 +21,13 @@ function parseChangelog() {
         .map((commit) => {
             const changelogIndex = commit.indexOf("    Changelog: ");
             if (changelogIndex === -1) {
-                return {};
+                throw `Changelog not found in commit:\n${commit}`;
             }
-            const dateIndex = commit.indexOf(/^Date:   /);
-            if (dateIndex === -1) {
-                return {};
+            const dateString = commit.match(/^Date:   (.*)$/m)?.[1];
+            if (!dateString) {
+                throw `Date not found in commit:\n${commit}`;
             }
-            const afterDate = commit.substring(dateIndex + 8);
-            const date = moment(new Date(afterDate.substring(0, afterDate.indexOf("\n")))).utc().format("YYYY-MM-DD");
+            const date = moment(new Date(dateString)).utc().format("YYYY-MM-DD");
             const id = commit.substring(0, commit.indexOf("\n"));
             const message = commit
                 .substring(changelogIndex + 15)
