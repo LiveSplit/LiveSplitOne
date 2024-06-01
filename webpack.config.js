@@ -23,7 +23,7 @@ function parseChangelog() {
             if (changelogIndex === -1) {
                 return {};
             }
-            const dateIndex = commit.indexOf("Date:   ");
+            const dateIndex = commit.indexOf(/^Date:   /);
             if (dateIndex === -1) {
                 return {};
             }
@@ -69,7 +69,10 @@ export default async (env, argv) => {
     }
 
     const contributorsList = Object.values(coreContributorsMap)
-        .sort((user1, user2) => user2.contributions - user1.contributions)
+        // Sort by contributions, but fallback to alphabetical order for the
+        // same amount of contributions
+        .sort((a, b) => a.login > b.login ? 1 : b.login > a.login ? -1 : 0)
+        .sort((a, b) => b.contributions - a.contributions)
         .map((user) => {
             return { id: user.id, name: user.login };
         });
