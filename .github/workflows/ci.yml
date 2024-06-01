@@ -63,7 +63,7 @@ jobs:
         mv wasm-bindgen-${{ steps.wasm-bindgen.outputs.version }}-x86_64-unknown-linux-musl/wasm* .
 
     - name: Install npm packages
-      run: npm ci
+      run: npm ci -f
       env:
         DETECT_CHROMEDRIVER_VERSION: true
 

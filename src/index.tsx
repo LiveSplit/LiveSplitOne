@@ -29,12 +29,12 @@ try {
     const [
         { LiveSplit },
         React,
-        ReactDOM,
-        { toast, ToastContainer },
+        { createRoot },
+        { ToastContainer },
     ] = await Promise.all([
         import("./ui/LiveSplit"),
         import("react"),
-        import("react-dom"),
+        import("react-dom/client"),
         import("react-toastify"),
     ]);
 
@@ -81,7 +81,9 @@ try {
             // should still have the fallback fonts that we can fall back to.
         }
 
-        ReactDOM.render(
+        const container = document.getElementById("base");
+        const root = createRoot(container!);
+        root.render(
             <div>
                 <LiveSplit
                     splits={splits}
@@ -93,13 +95,12 @@ try {
                     generalSettings={generalSettings}
                 />
                 <ToastContainer
-                    position={toast.POSITION.BOTTOM_RIGHT}
+                    position="bottom-right"
                     toastClassName="toast-class"
                     bodyClassName="toast-body"
                     theme="dark"
                 />
             </div>,
-            document.getElementById("base"),
         );
     } catch (e: any) {
         if (e.name === "InvalidStateError") {
