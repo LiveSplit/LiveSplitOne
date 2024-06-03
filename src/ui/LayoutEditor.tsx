@@ -18,6 +18,7 @@ export interface Props {
     layoutWidth: number,
     layoutHeight: number,
     generalSettings: GeneralSettings,
+    allComparisons: string[],
     isDesktop: boolean,
     eventSink: LSOEventSink,
     renderer: WebRenderer,
@@ -103,6 +104,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                     factory={LiveSplit.SettingValue}
                     state={this.state.editor.component_settings}
                     editorUrlCache={this.props.layoutEditorUrlCache}
+                    allComparisons={this.props.allComparisons}
                     setValue={(index, value) => {
                         this.props.editor.setComponentSettingsValue(index, value);
                         this.update();
@@ -114,6 +116,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                     factory={LiveSplit.SettingValue}
                     state={this.state.editor.general_settings}
                     editorUrlCache={this.props.layoutEditorUrlCache}
+                    allComparisons={this.props.allComparisons}
                     setValue={(index, value) => {
                         this.props.editor.setGeneralSettingsValue(
                             index,

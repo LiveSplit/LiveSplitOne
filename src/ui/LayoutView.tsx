@@ -26,6 +26,7 @@ export interface Props {
     currentTimingMethod: TimingMethod,
     currentPhase: TimerPhase,
     currentSplitIndex: number,
+    allComparisons: string[],
 }
 
 interface Callbacks {
@@ -67,6 +68,7 @@ export class LayoutView extends React.Component<Props> {
             currentTimingMethod={this.props.currentTimingMethod}
             currentPhase={this.props.currentPhase}
             currentSplitIndex={this.props.currentSplitIndex}
+            allComparisons={this.props.allComparisons}
         />;
         const sidebarContent = this.renderSidebarContent();
         return this.props.callbacks.renderViewWithSidebar(renderedView, sidebarContent);

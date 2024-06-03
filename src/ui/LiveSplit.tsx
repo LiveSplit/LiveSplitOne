@@ -84,6 +84,7 @@ export interface State {
     currentTimingMethod: TimingMethod,
     currentPhase: TimerPhase,
     currentSplitIndex: number,
+    allComparisons: string[],
 }
 
 export let hotkeySystem: Option<HotkeySystem> = null;
@@ -129,6 +130,7 @@ export class LiveSplit extends React.Component<Props, State> {
             () => this.currentTimingMethodChanged(),
             () => this.currentPhaseChanged(),
             () => this.currentSplitChanged(),
+            () => this.comparisonsListChanged(),
             () => this.onReset(),
         );
 
@@ -208,6 +210,7 @@ export class LiveSplit extends React.Component<Props, State> {
             currentTimingMethod: eventSink.currentTimingMethod(),
             currentPhase: eventSink.currentPhase(),
             currentSplitIndex: eventSink.currentSplitIndex(),
+            allComparisons: eventSink.getAllComparisons(),
         };
 
         this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
@@ -294,6 +297,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 editor={this.state.menu.editor}
                 callbacks={this}
                 runEditorUrlCache={this.state.runEditorUrlCache}
+                allComparisons={this.state.allComparisons}
                 generalSettings={this.state.generalSettings}
             />;
         } else if (this.state.menu.kind === MenuKind.LayoutEditor) {
@@ -305,6 +309,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 layoutWidth={this.state.layoutWidth}
                 layoutHeight={this.state.layoutHeight}
                 generalSettings={this.state.generalSettings}
+                allComparisons={this.state.allComparisons}
                 isDesktop={this.state.isDesktop}
                 eventSink={this.state.eventSink}
                 renderer={this.state.renderer}
@@ -318,6 +323,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 callbacks={this}
                 eventSink={this.state.eventSink}
                 serverConnection={this.state.serverConnection}
+                allComparisons={this.state.allComparisons}
             />;
         } else if (this.state.menu.kind === MenuKind.About) {
             return <About callbacks={this} />;
@@ -347,6 +353,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 currentTimingMethod={this.state.currentTimingMethod}
                 currentPhase={this.state.currentPhase}
                 currentSplitIndex={this.state.currentSplitIndex}
+                allComparisons={this.state.allComparisons}
             />;
         } else if (this.state.menu.kind === MenuKind.Layout) {
             return <LayoutView
@@ -367,6 +374,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 currentTimingMethod={this.state.currentTimingMethod}
                 currentPhase={this.state.currentPhase}
                 currentSplitIndex={this.state.currentSplitIndex}
+                allComparisons={this.state.allComparisons}
             />;
         }
         // Only get here if the type is invalid
@@ -771,6 +779,14 @@ export class LiveSplit extends React.Component<Props, State> {
         if (this.state != null) {
             this.setState({
                 currentSplitIndex: this.state.eventSink.currentSplitIndex(),
+            });
+        }
+    }
+
+    comparisonsListChanged(): void {
+        if (this.state != null) {
+            this.setState({
+                allComparisons: this.state.eventSink.getAllComparisons(),
             });
         }
     }

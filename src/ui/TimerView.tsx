@@ -32,6 +32,7 @@ export interface Props {
     currentTimingMethod: TimingMethod,
     currentPhase: TimerPhase,
     currentSplitIndex: number,
+    allComparisons: string[],
 }
 export interface State {
     manualGameTime: string,
@@ -214,21 +215,13 @@ export class TimerView extends React.Component<Props, State> {
                 </button>
                 <hr />
                 <h2>Compare Against</h2>
-                <div className="choose-comparison">
-                    <button
-                        aria-label="Switch to Previous Comparison"
-                        onClick={(_) => this.props.eventSink.switchToPreviousComparison()}
-                    >
-                        <i className="fa fa-caret-left" aria-hidden="true" />
-                    </button>
-                    <span>{this.props.currentComparison}</span>
-                    <button
-                        aria-label="Switch to Next Comparison"
-                        onClick={(_) => this.props.eventSink.switchToNextComparison()}
-                    >
-                        <i className="fa fa-caret-right" aria-hidden="true" />
-                    </button>
-                </div>
+                <select
+                    value={this.props.currentComparison}
+                    onChange={(e) => this.props.eventSink.setCurrentComparison(e.target.value)}
+                    className="choose-comparison"
+                >
+                    {this.props.allComparisons.map((comparison) => <option>{comparison}</option>)}
+                </select>
                 <div className="small">
                     <button
                         onClick={(_) => {

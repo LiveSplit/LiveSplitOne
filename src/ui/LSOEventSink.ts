@@ -10,6 +10,7 @@ export class LSOEventSink {
         private currentTimingMethodChanged: () => void,
         private currentPhaseChanged: () => void,
         private currentSplitChanged: () => void,
+        private comparisonListChanged: () => void,
         private onReset: () => void,
     ) {
         this.eventSink = new EventSink(new WebEventSink(this).intoGeneric());
@@ -106,6 +107,11 @@ export class LSOEventSink {
         this.currentComparisonChanged();
     }
 
+    public setCurrentComparison(comparison: string): void {
+        this.timer.setCurrentComparison(comparison);
+        this.currentComparisonChanged();
+    }
+
     public toggleTimingMethod(): void {
         this.timer.toggleTimingMethod();
         this.currentTimingMethodChanged();
@@ -160,6 +166,7 @@ export class LSOEventSink {
         this.currentComparisonChanged();
         this.currentPhaseChanged();
         this.currentSplitChanged();
+        this.comparisonListChanged();
 
         return result;
     }
@@ -214,6 +221,16 @@ export class LSOEventSink {
 
     public currentComparison(): string {
         return this.timer.currentComparison();
+    }
+
+    public getAllComparisons(): string[] {
+        const run = this.timer.getRun();
+        const len = run.comparisonsLen();
+        const comparisons = [];
+        for (let i = 0; i < len; i++) {
+            comparisons.push(run.comparison(i));
+        }
+        return comparisons;
     }
 
     public currentTimingMethod(): TimingMethod {
