@@ -28,6 +28,7 @@ export interface Props {
     callbacks: Callbacks,
     serverConnection: Option<LiveSplitServer>,
     eventSink: LSOEventSink,
+    allComparisons: string[],
 }
 
 export interface State {
@@ -68,6 +69,7 @@ export class SettingsEditor extends React.Component<Props, State> {
                     factory={SettingValue}
                     state={this.state.settings}
                     editorUrlCache={this.props.urlCache}
+                    allComparisons={this.props.allComparisons}
                     setValue={(index, value) => {
                         if (!this.props.hotkeyConfig.setValue(index, value)) {
                             toast.error("The hotkey is already in use.");
@@ -113,6 +115,7 @@ export class SettingsEditor extends React.Component<Props, State> {
                         ],
                     }}
                     editorUrlCache={this.props.urlCache}
+                    allComparisons={this.props.allComparisons}
                     setValue={(index, value) => {
                         switch (index) {
                             case 0:
@@ -196,6 +199,7 @@ export class SettingsEditor extends React.Component<Props, State> {
                         ],
                     }}
                     editorUrlCache={this.props.urlCache}
+                    allComparisons={this.props.allComparisons}
                     setValue={(index, value) => {
                         switch (index) {
                             case 0:

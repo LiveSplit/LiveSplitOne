@@ -28,6 +28,7 @@ export interface Props {
     editor: LiveSplit.RunEditor,
     callbacks: Callbacks,
     runEditorUrlCache: UrlCache,
+    allComparisons: string[],
     generalSettings: GeneralSettings,
 }
 export interface State {
@@ -819,6 +820,7 @@ export class RunEditor extends React.Component<Props, State> {
                     factory={new JsonSettingValueFactory()}
                     state={{ fields }}
                     editorUrlCache={this.props.runEditorUrlCache}
+                    allComparisons={this.props.allComparisons}
                     setValue={(index, value) => {
                         function unwrapString(value: ExtendedSettingsDescriptionValueJson): string {
                             if ("String" in value) {

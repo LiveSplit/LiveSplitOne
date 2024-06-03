@@ -18,6 +18,7 @@ export interface Props<T> {
     state: ExtendedSettingsDescriptionJson,
     factory: SettingValueFactory<T>,
     editorUrlCache: UrlCache,
+    allComparisons: string[],
 }
 
 export interface ExtendedSettingsDescriptionJson {
@@ -257,44 +258,72 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     </div>
                 );
             } else if ("OptionalString" in value) {
-                const children = [
-                    <ToggleCheckbox
-                        value={value.OptionalString !== null}
-                        setValue={(value) => {
-                            if (value) {
-                                this.props.setValue(
-                                    valueIndex,
-                                    factory.fromOptionalString(""),
-                                );
-                            } else {
-                                this.props.setValue(
-                                    valueIndex,
-                                    factory.fromOptionalEmptyString(),
-                                );
-                            }
-                        }}
-                    />,
-                ];
-
-                if (value.OptionalString !== null) {
-                    children.push(
-                        <input
-                            value={value.OptionalString}
+                // FIXME: This is a hack that we need for now until the way
+                // settings are represented is refactored.
+                if (typeof (field.text) === "string" && /^Comparison( \d)?$/.test(field.text)) {
+                    component = <div className="settings-value-box">
+                        <select
+                            value={value.OptionalString ?? ""}
                             onChange={(e) => {
-                                this.props.setValue(
-                                    valueIndex,
-                                    factory.fromOptionalString(e.target.value),
-                                );
+                                if (e.target.value !== "") {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        factory.fromOptionalString(e.target.value),
+                                    );
+                                } else {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        factory.fromOptionalEmptyString(),
+                                    );
+                                }
+                            }}
+                        >
+                            <option value="">Current Comparison</option>
+                            {this.props.allComparisons.map((comparison) =>
+                                <option>{comparison}</option>
+                            )}
+                        </select>
+                    </div>;
+                } else {
+                    const children = [
+                        <ToggleCheckbox
+                            value={value.OptionalString !== null}
+                            setValue={(value) => {
+                                if (value) {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        factory.fromOptionalString(""),
+                                    );
+                                } else {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        factory.fromOptionalEmptyString(),
+                                    );
+                                }
                             }}
                         />,
+                    ];
+
+                    if (value.OptionalString !== null) {
+                        children.push(
+                            <input
+                                value={value.OptionalString}
+                                onChange={(e) => {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        factory.fromOptionalString(e.target.value),
+                                    );
+                                }}
+                            />,
+                        );
+                    }
+
+                    component = (
+                        <div className="settings-value-box optional-value">
+                            {children}
+                        </div>
                     );
                 }
-
-                component = (
-                    <div className="settings-value-box optional-value">
-                        {children}
-                    </div>
-                );
             } else if ("RemovableString" in value) {
                 component = (
                     <div className="settings-value-box removable-string">
