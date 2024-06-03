@@ -129,6 +129,7 @@ export class LiveSplit extends React.Component<Props, State> {
             () => this.currentTimingMethodChanged(),
             () => this.currentPhaseChanged(),
             () => this.currentSplitChanged(),
+            () => this.onReset(),
         );
 
         const hotkeys = props.hotkeys;
@@ -443,6 +444,7 @@ export class LiveSplit extends React.Component<Props, State> {
         try {
             const layout = this.state.layout.settingsAsJson();
             await Storage.storeLayout(layout);
+            toast.info("Layout saved successfully.");
         } catch (_) {
             toast.error("Failed to save the layout.");
         }
@@ -715,6 +717,24 @@ export class LiveSplit extends React.Component<Props, State> {
         e.preventDefault();
     }
 
+    async saveSplits() {
+        try {
+            const openedSplitsKey = await Storage.storeSplits(
+                (callback) => {
+                    callback(this.state.eventSink.getRun(), this.state.eventSink.saveAsLssBytes());
+                    this.state.eventSink.markAsUnmodified();
+                },
+                this.state.openedSplitsKey,
+            );
+            if (this.state.openedSplitsKey !== openedSplitsKey) {
+                this.setSplitsKey(openedSplitsKey);
+            }
+            toast.info("Splits saved successfully.");
+        } catch (_) {
+            toast.error("Failed to save the splits.");
+        }
+    }
+
     onServerConnectionOpened(serverConnection: LiveSplitServer): void {
         this.setState({ serverConnection });
     }
@@ -752,6 +772,12 @@ export class LiveSplit extends React.Component<Props, State> {
             this.setState({
                 currentSplitIndex: this.state.eventSink.currentSplitIndex(),
             });
+        }
+    }
+
+    onReset(): void {
+        if (this.state.generalSettings.saveOnReset) {
+            this.saveSplits();
         }
     }
 }

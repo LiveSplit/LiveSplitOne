@@ -15,7 +15,7 @@ export interface GeneralSettings {
     frameRate: FrameRateSetting,
     showControlButtons: boolean,
     showManualGameTime: boolean,
-    // saveOnReset: boolean,
+    saveOnReset: boolean,
     speedrunComIntegration: boolean,
     splitsIoIntegration: boolean,
     serverUrl: string | undefined,
@@ -103,6 +103,13 @@ export class SettingsEditor extends React.Component<Props, State> {
                                 tooltip: "Shows a text box beneath the timer that allows you to manually input the game time. You start the timer and do splits by pressing the Enter key in the text box. Make sure to compare against \"Game Time\".",
                                 value: { Bool: this.state.generalSettings.showManualGameTime },
                             },
+                            {
+                                text: "Save On Reset",
+                                tooltip: "Determines whether to automatically save the splits when resetting the timer.",
+                                value: {
+                                    Bool: this.state.generalSettings.saveOnReset,
+                                },
+                            },
                         ],
                     }}
                     editorUrlCache={this.props.urlCache}
@@ -138,6 +145,16 @@ export class SettingsEditor extends React.Component<Props, State> {
                                         generalSettings: {
                                             ...this.state.generalSettings,
                                             showManualGameTime: value.Bool,
+                                        },
+                                    });
+                                }
+                                break;
+                            case 3:
+                                if ("Bool" in value) {
+                                    this.setState({
+                                        generalSettings: {
+                                            ...this.state.generalSettings,
+                                            saveOnReset: value.Bool,
                                         },
                                     });
                                 }

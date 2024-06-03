@@ -8,7 +8,6 @@ import * as SplitsIO from "../util/SplitsIO";
 import { toast } from "react-toastify";
 import { openFileAsArrayBuffer, exportFile, convertFileToArrayBuffer } from "../util/FileUtil";
 import { Option, maybeDisposeAndThen } from "../util/OptionUtil";
-import * as Storage from "../storage";
 import DragUpload from "./DragUpload";
 import { ContextMenuTrigger, ContextMenu, MenuItem } from "react-contextmenu";
 import { GeneralSettings } from "./SettingsEditor";
@@ -37,6 +36,7 @@ interface Callbacks {
     setSplitsKey(newKey?: number): void,
     openTimerView(): void,
     renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
+    saveSplits(): Promise<void>,
 }
 
 export class SplitsSelection extends React.Component<Props, State> {
@@ -321,21 +321,8 @@ export class SplitsSelection extends React.Component<Props, State> {
     }
 
     private async saveSplits() {
-        try {
-            const openedSplitsKey = await Storage.storeSplits(
-                (callback) => {
-                    callback(this.props.eventSink.getRun(), this.props.eventSink.saveAsLssBytes());
-                    this.props.eventSink.markAsUnmodified();
-                },
-                this.props.openedSplitsKey,
-            );
-            if (this.props.openedSplitsKey !== openedSplitsKey) {
-                this.props.callbacks.setSplitsKey(openedSplitsKey);
-            }
-            this.refreshDb();
-        } catch (_) {
-            toast.error("Failed to save the splits.");
-        }
+        await this.props.callbacks.saveSplits();
+        this.refreshDb();
     }
 
     private async uploadSplitsToSplitsIO(key: number): Promise<Option<Window>> {

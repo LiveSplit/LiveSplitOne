@@ -10,6 +10,7 @@ export class LSOEventSink {
         private currentTimingMethodChanged: () => void,
         private currentPhaseChanged: () => void,
         private currentSplitChanged: () => void,
+        private onReset: () => void,
     ) {
         this.eventSink = new EventSink(new WebEventSink(this).intoGeneric());
     }
@@ -54,6 +55,7 @@ export class LSOEventSink {
 
         this.currentPhaseChanged();
         this.currentSplitChanged();
+        this.onReset();
     }
 
     public undoSplit(): void {

@@ -8,10 +8,10 @@ export interface Props {
 }
 
 export default class AutoRefresh extends React.Component<Props> {
-    private reqId: number | null = null;
+    private reqId?: number;
     private previousTime: number = 0;
 
-    public componentWillMount() {
+    public componentDidMount() {
         this.startAnimation();
     }
 
