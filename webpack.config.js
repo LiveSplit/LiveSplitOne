@@ -16,7 +16,7 @@ import * as sass from "sass";
 function parseChangelog() {
     return execSync("git log --grep \"^Changelog: \" -10")
         .toString()
-        .split(/^commit /)
+        .split(/^commit /m)
         .slice(1)
         .map((commit) => {
             const changelogIndex = commit.indexOf("    Changelog: ");

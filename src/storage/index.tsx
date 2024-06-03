@@ -252,6 +252,7 @@ export async function loadGeneralSettings(): Promise<GeneralSettings> {
         frameRate: generalSettings.frameRate ?? FRAME_RATE_AUTOMATIC,
         showControlButtons: generalSettings.showControlButtons ?? true,
         showManualGameTime: generalSettings.showManualGameTime ?? false,
+        saveOnReset: generalSettings.saveOnReset ?? false,
         speedrunComIntegration: generalSettings.speedrunComIntegration ?? true,
         splitsIoIntegration: generalSettings.splitsIoIntegration ?? true,
         serverUrl: generalSettings.serverUrl,
