@@ -25,6 +25,7 @@ export interface Props {
     openedSplitsKey?: number,
     callbacks: Callbacks,
     generalSettings: GeneralSettings,
+    splitsModified: boolean,
 }
 
 interface State {
@@ -195,6 +196,10 @@ export class SplitsSelection extends React.Component<Props, State> {
                 </button>
                 <button onClick={(_) => this.saveSplits()}>
                     <i className="fa fa-save" aria-hidden="true" /> Save
+                    {
+                        this.props.splitsModified &&
+                        <i className="fa fa-circle modified-icon" aria-hidden="true" />
+                    }
                 </button>
                 <button onClick={(_) => this.exportTimerSplits()}>
                     <i className="fa fa-upload" aria-hidden="true" /> Export

@@ -85,6 +85,8 @@ export interface State {
     currentPhase: TimerPhase,
     currentSplitIndex: number,
     allComparisons: string[],
+    splitsModified: boolean,
+    layoutModified: boolean,
 }
 
 export let hotkeySystem: Option<HotkeySystem> = null;
@@ -131,6 +133,7 @@ export class LiveSplit extends React.Component<Props, State> {
             () => this.currentPhaseChanged(),
             () => this.currentSplitChanged(),
             () => this.comparisonsListChanged(),
+            () => this.splitsModifiedChanged(),
             () => this.onReset(),
         );
 
@@ -211,6 +214,8 @@ export class LiveSplit extends React.Component<Props, State> {
             currentPhase: eventSink.currentPhase(),
             currentSplitIndex: eventSink.currentSplitIndex(),
             allComparisons: eventSink.getAllComparisons(),
+            splitsModified: eventSink.hasBeenModified(),
+            layoutModified: false,
         };
 
         this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
@@ -234,13 +239,12 @@ export class LiveSplit extends React.Component<Props, State> {
         this.resizeEvent = { handleEvent: () => this.handleAutomaticResize() };
         window.addEventListener("resize", this.resizeEvent, false);
 
-        window.onbeforeunload = (e: BeforeUnloadEvent) => {
-            const hasBeenModified = this.state.eventSink.hasBeenModified();
-            if (hasBeenModified) {
-                e.returnValue = "There are unsaved changes. Do you really want to close LiveSplit One?";
-                return e.returnValue;
+        window.onbeforeunload = () => {
+            if (this.state.splitsModified || this.state.layoutModified) {
+                return "There are unsaved changes. Do you really want to close LiveSplit One?";
+            } else {
+                return;
             }
-            return null;
         };
 
         // This is bound in the constructor
@@ -333,6 +337,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 eventSink={this.state.eventSink}
                 openedSplitsKey={this.state.openedSplitsKey}
                 callbacks={this}
+                splitsModified={this.state.splitsModified}
             />;
         } else if (this.state.menu.kind === MenuKind.Timer) {
             return <TimerView
@@ -354,6 +359,8 @@ export class LiveSplit extends React.Component<Props, State> {
                 currentPhase={this.state.currentPhase}
                 currentSplitIndex={this.state.currentSplitIndex}
                 allComparisons={this.state.allComparisons}
+                splitsModified={this.state.splitsModified}
+                layoutModified={this.state.layoutModified}
             />;
         } else if (this.state.menu.kind === MenuKind.Layout) {
             return <LayoutView
@@ -375,6 +382,8 @@ export class LiveSplit extends React.Component<Props, State> {
                 currentPhase={this.state.currentPhase}
                 currentSplitIndex={this.state.currentSplitIndex}
                 allComparisons={this.state.allComparisons}
+                splitsModified={this.state.splitsModified}
+                layoutModified={this.state.layoutModified}
             />;
         }
         // Only get here if the type is invalid
@@ -412,9 +421,8 @@ export class LiveSplit extends React.Component<Props, State> {
         );
     }
 
-    public openTimerView(layout: Layout = this.state.layout) {
+    public openTimerView() {
         this.setState({
-            layout,
             menu: { kind: MenuKind.Timer },
             sidebarOpen: false,
         });
@@ -452,7 +460,7 @@ export class LiveSplit extends React.Component<Props, State> {
         try {
             const layout = this.state.layout.settingsAsJson();
             await Storage.storeLayout(layout);
-            toast.info("Layout saved successfully.");
+            this.setState({ layoutModified: false }, () => this.updateBadge());
         } catch (_) {
             toast.error("Failed to save the layout.");
         }
@@ -544,12 +552,11 @@ export class LiveSplit extends React.Component<Props, State> {
         const layoutEditor = this.state.menu.editor;
         const layout = layoutEditor.close();
         if (save) {
-            this.state.layout[Symbol.dispose]();
-            this.openTimerView(layout);
+            this.setLayout(layout);
         } else {
             layout[Symbol.dispose]();
-            this.openTimerView();
         }
+        this.openTimerView();
     }
 
     public openSettingsEditor() {
@@ -669,9 +676,13 @@ export class LiveSplit extends React.Component<Props, State> {
 
     private setLayout(layout: Layout) {
         this.state.layout[Symbol.dispose]();
-        this.setState({
-            layout,
-        });
+        this.setState(
+            {
+                layout,
+                layoutModified: true,
+            },
+            () => this.updateBadge(),
+        );
     }
 
     private setRun(run: Run, callback: () => void) {
@@ -737,7 +748,6 @@ export class LiveSplit extends React.Component<Props, State> {
             if (this.state.openedSplitsKey !== openedSplitsKey) {
                 this.setSplitsKey(openedSplitsKey);
             }
-            toast.info("Splits saved successfully.");
         } catch (_) {
             toast.error("Failed to save the splits.");
         }
@@ -794,6 +804,31 @@ export class LiveSplit extends React.Component<Props, State> {
     onReset(): void {
         if (this.state.generalSettings.saveOnReset) {
             this.saveSplits();
+        }
+    }
+
+    splitsModifiedChanged(): void {
+        if (this.state != null) {
+            const splitsModified = this.state.eventSink.hasBeenModified();
+            this.setState({ splitsModified }, () => this.updateBadge());
+        }
+    }
+
+    private updateBadge(): void {
+        if (this.state.splitsModified || this.state.layoutModified) {
+            try {
+                navigator?.setAppBadge();
+            } catch {
+                // It's fine if this fails.
+            }
+            document.title = "*LiveSplit One";
+        } else {
+            try {
+                navigator?.clearAppBadge();
+            } catch {
+                // It's fine if this fails.
+            }
+            document.title = "LiveSplit One";
         }
     }
 }

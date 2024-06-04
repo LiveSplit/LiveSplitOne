@@ -27,6 +27,8 @@ export interface Props {
     currentPhase: TimerPhase,
     currentSplitIndex: number,
     allComparisons: string[],
+    splitsModified: boolean,
+    layoutModified: boolean,
 }
 
 interface Callbacks {
@@ -69,6 +71,8 @@ export class LayoutView extends React.Component<Props> {
             currentPhase={this.props.currentPhase}
             currentSplitIndex={this.props.currentSplitIndex}
             allComparisons={this.props.allComparisons}
+            splitsModified={this.props.splitsModified}
+            layoutModified={this.props.layoutModified}
         />;
         const sidebarContent = this.renderSidebarContent();
         return this.props.callbacks.renderViewWithSidebar(renderedView, sidebarContent);
@@ -84,6 +88,10 @@ export class LayoutView extends React.Component<Props> {
                 </button>
                 <button onClick={(_) => this.props.callbacks.saveLayout()}>
                     <i className="fa fa-save" aria-hidden="true" /> Save
+                    {
+                        this.props.layoutModified &&
+                        <i className="fa fa-circle modified-icon" aria-hidden="true" />
+                    }
                 </button>
                 <button onClick={(_) => this.props.callbacks.importLayout()}>
                     <i className="fa fa-download" aria-hidden="true" /> Import

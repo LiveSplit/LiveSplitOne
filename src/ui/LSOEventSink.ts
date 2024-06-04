@@ -11,6 +11,7 @@ export class LSOEventSink {
         private currentPhaseChanged: () => void,
         private currentSplitChanged: () => void,
         private comparisonListChanged: () => void,
+        private splitsModifiedChanged: () => void,
         private onReset: () => void,
     ) {
         this.eventSink = new EventSink(new WebEventSink(this).intoGeneric());
@@ -30,6 +31,7 @@ export class LSOEventSink {
 
         this.currentPhaseChanged();
         this.currentSplitChanged();
+        this.splitsModifiedChanged();
     }
 
     public split(): void {
@@ -44,6 +46,7 @@ export class LSOEventSink {
 
         this.currentPhaseChanged();
         this.currentSplitChanged();
+        this.splitsModifiedChanged();
     }
 
     public reset(): void {
@@ -167,6 +170,7 @@ export class LSOEventSink {
         this.currentPhaseChanged();
         this.currentSplitChanged();
         this.comparisonListChanged();
+        this.splitsModifiedChanged();
 
         return result;
     }
@@ -177,6 +181,7 @@ export class LSOEventSink {
 
     public markAsUnmodified(): void {
         this.timer.markAsUnmodified();
+        this.splitsModifiedChanged();
     }
 
     public getRun(): RunRef {
