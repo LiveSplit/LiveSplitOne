@@ -33,6 +33,8 @@ export interface Props {
     currentPhase: TimerPhase,
     currentSplitIndex: number,
     allComparisons: string[],
+    splitsModified: boolean,
+    layoutModified: boolean,
 }
 export interface State {
     manualGameTime: string,
@@ -209,9 +211,17 @@ export class TimerView extends React.Component<Props, State> {
                 <hr className="livesplit-title-separator" />
                 <button onClick={(_) => this.props.callbacks.openSplitsView()}>
                     <i className="fa fa-list" aria-hidden="true" /> Splits
+                    {
+                        this.props.splitsModified &&
+                        <i className="fa fa-circle modified-icon" aria-hidden="true" />
+                    }
                 </button>
                 <button onClick={(_) => this.props.callbacks.openLayoutView()}>
                     <i className="fa fa-layer-group" aria-hidden="true" /> Layout
+                    {
+                        this.props.layoutModified &&
+                        <i className="fa fa-circle modified-icon" aria-hidden="true" />
+                    }
                 </button>
                 <hr />
                 <h2>Compare Against</h2>
