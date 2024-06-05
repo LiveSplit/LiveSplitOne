@@ -80,6 +80,7 @@ export class LSOEventSink {
 
         this.currentPhaseChanged();
         this.currentSplitChanged();
+        this.splitsModifiedChanged();
     }
 
     public pause(): void {
