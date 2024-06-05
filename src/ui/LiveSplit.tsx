@@ -828,7 +828,13 @@ export class LiveSplit extends React.Component<Props, State> {
             } catch {
                 // It's fine if this fails.
             }
-            document.title = "*LiveSplit One";
+
+            // It's important that any change is at the end of the title,
+            // because at least Chrome then recognizes that it's an extension of
+            // the PWA name. Otherwise it would show:
+            // LiveSplit One - Window Title
+            // which would repeat LiveSplit One.
+            document.title = "LiveSplit One ●";
         } else {
             try {
                 navigator?.clearAppBadge();

@@ -49,9 +49,9 @@ try {
             generalSettings,
         } = await LiveSplit.loadStoredData();
 
-        function requestWakeLock() {
+        async function requestWakeLock() {
             try {
-                (navigator as any)?.wakeLock?.request("screen");
+                await (navigator as any)?.wakeLock?.request();
             } catch {
                 // It's fine if it fails.
             }

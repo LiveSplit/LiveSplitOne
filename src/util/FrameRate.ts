@@ -20,25 +20,30 @@ switch (navigator.platform) {
 
 export let batteryAwareFrameRate: FrameRate = batteryFrameRate;
 
+let computePressure: FrameRate = FRAME_RATE_MATCH_SCREEN;
+
 if ('PressureObserver' in window) {
-    try {
-        const observer = new (window as any).PressureObserver((records: any) => {
-            const state = records[0].state;
-            switch (state) {
-                case "serious":
-                    batteryAwareFrameRate = FRAME_RATE_SERIOUS;
-                    break;
-                case "critical":
-                    batteryAwareFrameRate = FRAME_RATE_CRITICAL;
-                    break;
-                default:
-                    batteryAwareFrameRate = batteryFrameRate;
-            }
-        });
-        observer.observe("cpu", { sampleInterval: 2_000 });
-    } catch {
-        // The Compute Pressure API is not supported by the browser.
-    }
+    (async () => {
+        try {
+            const observer = new (window as any).PressureObserver((records: any) => {
+                const state = records[0].state;
+                switch (state) {
+                    case "serious":
+                        computePressure = FRAME_RATE_SERIOUS;
+                        break;
+                    case "critical":
+                        computePressure = FRAME_RATE_CRITICAL;
+                        break;
+                    default:
+                        computePressure = FRAME_RATE_MATCH_SCREEN;
+                }
+                updateBatteryAwareFrameRate();
+            });
+            await observer.observe("cpu", { sampleInterval: 2_000 });
+        } catch {
+            // The Compute Pressure API is not supported by every browser.
+        }
+    })();
 }
 
 (async () => {
@@ -48,8 +53,22 @@ if ('PressureObserver' in window) {
             batteryFrameRate = batteryApi.charging === true
                 ? FRAME_RATE_MATCH_SCREEN
                 : FRAME_RATE_LOW_POWER;
+            updateBatteryAwareFrameRate();
         };
     } catch {
         // The battery API is not supported by every browser.
     }
 })();
+
+function updateBatteryAwareFrameRate() {
+    // Choose the lower of the two frame rates. If one of them is a string, it
+    // is "Match Screen", which has the lowest priority.
+
+    if (typeof batteryFrameRate === "string") {
+        batteryAwareFrameRate = computePressure;
+    } else if (typeof computePressure === "string") {
+        batteryAwareFrameRate = batteryFrameRate;
+    } else {
+        batteryAwareFrameRate = Math.min(batteryFrameRate, computePressure);
+    }
+}
