@@ -185,10 +185,16 @@ export async function copySplits(key: number) {
     await tx.done;
 }
 
-export async function storeLayout(layout: LayoutSettings) {
+export async function storeLayout(
+    layout: LayoutSettings,
+    layoutWidth: number,
+    layoutHeight: number,
+) {
     const db = await getDb();
 
     await db.put("settings", layout, "layout");
+    await db.put("settings", layoutWidth, "layoutWidth");
+    await db.put("settings", layoutHeight, "layoutHeight");
 }
 
 export async function loadLayout(): Promise<LayoutSettings | undefined> {
@@ -207,13 +213,6 @@ export async function loadHotkeys(): Promise<HotkeyConfigSettings | undefined> {
     const db = await getDb();
 
     return await db.get("settings", "hotkeys");
-}
-
-export async function storeLayoutDims(layoutWidth: number, layoutHeight: number) {
-    const db = await getDb();
-
-    await db.put("settings", layoutWidth, "layoutWidth");
-    await db.put("settings", layoutHeight, "layoutHeight");
 }
 
 export async function loadLayoutDims(): Promise<[number, number]> {

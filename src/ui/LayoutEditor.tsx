@@ -30,7 +30,7 @@ export interface State {
 }
 
 interface Callbacks {
-    onResize(width: number, height: number): Promise<void>,
+    onResize(width: number, height: number): void,
     renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
     closeLayoutEditor(save: boolean): void,
 }

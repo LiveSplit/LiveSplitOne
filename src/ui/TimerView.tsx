@@ -43,7 +43,7 @@ export interface State {
 interface Callbacks {
     importLayoutFromFile(file: File): Promise<void>,
     importSplitsFromFile(file: File): Promise<void>,
-    onResize(width: number, height: number): Promise<void>,
+    onResize(width: number, height: number): void,
     openAboutView(): void,
     openLayoutView(): void,
     openSplitsView(): void,
