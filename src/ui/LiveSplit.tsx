@@ -459,7 +459,11 @@ export class LiveSplit extends React.Component<Props, State> {
     public async saveLayout() {
         try {
             const layout = this.state.layout.settingsAsJson();
-            await Storage.storeLayout(layout);
+            await Storage.storeLayout(
+                layout,
+                this.state.storedLayoutWidth,
+                this.state.storedLayoutHeight,
+            );
             this.setState({ layoutModified: false }, () => this.updateBadge());
         } catch (_) {
             toast.error("Failed to save the layout.");
@@ -600,14 +604,17 @@ export class LiveSplit extends React.Component<Props, State> {
         this.openTimerView();
     }
 
-    public async onResize(width: number, height: number) {
-        this.setState({
-            layoutWidth: width,
-            layoutHeight: height,
-            storedLayoutWidth: width,
-            storedLayoutHeight: height,
-        });
-        await Storage.storeLayoutDims(width, height);
+    public onResize(width: number, height: number) {
+        this.setState(
+            {
+                layoutWidth: width,
+                layoutHeight: height,
+                storedLayoutWidth: width,
+                storedLayoutHeight: height,
+                layoutModified: true,
+            },
+            () => this.updateBadge(),
+        );
     }
 
     private getDefaultRun() {
