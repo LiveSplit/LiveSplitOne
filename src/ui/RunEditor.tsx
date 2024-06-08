@@ -314,6 +314,13 @@ export class RunEditor extends React.Component<Props, State> {
             }
         };
 
+        let comparisonsButtonContextTrigger: any = null;
+        const comparisonsButtonToggleMenu = (e: any) => {
+            if (comparisonsButtonContextTrigger) {
+                comparisonsButtonContextTrigger.handleContextClick(e);
+            }
+        };
+
         return (
             <div className="btn-group">
                 <button onClick={(_) => this.insertSegmentAbove()}>
@@ -340,20 +347,48 @@ export class RunEditor extends React.Component<Props, State> {
                 >
                     Move Down
                 </button>
-                <button onClick={(_) => this.addComparison()}>
-                    Add Comparison
-                </button>
-                <button onClick={(_) => this.importComparison()}>
-                    Import Comparison
+                <button onClick={(e) => comparisonsButtonToggleMenu(e)}>
+                    <ContextMenuTrigger
+                        id="comparisons-button-context-menu"
+                        ref={(c) => comparisonsButtonContextTrigger = c}
+                    >
+                        Comparisons…
+                    </ContextMenuTrigger>
                 </button>
                 <button onClick={(e) => otherButtonToggleMenu(e)}>
                     <ContextMenuTrigger
                         id="other-button-context-menu"
                         ref={(c) => otherButtonContextTrigger = c}
                     >
-                        Other…
+                        Cleaning…
                     </ContextMenuTrigger>
                 </button>
+                <ContextMenu id="comparisons-button-context-menu">
+                    <MenuItem className="tooltip" onClick={(_) => this.addComparison()}>
+                        Add Comparison
+                        <span className="tooltip-text">
+                            Adds a new custom comparison where you can store any times that you would like.
+                        </span>
+                    </MenuItem>
+                    <MenuItem className="tooltip" onClick={(_) => this.importComparison()}>
+                        Import Comparison
+                        <span className="tooltip-text">
+                            Imports the Personal Best of a splits file you provide as a comparison.
+                        </span>
+                    </MenuItem>
+                    <MenuItem className="tooltip" onClick={(_) => this.generateGoalComparison()}>
+                        Generate Goal Comparison
+                        <span className="tooltip-text">
+                            Generates a custom goal comparison based on a goal time that you can specify. The comparison's times are automatically balanced based on the segment history such that it roughly represents what the split times for the goal time would look like. Since it is populated by the segment history, the goal times are capped to a range between the sum of the best segments and the sum of the worst segments. The comparison is only populated for the selected timing method. The other timing method's comparison times are not modified by this, so you can generate it again with the other timing method to generate the comparison times for both timing methods.
+                        </span>
+                    </MenuItem>
+                    <MenuItem className="tooltip" onClick={(_) => this.copyComparison()}>
+                        Copy Comparison
+                        <span className="tooltip-text">
+                            Copies any existing comparison, including the Personal Best or even any other automatically provided comparison as a new custom comparison. You could for example use this to keep the Latest Run around as a comparison that exists for as long as you want it to.
+                        </span>
+                    </MenuItem>
+                </ContextMenu>
                 <ContextMenu id="other-button-context-menu">
                     <MenuItem className="tooltip" onClick={(_) => this.clearHistory()}>
                         Clear Only History
@@ -371,12 +406,6 @@ export class RunEditor extends React.Component<Props, State> {
                         Clean Sum of Best
                         <span className="tooltip-text">
                             Allows you to interactively remove potential issues in the segment history that lead to an inaccurate Sum of Best. If you skip a split, whenever you will do the next split, the combined segment time might be faster than the sum of the individual best segments. This will point out all such occurrences and allow you to delete them individually if any of them seem wrong.
-                        </span>
-                    </MenuItem>
-                    <MenuItem className="tooltip" onClick={(_) => this.generateGoalComparison()}>
-                        Generate Goal Comparison
-                        <span className="tooltip-text">
-                            Generates a custom goal comparison based on a goal time that you can specify. The comparison's times are automatically balanced based on the segment history such that it roughly represents what the split times for the goal time would look like. Since it is populated by the segment history, the goal times are capped to a range between the sum of the best segments and the sum of the worst segments. The comparison is only populated for the selected timing method. The other timing method's comparison times are not modified by this, so you can generate it again with the other timing method to generate the comparison times for both timing methods.
                         </span>
                     </MenuItem>
                 </ContextMenu>
@@ -417,7 +446,7 @@ export class RunEditor extends React.Component<Props, State> {
 
     private addCustomVariable() {
         const variableName = prompt("Variable Name:");
-        if (variableName) {
+        if (variableName !== null) {
             this.props.editor.addCustomVariable(variableName);
             this.update();
         }
@@ -1225,6 +1254,14 @@ export class RunEditor extends React.Component<Props, State> {
                                                 </span>
                                             </MenuItem>
                                             <MenuItem className="tooltip" onClick={(_) =>
+                                                this.copyComparison(comparison)
+                                            }>
+                                                Copy
+                                                <span className="tooltip-text">
+                                                    Creates a copy of the custom comparison.
+                                                </span>
+                                            </MenuItem>
+                                            <MenuItem className="tooltip" onClick={(_) =>
                                                 this.removeComparison(comparison)
                                             }>
                                                 Remove
@@ -1415,11 +1452,36 @@ export class RunEditor extends React.Component<Props, State> {
 
     private generateGoalComparison() {
         const goalTime = prompt("Goal Time:");
-        if (goalTime) {
+        if (goalTime !== null) {
             if (this.props.editor.parseAndGenerateGoalComparison(goalTime)) {
                 this.update();
             } else {
-                toast.error("Failed generating the goal comparison.");
+                toast.error("Failed generating the goal comparison. Make sure to specify a valid time.");
+            }
+        }
+    }
+
+    private copyComparison(comparisonToCopy?: string) {
+        const comparison = comparisonToCopy ?? prompt("Comparison Name:");
+        if (comparison !== null) {
+            let newName: string | undefined;
+            if (comparison.endsWith(" Copy")) {
+                const before = comparison.substring(0, comparison.length - " Copy".length);
+                newName = `${before} Copy 2`;
+            } else {
+                const regexMatch = /^(.* Copy )(\d+)$/.exec(comparison);
+                if (regexMatch !== null) {
+                    const copyNumber = Number(regexMatch[2]);
+                    newName = `${regexMatch[1]}${copyNumber + 1}`;
+                } else {
+                    newName = `${comparison} Copy`;
+                }
+            }
+
+            if (this.props.editor.copyComparison(comparison, newName)) {
+                this.update();
+            } else {
+                toast.error("Failed copying the comparison. The comparison may not exist.");
             }
         }
     }
@@ -1460,7 +1522,7 @@ export class RunEditor extends React.Component<Props, State> {
         }
         using run = result.unwrap();
         const comparisonName = prompt("Comparison Name:", file.name.replace(/\.[^/.]+$/, ""));
-        if (!comparisonName) {
+        if (comparisonName === null) {
             return;
         }
         const valid = this.props.editor.importComparison(run, comparisonName);
@@ -1473,7 +1535,7 @@ export class RunEditor extends React.Component<Props, State> {
 
     private addComparison() {
         const comparisonName = prompt("Comparison Name:");
-        if (comparisonName) {
+        if (comparisonName !== null) {
             const valid = this.props.editor.addComparison(comparisonName);
             if (valid) {
                 this.update();
@@ -1485,7 +1547,7 @@ export class RunEditor extends React.Component<Props, State> {
 
     private renameComparison(comparison: string) {
         const newName = prompt("Comparison Name:", comparison);
-        if (newName) {
+        if (newName !== null) {
             const valid = this.props.editor.renameComparison(comparison, newName);
             if (valid) {
                 this.update();

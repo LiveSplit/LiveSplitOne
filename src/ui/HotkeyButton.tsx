@@ -49,7 +49,10 @@ export default class HotkeyButton extends React.Component<Props, State> {
                     onClick={() => this.focusButton()}
                 >
                     {buttonText}
-                    <span className="tooltip-text">Click to record a hotkey. You may also use buttons on a gamepad.</span>
+                    <span className="tooltip-text">
+                        Click to record a hotkey. You may also use buttons on a gamepad.
+                        Global hotkeys are currently not possible. Gamepad buttons work globally.
+                    </span>
                 </button>
                 {
                     map(this.props.value, () => (
