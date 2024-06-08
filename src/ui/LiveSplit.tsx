@@ -222,13 +222,17 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     private notifyAboutUpdate(this: void) {
-        toast.warn(
-            'A new version of LiveSplit One is available! Click here to reload.',
-            {
-                closeOnClick: true,
-                onClick: () => window.location.reload(),
-            },
-        );
+        const { serviceWorker } = navigator;
+        if (serviceWorker && serviceWorker.controller) {
+            // Don't prompt for update when service worker gets removed
+            toast.warn(
+                'A new version of LiveSplit One is available! Click here to reload.',
+                {
+                    closeOnClick: true,
+                    onClick: () => window.location.reload(),
+                },
+            );
+        }
     }
 
     public componentDidMount() {
@@ -258,7 +262,8 @@ export class LiveSplit extends React.Component<Props, State> {
         this.handleAutomaticResize();
 
         const { serviceWorker } = navigator;
-        if (serviceWorker) {
+        if (serviceWorker && serviceWorker.controller) {
+            // Don't prompt for update when there was no service worker previously installed
             serviceWorker.addEventListener('controllerchange', this.notifyAboutUpdate);
         }
     }
