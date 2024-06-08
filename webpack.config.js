@@ -120,6 +120,10 @@ export default async (env, argv) => {
                     theme_color: "#232323",
                     appleStatusBarStyle: "black-translucent",
                     icons: {
+                        appleIcon: {
+                            offset: 10,
+                        },
+                        windows: false,
                         coast: false,
                         yandex: false,
                     },
