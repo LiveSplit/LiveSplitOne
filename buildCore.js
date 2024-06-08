@@ -31,9 +31,7 @@ if (process.argv.some((v) => v === "--unstable")) {
 if (process.argv.some((v) => v === "--nightly")) {
     toolchain = "+nightly";
     cargoFlags += " -Z build-std=std,panic_abort -Z build-std-features=panic_immediate_abort";
-    // Multivalue is not supported by wasm-bindgen yet:
-    // https://github.com/rustwasm/wasm-bindgen/issues/3552
-    // rustFlags += ",+multivalue";
+    rustFlags += ",+multivalue -Z wasm-c-abi=spec";
 
     // Virtual function elimination requires LTO, so we can only do it for
     // max-opt builds.
