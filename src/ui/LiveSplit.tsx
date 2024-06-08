@@ -52,6 +52,8 @@ type Menu =
 export interface Props {
     splits?: Uint8Array,
     layout?: Storage.LayoutSettings,
+    comparison?: string,
+    timingMethod: TimingMethod,
     hotkeys?: Storage.HotkeyConfigSettings,
     layoutWidth: number,
     layoutHeight: number,
@@ -97,6 +99,8 @@ export class LiveSplit extends React.Component<Props, State> {
         const splitsKey = await Storage.loadSplitsKey();
         const splits = splitsKey !== undefined ? await Storage.loadSplits(splitsKey) : undefined;
         const layout = await Storage.loadLayout();
+        const comparison = await Storage.loadComparison();
+        const timingMethod = await Storage.loadTimingMethod();
         const hotkeys = await Storage.loadHotkeys();
         const [layoutWidth, layoutHeight] = await Storage.loadLayoutDims();
         const generalSettings = await Storage.loadGeneralSettings();
@@ -105,6 +109,8 @@ export class LiveSplit extends React.Component<Props, State> {
             splits,
             splitsKey,
             layout,
+            comparison,
+            timingMethod,
             hotkeys,
             layoutWidth,
             layoutHeight,
@@ -170,6 +176,11 @@ export class LiveSplit extends React.Component<Props, State> {
                 eventSink.setRun(r)?.[Symbol.dispose]();
             }
         }
+
+        if (props.comparison !== undefined) {
+            timer.setCurrentComparison(props.comparison);
+        }
+        timer.setCurrentTimingMethod(props.timingMethod);
 
         let layout: Option<Layout> = null;
         try {
@@ -775,17 +786,33 @@ export class LiveSplit extends React.Component<Props, State> {
 
     currentComparisonChanged(): void {
         if (this.state != null) {
-            this.setState({
-                currentComparison: this.state.eventSink.currentComparison(),
-            });
+            const currentComparison = this.state.eventSink.currentComparison();
+
+            (async () => {
+                try {
+                    await Storage.storeComparison(currentComparison);
+                } catch {
+                    // It's fine if this fails.
+                }
+            })();
+
+            this.setState({ currentComparison });
         }
     }
 
     currentTimingMethodChanged(): void {
         if (this.state != null) {
-            this.setState({
-                currentTimingMethod: this.state.eventSink.currentTimingMethod(),
-            });
+            const currentTimingMethod = this.state.eventSink.currentTimingMethod();
+
+            (async () => {
+                try {
+                    await Storage.storeTimingMethod(currentTimingMethod);
+                } catch {
+                    // It's fine if this fails.
+                }
+            })();
+
+            this.setState({ currentTimingMethod });
         }
     }
 

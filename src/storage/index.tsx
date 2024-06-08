@@ -1,6 +1,6 @@
 import { openDB, IDBPDatabase } from "idb";
 import { Option, assert } from "../util/OptionUtil";
-import { RunRef, Run } from "../livesplit-core";
+import { RunRef, Run, TimingMethod } from "../livesplit-core";
 import { GeneralSettings } from "../ui/SettingsEditor";
 import { FRAME_RATE_AUTOMATIC } from "../util/FrameRate";
 
@@ -256,4 +256,28 @@ export async function loadGeneralSettings(): Promise<GeneralSettings> {
         splitsIoIntegration: generalSettings.splitsIoIntegration ?? true,
         serverUrl: generalSettings.serverUrl,
     };
+}
+
+export async function storeTimingMethod(timingMethod: TimingMethod) {
+    const db = await getDb();
+
+    await db.put("settings", timingMethod, "timingMethod");
+}
+
+export async function loadTimingMethod(): Promise<TimingMethod> {
+    const db = await getDb();
+
+    return await db.get("settings", "timingMethod") ?? TimingMethod.RealTime;
+}
+
+export async function storeComparison(comparison: string) {
+    const db = await getDb();
+
+    await db.put("settings", comparison, "comparison");
+}
+
+export async function loadComparison(): Promise<string | undefined> {
+    const db = await getDb();
+
+    return await db.get("settings", "comparison");
 }

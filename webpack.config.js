@@ -123,6 +123,9 @@ export default async (env, argv) => {
                         appleIcon: {
                             offset: 10,
                         },
+                        appleStartup: {
+                            offset: 15,
+                        },
                         android: {
                             background: true,
                             offset: 10,

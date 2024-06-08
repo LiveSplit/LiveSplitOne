@@ -43,6 +43,8 @@ try {
             splits,
             splitsKey,
             layout,
+            comparison,
+            timingMethod,
             hotkeys,
             layoutWidth,
             layoutHeight,
@@ -88,6 +90,8 @@ try {
                 <LiveSplit
                     splits={splits}
                     layout={layout}
+                    comparison={comparison}
+                    timingMethod={timingMethod}
                     hotkeys={hotkeys}
                     splitsKey={splitsKey}
                     layoutWidth={layoutWidth}
