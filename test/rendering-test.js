@@ -158,7 +158,7 @@ describe("Layout Rendering Tests", function () {
     testRendering("default", "default", "________8AADVVVVAAAAAAAAAAAA____________AAAAAAAAAAAA____VVVVAAAA____AAAAVVVVAAAAAADgAAD_________");
     testRendering("default", "pmw3", "b_gAb9-HV8AG__AHV_AG7kAGX-AGV-AOX8APX_gOX-AP28AO_-APX-APXeAOUQAOX-AOX_gP_-AfAAAAAADgAAD_q97_____");
     testRendering("splits_two_rows", "celeste", "b4AAYAAH________bwAA4AAHb-AA4AAHb-AAYAAHbwAA____bwAAYAAH_9VV____b_AAYAAH__wA____b_AAYAAPb8AAYAAP");
-    testRendering("splits_with_labels", "celeste", "AAAAAABMAADnAADnAABH________WAAHfwAHfwAHTwAHVVVVAAAA0gAH_wAH_wAH3wAH_________IAP34AP34AP38APAAAA");
+    testRendering("splits_with_labels", "celeste", "AAAAAAA8AAA3AAA3AAA3________WAAHfwAHfwAHTwAHVVVVAAAA0gAH_wAH_wAH3wAH_________IAP34AP34AP38APAAAA");
     testRendering("title_centered_no_game_icon", "celeste", "________MzMzADAAADwAADwA________VX1VADwAAAAAAAAA____ABkAAP8DAP8DAP8DAP8D________V_1XAGAAAAAAAAAA");
     testRendering("title_centered_with_game_icon", "celeste", "________AiIiQDAAYDwAYDwA________YDwAYDwAYAAAYAAAd393YBkAYL8DYP8DYP8DYP8D________d_1XYGAAAAAAAAAA");
     testRendering("title_left_no_attempt_count", "celeste", "________MzMz4AAA8AAA-AAA_________VVV-AAAAAAAAAAA____GQAA_wAA_wAA_wAA_wAA________f_1XIAAAAAAAAAAA");
