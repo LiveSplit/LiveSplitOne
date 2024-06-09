@@ -111,6 +111,7 @@ export default async (env, argv) => {
             new FaviconsWebpackPlugin({
                 logo: path.resolve("src/assets/icon.svg"),
                 inject: true,
+                logoMaskable: path.resolve("src/assets/maskable.svg"),
                 favicons: {
                     appName: "LiveSplit One",
                     appDescription: "A version of LiveSplit that works on a lot of platforms.",
@@ -125,10 +126,6 @@ export default async (env, argv) => {
                         },
                         appleStartup: {
                             offset: 15,
-                        },
-                        android: {
-                            background: true,
-                            offset: 10,
                         },
                         windows: false,
                         coast: false,
