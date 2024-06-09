@@ -91,12 +91,17 @@ export class TimerView extends React.Component<Props, State> {
                 >
                     <Layout
                         getState={() => {
-                            this.props.eventSink.updateLayoutState(
-                                this.props.layout,
-                                this.props.layoutState,
-                                this.props.layoutUrlCache.imageCache,
-                            );
-                            this.props.layoutUrlCache.collect();
+                            // The drag upload above causes the layout to be
+                            // dropped. We need to wait for it to be replaced
+                            // with the new layout.
+                            if (this.props.layout.ptr !== 0) {
+                                this.props.eventSink.updateLayoutState(
+                                    this.props.layout,
+                                    this.props.layoutState,
+                                    this.props.layoutUrlCache.imageCache,
+                                );
+                                this.props.layoutUrlCache.collect();
+                            }
                             return this.props.layoutState;
                         }}
                         layoutUrlCache={this.props.layoutUrlCache}
