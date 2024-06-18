@@ -15,13 +15,15 @@ import { TimerView } from "./TimerView";
 import { About } from "./About";
 import { SplitsSelection, EditingInfo } from "./SplitsSelection";
 import { LayoutView } from "./LayoutView";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import * as Storage from "../storage";
 import { UrlCache } from "../util/UrlCache";
 import { WebRenderer } from "../livesplit-core/livesplit_core";
-import variables from "../css/variables.scss";
 import { LiveSplitServer } from "../api/LiveSplitServer";
 import { LSOEventSink } from "./LSOEventSink";
+import DialogContainer from "./Dialog";
+
+import variables from "../css/variables.scss";
 
 import "react-toastify/dist/ReactToastify.css";
 import "../css/LiveSplit.scss";
@@ -138,7 +140,7 @@ export class LiveSplit extends React.Component<Props, State> {
             () => this.currentTimingMethodChanged(),
             () => this.currentPhaseChanged(),
             () => this.currentSplitChanged(),
-            () => this.comparisonsListChanged(),
+            () => this.comparisonListChanged(),
             () => this.splitsModifiedChanged(),
             () => this.onReset(),
         );
@@ -229,6 +231,8 @@ export class LiveSplit extends React.Component<Props, State> {
             layoutModified: false,
         };
 
+        this.updateBadge();
+
         this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
     }
 
@@ -312,8 +316,9 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     public render() {
+        let view;
         if (this.state.menu.kind === MenuKind.RunEditor) {
-            return <RunEditorComponent
+            view = <RunEditorComponent
                 editor={this.state.menu.editor}
                 callbacks={this}
                 runEditorUrlCache={this.state.runEditorUrlCache}
@@ -321,7 +326,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 generalSettings={this.state.generalSettings}
             />;
         } else if (this.state.menu.kind === MenuKind.LayoutEditor) {
-            return <LayoutEditorComponent
+            view = <LayoutEditorComponent
                 editor={this.state.menu.editor}
                 layoutState={this.state.layoutState}
                 layoutEditorUrlCache={this.state.layoutEditorUrlCache}
@@ -336,7 +341,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 callbacks={this}
             />;
         } else if (this.state.menu.kind === MenuKind.SettingsEditor) {
-            return <SettingsEditorComponent
+            view = <SettingsEditorComponent
                 generalSettings={this.state.generalSettings}
                 hotkeyConfig={this.state.menu.config}
                 urlCache={this.state.layoutUrlCache}
@@ -346,9 +351,9 @@ export class LiveSplit extends React.Component<Props, State> {
                 allComparisons={this.state.allComparisons}
             />;
         } else if (this.state.menu.kind === MenuKind.About) {
-            return <About callbacks={this} />;
+            view = <About callbacks={this} />;
         } else if (this.state.menu.kind === MenuKind.Splits) {
-            return <SplitsSelection
+            view = <SplitsSelection
                 generalSettings={this.state.generalSettings}
                 eventSink={this.state.eventSink}
                 openedSplitsKey={this.state.openedSplitsKey}
@@ -356,7 +361,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 splitsModified={this.state.splitsModified}
             />;
         } else if (this.state.menu.kind === MenuKind.Timer) {
-            return <TimerView
+            view = <TimerView
                 layout={this.state.layout}
                 layoutState={this.state.layoutState}
                 layoutUrlCache={this.state.layoutUrlCache}
@@ -379,7 +384,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 layoutModified={this.state.layoutModified}
             />;
         } else if (this.state.menu.kind === MenuKind.Layout) {
-            return <LayoutView
+            view = <LayoutView
                 layout={this.state.layout}
                 layoutState={this.state.layoutState}
                 layoutUrlCache={this.state.layoutUrlCache}
@@ -402,9 +407,17 @@ export class LiveSplit extends React.Component<Props, State> {
                 layoutModified={this.state.layoutModified}
             />;
         }
-        // Only get here if the type is invalid
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        throw Error(`Invalid menu: ${this.state.menu}`);
+
+        return <>
+            {view}
+            <DialogContainer />
+            <ToastContainer
+                position="bottom-right"
+                toastClassName="toast-class"
+                bodyClassName="toast-body"
+                theme="dark"
+            />
+        </>;
     }
 
     public renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element) {
@@ -487,7 +500,11 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     public async importLayout() {
-        const [file] = await openFileAsString();
+        const maybeFile = await openFileAsString();
+        if (maybeFile === undefined) {
+            return;
+        }
+        const [file] = maybeFile;
         try {
             this.importLayoutFromString(file);
         } catch (err) {
@@ -832,7 +849,7 @@ export class LiveSplit extends React.Component<Props, State> {
         }
     }
 
-    comparisonsListChanged(): void {
+    comparisonListChanged(): void {
         if (this.state != null) {
             this.setState({
                 allComparisons: this.state.eventSink.getAllComparisons(),

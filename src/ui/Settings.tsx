@@ -8,6 +8,7 @@ import { UrlCache } from "../util/UrlCache";
 import { openFileAsArrayBuffer } from "../util/FileUtil";
 import * as FontList from "../util/FontList";
 import { LiveSplitServer } from "../api/LiveSplitServer";
+import { showDialog } from "./Dialog";
 
 import "../css/Tooltip.scss";
 import "../css/LiveSplitServerButton.scss";
@@ -1247,10 +1248,14 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             <div
                                 className="color-picker-button"
                                 style={{
-                                    background: `url("${imageUrl}") center / cover`,
+                                    background: imageUrl ? `url("${imageUrl}") center / cover` : undefined,
                                 }}
                                 onClick={async (_) => {
-                                    const [file] = await openFileAsArrayBuffer();
+                                    const maybeFile = await openFileAsArrayBuffer();
+                                    if (maybeFile === undefined) {
+                                        return;
+                                    }
+                                    const [file] = maybeFile;
                                     const imageId = this.props.editorUrlCache.imageCache.cacheFromArray(
                                         new Uint8Array(file),
                                         true,
@@ -1429,13 +1434,19 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
         );
     }
 
-    private connectToServerOrDisconnect(valueIndex: number, serverUrl: string | undefined, connection: Option<LiveSplitServer>) {
+    private async connectToServerOrDisconnect(valueIndex: number, serverUrl: string | undefined, connection: Option<LiveSplitServer>) {
         if (connection) {
             connection.close();
             return;
         }
-        const url = prompt("Specify the WebSocket URL:", serverUrl);
-        if (!url) {
+        const [result, url] = await showDialog({
+            title: "Connect to Server",
+            description: "Specify the WebSocket URL:",
+            textInput: true,
+            defaultText: serverUrl,
+            buttons: ["Connect", "Cancel"],
+        });
+        if (result !== 0) {
             return;
         }
         this.props.setValue(valueIndex, this.props.factory.fromString(url));
