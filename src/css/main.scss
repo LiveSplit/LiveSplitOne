@@ -29,6 +29,14 @@ body {
     border: 2px solid $border-color !important;
     border-radius: 10px !important;
     min-height: 48px !important;
+
+    &.toast-bug {
+      border-color: red !important;
+
+      a {
+        color: red;
+      }
+    }
   }
 }
 

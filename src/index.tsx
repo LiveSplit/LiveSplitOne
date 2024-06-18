@@ -30,12 +30,10 @@ try {
         { LiveSplit },
         React,
         { createRoot },
-        { ToastContainer },
     ] = await Promise.all([
         import("./ui/LiveSplit"),
         import("react"),
         import("react-dom/client"),
-        import("react-toastify"),
     ]);
 
     try {
@@ -86,25 +84,17 @@ try {
         const container = document.getElementById("base");
         const root = createRoot(container!);
         root.render(
-            <div>
-                <LiveSplit
-                    splits={splits}
-                    layout={layout}
-                    comparison={comparison}
-                    timingMethod={timingMethod}
-                    hotkeys={hotkeys}
-                    splitsKey={splitsKey}
-                    layoutWidth={layoutWidth}
-                    layoutHeight={layoutHeight}
-                    generalSettings={generalSettings}
-                />
-                <ToastContainer
-                    position="bottom-right"
-                    toastClassName="toast-class"
-                    bodyClassName="toast-body"
-                    theme="dark"
-                />
-            </div>,
+            <LiveSplit
+                splits={splits}
+                layout={layout}
+                comparison={comparison}
+                timingMethod={timingMethod}
+                hotkeys={hotkeys}
+                splitsKey={splitsKey}
+                layoutWidth={layoutWidth}
+                layoutHeight={layoutHeight}
+                generalSettings={generalSettings}
+            />,
         );
     } catch (e: any) {
         if (e.name === "InvalidStateError") {

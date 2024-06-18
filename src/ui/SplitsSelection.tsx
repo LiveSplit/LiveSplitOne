@@ -7,11 +7,12 @@ import { Run, Segment, TimerPhase } from "../livesplit-core";
 import * as SplitsIO from "../util/SplitsIO";
 import { toast } from "react-toastify";
 import { openFileAsArrayBuffer, exportFile, convertFileToArrayBuffer } from "../util/FileUtil";
-import { Option, maybeDisposeAndThen } from "../util/OptionUtil";
+import { Option, bug, maybeDisposeAndThen } from "../util/OptionUtil";
 import DragUpload from "./DragUpload";
 import { ContextMenuTrigger, ContextMenu, MenuItem } from "react-contextmenu";
 import { GeneralSettings } from "./SettingsEditor";
 import { LSOEventSink } from "./LSOEventSink";
+import { showDialog } from "./Dialog";
 
 import "../css/SplitsSelection.scss";
 
@@ -217,10 +218,11 @@ export class SplitsSelection extends React.Component<Props, State> {
         );
     }
 
-    private async getRunFromKey(key: number): Promise<Run> {
+    private async getRunFromKey(key: number): Promise<Run | undefined> {
         const splitsData = await loadSplits(key);
         if (splitsData === undefined) {
-            throw Error("The splits key is invalid.");
+            bug("The splits key is invalid.");
+            return;
         }
 
         using result = Run.parseArray(new Uint8Array(splitsData), "");
@@ -228,19 +230,28 @@ export class SplitsSelection extends React.Component<Props, State> {
         if (result.parsedSuccessfully()) {
             return result.unwrap();
         } else {
-            throw Error("Couldn't parse the splits.");
+            bug("Couldn't parse the splits.");
+            return;
         }
     }
 
     private async openSplits(key: number) {
         const isModified = this.props.eventSink.hasBeenModified();
-        if (isModified && !confirm(
-            "Your current splits are modified and have unsaved changes. Do you want to continue and discard those changes?",
-        )) {
-            return;
+        if (isModified) {
+            const [result] = await showDialog({
+                title: "Discard Changes?",
+                description: "Your current splits are modified and have unsaved changes. Do you want to continue and discard those changes?",
+                buttons: ["Yes", "No"],
+            });
+            if (result === 1) {
+                return;
+            }
         }
 
         using run = await this.getRunFromKey(key);
+        if (run === undefined) {
+            return;
+        }
         maybeDisposeAndThen(
             this.props.eventSink.setRun(run),
             () => toast.error("The loaded splits are invalid."),
@@ -274,7 +285,9 @@ export class SplitsSelection extends React.Component<Props, State> {
 
     private async editSplits(splitsKey: number) {
         const run = await this.getRunFromKey(splitsKey);
-        this.props.callbacks.openRunEditor({ splitsKey, run });
+        if (run !== undefined) {
+            this.props.callbacks.openRunEditor({ splitsKey, run });
+        }
     }
 
     private async copySplits(key: number) {
@@ -283,9 +296,12 @@ export class SplitsSelection extends React.Component<Props, State> {
     }
 
     private async deleteSplits(key: number) {
-        if (!confirm(
-            "Are you sure you want to delete the splits? This operation can not be undone.",
-        )) {
+        const [result] = await showDialog({
+            title: "Delete Splits?",
+            description: "Are you sure you want to delete the splits? This operation can not be undone.",
+            buttons: ["Yes", "No"],
+        });
+        if (result !== 0) {
             return;
         }
 
@@ -299,6 +315,9 @@ export class SplitsSelection extends React.Component<Props, State> {
 
     private async importSplits() {
         const splits = await openFileAsArrayBuffer();
+        if (splits === undefined) {
+            return;
+        }
         try {
             await this.importSplitsFromArrayBuffer(splits);
         } catch (err: any) {
@@ -358,8 +377,16 @@ export class SplitsSelection extends React.Component<Props, State> {
     }
 
     private async importSplitsFromSplitsIO() {
-        let id = prompt("Specify the Splits.io URL or ID:");
-        if (!id) {
+        const response = await showDialog({
+            title: "Import Splits from Splits.io",
+            description: "Specify the Splits.io URL or ID:",
+            textInput: true,
+            buttons: ["Import", "Cancel"],
+        });
+        const result = response[0];
+        let id = response[1];
+
+        if (result !== 0) {
             return;
         }
         if (id.indexOf("https://splits.io/") === 0) {

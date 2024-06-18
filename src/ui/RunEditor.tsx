@@ -8,6 +8,9 @@ import {
     downloadGameList, searchGames, getCategories, downloadCategories,
     downloadLeaderboard, getLeaderboard, downloadPlatformList, getPlatforms,
     downloadRegionList, getRegions, downloadGameInfo, getGameInfo, downloadGameInfoByGameId, downloadCategoriesByGameId,
+    gameListLength,
+    platformListLength,
+    regionListLength,
 } from "../api/GameList";
 import { Category, Run, Variable, getRun } from "../api/SpeedrunCom";
 import { Option, expect, map, assert } from "../util/OptionUtil";
@@ -21,6 +24,7 @@ import {
 import { renderMarkdown, replaceFlag } from "../util/Markdown";
 import { UrlCache } from "../util/UrlCache";
 import { GeneralSettings } from "./SettingsEditor";
+import { showDialog } from "./Dialog";
 
 import "../css/RunEditor.scss";
 
@@ -33,6 +37,7 @@ export interface Props {
 }
 export interface State {
     editor: LiveSplit.RunEditorStateJson,
+    foundGames: string[],
     offsetIsValid: boolean,
     attemptCountIsValid: boolean,
     rowState: RowState,
@@ -80,12 +85,14 @@ export class RunEditor extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
 
-        const state = props.editor.stateAsJson(props.runEditorUrlCache.imageCache) as LiveSplit.RunEditorStateJson;
+        const state: LiveSplit.RunEditorStateJson = props.editor.stateAsJson(props.runEditorUrlCache.imageCache) as LiveSplit.RunEditorStateJson;
+        const foundGames = searchGames(state.game);
         props.runEditorUrlCache.collect();
 
         this.state = {
             attemptCountIsValid: true,
             editor: state,
+            foundGames,
             offsetIsValid: true,
             rowState: {
                 bestSegmentTime: "",
@@ -196,7 +203,7 @@ export class RunEditor extends React.Component<Props, State> {
                                     label="Game"
                                     list={[
                                         "run-editor-game-list",
-                                        searchGames(this.state.editor.game),
+                                        this.state.foundGames,
                                     ]}
                                 />
                             </div>
@@ -444,9 +451,14 @@ export class RunEditor extends React.Component<Props, State> {
         );
     }
 
-    private addCustomVariable() {
-        const variableName = prompt("Variable Name:");
-        if (variableName !== null) {
+    private async addCustomVariable() {
+        const [result, variableName] = await showDialog({
+            title: "Add Variable",
+            description: "Specify the name of the custom variable you want to add:",
+            textInput: true,
+            buttons: ["OK", "Cancel"],
+        });
+        if (result === 0) {
             this.props.editor.addCustomVariable(variableName);
             this.update();
         }
@@ -1104,9 +1116,16 @@ export class RunEditor extends React.Component<Props, State> {
                                                     </a>,
                                                 ];
                                             } else {
+                                                const possibleMatch = /^\[([a-z]+)\](.+)$/.exec(p.name);
+                                                let name = p.name;
+                                                let flag;
+                                                if (possibleMatch !== null) {
+                                                    flag = replaceFlag(possibleMatch[1]);
+                                                    name = possibleMatch[2];
+                                                }
                                                 return [
                                                     i !== 0 ? ", " : null,
-                                                    <span className="unregistered-user">{p.name}</span>
+                                                    <span className="unregistered-user">{flag}{name}</span>
                                                 ];
                                             }
                                         })
@@ -1450,9 +1469,15 @@ export class RunEditor extends React.Component<Props, State> {
         };
     }
 
-    private generateGoalComparison() {
-        const goalTime = prompt("Goal Time:");
-        if (goalTime !== null) {
+    private async generateGoalComparison() {
+        const [result, goalTime] = await showDialog({
+            title: "Generate Goal Comparison",
+            description: "Specify the time you want to achieve:",
+            textInput: true,
+            buttons: ["Generate", "Cancel"],
+        });
+
+        if (result === 0) {
             if (this.props.editor.parseAndGenerateGoalComparison(goalTime)) {
                 this.update();
             } else {
@@ -1461,45 +1486,70 @@ export class RunEditor extends React.Component<Props, State> {
         }
     }
 
-    private copyComparison(comparisonToCopy?: string) {
-        const comparison = comparisonToCopy ?? prompt("Comparison Name:");
-        if (comparison !== null) {
-            let newName: string | undefined;
-            if (comparison.endsWith(" Copy")) {
-                const before = comparison.substring(0, comparison.length - " Copy".length);
-                newName = `${before} Copy 2`;
-            } else {
-                const regexMatch = /^(.* Copy )(\d+)$/.exec(comparison);
-                if (regexMatch !== null) {
-                    const copyNumber = Number(regexMatch[2]);
-                    newName = `${regexMatch[1]}${copyNumber + 1}`;
-                } else {
-                    newName = `${comparison} Copy`;
-                }
+    private async copyComparison(comparisonToCopy?: string) {
+        let comparison = comparisonToCopy;
+        if (comparison === undefined) {
+            const [result, comparisonName] = await showDialog({
+                title: "Copy Comparison",
+                description: "Specify the name of the comparison you want to copy:",
+                textInput: true,
+                buttons: ["Copy", "Cancel"],
+            });
+            if (result !== 0) {
+                return;
             }
+            comparison = comparisonName;
+        }
 
-            if (this.props.editor.copyComparison(comparison, newName)) {
-                this.update();
+        let newName: string | undefined;
+        if (comparison.endsWith(" Copy")) {
+            const before = comparison.substring(0, comparison.length - " Copy".length);
+            newName = `${before} Copy 2`;
+        } else {
+            const regexMatch = /^(.* Copy )(\d+)$/.exec(comparison);
+            if (regexMatch !== null) {
+                const copyNumber = Number(regexMatch[2]);
+                newName = `${regexMatch[1]}${copyNumber + 1}`;
             } else {
-                toast.error("Failed copying the comparison. The comparison may not exist.");
+                newName = `${comparison} Copy`;
             }
+        }
+
+        if (this.props.editor.copyComparison(comparison, newName)) {
+            this.update();
+        } else {
+            toast.error("Failed copying the comparison. The comparison may not exist.");
         }
     }
 
-    private cleanSumOfBest() {
+    private async cleanSumOfBest() {
+        const ptr = this.props.editor.ptr;
         {
             using cleaner = this.props.editor.cleanSumOfBest();
+            this.props.editor.ptr = 0;
+            let first = true;
             while (true) {
                 using potentialCleanUp = cleaner.nextPotentialCleanUp();
                 if (!potentialCleanUp) {
+                    if (first) {
+                        toast.info("There is nothing to clean up.");
+                    }
                     break;
                 }
-                const message = potentialCleanUp.message();
-                if (confirm(message)) {
+                first = false;
+                const [result] = await showDialog({
+                    title: "Clean?",
+                    description: potentialCleanUp.message(),
+                    buttons: ["Yes", "No", "Cancel"],
+                });
+                if (result === 0) {
                     cleaner.apply(potentialCleanUp);
+                } else if (result === 2) {
+                    break;
                 }
             }
         }
+        this.props.editor.ptr = ptr;
         this.update();
     }
 
@@ -1514,15 +1564,25 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private async importComparison() {
-        const [data, file] = await openFileAsArrayBuffer();
+        const maybeFile = await openFileAsArrayBuffer();
+        if (maybeFile === undefined) {
+            return;
+        }
+        const [data, file] = maybeFile;
         using result = LiveSplit.Run.parseArray(new Uint8Array(data), "");
         if (!result.parsedSuccessfully()) {
             toast.error("Couldn't parse the splits.");
             return;
         }
         using run = result.unwrap();
-        const comparisonName = prompt("Comparison Name:", file.name.replace(/\.[^/.]+$/, ""));
-        if (comparisonName === null) {
+        const [dialogResult, comparisonName] = await showDialog({
+            title: "Import Comparison",
+            description: "Specify the name of the comparison you want to import:",
+            textInput: true,
+            buttons: ["Import", "Cancel"],
+            defaultText: file.name.replace(/\.[^/.]+$/, ""),
+        });
+        if (dialogResult !== 0) {
             return;
         }
         const valid = this.props.editor.importComparison(run, comparisonName);
@@ -1533,9 +1593,15 @@ export class RunEditor extends React.Component<Props, State> {
         }
     }
 
-    private addComparison() {
-        const comparisonName = prompt("Comparison Name:");
-        if (comparisonName !== null) {
+    private async addComparison() {
+        const [result, comparisonName] = await showDialog({
+            title: "Add Comparison",
+            description: "Specify the name of the comparison you want to add:",
+            textInput: true,
+            buttons: ["Add", "Cancel"],
+        });
+
+        if (result === 0) {
             const valid = this.props.editor.addComparison(comparisonName);
             if (valid) {
                 this.update();
@@ -1545,9 +1611,16 @@ export class RunEditor extends React.Component<Props, State> {
         }
     }
 
-    private renameComparison(comparison: string) {
-        const newName = prompt("Comparison Name:", comparison);
-        if (newName !== null) {
+    private async renameComparison(comparison: string) {
+        const [result, newName] = await showDialog({
+            title: "Rename Comparison",
+            description: "Specify the new name of the comparison:",
+            textInput: true,
+            buttons: ["Rename", "Cancel"],
+            defaultText: comparison,
+        });
+
+        if (result === 0) {
             const valid = this.props.editor.renameComparison(comparison, newName);
             if (valid) {
                 this.update();
@@ -1564,7 +1637,11 @@ export class RunEditor extends React.Component<Props, State> {
 
     private async changeSegmentIcon(index: number) {
         this.props.editor.selectOnly(index);
-        const [file] = await openFileAsArrayBuffer();
+        const maybeFile = await openFileAsArrayBuffer();
+        if (maybeFile === undefined) {
+            return;
+        }
+        const [file] = maybeFile;
         this.props.editor.activeSetIconFromArray(new Uint8Array(file));
         this.update();
     }
@@ -1579,7 +1656,11 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private async changeGameIcon() {
-        const [file] = await openFileAsArrayBuffer();
+        const maybeFile = await openFileAsArrayBuffer();
+        if (maybeFile === undefined) {
+            return;
+        }
+        const [file] = maybeFile;
         this.props.editor.setGameIconFromArray(new Uint8Array(file));
         this.maybeUpdate();
     }
@@ -1600,22 +1681,26 @@ export class RunEditor extends React.Component<Props, State> {
      * the leaderboards. We don't want to update the editor if it has been
      * disposed in the meantime.
      */
-    private maybeUpdate() {
+    private maybeUpdate(options: { switchTab?: Tab, search?: boolean } = {}) {
         if (this.props.editor.ptr === 0) {
             return;
         }
-        this.update();
+        this.update(options);
     }
 
-    private update(switchTab?: Tab) {
-        const intendedTab = switchTab ?? this.state.tab;
+    private update(options: { switchTab?: Tab, search?: boolean } = {}) {
+        const intendedTab = options.switchTab ?? this.state.tab;
         const shouldShowTab = this.shouldShowTab(intendedTab);
         const newActiveTab = shouldShowTab ? intendedTab : Tab.RealTime;
 
-        const state = this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache);
+        const state: LiveSplit.RunEditorStateJson = this.props.editor.stateAsJson(
+            this.props.runEditorUrlCache.imageCache,
+        );
+        if (options.search) {
+            this.setState({ foundGames: searchGames(state.game) });
+        }
         this.props.runEditorUrlCache.collect();
         this.setState({
-            ...this.state,
             editor: state,
             tab: newActiveTab,
         });
@@ -1630,7 +1715,7 @@ export class RunEditor extends React.Component<Props, State> {
             this.refreshLeaderboard(event.target.value, this.state.editor.category);
             this.resetTotalLeaderboardState();
         }
-        this.update();
+        this.update({ search: true });
     }
 
     private handleCategoryChange(event: any) {
@@ -1646,7 +1731,6 @@ export class RunEditor extends React.Component<Props, State> {
     private handleOffsetChange(event: any) {
         const valid = this.props.editor.parseAndSetOffset(event.target.value);
         this.setState({
-            ...this.state,
             editor: {
                 ...this.state.editor,
                 offset: event.target.value,
@@ -1657,7 +1741,6 @@ export class RunEditor extends React.Component<Props, State> {
 
     private handleOffsetBlur() {
         this.setState({
-            ...this.state,
             editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
             offsetIsValid: true,
         });
@@ -1667,7 +1750,6 @@ export class RunEditor extends React.Component<Props, State> {
     private handleAttemptsChange(event: any) {
         const valid = this.props.editor.parseAndSetAttemptCount(event.target.value);
         this.setState({
-            ...this.state,
             attemptCountIsValid: valid,
             editor: {
                 ...this.state.editor,
@@ -1678,7 +1760,6 @@ export class RunEditor extends React.Component<Props, State> {
 
     private handleAttemptsBlur() {
         this.setState({
-            ...this.state,
             attemptCountIsValid: true,
             editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
         });
@@ -1705,7 +1786,6 @@ export class RunEditor extends React.Component<Props, State> {
         };
 
         this.setState({
-            ...this.state,
             editor,
             rowState,
         });
@@ -1718,7 +1798,6 @@ export class RunEditor extends React.Component<Props, State> {
 
     private handleSplitTimeChange(event: any) {
         this.setState({
-            ...this.state,
             rowState: {
                 ...this.state.rowState,
                 splitTime: event.target.value,
@@ -1729,7 +1808,6 @@ export class RunEditor extends React.Component<Props, State> {
 
     private handleSegmentTimeChange(event: any) {
         this.setState({
-            ...this.state,
             rowState: {
                 ...this.state.rowState,
                 segmentTime: event.target.value,
@@ -1740,7 +1818,6 @@ export class RunEditor extends React.Component<Props, State> {
 
     private handleBestSegmentTimeChange(event: any) {
         this.setState({
-            ...this.state,
             rowState: {
                 ...this.state.rowState,
                 bestSegmentTime: event.target.value,
@@ -1757,7 +1834,6 @@ export class RunEditor extends React.Component<Props, State> {
         comparisonTimesChanged[comparisonIndex] = true;
 
         this.setState({
-            ...this.state,
             rowState: {
                 ...this.state.rowState,
                 comparisonTimes,
@@ -1772,7 +1848,6 @@ export class RunEditor extends React.Component<Props, State> {
         }
 
         this.setState({
-            ...this.state,
             editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
             rowState: {
                 ...this.state.rowState,
@@ -1789,7 +1864,6 @@ export class RunEditor extends React.Component<Props, State> {
         }
 
         this.setState({
-            ...this.state,
             editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
             rowState: {
                 ...this.state.rowState,
@@ -1806,7 +1880,6 @@ export class RunEditor extends React.Component<Props, State> {
         }
 
         this.setState({
-            ...this.state,
             editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
             rowState: {
                 ...this.state.rowState,
@@ -1827,7 +1900,6 @@ export class RunEditor extends React.Component<Props, State> {
         comparisonTimesChanged[comparisonIndex] = false;
 
         this.setState({
-            ...this.state,
             editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
             rowState: {
                 ...this.state.rowState,
@@ -1884,7 +1956,7 @@ export class RunEditor extends React.Component<Props, State> {
             }
         }
         this.resetTotalLeaderboardState();
-        this.update(tab);
+        this.update({ switchTab: tab });
     }
 
     private shouldShowTab(tab: Tab) {
@@ -1921,48 +1993,76 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private async downloadBoxArt() {
-        const gameName = this.state.editor.game;
-        await downloadGameInfo(gameName);
-        const game = getGameInfo(gameName);
-        if (game !== undefined) {
-            const uri = game.assets["cover-medium"].uri;
-            if (uri.startsWith("https://")) {
-                const response = await fetch(uri);
-                const buffer = await response.arrayBuffer();
-                this.props.editor.setGameIconFromArray(new Uint8Array(buffer));
-                this.maybeUpdate();
+        try {
+            const gameName = this.state.editor.game;
+            await downloadGameInfo(gameName);
+            const game = getGameInfo(gameName);
+            if (game !== undefined) {
+                const uri = game.assets["cover-medium"].uri;
+                if (uri.startsWith("https://") && uri !== "https://www.speedrun.com/images/blankcover.png") {
+                    const response = await fetch(uri);
+                    const buffer = await response.arrayBuffer();
+                    this.props.editor.setGameIconFromArray(new Uint8Array(buffer));
+                    this.maybeUpdate();
+                } else {
+                    toast.error("The game doesn't have a box art.");
+                }
+            } else {
+                toast.error("Couldn't find the game.");
             }
+        } catch {
+            toast.error("Couldn't download the box art.");
         }
     }
 
     private async downloadIcon() {
-        const gameName = this.state.editor.game;
-        await downloadGameInfo(gameName);
-        const game = getGameInfo(gameName);
-        if (game !== undefined) {
-            const uri = game.assets.icon.uri;
-            if (uri.startsWith("https://")) {
-                const response = await fetch(uri);
-                const buffer = await response.arrayBuffer();
-                this.props.editor.setGameIconFromArray(new Uint8Array(buffer));
-                this.maybeUpdate();
+        try {
+            const gameName = this.state.editor.game;
+            await downloadGameInfo(gameName);
+            const game = getGameInfo(gameName);
+            if (game !== undefined) {
+                const uri = game.assets.icon.uri;
+                if (uri.startsWith("https://") && uri !== "https://www.speedrun.com/images/1st.png") {
+                    const response = await fetch(uri);
+                    const buffer = await response.arrayBuffer();
+                    this.props.editor.setGameIconFromArray(new Uint8Array(buffer));
+                    this.maybeUpdate();
+                } else {
+                    toast.error("The game doesn't have an icon.");
+                }
+            } else {
+                toast.error("Couldn't find the game.");
             }
+        } catch {
+            toast.error("Couldn't download the icon.");
         }
     }
 
     private async refreshGameList() {
+        const before = gameListLength();
         await downloadGameList();
-        this.maybeUpdate();
+        const after = gameListLength();
+        if (before !== after) {
+            this.maybeUpdate({ search: true });
+        }
     }
 
     private async refreshPlatformList() {
+        const before = platformListLength();
         await downloadPlatformList();
-        this.maybeUpdate();
+        const after = platformListLength();
+        if (before !== after) {
+            this.maybeUpdate();
+        }
     }
 
     private async refreshRegionList() {
+        const before = regionListLength();
         await downloadRegionList();
-        this.maybeUpdate();
+        const after = regionListLength();
+        if (before !== after) {
+            this.maybeUpdate();
+        }
     }
 
     private async refreshGameInfo(gameName: string) {
@@ -2062,8 +2162,14 @@ export class RunEditor extends React.Component<Props, State> {
             return;
         }
 
-        const idOrUrl = prompt("Specify the speedrun.com ID or URL of the run:");
-        if (idOrUrl === null) {
+        const [result, idOrUrl] = await showDialog({
+            title: "Associate Run",
+            description: "Specify the speedrun.com ID or URL of the run:",
+            textInput: true,
+            buttons: ["Associate", "Cancel"],
+        });
+
+        if (result !== 0) {
             return;
         }
         const pattern = /^(?:(?:https?:\/\/)?(?:www\.)?speedrun\.com\/(?:\w+\/)?run\/)?(\w+)$/;

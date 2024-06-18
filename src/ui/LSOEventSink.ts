@@ -1,5 +1,6 @@
 import { EventSink, EventSinkRef, ImageCacheRefMut, LayoutEditorRefMut, LayoutRefMut, LayoutStateRefMut, Run, RunRef, TimeSpan, TimeSpanRef, Timer, TimerPhase, TimingMethod } from "../livesplit-core";
 import { WebEventSink } from "../livesplit-core/livesplit_core";
+import { showDialog } from "./Dialog";
 
 export class LSOEventSink {
     private eventSink: EventSink;
@@ -49,10 +50,18 @@ export class LSOEventSink {
         this.splitsModifiedChanged();
     }
 
-    public reset(): void {
+    public async reset(): Promise<void> {
         let updateSplits = true;
         if (this.timer.currentAttemptHasNewBestTimes()) {
-            updateSplits = confirm("You have beaten some of your best times. Do you want to update them?");
+            const [result] = await showDialog({
+                title: "Save Best Times?",
+                description: "You have beaten some of your best times. Do you want to update them?",
+                buttons: ["Yes", "No", "Don't Reset"],
+            });
+            if (result === 2) {
+                return;
+            }
+            updateSplits = result === 0;
         }
 
         this.timer.reset(updateSplits);

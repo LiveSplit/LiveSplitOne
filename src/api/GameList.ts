@@ -110,6 +110,10 @@ export async function downloadGameInfo(gameName: string): Promise<void> {
     }
 }
 
+export function gameListLength(): number {
+    return gameList.length;
+}
+
 export function downloadGameList(): Promise<void> {
     if (gameListPromise == null) {
         gameListPromise = (async () => {
@@ -127,6 +131,10 @@ export function downloadGameList(): Promise<void> {
     return gameListPromise;
 }
 
+export function platformListLength(): number {
+    return platformList.size;
+}
+
 export function downloadPlatformList(): Promise<void> {
     if (platformListPromise == null) {
         platformListPromise = (async () => {
@@ -137,6 +145,10 @@ export function downloadPlatformList(): Promise<void> {
         })();
     }
     return platformListPromise;
+}
+
+export function regionListLength(): number {
+    return regionList.size;
 }
 
 export function downloadRegionList(): Promise<void> {

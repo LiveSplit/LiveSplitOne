@@ -5,14 +5,14 @@ import { Option } from "./OptionUtil";
 // @ts-expect-error Unused variable due to above issue
 let fileInputElement = null; // eslint-disable-line
 
-function openFile(): Promise<File> {
-    return new Promise((resolve, reject) => {
+function openFile(): Promise<File | undefined> {
+    return new Promise((resolve) => {
         const input = document.createElement("input");
         input.setAttribute("type", "file");
         input.onchange = () => {
             const file: Option<File> = input.files?.[0];
             if (file === undefined) {
-                reject();
+                resolve(undefined);
                 return;
             }
             resolve(file);
@@ -31,12 +31,16 @@ export async function convertFileToArrayBuffer(file: File): Promise<[ArrayBuffer
                 resolve([contents, file]);
             }
         };
+        // FIXME: onerror
         reader.readAsArrayBuffer(file);
     });
 }
 
-export async function openFileAsArrayBuffer(): Promise<[ArrayBuffer, File]> {
+export async function openFileAsArrayBuffer(): Promise<[ArrayBuffer, File] | undefined> {
     const file = await openFile();
+    if (file === undefined) {
+        return undefined;
+    }
     return convertFileToArrayBuffer(file);
 }
 
@@ -53,8 +57,11 @@ export async function convertFileToString(file: File): Promise<[string, File]> {
     });
 }
 
-export async function openFileAsString(): Promise<[string, File]> {
+export async function openFileAsString(): Promise<[string, File] | undefined> {
     const file = await openFile();
+    if (file === undefined) {
+        return undefined;
+    }
     return convertFileToString(file);
 }
 

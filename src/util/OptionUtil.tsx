@@ -1,3 +1,4 @@
+import React from "react";
 import { toast } from "react-toastify";
 
 export type Option<T> = T | null | undefined;
@@ -14,8 +15,25 @@ interface Disposable {
 }
 
 export function panic(message: string): never {
-    toast.error(`Bug: ${message}`);
+    bug(message);
     throw new Error(message);
+}
+
+export function bug(message: string): void {
+    toast.error(
+        <>
+            <b>You encountered a bug:</b>
+            <p><i>{message}</i></p>
+            Please report this issue <a
+                href="https://github.com/LiveSplit/LiveSplitOne"
+                target="_blank"
+            >here</a>.
+        </>,
+        {
+            autoClose: false,
+            className: "toast-class toast-bug",
+        },
+    );
 }
 
 export function assertNever(x: never): never { return x; }
