@@ -1,9 +1,16 @@
 import { EventSink, EventSinkRef, ImageCacheRefMut, LayoutEditorRefMut, LayoutRefMut, LayoutStateRefMut, Run, RunRef, TimeSpan, TimeSpanRef, Timer, TimerPhase, TimingMethod } from "../livesplit-core";
 import { WebEventSink } from "../livesplit-core/livesplit_core";
+import { assert } from "../util/OptionUtil";
 import { showDialog } from "./Dialog";
 
 export class LSOEventSink {
     private eventSink: EventSink;
+    // We don't want to the timer to be interacted with while we are in menus
+    // where the timer is not visible or otherwise meant to be interacted with,
+    // nor do we want it to to be interacted with while dialogs are open.
+    // Multiple of these conditions can be true at the same time, so we count
+    // them.
+    private locked = 0;
 
     constructor(
         private timer: Timer,
@@ -27,7 +34,24 @@ export class LSOEventSink {
         return this.eventSink;
     }
 
+    public isLocked(): boolean {
+        return this.locked > 0;
+    }
+
+    public lockInteraction() {
+        this.locked++;
+    }
+
+    public unlockInteraction() {
+        this.locked--;
+        assert(this.locked >= 0, "The lock count should never be negative.");
+    }
+
     public start(): void {
+        if (this.locked) {
+            return;
+        }
+
         this.timer.start();
 
         this.currentPhaseChanged();
@@ -36,6 +60,10 @@ export class LSOEventSink {
     }
 
     public split(): void {
+        if (this.locked) {
+            return;
+        }
+
         this.timer.split();
 
         this.currentPhaseChanged();
@@ -43,6 +71,10 @@ export class LSOEventSink {
     }
 
     public splitOrStart(): void {
+        if (this.locked) {
+            return;
+        }
+
         this.timer.splitOrStart();
 
         this.currentPhaseChanged();
@@ -51,6 +83,10 @@ export class LSOEventSink {
     }
 
     public async reset(): Promise<void> {
+        if (this.locked) {
+            return;
+        }
+
         let updateSplits = true;
         if (this.timer.currentAttemptHasNewBestTimes()) {
             const [result] = await showDialog({
@@ -72,6 +108,10 @@ export class LSOEventSink {
     }
 
     public undoSplit(): void {
+        if (this.locked) {
+            return;
+        }
+
         this.timer.undoSplit();
 
         this.currentPhaseChanged();
@@ -79,12 +119,20 @@ export class LSOEventSink {
     }
 
     public skipSplit(): void {
+        if (this.locked) {
+            return;
+        }
+
         this.timer.skipSplit();
 
         this.currentSplitChanged();
     }
 
     public togglePauseOrStart(): void {
+        if (this.locked) {
+            return;
+        }
+
         this.timer.togglePauseOrStart();
 
         this.currentPhaseChanged();
@@ -93,39 +141,67 @@ export class LSOEventSink {
     }
 
     public pause(): void {
+        if (this.locked) {
+            return;
+        }
+
         this.timer.pause();
 
         this.currentPhaseChanged();
     }
 
     public resume(): void {
+        if (this.locked) {
+            return;
+        }
+
         this.timer.resume();
 
         this.currentPhaseChanged();
     }
 
     public undoAllPauses(): void {
+        if (this.locked) {
+            return;
+        }
+
         this.timer.undoAllPauses();
 
         this.currentPhaseChanged();
     }
 
     public switchToPreviousComparison(): void {
+        if (this.locked) {
+            return;
+        }
+
         this.timer.switchToPreviousComparison();
         this.currentComparisonChanged();
     }
 
     public switchToNextComparison(): void {
+        if (this.locked) {
+            return;
+        }
+
         this.timer.switchToNextComparison();
         this.currentComparisonChanged();
     }
 
     public setCurrentComparison(comparison: string): void {
+        if (this.locked) {
+            return;
+        }
+
         this.timer.setCurrentComparison(comparison);
         this.currentComparisonChanged();
     }
 
     public toggleTimingMethod(): void {
+        if (this.locked) {
+            return;
+        }
+
         this.timer.toggleTimingMethod();
         this.currentTimingMethodChanged();
     }
@@ -136,6 +212,9 @@ export class LSOEventSink {
     }
 
     public setGameTimeInner(timeSpan: TimeSpanRef): void {
+        if (this.locked) {
+            return;
+        }
         this.timer.setGameTime(timeSpan);
     }
 
@@ -154,22 +233,37 @@ export class LSOEventSink {
     }
 
     public pauseGameTime(): void {
+        if (this.locked) {
+            return;
+        }
         this.timer.pauseGameTime();
     }
 
     public resumeGameTime(): void {
+        if (this.locked) {
+            return;
+        }
         this.timer.resumeGameTime();
     }
 
     public setCustomVariable(name: string, value: string): void {
+        if (this.locked) {
+            return;
+        }
         this.timer.setCustomVariable(name, value);
     }
 
     public initializeGameTime(): void {
+        if (this.locked) {
+            return;
+        }
         this.timer.initializeGameTime();
     }
 
     public setLoadingTimesInner(timeSpan: TimeSpanRef): void {
+        if (this.locked) {
+            return;
+        }
         this.timer.setLoadingTimes(timeSpan);
     }
 
@@ -190,6 +284,10 @@ export class LSOEventSink {
     }
 
     public markAsUnmodified(): void {
+        if (this.locked) {
+            return;
+        }
+
         this.timer.markAsUnmodified();
         this.splitsModifiedChanged();
     }

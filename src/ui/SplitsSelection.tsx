@@ -6,7 +6,7 @@ import {
 import { Run, Segment, TimerPhase } from "../livesplit-core";
 import * as SplitsIO from "../util/SplitsIO";
 import { toast } from "react-toastify";
-import { openFileAsArrayBuffer, exportFile, convertFileToArrayBuffer } from "../util/FileUtil";
+import { openFileAsArrayBuffer, exportFile, convertFileToArrayBuffer, FILE_EXT_SPLITS } from "../util/FileUtil";
 import { Option, bug, maybeDisposeAndThen } from "../util/OptionUtil";
 import DragUpload from "./DragUpload";
 import { ContextMenuTrigger, ContextMenu, MenuItem } from "react-contextmenu";
@@ -314,34 +314,43 @@ export class SplitsSelection extends React.Component<Props, State> {
     }
 
     private async importSplits() {
-        const splits = await openFileAsArrayBuffer();
+        const splits = await openFileAsArrayBuffer(FILE_EXT_SPLITS);
         if (splits === undefined) {
             return;
         }
-        try {
-            await this.importSplitsFromArrayBuffer(splits);
-        } catch (err: any) {
-            toast.error(err.message);
+        if (splits instanceof Error) {
+            toast.error(`Failed to read the file: ${splits.message}`);
+            return;
+        }
+
+        const result = await this.importSplitsFromArrayBuffer(splits);
+        if (result != null) {
+            toast.error(`Failed to import the splits: ${result.message}`);
         }
     }
 
     private async importSplitsFromFile(file: File) {
         const splits = await convertFileToArrayBuffer(file);
-        this.importSplitsFromArrayBuffer(splits);
+        if (splits instanceof Error) {
+            toast.error(`Failed to read the file: ${splits.message}`);
+            return;
+        }
+
+        const result = await this.importSplitsFromArrayBuffer(splits);
+        if (result != null) {
+            toast.error(`Failed to import the splits: ${result.message}`);
+        }
     }
 
-    private async importSplitsFromArrayBuffer(buffer: [ArrayBuffer, File]) {
+    private async importSplitsFromArrayBuffer(buffer: [ArrayBuffer, File]): Promise<Option<Error>> {
         const [file] = buffer;
-        const result = Run.parseArray(new Uint8Array(file), "");
-        try {
-            if (result.parsedSuccessfully()) {
-                await this.storeRun(result.unwrap());
-            } else {
-                throw Error("Couldn't parse the splits.");
-            }
-        } finally {
-            result[Symbol.dispose]();
+        using result = Run.parseArray(new Uint8Array(file), "");
+        if (result.parsedSuccessfully()) {
+            await this.storeRun(result.unwrap());
+        } else {
+            return Error("Couldn't parse the splits.");
         }
+        return;
     }
 
     private async saveSplits() {

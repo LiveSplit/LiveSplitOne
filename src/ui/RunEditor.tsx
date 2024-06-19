@@ -1,7 +1,7 @@
 import * as React from "react";
 import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
 import * as LiveSplit from "../livesplit-core";
-import { openFileAsArrayBuffer } from "../util/FileUtil";
+import { FILE_EXT_IMAGES, FILE_EXT_SPLITS, openFileAsArrayBuffer } from "../util/FileUtil";
 import { TextBox } from "./TextBox";
 import { toast } from "react-toastify";
 import {
@@ -42,6 +42,7 @@ export interface State {
     attemptCountIsValid: boolean,
     rowState: RowState,
     tab: Tab,
+    abortController: AbortController,
 }
 
 interface Callbacks {
@@ -106,6 +107,7 @@ export class RunEditor extends React.Component<Props, State> {
                 splitTimeChanged: false,
             },
             tab: state.timing_method === "RealTime" ? Tab.RealTime : Tab.GameTime,
+            abortController: new AbortController(),
         };
 
         if (props.generalSettings.speedrunComIntegration) {
@@ -261,6 +263,11 @@ export class RunEditor extends React.Component<Props, State> {
         );
     }
 
+    private close(save: boolean) {
+        this.state.abortController.abort();
+        this.props.callbacks.closeRunEditor(save);
+    }
+
     private renderSidebarContent() {
         return (
             <div className="sidebar-buttons">
@@ -269,13 +276,13 @@ export class RunEditor extends React.Component<Props, State> {
                 <div className="small">
                     <button
                         className="toggle-left"
-                        onClick={(_) => this.props.callbacks.closeRunEditor(true)}
+                        onClick={(_) => this.close(true)}
                     >
                         <i className="fa fa-check" aria-hidden="true" /> OK
                     </button>
                     <button
                         className="toggle-right"
-                        onClick={(_) => this.props.callbacks.closeRunEditor(false)}
+                        onClick={(_) => this.close(false)}
                     >
                         <i className="fa fa-times" aria-hidden="true" /> Cancel
                     </button>
@@ -1564,8 +1571,12 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private async importComparison() {
-        const maybeFile = await openFileAsArrayBuffer();
+        const maybeFile = await openFileAsArrayBuffer(FILE_EXT_SPLITS);
         if (maybeFile === undefined) {
+            return;
+        }
+        if (maybeFile instanceof Error) {
+            toast.error(`Failed to read the file: ${maybeFile.message}`);
             return;
         }
         const [data, file] = maybeFile;
@@ -1637,8 +1648,12 @@ export class RunEditor extends React.Component<Props, State> {
 
     private async changeSegmentIcon(index: number) {
         this.props.editor.selectOnly(index);
-        const maybeFile = await openFileAsArrayBuffer();
+        const maybeFile = await openFileAsArrayBuffer(FILE_EXT_IMAGES);
         if (maybeFile === undefined) {
+            return;
+        }
+        if (maybeFile instanceof Error) {
+            toast.error(`Failed to read the file: ${maybeFile.message}`);
             return;
         }
         const [file] = maybeFile;
@@ -1656,8 +1671,12 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private async changeGameIcon() {
-        const maybeFile = await openFileAsArrayBuffer();
+        const maybeFile = await openFileAsArrayBuffer(FILE_EXT_IMAGES);
         if (maybeFile === undefined) {
+            return;
+        }
+        if (maybeFile instanceof Error) {
+            toast.error(`Failed to read the file: ${maybeFile.message}`);
             return;
         }
         const [file] = maybeFile;
@@ -1993,6 +2012,7 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private async downloadBoxArt() {
+        const signal = this.state.abortController.signal;
         try {
             const gameName = this.state.editor.game;
             await downloadGameInfo(gameName);
@@ -2000,8 +2020,11 @@ export class RunEditor extends React.Component<Props, State> {
             if (game !== undefined) {
                 const uri = game.assets["cover-medium"].uri;
                 if (uri.startsWith("https://") && uri !== "https://www.speedrun.com/images/blankcover.png") {
-                    const response = await fetch(uri);
+                    const response = await fetch(uri, { signal });
                     const buffer = await response.arrayBuffer();
+                    if (this.props.editor.ptr === 0) {
+                        return;
+                    }
                     this.props.editor.setGameIconFromArray(new Uint8Array(buffer));
                     this.maybeUpdate();
                 } else {
@@ -2011,11 +2034,15 @@ export class RunEditor extends React.Component<Props, State> {
                 toast.error("Couldn't find the game.");
             }
         } catch {
+            if (signal.aborted) {
+                return;
+            }
             toast.error("Couldn't download the box art.");
         }
     }
 
     private async downloadIcon() {
+        const signal = this.state.abortController.signal;
         try {
             const gameName = this.state.editor.game;
             await downloadGameInfo(gameName);
@@ -2023,8 +2050,11 @@ export class RunEditor extends React.Component<Props, State> {
             if (game !== undefined) {
                 const uri = game.assets.icon.uri;
                 if (uri.startsWith("https://") && uri !== "https://www.speedrun.com/images/1st.png") {
-                    const response = await fetch(uri);
+                    const response = await fetch(uri, { signal });
                     const buffer = await response.arrayBuffer();
+                    if (this.props.editor.ptr === 0) {
+                        return;
+                    }
                     this.props.editor.setGameIconFromArray(new Uint8Array(buffer));
                     this.maybeUpdate();
                 } else {
@@ -2034,6 +2064,9 @@ export class RunEditor extends React.Component<Props, State> {
                 toast.error("Couldn't find the game.");
             }
         } catch {
+            if (signal.aborted) {
+                return;
+            }
             toast.error("Couldn't download the icon.");
         }
     }
@@ -2088,10 +2121,11 @@ export class RunEditor extends React.Component<Props, State> {
         const baseUri = "https://splits.io/api/v3/runs/";
         assert(apiUri.startsWith(baseUri), "Unexpected Splits.io URL");
         const splitsId = apiUri.slice(baseUri.length);
+        const signal = this.state.abortController.signal;
         try {
             const gameName = this.state.editor.game;
             const categoryName = this.state.editor.category;
-            const runDownload = downloadById(splitsId);
+            const runDownload = downloadById(splitsId, signal);
             const platformListDownload = downloadPlatformList();
             const regionListDownload = downloadRegionList();
             const gameInfoDownload = downloadGameInfo(gameName);
@@ -2116,7 +2150,10 @@ export class RunEditor extends React.Component<Props, State> {
             } else {
                 toast.error("The downloaded splits are not suitable for being edited.");
             }
-        } catch (_) {
+        } catch {
+            if (signal.aborted) {
+                return;
+            }
             toast.error("Failed to download the splits.");
         }
     }

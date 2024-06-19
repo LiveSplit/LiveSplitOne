@@ -2,6 +2,11 @@ import * as React from "react";
 
 import "../css/Dialog.scss";
 
+export interface Props {
+    onShow: () => void,
+    onClose: () => void,
+}
+
 export interface Options {
     title: string | JSX.Element,
     description: string | JSX.Element,
@@ -18,22 +23,31 @@ export interface State {
 let dialogElement: HTMLDialogElement | null = null;
 let setState: ((options: Options) => void) | undefined;
 let resolveFn: ((_: [number, string]) => void) | undefined;
+let onCloseFn: (() => void) | undefined;
+let alreadyClosed = false;
 
 export function showDialog(options: Options): Promise<[number, string]> {
     if (dialogElement) {
         dialogElement.showModal();
+        alreadyClosed = false;
+        dialogElement.setAttribute("disabled", "");
         const closeWith = options.buttons.length - 1;
         dialogElement.onclose = () => {
-            resolveFn?.([closeWith, ""]);
+            if (!alreadyClosed) {
+                resolveFn?.([closeWith, ""]);
+                onCloseFn?.();
+            }
         };
     }
     setState?.(options);
     return new Promise((resolve) => resolveFn = resolve);
 }
 
-export default class DialogContainer extends React.Component<unknown, State> {
-    constructor(props: unknown) {
+export default class DialogContainer extends React.Component<Props, State> {
+    constructor(props: Props) {
         super(props);
+
+        onCloseFn = props.onClose;
 
         this.state = {
             options: {
@@ -46,15 +60,17 @@ export default class DialogContainer extends React.Component<unknown, State> {
     }
 
     public componentDidMount(): void {
-        setState = (options) => this.setState({
-            options,
-            input: options.defaultText ?? "",
-        });
+        setState = (options) => {
+            this.props.onShow();
+            this.setState({
+                options,
+                input: options.defaultText ?? "",
+            });
+        };
     }
 
     public render() {
         return <dialog
-            tabIndex={-1}
             ref={(element) => dialogElement = element}
             onKeyDown={(e) => {
                 if (e?.key === "ArrowLeft") {
@@ -66,38 +82,43 @@ export default class DialogContainer extends React.Component<unknown, State> {
                 }
             }}
         >
-            <h1>{this.state.options.title}</h1>
-            <p>{this.state.options.description}</p>
-            {
-                this.state.options.textInput && <input
-                    type="text"
-                    value={this.state.input}
-                    autoFocus={true}
-                    onChange={(e) => this.setState({ input: e.target.value })}
-                    onKeyDown={(e) => {
-                        if (e?.key === "Enter") {
-                            e.preventDefault();
-                            dialogElement?.close();
-                            resolveFn?.([0, this.state.input]);
-                        }
-                    }}
-                />
-            }
-            <div className="buttons">
+            <div className="dialog">
+                <h1>{this.state.options.title}</h1>
+                <p>{this.state.options.description}</p>
                 {
-                    this.state.options.buttons.map((button, i) => {
-                        return <button
-                            autoFocus={i === 0 && !this.state.options.textInput}
-                            onClick={() => {
-                                dialogElement?.close();
-                                resolveFn?.([i, this.state.input]);
-                            }}
-                        >
-                            {button}
-                        </button>;
-                    })
+                    this.state.options.textInput && <input
+                        type="text"
+                        value={this.state.input}
+                        autoFocus={true}
+                        onChange={(e) => this.setState({ input: e.target.value })}
+                        onKeyDown={(e) => {
+                            if (e?.key === "Enter") {
+                                e.preventDefault();
+                                this.close(0);
+                            }
+                        }}
+                    />
                 }
+                <div className="buttons">
+                    {
+                        this.state.options.buttons.map((button, i) => {
+                            return <button
+                                autoFocus={i === 0 && !this.state.options.textInput}
+                                onClick={() => this.close(i)}
+                            >
+                                {button}
+                            </button>;
+                        })
+                    }
+                </div>
             </div>
         </dialog>;
+    }
+
+    private close(i: number) {
+        alreadyClosed = true;
+        dialogElement?.close();
+        resolveFn?.([i, this.state.input]);
+        this.props.onClose();
     }
 }

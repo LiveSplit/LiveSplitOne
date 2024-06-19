@@ -12,12 +12,12 @@
 
     .table-row-even {
       display: table-row;
-      background: $dark-row-color  !important;
+      background: $dark-row-color !important;
     }
 
     .table-row-odd {
       display: table-row;
-      background: $light-row-color  !important;
+      background: $light-row-color !important;
     }
   }
 
@@ -54,16 +54,16 @@
   }
 
   .selected {
-    background: $selected-row-color  !important;
+    background: $selected-row-color !important;
   }
 
   .tab-bar>button {
     font-size: 15px;
-    height: 30px;
-    border-bottom-right-radius: 0px;
-    border-bottom-left-radius: 0px;
-    margin-bottom: 0px;
-    border-bottom: 0px;
+    min-height: 30px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    margin-bottom: 0;
+    border-bottom: 0;
   }
 
   tr>td>input {
@@ -144,9 +144,11 @@
           grid-template-columns: 1fr 30px;
 
           button {
-            margin: 0px;
+            margin: 0;
             font-size: 12px;
-            height: $settings-row-height;
+            min-height: $settings-row-height;
+            padding-top: 0;
+            padding-bottom: 0;
           }
         }
       }

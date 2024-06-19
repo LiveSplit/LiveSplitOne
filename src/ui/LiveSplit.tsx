@@ -5,7 +5,7 @@ import {
     Timer, HotkeyConfig, LayoutState, LayoutStateJson,
     TimingMethod, TimerPhase,
 } from "../livesplit-core";
-import { convertFileToArrayBuffer, convertFileToString, exportFile, openFileAsString } from "../util/FileUtil";
+import { FILE_EXT_LAYOUTS, convertFileToArrayBuffer, convertFileToString, exportFile, openFileAsString } from "../util/FileUtil";
 import { Option, assertNull, expect, maybeDisposeAndThen, panic } from "../util/OptionUtil";
 import * as SplitsIO from "../util/SplitsIO";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
@@ -40,6 +40,16 @@ export enum MenuKind {
     LayoutEditor,
     SettingsEditor,
     About,
+}
+
+function isMenuLocked(menuKind: MenuKind) {
+    switch (menuKind) {
+        case MenuKind.Timer:
+        case MenuKind.Layout:
+            return false;
+        default:
+            return true;
+    }
 }
 
 type Menu =
@@ -410,7 +420,10 @@ export class LiveSplit extends React.Component<Props, State> {
 
         return <>
             {view}
-            <DialogContainer />
+            <DialogContainer
+                onShow={() => this.lockTimerInteraction()}
+                onClose={() => this.unlockTimerInteraction()}
+            />
             <ToastContainer
                 position="bottom-right"
                 toastClassName="toast-class"
@@ -450,38 +463,65 @@ export class LiveSplit extends React.Component<Props, State> {
         );
     }
 
+    private changeMenu(menu: Menu) {
+        const wasLocked = isMenuLocked(this.state.menu.kind);
+        const isLocked = isMenuLocked(menu.kind);
+
+        this.setState({ menu, sidebarOpen: false });
+
+        if (!wasLocked && isLocked) {
+            this.lockTimerInteraction();
+        } else if (wasLocked && !isLocked) {
+            this.unlockTimerInteraction();
+        }
+    }
+
     public openTimerView() {
-        this.setState({
-            menu: { kind: MenuKind.Timer },
-            sidebarOpen: false,
-        });
-        this.state.hotkeySystem.activate();
+        this.changeMenu({ kind: MenuKind.Timer });
     }
 
     public openSplitsView() {
-        this.setState({
-            menu: { kind: MenuKind.Splits },
-            sidebarOpen: false,
-        });
-        this.state.hotkeySystem.deactivate();
+        this.changeMenu({ kind: MenuKind.Splits });
     }
 
     public openLayoutView() {
-        this.setState({
-            menu: { kind: MenuKind.Layout },
-        });
+        this.changeMenu({ kind: MenuKind.Layout });
     }
 
     public openAboutView() {
-        this.setState({
-            menu: { kind: MenuKind.About },
-            sidebarOpen: false,
-        });
-        this.state.hotkeySystem.deactivate();
+        this.changeMenu({ kind: MenuKind.About });
+    }
+
+    private lockTimerInteraction() {
+        if (!this.state.eventSink.isLocked()) {
+            // We need to schedule this to happen in the next micro task,
+            // because the hotkey system itself may be what triggered this
+            // function, so the hotkey system might still be in use, which would
+            // result in a deadlock acquiring the internal state of the hotkey
+            // system.
+            setTimeout(() => this.state.hotkeySystem.deactivate());
+        }
+        this.state.eventSink.lockInteraction();
+    }
+
+    private unlockTimerInteraction() {
+        this.state.eventSink.unlockInteraction();
+        if (!this.state.eventSink.isLocked()) {
+            // We need to schedule this to happen in the next micro task,
+            // because the hotkey system itself may be what triggered this
+            // function, so the hotkey system might still be in use, which would
+            // result in a deadlock acquiring the internal state of the hotkey
+            // system.
+            setTimeout(() => this.state.hotkeySystem.activate());
+        }
     }
 
     public async importSplitsFromFile(file: File) {
         const splits = await convertFileToArrayBuffer(file);
+        if (splits instanceof Error) {
+            toast.error(`Failed to read the file: ${splits.message}`);
+            return;
+        }
         this.importSplitsFromArrayBuffer(splits);
     }
 
@@ -500,8 +540,12 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     public async importLayout() {
-        const maybeFile = await openFileAsString();
+        const maybeFile = await openFileAsString(FILE_EXT_LAYOUTS);
         if (maybeFile === undefined) {
+            return;
+        }
+        if (maybeFile instanceof Error) {
+            toast.error(`Failed to read the file: ${maybeFile.message}`);
             return;
         }
         const [file] = maybeFile;
@@ -513,7 +557,12 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     public async importLayoutFromFile(file: File) {
-        const [fileString] = await convertFileToString(file);
+        const maybeFile = await convertFileToString(file);
+        if (maybeFile instanceof Error) {
+            toast.error(`Failed to read the file: ${maybeFile.message}`);
+            return;
+        }
+        const [fileString] = maybeFile;
         this.importLayoutFromString(fileString);
     }
 
@@ -532,10 +581,7 @@ export class LiveSplit extends React.Component<Props, State> {
             RunEditor.new(run),
             "The Run Editor should always be able to be opened.",
         );
-        this.setState({
-            menu: { kind: MenuKind.RunEditor, editor, splitsKey },
-            sidebarOpen: false,
-        });
+        this.changeMenu({ kind: MenuKind.RunEditor, editor, splitsKey });
     }
 
     public closeRunEditor(save: boolean) {
@@ -569,17 +615,12 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     public openLayoutEditor() {
-        this.state.hotkeySystem.deactivate();
-
         const layout = this.state.layout.clone();
         const editor = expect(
             LayoutEditor.new(layout),
             "The Layout Editor should always be able to be opened.",
         );
-        this.setState({
-            menu: { kind: MenuKind.LayoutEditor, editor },
-            sidebarOpen: false,
-        });
+        this.changeMenu({ kind: MenuKind.LayoutEditor, editor });
     }
 
     public closeLayoutEditor(save: boolean) {
@@ -597,13 +638,9 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     public openSettingsEditor() {
-        this.state.hotkeySystem.deactivate();
-        this.setState({
-            menu: {
-                kind: MenuKind.SettingsEditor,
-                config: this.state.hotkeySystem.config(),
-            },
-            sidebarOpen: false,
+        this.changeMenu({
+            kind: MenuKind.SettingsEditor,
+            config: this.state.hotkeySystem.config(),
         });
     }
 
