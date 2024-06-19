@@ -1,52 +1,65 @@
 @import 'variables';
 
+.is-mobile+dialog>.dialog {
+    min-width: auto;
+}
+
 dialog {
-    color: #eee;
-    background: $main-background-color;
-    border: 2px solid $border-color;
-    border-radius: 10px;
-    min-width: 225px;
-    max-width: 400px;
-    padding: $ui-large-margin;
-
-    h1 {
-        font-size: 20px;
-        margin: 5px 0;
-    }
-
-    .buttons {
-        button {
-            font-size: 16px;
-            margin: 0;
-            min-width: 80px;
-
-            &:focus {
-                border-color: #888;
-            }
-        }
-
-        display: flex;
-        flex-direction: row;
-        justify-content: flex-end;
-        column-gap: $ui-margin;
-    }
+    background: none;
+    border: none;
+    outline: 0;
 
     &::backdrop {
         background: rgba(0, 0, 0, 0.5);
     }
 
-    input {
-        width: 100%;
-        border: none;
-        border-bottom: 1px solid hsla(0, 0%, 100%, 0.25);
-        background: transparent;
-        color: white;
-        text-overflow: ellipsis;
-        font-family: "fira", sans-serif;
-        font-size: 16px;
+    .dialog {
+        color: #eee;
+        background: $main-background-color;
+        border: 2px solid $border-color;
+        border-radius: 10px;
+        min-width: 225px;
 
-        &:focus {
-            outline: 0;
+        max-width: 400px;
+        padding: $ui-large-margin;
+
+        h1 {
+            font-size: 20px;
+            margin: 5px 0;
+        }
+
+        .buttons {
+            button {
+                font-size: 16px;
+                margin: 0;
+                min-width: 80px;
+                height: auto;
+
+                &:focus {
+                    border-color: #888;
+                }
+            }
+
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+            gap: $ui-margin;
+        }
+
+        input {
+            width: 100%;
+            border: none;
+            border-bottom: 1px solid hsla(0, 0%, 100%, 0.25);
+            background: transparent;
+            color: white;
+            text-overflow: ellipsis;
+            font-family: "fira", sans-serif;
+            font-size: 16px;
+
+            &:focus {
+                outline: 0;
+            }
         }
     }
 }

@@ -5,10 +5,15 @@ import { Option } from "./OptionUtil";
 // @ts-expect-error Unused variable due to above issue
 let fileInputElement = null; // eslint-disable-line
 
-function openFile(): Promise<File | undefined> {
+export const FILE_EXT_SPLITS = ".lss";
+export const FILE_EXT_LAYOUTS = ".ls1l,.lsl";
+export const FILE_EXT_IMAGES = "image/*";
+
+function openFile(accept: string): Promise<File | undefined> {
     return new Promise((resolve) => {
         const input = document.createElement("input");
         input.setAttribute("type", "file");
+        input.setAttribute("accept", accept);
         input.onchange = () => {
             const file: Option<File> = input.files?.[0];
             if (file === undefined) {
@@ -22,43 +27,68 @@ function openFile(): Promise<File | undefined> {
     });
 }
 
-export async function convertFileToArrayBuffer(file: File): Promise<[ArrayBuffer, File]> {
-    return new Promise((resolve: (_: [ArrayBuffer, File]) => void) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            const contents = reader.result as Option<ArrayBuffer>;
-            if (contents != null) {
-                resolve([contents, file]);
+export async function convertFileToArrayBuffer(file: File): Promise<[ArrayBuffer, File] | Error> {
+    return new Promise((resolve: (_: [ArrayBuffer, File] | Error) => void) => {
+        try {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const contents = reader.result as Option<ArrayBuffer>;
+                if (contents != null) {
+                    resolve([contents, file]);
+                } else {
+                    resolve(new Error("Failed to read the file."));
+                }
+            };
+            reader.onerror = () => {
+                resolve(new Error("Failed to read the file."));
+            };
+            reader.readAsArrayBuffer(file);
+        } catch (e) {
+            if (e instanceof Error) {
+                resolve(e);
+            } else {
+                resolve(new Error("Unknown error while reading the file."));
             }
-        };
-        // FIXME: onerror
-        reader.readAsArrayBuffer(file);
+        }
     });
 }
 
-export async function openFileAsArrayBuffer(): Promise<[ArrayBuffer, File] | undefined> {
-    const file = await openFile();
+export async function openFileAsArrayBuffer(accept: string): Promise<[ArrayBuffer, File] | Error | undefined> {
+    const file = await openFile(accept);
     if (file === undefined) {
         return undefined;
     }
     return convertFileToArrayBuffer(file);
 }
 
-export async function convertFileToString(file: File): Promise<[string, File]> {
-    return new Promise((resolve: (_: [string, File]) => void) => {
-        const reader = new FileReader();
-        reader.onload = () => {
-            const contents = reader.result as Option<string>;
-            if (contents != null) {
-                resolve([contents, file]);
+export async function convertFileToString(file: File): Promise<[string, File] | Error> {
+    return new Promise((resolve: (_: [string, File] | Error) => void) => {
+        try {
+            const reader = new FileReader();
+            reader.onload = () => {
+                const contents = reader.result as Option<string>;
+                if (contents != null) {
+                    resolve([contents, file]);
+                } else {
+                    resolve(new Error("Failed to read the file."));
+                }
+            };
+            reader.onerror = () => {
+                resolve(new Error("Failed to read the file."));
+            };
+            reader.readAsText(file);
+        } catch (e) {
+            if (e instanceof Error) {
+                resolve(e);
+            } else {
+                resolve(new Error("Unknown error while reading the file."));
             }
-        };
-        reader.readAsText(file);
+        }
     });
 }
 
-export async function openFileAsString(): Promise<[string, File] | undefined> {
-    const file = await openFile();
+export async function openFileAsString(accept: string): Promise<[string, File] | Error | undefined> {
+    const file = await openFile(accept);
     if (file === undefined) {
         return undefined;
     }

@@ -270,7 +270,7 @@ $small-button-padding: 1px 3px 1px 3px;
       font-size: 15px;
       width: $button-width;
       margin-right: 0;
-      height: 30px;
+      min-height: 30px;
 
       @include mobile {
         margin-top: 0;
@@ -389,7 +389,7 @@ $small-button-padding: 1px 3px 1px 3px;
       content: "";
       height: 2px;
       width: 0;
-      bottom: 0px;
+      bottom: 0;
       position: absolute;
       background: hsla(50, 100%, 50%, 1);
       transition: 0.2s ease all;

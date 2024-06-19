@@ -18,9 +18,13 @@ $h2-font-size: 22px;
 
   @include toggle;
 
-  >div>div.small>button {
-    width: 50%;
-    font-size: 18px;
+  >div>div.small {
+    display: flex;
+
+    >button {
+      width: 50%;
+      font-size: 18px;
+    }
   }
 
   .sidebar-buttons {

@@ -5,10 +5,11 @@ import ColorPicker from "./ColorPicker";
 import HotkeyButton from "./HotkeyButton";
 import ToggleCheckbox from "./ToggleCheckbox";
 import { UrlCache } from "../util/UrlCache";
-import { openFileAsArrayBuffer } from "../util/FileUtil";
+import { FILE_EXT_IMAGES, openFileAsArrayBuffer } from "../util/FileUtil";
 import * as FontList from "../util/FontList";
 import { LiveSplitServer } from "../api/LiveSplitServer";
 import { showDialog } from "./Dialog";
+import { toast } from "react-toastify";
 
 import "../css/Tooltip.scss";
 import "../css/LiveSplitServerButton.scss";
@@ -1251,8 +1252,12 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                     background: imageUrl ? `url("${imageUrl}") center / cover` : undefined,
                                 }}
                                 onClick={async (_) => {
-                                    const maybeFile = await openFileAsArrayBuffer();
+                                    const maybeFile = await openFileAsArrayBuffer(FILE_EXT_IMAGES);
                                     if (maybeFile === undefined) {
+                                        return;
+                                    }
+                                    if (maybeFile instanceof Error) {
+                                        toast.error(`Failed to read the file: ${maybeFile.message}`);
                                         return;
                                     }
                                     const [file] = maybeFile;
