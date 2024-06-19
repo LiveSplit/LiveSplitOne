@@ -26,15 +26,7 @@ import "./css/main.scss";
 import("./css/font-awesome.css");
 
 try {
-    const [
-        { LiveSplit },
-        React,
-        { createRoot },
-    ] = await Promise.all([
-        import("./ui/LiveSplit"),
-        import("react"),
-        import("react-dom/client"),
-    ]);
+    const { LiveSplit, React, createRoot } = await import("./indexDelayed");
 
     try {
         const {
