@@ -74,13 +74,14 @@ export enum DownloadError {
     FailedParsing,
 }
 
-export async function downloadById(id: string): Promise<Run> {
+export async function downloadById(id: string, signal?: AbortSignal): Promise<Run> {
     const response = await validatedFetch(
         `https://splits.io/api/v4/runs/${id}`,
         {
             headers: new Headers({
                 Accept: "application/original-timer",
             }),
+            signal,
         },
         DownloadError.ApiRequestErrored,
     );

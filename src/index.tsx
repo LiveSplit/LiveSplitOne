@@ -26,32 +26,24 @@ import "./css/main.scss";
 import("./css/font-awesome.css");
 
 try {
-    const [
-        { LiveSplit },
-        React,
-        ReactDOM,
-        { toast, ToastContainer },
-    ] = await Promise.all([
-        import("./ui/LiveSplit"),
-        import("react"),
-        import("react-dom"),
-        import("react-toastify"),
-    ]);
+    const { LiveSplit, React, createRoot } = await import("./indexDelayed");
 
     try {
         const {
             splits,
             splitsKey,
             layout,
+            comparison,
+            timingMethod,
             hotkeys,
             layoutWidth,
             layoutHeight,
             generalSettings,
         } = await LiveSplit.loadStoredData();
 
-        function requestWakeLock() {
+        async function requestWakeLock() {
             try {
-                (navigator as any)?.wakeLock?.request("screen");
+                await (navigator as any)?.wakeLock?.request();
             } catch {
                 // It's fine if it fails.
             }
@@ -81,27 +73,20 @@ try {
             // should still have the fallback fonts that we can fall back to.
         }
 
-        ReactDOM.render(
-            <div>
-                <LiveSplit
-                    splits={splits}
-                    layout={layout}
-                    hotkeys={hotkeys}
-                    splitsKey={splitsKey}
-                    layoutWidth={layoutWidth}
-                    layoutHeight={layoutHeight}
-                    generalSettings={generalSettings}
-                />
-                <ToastContainer
-                    position={toast.POSITION.BOTTOM_RIGHT}
-                    toastClassName="toast-class"
-                    bodyClassName="toast-body"
-                    style={{
-                        textShadow: "none",
-                    }}
-                />
-            </div>,
-            document.getElementById("base"),
+        const container = document.getElementById("base");
+        const root = createRoot(container!);
+        root.render(
+            <LiveSplit
+                splits={splits}
+                layout={layout}
+                comparison={comparison}
+                timingMethod={timingMethod}
+                hotkeys={hotkeys}
+                splitsKey={splitsKey}
+                layoutWidth={layoutWidth}
+                layoutHeight={layoutHeight}
+                generalSettings={generalSettings}
+            />,
         );
     } catch (e: any) {
         if (e.name === "InvalidStateError") {

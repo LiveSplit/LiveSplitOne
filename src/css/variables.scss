@@ -7,10 +7,13 @@ $main-content-margin: 24px;
 $settings-table-width: 500px;
 $settings-row-height: 19px;
 
+$contributor-avatar-size: 42px;
+
 $border-color: #404040;
 
 $button-active-color: linear-gradient(hsl(0, 0%, 13%) 0%, hsl(0, 0%, 23%) 100%);
 $button-color: linear-gradient(hsl(0, 0%, 11%) 0%, hsl(0, 0%, 7%) 100%);
+$button-middle-color: hsl(0, 0%, 9%);
 $button-disabled-color: #222;
 $button-disabled-text-color: #666;
 $button-hover-color: linear-gradient(hsl(0, 0%, 14%) 0%, hsl(0, 0%, 9%) 100%);
@@ -35,4 +38,5 @@ $selected-row-hover-color: linear-gradient(hsl(220, 90%, 70%) 0%, hsl(220, 69%, 
   buttonHeight: $button-height;
   largeMargin: $ui-large-margin;
   manualGameTimeHeight: $manual-game-time-height;
+  contributorAvatarSize: $contributor-avatar-size;
 }

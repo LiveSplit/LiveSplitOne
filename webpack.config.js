@@ -13,6 +13,35 @@ import fetch from "node-fetch";
 import { fileURLToPath } from 'url';
 import * as sass from "sass";
 
+function parseChangelog() {
+    return execSync("git log --grep \"^Changelog: \" -10")
+        .toString()
+        .split(/^commit /m)
+        .slice(1)
+        .map((commit) => {
+            const changelogIndex = commit.indexOf("    Changelog: ");
+            if (changelogIndex === -1) {
+                throw `Changelog not found in commit:\n${commit}`;
+            }
+            const dateString = commit.match(/^Date:   (.*)$/m)?.[1];
+            if (!dateString) {
+                throw `Date not found in commit:\n${commit}`;
+            }
+            const date = moment(new Date(dateString)).utc().format("YYYY-MM-DD");
+            const id = commit.substring(0, commit.indexOf("\n"));
+            const message = commit
+                .substring(changelogIndex + 15)
+                .replaceAll("\n    ", "\n")
+                .trim();
+            return {
+                id,
+                message,
+                date,
+            };
+        })
+        .filter((changelog) => changelog.message);
+}
+
 export default async (env, argv) => {
     const getContributorsForRepo = async (repoName) => {
         const contributorsData = await fetch(`https://api.github.com/repos/LiveSplit/${repoName}/contributors`);
@@ -39,10 +68,17 @@ export default async (env, argv) => {
     }
 
     const contributorsList = Object.values(coreContributorsMap)
-        .sort((user1, user2) => user2.contributions - user1.contributions)
-        .map((user) => user.login);
+        // Sort by contributions, but fallback to alphabetical order for the
+        // same amount of contributions
+        .sort((a, b) => a.login > b.login ? 1 : b.login > a.login ? -1 : 0)
+        .sort((a, b) => b.contributions - a.contributions)
+        .map((user) => {
+            return { id: user.id, name: user.login };
+        });
     const commitHash = execSync("git rev-parse --short HEAD").toString();
-    const date = moment.utc().format("YYYY-MM-DD kk:mm:ss");
+    const date = moment.utc().format("YYYY-MM-DD kk:mm:ss z");
+
+    const changelog = parseChangelog();
 
     const basePath = path.dirname(fileURLToPath(import.meta.url));
 
@@ -75,6 +111,7 @@ export default async (env, argv) => {
             new FaviconsWebpackPlugin({
                 logo: path.resolve("src/assets/icon.svg"),
                 inject: true,
+                logoMaskable: path.resolve("src/assets/maskable.svg"),
                 favicons: {
                     appName: "LiveSplit One",
                     appDescription: "A version of LiveSplit that works on a lot of platforms.",
@@ -84,6 +121,13 @@ export default async (env, argv) => {
                     theme_color: "#232323",
                     appleStatusBarStyle: "black-translucent",
                     icons: {
+                        appleIcon: {
+                            offset: 10,
+                        },
+                        appleStartup: {
+                            offset: 15,
+                        },
+                        windows: false,
                         coast: false,
                         yandex: false,
                     },
@@ -97,6 +141,7 @@ export default async (env, argv) => {
                 BUILD_DATE: JSON.stringify(date),
                 COMMIT_HASH: JSON.stringify(commitHash),
                 CONTRIBUTORS_LIST: JSON.stringify(contributorsList),
+                CHANGELOG: JSON.stringify(changelog),
             }),
             ...(isProduction ? [
                 new HtmlInlineScriptPlugin({

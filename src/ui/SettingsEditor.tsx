@@ -5,6 +5,9 @@ import { SettingsDescriptionJson, SettingValue, HotkeyConfig } from "../livespli
 import { toast } from "react-toastify";
 import { UrlCache } from "../util/UrlCache";
 import { FRAME_RATE_AUTOMATIC as FRAME_RATE_BATTERY_AWARE, FRAME_RATE_MATCH_SCREEN as FRAME_RATE_MATCH_SCREEN, FrameRateSetting } from "../util/FrameRate";
+import { LiveSplitServer } from "../api/LiveSplitServer";
+import { Option } from "../util/OptionUtil";
+import { LSOEventSink } from "./LSOEventSink";
 
 import "../css/SettingsEditor.scss";
 
@@ -12,8 +15,10 @@ export interface GeneralSettings {
     frameRate: FrameRateSetting,
     showControlButtons: boolean,
     showManualGameTime: boolean,
+    saveOnReset: boolean,
     speedrunComIntegration: boolean,
     splitsIoIntegration: boolean,
+    serverUrl: string | undefined,
 }
 
 export interface Props {
@@ -21,6 +26,9 @@ export interface Props {
     hotkeyConfig: HotkeyConfig,
     urlCache: UrlCache,
     callbacks: Callbacks,
+    serverConnection: Option<LiveSplitServer>,
+    eventSink: LSOEventSink,
+    allComparisons: string[],
 }
 
 export interface State {
@@ -31,6 +39,9 @@ export interface State {
 interface Callbacks {
     renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
     closeSettingsEditor(save: boolean, newGeneralSettings: GeneralSettings): void,
+    onServerConnectionOpened(serverConnection: LiveSplitServer): void,
+    onServerConnectionClosed(): void,
+    forceUpdate(): void,
 }
 
 export class SettingsEditor extends React.Component<Props, State> {
@@ -58,6 +69,7 @@ export class SettingsEditor extends React.Component<Props, State> {
                     factory={SettingValue}
                     state={this.state.settings}
                     editorUrlCache={this.props.urlCache}
+                    allComparisons={this.props.allComparisons}
                     setValue={(index, value) => {
                         if (!this.props.hotkeyConfig.setValue(index, value)) {
                             toast.error("The hotkey is already in use.");
@@ -93,9 +105,17 @@ export class SettingsEditor extends React.Component<Props, State> {
                                 tooltip: "Shows a text box beneath the timer that allows you to manually input the game time. You start the timer and do splits by pressing the Enter key in the text box. Make sure to compare against \"Game Time\".",
                                 value: { Bool: this.state.generalSettings.showManualGameTime },
                             },
+                            {
+                                text: "Save On Reset",
+                                tooltip: "Determines whether to automatically save the splits when resetting the timer.",
+                                value: {
+                                    Bool: this.state.generalSettings.saveOnReset,
+                                },
+                            },
                         ],
                     }}
                     editorUrlCache={this.props.urlCache}
+                    allComparisons={this.props.allComparisons}
                     setValue={(index, value) => {
                         switch (index) {
                             case 0:
@@ -132,6 +152,16 @@ export class SettingsEditor extends React.Component<Props, State> {
                                     });
                                 }
                                 break;
+                            case 3:
+                                if ("Bool" in value) {
+                                    this.setState({
+                                        generalSettings: {
+                                            ...this.state.generalSettings,
+                                            saveOnReset: value.Bool,
+                                        },
+                                    });
+                                }
+                                break;
                         }
                     }}
                 />
@@ -151,9 +181,25 @@ export class SettingsEditor extends React.Component<Props, State> {
                                 tooltip: "Allows you to upload splits to and download splits from splits.io.",
                                 value: { Bool: this.state.generalSettings.splitsIoIntegration },
                             },
+                            {
+                                text: <>
+                                    Server Connection <i className="fa fa-flask" style={{ color: "#07bc0c" }} aria-hidden="true" />
+                                </>,
+                                tooltip: <>
+                                    Allows you to connect to a WebSocket server that can control the timer by sending various commands. The commands are currently a subset of the commands the original LiveSplit supports.<br /><br />
+                                    This feature is <b>experimental</b> and the protocol will likely change in the future.
+                                </>,
+                                value: {
+                                    ServerConnection: {
+                                        url: this.props.generalSettings.serverUrl,
+                                        connection: this.props.serverConnection,
+                                    },
+                                }
+                            },
                         ],
                     }}
                     editorUrlCache={this.props.urlCache}
+                    allComparisons={this.props.allComparisons}
                     setValue={(index, value) => {
                         switch (index) {
                             case 0:
@@ -172,6 +218,26 @@ export class SettingsEditor extends React.Component<Props, State> {
                                         generalSettings: {
                                             ...this.state.generalSettings,
                                             splitsIoIntegration: value.Bool,
+                                        },
+                                    });
+                                }
+                                break;
+                            case 2:
+                                if ("String" in value) {
+                                    try {
+                                        this.props.callbacks.onServerConnectionOpened(new LiveSplitServer(
+                                            value.String,
+                                            () => this.forceUpdate(),
+                                            () => this.props.callbacks.onServerConnectionClosed(),
+                                            this.props.eventSink,
+                                        ));
+                                    } catch {
+                                        // It's fine if it fails.
+                                    }
+                                    this.setState({
+                                        generalSettings: {
+                                            ...this.state.generalSettings,
+                                            serverUrl: value.String,
                                         },
                                     });
                                 }

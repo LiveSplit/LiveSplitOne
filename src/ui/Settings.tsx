@@ -2,14 +2,17 @@ import * as React from "react";
 import { Color, SettingsDescriptionValueJson } from "../livesplit-core";
 import { assertNever, expect, Option } from "../util/OptionUtil";
 import ColorPicker from "./ColorPicker";
-
 import HotkeyButton from "./HotkeyButton";
 import ToggleCheckbox from "./ToggleCheckbox";
 import { UrlCache } from "../util/UrlCache";
-import { openFileAsArrayBuffer } from "../util/FileUtil";
+import { FILE_EXT_IMAGES, openFileAsArrayBuffer } from "../util/FileUtil";
 import * as FontList from "../util/FontList";
+import { LiveSplitServer } from "../api/LiveSplitServer";
+import { showDialog } from "./Dialog";
+import { toast } from "react-toastify";
 
 import "../css/Tooltip.scss";
+import "../css/LiveSplitServerButton.scss";
 
 export interface Props<T> {
     context: string,
@@ -17,6 +20,7 @@ export interface Props<T> {
     state: ExtendedSettingsDescriptionJson,
     factory: SettingValueFactory<T>,
     editorUrlCache: UrlCache,
+    allComparisons: string[],
 }
 
 export interface ExtendedSettingsDescriptionJson {
@@ -24,14 +28,20 @@ export interface ExtendedSettingsDescriptionJson {
 }
 
 export interface ExtendedSettingsDescriptionFieldJson {
-    text: string,
-    tooltip: string,
+    text: string | JSX.Element,
+    tooltip: string | JSX.Element,
     value: ExtendedSettingsDescriptionValueJson,
 }
 
 export type ExtendedSettingsDescriptionValueJson =
     SettingsDescriptionValueJson |
-    { RemovableString: string | null };
+    { RemovableString: string | null } |
+    {
+        ServerConnection: {
+            url: string | undefined,
+            connection: Option<LiveSplitServer>,
+        }
+    };
 
 export interface SettingValueFactory<T> {
     fromBool(v: boolean): T;
@@ -250,44 +260,72 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     </div>
                 );
             } else if ("OptionalString" in value) {
-                const children = [
-                    <ToggleCheckbox
-                        value={value.OptionalString !== null}
-                        setValue={(value) => {
-                            if (value) {
-                                this.props.setValue(
-                                    valueIndex,
-                                    factory.fromOptionalString(""),
-                                );
-                            } else {
-                                this.props.setValue(
-                                    valueIndex,
-                                    factory.fromOptionalEmptyString(),
-                                );
-                            }
-                        }}
-                    />,
-                ];
-
-                if (value.OptionalString !== null) {
-                    children.push(
-                        <input
-                            value={value.OptionalString}
+                // FIXME: This is a hack that we need for now until the way
+                // settings are represented is refactored.
+                if (typeof (field.text) === "string" && /^Comparison( \d)?$/.test(field.text)) {
+                    component = <div className="settings-value-box">
+                        <select
+                            value={value.OptionalString ?? ""}
                             onChange={(e) => {
-                                this.props.setValue(
-                                    valueIndex,
-                                    factory.fromOptionalString(e.target.value),
-                                );
+                                if (e.target.value !== "") {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        factory.fromOptionalString(e.target.value),
+                                    );
+                                } else {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        factory.fromOptionalEmptyString(),
+                                    );
+                                }
+                            }}
+                        >
+                            <option value="">Current Comparison</option>
+                            {this.props.allComparisons.map((comparison) =>
+                                <option>{comparison}</option>
+                            )}
+                        </select>
+                    </div>;
+                } else {
+                    const children = [
+                        <ToggleCheckbox
+                            value={value.OptionalString !== null}
+                            setValue={(value) => {
+                                if (value) {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        factory.fromOptionalString(""),
+                                    );
+                                } else {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        factory.fromOptionalEmptyString(),
+                                    );
+                                }
                             }}
                         />,
+                    ];
+
+                    if (value.OptionalString !== null) {
+                        children.push(
+                            <input
+                                value={value.OptionalString}
+                                onChange={(e) => {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        factory.fromOptionalString(e.target.value),
+                                    );
+                                }}
+                            />,
+                        );
+                    }
+
+                    component = (
+                        <div className="settings-value-box optional-value">
+                            {children}
+                        </div>
                     );
                 }
-
-                component = (
-                    <div className="settings-value-box optional-value">
-                        {children}
-                    </div>
-                );
             } else if ("RemovableString" in value) {
                 component = (
                     <div className="settings-value-box removable-string">
@@ -1211,10 +1249,18 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             <div
                                 className="color-picker-button"
                                 style={{
-                                    background: `url("${imageUrl}") center / cover`,
+                                    background: imageUrl ? `url("${imageUrl}") center / cover` : undefined,
                                 }}
                                 onClick={async (_) => {
-                                    const [file] = await openFileAsArrayBuffer();
+                                    const maybeFile = await openFileAsArrayBuffer(FILE_EXT_IMAGES);
+                                    if (maybeFile === undefined) {
+                                        return;
+                                    }
+                                    if (maybeFile instanceof Error) {
+                                        toast.error(`Failed to read the file: ${maybeFile.message}`);
+                                        return;
+                                    }
+                                    const [file] = maybeFile;
                                     const imageId = this.props.editorUrlCache.imageCache.cacheFromArray(
                                         new Uint8Array(file),
                                         true,
@@ -1348,6 +1394,27 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                         </div>
                     );
                 }
+            } else if ("ServerConnection" in value) {
+                component = <div className="settings-value-box">
+                    <button className="livesplit-server-button" onClick={(_) => this.connectToServerOrDisconnect(valueIndex, value.ServerConnection.url, value.ServerConnection.connection)}>
+                        {
+                            (() => {
+                                const connectionState = value.ServerConnection.connection?.getConnectionState() ?? WebSocket.CLOSED;
+                                switch (connectionState) {
+                                    case WebSocket.OPEN:
+                                        return <div>Disconnect</div>;
+                                    case WebSocket.CLOSED:
+                                        return <div>Connect</div>;
+                                    case WebSocket.CONNECTING:
+                                        return <div>Connecting...</div>;
+                                    case WebSocket.CLOSING:
+                                        return <div>Disconnecting...</div>;
+                                    default: throw new Error("Unknown WebSocket State");
+                                }
+                            })()
+                        }
+                    </button>
+                </div>;
             } else {
                 assertNever(value);
             }
@@ -1370,5 +1437,23 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                 </tbody>
             </table>
         );
+    }
+
+    private async connectToServerOrDisconnect(valueIndex: number, serverUrl: string | undefined, connection: Option<LiveSplitServer>) {
+        if (connection) {
+            connection.close();
+            return;
+        }
+        const [result, url] = await showDialog({
+            title: "Connect to Server",
+            description: "Specify the WebSocket URL:",
+            textInput: true,
+            defaultText: serverUrl,
+            buttons: ["Connect", "Cancel"],
+        });
+        if (result !== 0) {
+            return;
+        }
+        this.props.setValue(valueIndex, this.props.factory.fromString(url));
     }
 }

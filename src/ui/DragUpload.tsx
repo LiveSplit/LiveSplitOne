@@ -4,7 +4,7 @@ import { toast } from "react-toastify";
 import "../css/DragUpload.scss";
 
 export interface Props {
-    children: any,
+    children: React.ReactNode,
     importLayout?: (file: File) => Promise<void>,
     importSplits(file: File): Promise<void>,
 }

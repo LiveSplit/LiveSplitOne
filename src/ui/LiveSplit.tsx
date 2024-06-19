@@ -1,11 +1,11 @@
 import * as React from "react";
 import Sidebar from "react-sidebar";
 import {
-    HotkeySystem, Layout, LayoutEditor, Run, RunEditor,
-    Segment, SharedTimer, Timer, TimerRef, TimerRefMut,
-    HotkeyConfig, LayoutState, LayoutStateJson,
+    HotkeySystem, Layout, LayoutEditor, Run, RunEditor, Segment,
+    Timer, HotkeyConfig, LayoutState, LayoutStateJson,
+    TimingMethod, TimerPhase,
 } from "../livesplit-core";
-import { convertFileToArrayBuffer, convertFileToString, exportFile, openFileAsString } from "../util/FileUtil";
+import { FILE_EXT_LAYOUTS, convertFileToArrayBuffer, convertFileToString, exportFile, openFileAsString } from "../util/FileUtil";
 import { Option, assertNull, expect, maybeDisposeAndThen, panic } from "../util/OptionUtil";
 import * as SplitsIO from "../util/SplitsIO";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
@@ -15,10 +15,14 @@ import { TimerView } from "./TimerView";
 import { About } from "./About";
 import { SplitsSelection, EditingInfo } from "./SplitsSelection";
 import { LayoutView } from "./LayoutView";
-import { toast } from "react-toastify";
+import { ToastContainer, toast } from "react-toastify";
 import * as Storage from "../storage";
 import { UrlCache } from "../util/UrlCache";
 import { WebRenderer } from "../livesplit-core/livesplit_core";
+import { LiveSplitServer } from "../api/LiveSplitServer";
+import { LSOEventSink } from "./LSOEventSink";
+import DialogContainer from "./Dialog";
+
 import variables from "../css/variables.scss";
 
 import "react-toastify/dist/ReactToastify.css";
@@ -38,6 +42,16 @@ export enum MenuKind {
     About,
 }
 
+function isMenuLocked(menuKind: MenuKind) {
+    switch (menuKind) {
+        case MenuKind.Timer:
+        case MenuKind.Layout:
+            return false;
+        default:
+            return true;
+    }
+}
+
 type Menu =
     { kind: MenuKind.Timer } |
     { kind: MenuKind.Splits } |
@@ -50,6 +64,8 @@ type Menu =
 export interface Props {
     splits?: Uint8Array,
     layout?: Storage.LayoutSettings,
+    comparison?: string,
+    timingMethod: TimingMethod,
     hotkeys?: Storage.HotkeyConfigSettings,
     layoutWidth: number,
     layoutHeight: number,
@@ -74,9 +90,17 @@ export interface State {
     sidebarTransitionsEnabled: boolean,
     storedLayoutWidth: number,
     storedLayoutHeight: number,
-    timer: SharedTimer,
+    eventSink: LSOEventSink,
     renderer: WebRenderer,
     generalSettings: GeneralSettings,
+    serverConnection: Option<LiveSplitServer>,
+    currentComparison: string,
+    currentTimingMethod: TimingMethod,
+    currentPhase: TimerPhase,
+    currentSplitIndex: number,
+    allComparisons: string[],
+    splitsModified: boolean,
+    layoutModified: boolean,
 }
 
 export let hotkeySystem: Option<HotkeySystem> = null;
@@ -87,6 +111,8 @@ export class LiveSplit extends React.Component<Props, State> {
         const splitsKey = await Storage.loadSplitsKey();
         const splits = splitsKey !== undefined ? await Storage.loadSplits(splitsKey) : undefined;
         const layout = await Storage.loadLayout();
+        const comparison = await Storage.loadComparison();
+        const timingMethod = await Storage.loadTimingMethod();
         const hotkeys = await Storage.loadHotkeys();
         const [layoutWidth, layoutHeight] = await Storage.loadLayoutDims();
         const generalSettings = await Storage.loadGeneralSettings();
@@ -95,6 +121,8 @@ export class LiveSplit extends React.Component<Props, State> {
             splits,
             splitsKey,
             layout,
+            comparison,
+            timingMethod,
             hotkeys,
             layoutWidth,
             layoutHeight,
@@ -114,20 +142,31 @@ export class LiveSplit extends React.Component<Props, State> {
         const timer = expect(
             Timer.new(run),
             "The Default Run should be a valid Run",
-        ).intoShared();
+        );
+
+        const eventSink = new LSOEventSink(
+            timer,
+            () => this.currentComparisonChanged(),
+            () => this.currentTimingMethodChanged(),
+            () => this.currentPhaseChanged(),
+            () => this.currentSplitChanged(),
+            () => this.comparisonListChanged(),
+            () => this.splitsModifiedChanged(),
+            () => this.onReset(),
+        );
 
         const hotkeys = props.hotkeys;
         try {
             if (hotkeys !== undefined) {
                 const config = HotkeyConfig.parseJson(hotkeys);
                 if (config !== null) {
-                    hotkeySystem = HotkeySystem.withConfig(timer.share(), config);
+                    hotkeySystem = HotkeySystem.withConfig(eventSink.getEventSink(), config);
                 }
             }
         } catch (_) { /* Looks like the storage has no valid data */ }
         if (hotkeySystem == null) {
             hotkeySystem = expect(
-                HotkeySystem.new(timer.share()),
+                HotkeySystem.new(eventSink.getEventSink()),
                 "Couldn't initialize the hotkeys",
             );
         }
@@ -138,7 +177,7 @@ export class LiveSplit extends React.Component<Props, State> {
             loadingRun.setCategoryName("Loading...");
             loadingRun.pushSegment(Segment.new("Time"));
             assertNull(
-                timer.writeWith((t) => t.setRun(loadingRun)),
+                eventSink.setRun(loadingRun),
                 "The Default Loading Run should be a valid Run",
             );
             this.loadFromSplitsIO(window.location.hash.substring("#/splits-io/".length));
@@ -146,9 +185,14 @@ export class LiveSplit extends React.Component<Props, State> {
             using result = Run.parseArray(props.splits, "");
             if (result.parsedSuccessfully()) {
                 using r = result.unwrap();
-                timer.writeWith((t) => t.setRun(r))?.[Symbol.dispose]();
+                eventSink.setRun(r)?.[Symbol.dispose]();
             }
         }
+
+        if (props.comparison !== undefined) {
+            timer.setCurrentComparison(props.comparison);
+        }
+        timer.setCurrentTimingMethod(props.timingMethod);
 
         let layout: Option<Layout> = null;
         try {
@@ -164,7 +208,7 @@ export class LiveSplit extends React.Component<Props, State> {
         const isDesktop = this.isDesktopQuery.matches;
         const isBrowserSource = !!(window as any).obsstudio;
 
-        const renderer = WebRenderer.new();
+        const renderer = new WebRenderer();
         renderer.element().setAttribute("style", "width: inherit; height: inherit;");
 
         this.state = {
@@ -182,25 +226,38 @@ export class LiveSplit extends React.Component<Props, State> {
             sidebarTransitionsEnabled: false,
             storedLayoutWidth: props.layoutWidth,
             storedLayoutHeight: props.layoutHeight,
-            timer,
+            eventSink,
             hotkeySystem,
             openedSplitsKey: props.splitsKey,
             renderer,
             generalSettings: props.generalSettings,
+            serverConnection: null,
+            currentComparison: eventSink.currentComparison(),
+            currentTimingMethod: eventSink.currentTimingMethod(),
+            currentPhase: eventSink.currentPhase(),
+            currentSplitIndex: eventSink.currentSplitIndex(),
+            allComparisons: eventSink.getAllComparisons(),
+            splitsModified: eventSink.hasBeenModified(),
+            layoutModified: false,
         };
+
+        this.updateBadge();
 
         this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
     }
 
-    private notifyAboutUpdate(this: void)
-    {
-        toast.warn(
-            'A new version of LiveSplit One is available! Click here to reload.',
-            {
-              closeOnClick: true,
-              onClick: () => window.location.reload(),
-            },
-        );
+    private notifyAboutUpdate(this: void) {
+        const { serviceWorker } = navigator;
+        if (serviceWorker && serviceWorker.controller) {
+            // Don't prompt for update when service worker gets removed
+            toast.warn(
+                'A new version of LiveSplit One is available! Click here to reload.',
+                {
+                    closeOnClick: true,
+                    onClick: () => window.location.reload(),
+                },
+            );
+        }
     }
 
     public componentDidMount() {
@@ -211,13 +268,12 @@ export class LiveSplit extends React.Component<Props, State> {
         this.resizeEvent = { handleEvent: () => this.handleAutomaticResize() };
         window.addEventListener("resize", this.resizeEvent, false);
 
-        window.onbeforeunload = (e: BeforeUnloadEvent) => {
-            const hasBeenModified = this.readWith((t) => t.getRun().hasBeenModified());
-            if (hasBeenModified) {
-                e.returnValue = "There are unsaved changes. Do you really want to close LiveSplit One?";
-                return e.returnValue;
+        window.onbeforeunload = () => {
+            if (this.state.splitsModified || this.state.layoutModified) {
+                return "There are unsaved changes. Do you really want to close LiveSplit One?";
+            } else {
+                return;
             }
-            return null;
         };
 
         // This is bound in the constructor
@@ -231,8 +287,9 @@ export class LiveSplit extends React.Component<Props, State> {
         this.handleAutomaticResize();
 
         const { serviceWorker } = navigator;
-        if (serviceWorker) {
-          serviceWorker.addEventListener('controllerchange', this.notifyAboutUpdate);
+        if (serviceWorker && serviceWorker.controller) {
+            // Don't prompt for update when there was no service worker previously installed
+            serviceWorker.addEventListener('controllerchange', this.notifyAboutUpdate);
         }
     }
 
@@ -253,7 +310,7 @@ export class LiveSplit extends React.Component<Props, State> {
             "resize",
             expect(this.resizeEvent, "A Resize Event should exist"),
         );
-        this.state.timer[Symbol.dispose]();
+        this.state.eventSink[Symbol.dispose]();
         this.state.layout[Symbol.dispose]();
         this.state.layoutState[Symbol.dispose]();
         this.state.hotkeySystem?.[Symbol.dispose]();
@@ -269,15 +326,17 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     public render() {
+        let view;
         if (this.state.menu.kind === MenuKind.RunEditor) {
-            return <RunEditorComponent
+            view = <RunEditorComponent
                 editor={this.state.menu.editor}
                 callbacks={this}
                 runEditorUrlCache={this.state.runEditorUrlCache}
+                allComparisons={this.state.allComparisons}
                 generalSettings={this.state.generalSettings}
             />;
         } else if (this.state.menu.kind === MenuKind.LayoutEditor) {
-            return <LayoutEditorComponent
+            view = <LayoutEditorComponent
                 editor={this.state.menu.editor}
                 layoutState={this.state.layoutState}
                 layoutEditorUrlCache={this.state.layoutEditorUrlCache}
@@ -285,29 +344,34 @@ export class LiveSplit extends React.Component<Props, State> {
                 layoutWidth={this.state.layoutWidth}
                 layoutHeight={this.state.layoutHeight}
                 generalSettings={this.state.generalSettings}
+                allComparisons={this.state.allComparisons}
                 isDesktop={this.state.isDesktop}
-                timer={this.state.timer}
+                eventSink={this.state.eventSink}
                 renderer={this.state.renderer}
                 callbacks={this}
             />;
         } else if (this.state.menu.kind === MenuKind.SettingsEditor) {
-            return <SettingsEditorComponent
+            view = <SettingsEditorComponent
                 generalSettings={this.state.generalSettings}
                 hotkeyConfig={this.state.menu.config}
                 urlCache={this.state.layoutUrlCache}
                 callbacks={this}
+                eventSink={this.state.eventSink}
+                serverConnection={this.state.serverConnection}
+                allComparisons={this.state.allComparisons}
             />;
         } else if (this.state.menu.kind === MenuKind.About) {
-            return <About callbacks={this} />;
+            view = <About callbacks={this} />;
         } else if (this.state.menu.kind === MenuKind.Splits) {
-            return <SplitsSelection
+            view = <SplitsSelection
                 generalSettings={this.state.generalSettings}
-                timer={this.state.timer}
+                eventSink={this.state.eventSink}
                 openedSplitsKey={this.state.openedSplitsKey}
                 callbacks={this}
+                splitsModified={this.state.splitsModified}
             />;
         } else if (this.state.menu.kind === MenuKind.Timer) {
-            return <TimerView
+            view = <TimerView
                 layout={this.state.layout}
                 layoutState={this.state.layoutState}
                 layoutUrlCache={this.state.layoutUrlCache}
@@ -317,12 +381,20 @@ export class LiveSplit extends React.Component<Props, State> {
                 isDesktop={this.state.isDesktop}
                 renderWithSidebar={true}
                 sidebarOpen={this.state.sidebarOpen}
-                timer={this.state.timer}
+                eventSink={this.state.eventSink}
                 renderer={this.state.renderer}
+                serverConnection={this.state.serverConnection}
                 callbacks={this}
+                currentComparison={this.state.currentComparison}
+                currentTimingMethod={this.state.currentTimingMethod}
+                currentPhase={this.state.currentPhase}
+                currentSplitIndex={this.state.currentSplitIndex}
+                allComparisons={this.state.allComparisons}
+                splitsModified={this.state.splitsModified}
+                layoutModified={this.state.layoutModified}
             />;
         } else if (this.state.menu.kind === MenuKind.Layout) {
-            return <LayoutView
+            view = <LayoutView
                 layout={this.state.layout}
                 layoutState={this.state.layoutState}
                 layoutUrlCache={this.state.layoutUrlCache}
@@ -332,14 +404,33 @@ export class LiveSplit extends React.Component<Props, State> {
                 isDesktop={this.state.isDesktop}
                 renderWithSidebar={true}
                 sidebarOpen={this.state.sidebarOpen}
-                timer={this.state.timer}
+                eventSink={this.state.eventSink}
                 renderer={this.state.renderer}
+                serverConnection={this.state.serverConnection}
                 callbacks={this}
+                currentComparison={this.state.currentComparison}
+                currentTimingMethod={this.state.currentTimingMethod}
+                currentPhase={this.state.currentPhase}
+                currentSplitIndex={this.state.currentSplitIndex}
+                allComparisons={this.state.allComparisons}
+                splitsModified={this.state.splitsModified}
+                layoutModified={this.state.layoutModified}
             />;
         }
-        // Only get here if the type is invalid
-        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-        throw Error(`Invalid menu: ${this.state.menu}`);
+
+        return <>
+            {view}
+            <DialogContainer
+                onShow={() => this.lockTimerInteraction()}
+                onClose={() => this.unlockTimerInteraction()}
+            />
+            <ToastContainer
+                position="bottom-right"
+                toastClassName="toast-class"
+                bodyClassName="toast-body"
+                theme="dark"
+            />
+        </>;
     }
 
     public renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element) {
@@ -372,53 +463,92 @@ export class LiveSplit extends React.Component<Props, State> {
         );
     }
 
-    public openTimerView(layout: Layout = this.state.layout) {
-        this.setState({
-            layout,
-            menu: { kind: MenuKind.Timer },
-            sidebarOpen: false,
-        });
-        this.state.hotkeySystem.activate();
+    private changeMenu(menu: Menu) {
+        const wasLocked = isMenuLocked(this.state.menu.kind);
+        const isLocked = isMenuLocked(menu.kind);
+
+        this.setState({ menu, sidebarOpen: false });
+
+        if (!wasLocked && isLocked) {
+            this.lockTimerInteraction();
+        } else if (wasLocked && !isLocked) {
+            this.unlockTimerInteraction();
+        }
+    }
+
+    public openTimerView() {
+        this.changeMenu({ kind: MenuKind.Timer });
     }
 
     public openSplitsView() {
-        this.setState({
-            menu: { kind: MenuKind.Splits },
-            sidebarOpen: false,
-        });
-        this.state.hotkeySystem.deactivate();
+        this.changeMenu({ kind: MenuKind.Splits });
     }
 
     public openLayoutView() {
-        this.setState({
-            menu: { kind: MenuKind.Layout },
-        });
+        this.changeMenu({ kind: MenuKind.Layout });
     }
 
     public openAboutView() {
-        this.setState({
-            menu: { kind: MenuKind.About },
-            sidebarOpen: false,
-        });
-        this.state.hotkeySystem.deactivate();
+        this.changeMenu({ kind: MenuKind.About });
+    }
+
+    private lockTimerInteraction() {
+        if (!this.state.eventSink.isLocked()) {
+            // We need to schedule this to happen in the next micro task,
+            // because the hotkey system itself may be what triggered this
+            // function, so the hotkey system might still be in use, which would
+            // result in a deadlock acquiring the internal state of the hotkey
+            // system.
+            setTimeout(() => this.state.hotkeySystem.deactivate());
+        }
+        this.state.eventSink.lockInteraction();
+    }
+
+    private unlockTimerInteraction() {
+        this.state.eventSink.unlockInteraction();
+        if (!this.state.eventSink.isLocked()) {
+            // We need to schedule this to happen in the next micro task,
+            // because the hotkey system itself may be what triggered this
+            // function, so the hotkey system might still be in use, which would
+            // result in a deadlock acquiring the internal state of the hotkey
+            // system.
+            setTimeout(() => this.state.hotkeySystem.activate());
+        }
     }
 
     public async importSplitsFromFile(file: File) {
         const splits = await convertFileToArrayBuffer(file);
+        if (splits instanceof Error) {
+            toast.error(`Failed to read the file: ${splits.message}`);
+            return;
+        }
         this.importSplitsFromArrayBuffer(splits);
     }
 
     public async saveLayout() {
         try {
             const layout = this.state.layout.settingsAsJson();
-            await Storage.storeLayout(layout);
+            await Storage.storeLayout(
+                layout,
+                this.state.storedLayoutWidth,
+                this.state.storedLayoutHeight,
+            );
+            this.setState({ layoutModified: false }, () => this.updateBadge());
         } catch (_) {
             toast.error("Failed to save the layout.");
         }
     }
 
     public async importLayout() {
-        const [file] = await openFileAsString();
+        const maybeFile = await openFileAsString(FILE_EXT_LAYOUTS);
+        if (maybeFile === undefined) {
+            return;
+        }
+        if (maybeFile instanceof Error) {
+            toast.error(`Failed to read the file: ${maybeFile.message}`);
+            return;
+        }
+        const [file] = maybeFile;
         try {
             this.importLayoutFromString(file);
         } catch (err) {
@@ -427,7 +557,12 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     public async importLayoutFromFile(file: File) {
-        const [fileString] = await convertFileToString(file);
+        const maybeFile = await convertFileToString(file);
+        if (maybeFile instanceof Error) {
+            toast.error(`Failed to read the file: ${maybeFile.message}`);
+            return;
+        }
+        const [fileString] = maybeFile;
         this.importLayoutFromString(fileString);
     }
 
@@ -446,10 +581,9 @@ export class LiveSplit extends React.Component<Props, State> {
             RunEditor.new(run),
             "The Run Editor should always be able to be opened.",
         );
-        this.setState({
-            menu: { kind: MenuKind.RunEditor, editor, splitsKey, persistChanges },
-            sidebarOpen: false,
-        });
+        this.changeMenu(
+            { kind: MenuKind.RunEditor, editor, splitsKey, persistChanges },
+        );
     }
 
     public replaceRunEditor(editor: RunEditor) {
@@ -482,7 +616,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 Storage.storeRunAndDispose(run, splitsKey);
             } else {
                 assertNull(
-                    this.writeWith((t) => t.setRun(run)),
+                    this.state.eventSink.setRun(run),
                     "The Run Editor should always return a valid Run.",
                 );
             }
@@ -502,17 +636,12 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     public openLayoutEditor() {
-        this.state.hotkeySystem.deactivate();
-
         const layout = this.state.layout.clone();
         const editor = expect(
             LayoutEditor.new(layout),
             "The Layout Editor should always be able to be opened.",
         );
-        this.setState({
-            menu: { kind: MenuKind.LayoutEditor, editor },
-            sidebarOpen: false,
-        });
+        this.changeMenu({ kind: MenuKind.LayoutEditor, editor });
     }
 
     public closeLayoutEditor(save: boolean) {
@@ -522,22 +651,17 @@ export class LiveSplit extends React.Component<Props, State> {
         const layoutEditor = this.state.menu.editor;
         const layout = layoutEditor.close();
         if (save) {
-            this.state.layout[Symbol.dispose]();
-            this.openTimerView(layout);
+            this.setLayout(layout);
         } else {
             layout[Symbol.dispose]();
-            this.openTimerView();
         }
+        this.openTimerView();
     }
 
     public openSettingsEditor() {
-        this.state.hotkeySystem.deactivate();
-        this.setState({
-            menu: {
-                kind: MenuKind.SettingsEditor,
-                config: this.state.hotkeySystem.config(),
-            },
-            sidebarOpen: false,
+        this.changeMenu({
+            kind: MenuKind.SettingsEditor,
+            config: this.state.hotkeySystem.config(),
         });
     }
 
@@ -571,14 +695,17 @@ export class LiveSplit extends React.Component<Props, State> {
         this.openTimerView();
     }
 
-    public async onResize(width: number, height: number) {
-        this.setState({
-            layoutWidth: width,
-            layoutHeight: height,
-            storedLayoutWidth: width,
-            storedLayoutHeight: height,
-        });
-        await Storage.storeLayoutDims(width, height);
+    public onResize(width: number, height: number) {
+        this.setState(
+            {
+                layoutWidth: width,
+                layoutHeight: height,
+                storedLayoutWidth: width,
+                storedLayoutHeight: height,
+                layoutModified: true,
+            },
+            () => this.updateBadge(),
+        );
     }
 
     private getDefaultRun() {
@@ -647,14 +774,18 @@ export class LiveSplit extends React.Component<Props, State> {
 
     private setLayout(layout: Layout) {
         this.state.layout[Symbol.dispose]();
-        this.setState({
-            layout,
-        });
+        this.setState(
+            {
+                layout,
+                layoutModified: true,
+            },
+            () => this.updateBadge(),
+        );
     }
 
     private setRun(run: Run, callback: () => void) {
         maybeDisposeAndThen(
-            this.writeWith((t) => t.setRun(run)),
+            this.state.eventSink.setRun(run),
             callback,
         );
         this.setSplitsKey(undefined);
@@ -703,11 +834,121 @@ export class LiveSplit extends React.Component<Props, State> {
         e.preventDefault();
     }
 
-    private writeWith<T>(action: (timer: TimerRefMut) => T): T {
-        return this.state.timer.writeWith(action);
+    async saveSplits() {
+        try {
+            const openedSplitsKey = await Storage.storeSplits(
+                (callback) => {
+                    callback(this.state.eventSink.getRun(), this.state.eventSink.saveAsLssBytes());
+                    this.state.eventSink.markAsUnmodified();
+                },
+                this.state.openedSplitsKey,
+            );
+            if (this.state.openedSplitsKey !== openedSplitsKey) {
+                this.setSplitsKey(openedSplitsKey);
+            }
+        } catch (_) {
+            toast.error("Failed to save the splits.");
+        }
     }
 
-    private readWith<T>(action: (timer: TimerRef) => T): T {
-        return this.state.timer.readWith(action);
+    onServerConnectionOpened(serverConnection: LiveSplitServer): void {
+        this.setState({ serverConnection });
+    }
+
+    onServerConnectionClosed(): void {
+        this.setState({ serverConnection: null });
+    }
+
+    currentComparisonChanged(): void {
+        if (this.state != null) {
+            const currentComparison = this.state.eventSink.currentComparison();
+
+            (async () => {
+                try {
+                    await Storage.storeComparison(currentComparison);
+                } catch {
+                    // It's fine if this fails.
+                }
+            })();
+
+            this.setState({ currentComparison });
+        }
+    }
+
+    currentTimingMethodChanged(): void {
+        if (this.state != null) {
+            const currentTimingMethod = this.state.eventSink.currentTimingMethod();
+
+            (async () => {
+                try {
+                    await Storage.storeTimingMethod(currentTimingMethod);
+                } catch {
+                    // It's fine if this fails.
+                }
+            })();
+
+            this.setState({ currentTimingMethod });
+        }
+    }
+
+    currentPhaseChanged(): void {
+        if (this.state != null) {
+            this.setState({
+                currentPhase: this.state.eventSink.currentPhase(),
+            });
+        }
+    }
+
+    currentSplitChanged(): void {
+        if (this.state != null) {
+            this.setState({
+                currentSplitIndex: this.state.eventSink.currentSplitIndex(),
+            });
+        }
+    }
+
+    comparisonListChanged(): void {
+        if (this.state != null) {
+            this.setState({
+                allComparisons: this.state.eventSink.getAllComparisons(),
+            });
+        }
+    }
+
+    onReset(): void {
+        if (this.state.generalSettings.saveOnReset) {
+            this.saveSplits();
+        }
+    }
+
+    splitsModifiedChanged(): void {
+        if (this.state != null) {
+            const splitsModified = this.state.eventSink.hasBeenModified();
+            this.setState({ splitsModified }, () => this.updateBadge());
+        }
+    }
+
+    private updateBadge(): void {
+        if (this.state.splitsModified || this.state.layoutModified) {
+            try {
+                navigator?.setAppBadge();
+            } catch {
+                // It's fine if this fails.
+            }
+
+            // It's important that any change is at the end of the title,
+            // because at least Chrome then recognizes that it's an extension of
+            // the PWA name. Otherwise it would show:
+            // LiveSplit One - Window Title
+            // which would repeat LiveSplit One.
+            document.title = "LiveSplit One ●";
+        } else {
+            try {
+                navigator?.clearAppBadge();
+            } catch {
+                // It's fine if this fails.
+            }
+            document.title = "LiveSplit One";
+        }
     }
 }

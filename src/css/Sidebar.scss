@@ -3,7 +3,8 @@
 @import 'Toggle';
 @import 'variables';
 
-$header-font-size: 24px;
+$h1-font-size: 24px;
+$h2-font-size: 22px;
 
 .sidebar-overlay {
   z-index: 3 !important;
@@ -17,9 +18,13 @@ $header-font-size: 24px;
 
   @include toggle;
 
-  > div > div.small > button {
-    width: 50%;
-    font-size: 18px;
+  >div>div.small {
+    display: flex;
+
+    >button {
+      width: 50%;
+      font-size: 18px;
+    }
   }
 
   .sidebar-buttons {
@@ -32,18 +37,23 @@ $header-font-size: 24px;
       }
     }
 
-    h1, h2 {
-      font-size: $header-font-size;
+    h1,
+    h2 {
       text-align: center;
       margin-top: $ui-large-margin;
       margin-bottom: $ui-large-margin;
     }
 
-    h2 {
-      margin-bottom: $ui-large-margin - math.div($ui-margin, 2);
+    h1 {
+      font-size: $h1-font-size;
     }
 
-    > button {
+    h2 {
+      font-size: $h2-font-size;
+      margin-bottom: $ui-margin;
+    }
+
+    >button {
       width: 100%;
     }
 
@@ -61,22 +71,28 @@ $header-font-size: 24px;
         }
       }
     }
+
+    .modified-icon {
+      position: absolute;
+      font-size: 10px;
+      padding-left: 5px;
+    }
   }
 
   .choose-comparison {
-    > button {
-      width: 30px;
-      font-size: 28px;
-    }
-
-    > span {
-      width: calc(100% - 60px);
-      text-align: center;
-      display: inline-block;
-      font-size: 20px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+    margin-bottom: math.div($ui-margin, 2);
+    padding: 0 6px 0 6px;
+    width: 100%;
+    height: 40px;
+    appearance: none;
+    background: $button-middle-color;
+    border: 1px solid $border-color;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    font-family: "fira", sans-serif;
+    font-size: 20px;
+    text-align: center;
+    text-overflow: ellipsis;
   }
 }

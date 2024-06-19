@@ -1,9 +1,12 @@
 import * as React from "react";
-import { SharedTimer, Layout, LayoutStateRefMut } from "../livesplit-core";
+import { Layout, LayoutStateRefMut, TimerPhase, TimingMethod } from "../livesplit-core";
 import { TimerView } from "./TimerView";
 import { UrlCache } from "../util/UrlCache";
 import { WebRenderer } from "../livesplit-core/livesplit_core";
 import { GeneralSettings } from "./SettingsEditor";
+import { LiveSplitServer } from "../api/LiveSplitServer";
+import { Option } from "../util/OptionUtil";
+import { LSOEventSink } from "./LSOEventSink";
 
 export interface Props {
     isDesktop: boolean,
@@ -15,9 +18,17 @@ export interface Props {
     generalSettings: GeneralSettings,
     renderWithSidebar: boolean,
     sidebarOpen: boolean,
-    timer: SharedTimer,
+    eventSink: LSOEventSink,
     renderer: WebRenderer,
+    serverConnection: Option<LiveSplitServer>,
     callbacks: Callbacks,
+    currentComparison: string,
+    currentTimingMethod: TimingMethod,
+    currentPhase: TimerPhase,
+    currentSplitIndex: number,
+    allComparisons: string[],
+    splitsModified: boolean,
+    layoutModified: boolean,
 }
 
 interface Callbacks {
@@ -26,7 +37,7 @@ interface Callbacks {
     importLayoutFromFile(file: File): Promise<void>,
     importSplitsFromFile(file: File): Promise<void>,
     loadDefaultLayout(): void,
-    onResize(width: number, height: number): Promise<void>,
+    onResize(width: number, height: number): void,
     openAboutView(): void,
     openLayoutEditor(): void,
     openLayoutView(): void,
@@ -35,6 +46,8 @@ interface Callbacks {
     openTimerView(): void,
     renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
     saveLayout(): void,
+    onServerConnectionOpened(serverConnection: LiveSplitServer): void,
+    onServerConnectionClosed(): void,
 }
 
 export class LayoutView extends React.Component<Props> {
@@ -49,9 +62,17 @@ export class LayoutView extends React.Component<Props> {
             isDesktop={this.props.isDesktop}
             renderWithSidebar={false}
             sidebarOpen={this.props.sidebarOpen}
-            timer={this.props.timer}
+            eventSink={this.props.eventSink}
             renderer={this.props.renderer}
+            serverConnection={this.props.serverConnection}
             callbacks={this.props.callbacks}
+            currentComparison={this.props.currentComparison}
+            currentTimingMethod={this.props.currentTimingMethod}
+            currentPhase={this.props.currentPhase}
+            currentSplitIndex={this.props.currentSplitIndex}
+            allComparisons={this.props.allComparisons}
+            splitsModified={this.props.splitsModified}
+            layoutModified={this.props.layoutModified}
         />;
         const sidebarContent = this.renderSidebarContent();
         return this.props.callbacks.renderViewWithSidebar(renderedView, sidebarContent);
@@ -67,6 +88,10 @@ export class LayoutView extends React.Component<Props> {
                 </button>
                 <button onClick={(_) => this.props.callbacks.saveLayout()}>
                     <i className="fa fa-save" aria-hidden="true" /> Save
+                    {
+                        this.props.layoutModified &&
+                        <i className="fa fa-circle modified-icon" aria-hidden="true" />
+                    }
                 </button>
                 <button onClick={(_) => this.props.callbacks.importLayout()}>
                     <i className="fa fa-download" aria-hidden="true" /> Import

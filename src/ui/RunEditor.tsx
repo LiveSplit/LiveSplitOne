@@ -1,13 +1,16 @@
 import * as React from "react";
 import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
 import * as LiveSplit from "../livesplit-core";
-import { openFileAsArrayBuffer } from "../util/FileUtil";
+import { FILE_EXT_IMAGES, FILE_EXT_SPLITS, openFileAsArrayBuffer } from "../util/FileUtil";
 import { TextBox } from "./TextBox";
 import { toast } from "react-toastify";
 import {
     downloadGameList, searchGames, getCategories, downloadCategories,
     downloadLeaderboard, getLeaderboard, downloadPlatformList, getPlatforms,
     downloadRegionList, getRegions, downloadGameInfo, getGameInfo, downloadGameInfoByGameId, downloadCategoriesByGameId,
+    gameListLength,
+    platformListLength,
+    regionListLength,
 } from "../api/GameList";
 import { Category, Run, Variable, getRun } from "../api/SpeedrunCom";
 import { Option, expect, map, assert } from "../util/OptionUtil";
@@ -21,6 +24,7 @@ import {
 import { renderMarkdown, replaceFlag } from "../util/Markdown";
 import { UrlCache } from "../util/UrlCache";
 import { GeneralSettings } from "./SettingsEditor";
+import { showDialog } from "./Dialog";
 
 import "../css/RunEditor.scss";
 
@@ -28,15 +32,18 @@ export interface Props {
     editor: LiveSplit.RunEditor,
     callbacks: Callbacks,
     runEditorUrlCache: UrlCache,
+    allComparisons: string[],
     generalSettings: GeneralSettings,
 }
 export interface State {
     editor: LiveSplit.RunEditorStateJson,
     isLoading: boolean,
+    foundGames: string[],
     offsetIsValid: boolean,
     attemptCountIsValid: boolean,
     rowState: RowState,
     tab: Tab,
+    abortController: AbortController,
 }
 
 interface Callbacks {
@@ -81,13 +88,15 @@ export class RunEditor extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
 
-        const state = props.editor.stateAsJson(props.runEditorUrlCache.imageCache) as LiveSplit.RunEditorStateJson;
+        const state: LiveSplit.RunEditorStateJson = props.editor.stateAsJson(props.runEditorUrlCache.imageCache) as LiveSplit.RunEditorStateJson;
+        const foundGames = searchGames(state.game);
         props.runEditorUrlCache.collect();
 
         this.state = {
             attemptCountIsValid: true,
             editor: state,
             isLoading: false,
+            foundGames,
             offsetIsValid: true,
             rowState: {
                 bestSegmentTime: "",
@@ -101,6 +110,7 @@ export class RunEditor extends React.Component<Props, State> {
                 splitTimeChanged: false,
             },
             tab: state.timing_method === "RealTime" ? Tab.RealTime : Tab.GameTime,
+            abortController: new AbortController(),
         };
 
         if (props.generalSettings.speedrunComIntegration) {
@@ -209,7 +219,7 @@ export class RunEditor extends React.Component<Props, State> {
                                     label="Game"
                                     list={[
                                         "run-editor-game-list",
-                                        searchGames(this.state.editor.game),
+                                        this.state.foundGames,
                                     ]}
                                 />
                             </div>
@@ -267,6 +277,11 @@ export class RunEditor extends React.Component<Props, State> {
         );
     }
 
+    private close(save: boolean) {
+        this.state.abortController.abort();
+        this.props.callbacks.closeRunEditor(save);
+    }
+
     private renderSidebarContent() {
         return (
             <div className="sidebar-buttons">
@@ -275,13 +290,13 @@ export class RunEditor extends React.Component<Props, State> {
                 <div className="small">
                     <button
                         className="toggle-left"
-                        onClick={(_) => this.props.callbacks.closeRunEditor(true)}
+                        onClick={(_) => this.close(true)}
                     >
                         <i className="fa fa-check" aria-hidden="true" /> OK
                     </button>
                     <button
                         className="toggle-right"
-                        onClick={(_) => this.props.callbacks.closeRunEditor(false)}
+                        onClick={(_) => this.close(false)}
                     >
                         <i className="fa fa-times" aria-hidden="true" /> Cancel
                     </button>
@@ -327,6 +342,13 @@ export class RunEditor extends React.Component<Props, State> {
             }
         };
 
+        let comparisonsButtonContextTrigger: any = null;
+        const comparisonsButtonToggleMenu = (e: any) => {
+            if (comparisonsButtonContextTrigger) {
+                comparisonsButtonContextTrigger.handleContextClick(e);
+            }
+        };
+
         return (
             <div className="btn-group">
                 <button onClick={(_) => this.insertSegmentAbove()}>
@@ -337,36 +359,64 @@ export class RunEditor extends React.Component<Props, State> {
                 </button>
                 <button
                     onClick={(_) => this.removeSegments()}
-                    className={this.state.editor.buttons.can_remove ? "" : "disabled"}
+                    disabled={!this.state.editor.buttons.can_remove}
                 >
                     Remove Segment
                 </button>
                 <button
                     onClick={(_) => this.moveSegmentsUp()}
-                    className={this.state.editor.buttons.can_move_up ? "" : "disabled"}
+                    disabled={!this.state.editor.buttons.can_move_up}
                 >
                     Move Up
                 </button>
                 <button
                     onClick={(_) => this.moveSegmentsDown()}
-                    className={this.state.editor.buttons.can_move_down ? "" : "disabled"}
+                    disabled={!this.state.editor.buttons.can_move_down}
                 >
                     Move Down
                 </button>
-                <button onClick={(_) => this.addComparison()}>
-                    Add Comparison
-                </button>
-                <button onClick={(_) => this.importComparison()}>
-                    Import Comparison
+                <button onClick={(e) => comparisonsButtonToggleMenu(e)}>
+                    <ContextMenuTrigger
+                        id="comparisons-button-context-menu"
+                        ref={(c) => comparisonsButtonContextTrigger = c}
+                    >
+                        Comparisons…
+                    </ContextMenuTrigger>
                 </button>
                 <button onClick={(e) => otherButtonToggleMenu(e)}>
                     <ContextMenuTrigger
                         id="other-button-context-menu"
                         ref={(c) => otherButtonContextTrigger = c}
                     >
-                        Other…
+                        Cleaning…
                     </ContextMenuTrigger>
                 </button>
+                <ContextMenu id="comparisons-button-context-menu">
+                    <MenuItem className="tooltip" onClick={(_) => this.addComparison()}>
+                        Add Comparison
+                        <span className="tooltip-text">
+                            Adds a new custom comparison where you can store any times that you would like.
+                        </span>
+                    </MenuItem>
+                    <MenuItem className="tooltip" onClick={(_) => this.importComparison()}>
+                        Import Comparison
+                        <span className="tooltip-text">
+                            Imports the Personal Best of a splits file you provide as a comparison.
+                        </span>
+                    </MenuItem>
+                    <MenuItem className="tooltip" onClick={(_) => this.generateGoalComparison()}>
+                        Generate Goal Comparison
+                        <span className="tooltip-text">
+                            Generates a custom goal comparison based on a goal time that you can specify. The comparison's times are automatically balanced based on the segment history such that it roughly represents what the split times for the goal time would look like. Since it is populated by the segment history, the goal times are capped to a range between the sum of the best segments and the sum of the worst segments. The comparison is only populated for the selected timing method. The other timing method's comparison times are not modified by this, so you can generate it again with the other timing method to generate the comparison times for both timing methods.
+                        </span>
+                    </MenuItem>
+                    <MenuItem className="tooltip" onClick={(_) => this.copyComparison()}>
+                        Copy Comparison
+                        <span className="tooltip-text">
+                            Copies any existing comparison, including the Personal Best or even any other automatically provided comparison as a new custom comparison. You could for example use this to keep the Latest Run around as a comparison that exists for as long as you want it to.
+                        </span>
+                    </MenuItem>
+                </ContextMenu>
                 <ContextMenu id="other-button-context-menu">
                     <MenuItem className="tooltip" onClick={(_) => this.clearHistory()}>
                         Clear Only History
@@ -384,12 +434,6 @@ export class RunEditor extends React.Component<Props, State> {
                         Clean Sum of Best
                         <span className="tooltip-text">
                             Allows you to interactively remove potential issues in the segment history that lead to an inaccurate Sum of Best. If you skip a split, whenever you will do the next split, the combined segment time might be faster than the sum of the individual best segments. This will point out all such occurrences and allow you to delete them individually if any of them seem wrong.
-                        </span>
-                    </MenuItem>
-                    <MenuItem className="tooltip" onClick={(_) => this.generateGoalComparison()}>
-                        Generate Goal Comparison
-                        <span className="tooltip-text">
-                            Generates a custom goal comparison based on a goal time that you can specify. The comparison's times are automatically balanced based on the segment history such that it roughly represents what the split times for the goal time would look like. Since it is populated by the segment history, the goal times are capped to a range between the sum of the best segments and the sum of the worst segments. The comparison is only populated for the selected timing method. The other timing method's comparison times are not modified by this, so you can generate it again with the other timing method to generate the comparison times for both timing methods.
                         </span>
                     </MenuItem>
                 </ContextMenu>
@@ -428,9 +472,14 @@ export class RunEditor extends React.Component<Props, State> {
         );
     }
 
-    private addCustomVariable() {
-        const variableName = prompt("Variable Name:");
-        if (variableName) {
+    private async addCustomVariable() {
+        const [result, variableName] = await showDialog({
+            title: "Add Variable",
+            description: "Specify the name of the custom variable you want to add:",
+            textInput: true,
+            buttons: ["OK", "Cancel"],
+        });
+        if (result === 0) {
             this.props.editor.addCustomVariable(variableName);
             this.update();
         }
@@ -676,12 +725,9 @@ export class RunEditor extends React.Component<Props, State> {
                             window.open(`${gameInfo.weblink}?x=${category.id}`, "_blank");
                         }
                     }}
-                    className={category == null ? "disabled" : ""}
+                    disabled={category == null}
                 >
                     Open Leaderboard
-                </button>
-                <button className="disabled">
-                    Submit Run
                 </button>
                 <button onClick={(_) => this.interactiveAssociateRunOrOpenPage()}>
                     {this.state.editor.metadata.run_id !== "" ? "Open PB Page" : "Associate Run"}
@@ -836,6 +882,7 @@ export class RunEditor extends React.Component<Props, State> {
                     factory={new JsonSettingValueFactory()}
                     state={{ fields }}
                     editorUrlCache={this.props.runEditorUrlCache}
+                    allComparisons={this.props.allComparisons}
                     setValue={(index, value) => {
                         function unwrapString(value: ExtendedSettingsDescriptionValueJson): string {
                             if ("String" in value) {
@@ -869,14 +916,14 @@ export class RunEditor extends React.Component<Props, State> {
                             this.props.editor.setEmulatorUsage(emulatorUsage);
                         } else if (index < customVariablesOffset) {
                             const stringValue = unwrapString(value);
-                            const key = speedrunComVariables[index - speedrunComVariablesOffset].text;
+                            const key = speedrunComVariables[index - speedrunComVariablesOffset].text as string;
                             if (stringValue !== "") {
                                 this.props.editor.setSpeedrunComVariable(key, stringValue);
                             } else {
                                 this.props.editor.removeSpeedrunComVariable(key);
                             }
                         } else {
-                            const key = customVariables[index - customVariablesOffset].text;
+                            const key = customVariables[index - customVariablesOffset].text as string;
                             const stringValue = unwrapRemovableString(value);
                             if (stringValue !== null) {
                                 this.props.editor.setCustomVariable(key, stringValue);
@@ -1090,9 +1137,16 @@ export class RunEditor extends React.Component<Props, State> {
                                                     </a>,
                                                 ];
                                             } else {
+                                                const possibleMatch = /^\[([a-z]+)\](.+)$/.exec(p.name);
+                                                let name = p.name;
+                                                let flag;
+                                                if (possibleMatch !== null) {
+                                                    flag = replaceFlag(possibleMatch[1]);
+                                                    name = possibleMatch[2];
+                                                }
                                                 return [
                                                     i !== 0 ? ", " : null,
-                                                    <span className="unregistered-user">{p.name}</span>
+                                                    <span className="unregistered-user">{flag}{name}</span>
                                                 ];
                                             }
                                         })
@@ -1237,6 +1291,14 @@ export class RunEditor extends React.Component<Props, State> {
                                                 Rename
                                                 <span className="tooltip-text">
                                                     Choose a new name for the custom comparison. There are reserved names that can't be used. You also can't have duplicate names.
+                                                </span>
+                                            </MenuItem>
+                                            <MenuItem className="tooltip" onClick={(_) =>
+                                                this.copyComparison(comparison)
+                                            }>
+                                                Copy
+                                                <span className="tooltip-text">
+                                                    Creates a copy of the custom comparison.
                                                 </span>
                                             </MenuItem>
                                             <MenuItem className="tooltip" onClick={(_) =>
@@ -1428,31 +1490,87 @@ export class RunEditor extends React.Component<Props, State> {
         };
     }
 
-    private generateGoalComparison() {
-        const goalTime = prompt("Goal Time:");
-        if (goalTime) {
+    private async generateGoalComparison() {
+        const [result, goalTime] = await showDialog({
+            title: "Generate Goal Comparison",
+            description: "Specify the time you want to achieve:",
+            textInput: true,
+            buttons: ["Generate", "Cancel"],
+        });
+
+        if (result === 0) {
             if (this.props.editor.parseAndGenerateGoalComparison(goalTime)) {
                 this.update();
             } else {
-                toast.error("Failed generating the goal comparison.");
+                toast.error("Failed generating the goal comparison. Make sure to specify a valid time.");
             }
         }
     }
 
-    private cleanSumOfBest() {
+    private async copyComparison(comparisonToCopy?: string) {
+        let comparison = comparisonToCopy;
+        if (comparison === undefined) {
+            const [result, comparisonName] = await showDialog({
+                title: "Copy Comparison",
+                description: "Specify the name of the comparison you want to copy:",
+                textInput: true,
+                buttons: ["Copy", "Cancel"],
+            });
+            if (result !== 0) {
+                return;
+            }
+            comparison = comparisonName;
+        }
+
+        let newName: string | undefined;
+        if (comparison.endsWith(" Copy")) {
+            const before = comparison.substring(0, comparison.length - " Copy".length);
+            newName = `${before} Copy 2`;
+        } else {
+            const regexMatch = /^(.* Copy )(\d+)$/.exec(comparison);
+            if (regexMatch !== null) {
+                const copyNumber = Number(regexMatch[2]);
+                newName = `${regexMatch[1]}${copyNumber + 1}`;
+            } else {
+                newName = `${comparison} Copy`;
+            }
+        }
+
+        if (this.props.editor.copyComparison(comparison, newName)) {
+            this.update();
+        } else {
+            toast.error("Failed copying the comparison. The comparison may not exist.");
+        }
+    }
+
+    private async cleanSumOfBest() {
+        const ptr = this.props.editor.ptr;
         {
             using cleaner = this.props.editor.cleanSumOfBest();
+            this.props.editor.ptr = 0;
+            let first = true;
             while (true) {
                 using potentialCleanUp = cleaner.nextPotentialCleanUp();
                 if (!potentialCleanUp) {
+                    if (first) {
+                        toast.info("There is nothing to clean up.");
+                    }
                     break;
                 }
-                const message = potentialCleanUp.message();
-                if (confirm(message)) {
+                first = false;
+                const [result] = await showDialog({
+                    title: "Clean?",
+                    description: potentialCleanUp.message(),
+                    buttons: ["Yes", "No", "Cancel"],
+                });
+                if (result === 0) {
                     cleaner.apply(potentialCleanUp);
+                } else if (result === 2) {
+                    break;
                 }
             }
         }
+        this.props.editor.ptr = ptr;
         this.update();
     }
 
@@ -1467,15 +1585,29 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private async importComparison() {
-        const [data, file] = await openFileAsArrayBuffer();
+        const maybeFile = await openFileAsArrayBuffer(FILE_EXT_SPLITS);
+        if (maybeFile === undefined) {
+            return;
+        }
+        if (maybeFile instanceof Error) {
+            toast.error(`Failed to read the file: ${maybeFile.message}`);
+            return;
+        }
+        const [data, file] = maybeFile;
         using result = LiveSplit.Run.parseArray(new Uint8Array(data), "");
         if (!result.parsedSuccessfully()) {
             toast.error("Couldn't parse the splits.");
             return;
         }
         using run = result.unwrap();
-        const comparisonName = prompt("Comparison Name:", file.name.replace(/\.[^/.]+$/, ""));
-        if (!comparisonName) {
+        const [dialogResult, comparisonName] = await showDialog({
+            title: "Import Comparison",
+            description: "Specify the name of the comparison you want to import:",
+            textInput: true,
+            buttons: ["Import", "Cancel"],
+            defaultText: file.name.replace(/\.[^/.]+$/, ""),
+        });
+        if (dialogResult !== 0) {
             return;
         }
         const valid = this.props.editor.importComparison(run, comparisonName);
@@ -1486,9 +1618,15 @@ export class RunEditor extends React.Component<Props, State> {
         }
     }
 
-    private addComparison() {
-        const comparisonName = prompt("Comparison Name:");
-        if (comparisonName) {
+    private async addComparison() {
+        const [result, comparisonName] = await showDialog({
+            title: "Add Comparison",
+            description: "Specify the name of the comparison you want to add:",
+            textInput: true,
+            buttons: ["Add", "Cancel"],
+        });
+
+        if (result === 0) {
             const valid = this.props.editor.addComparison(comparisonName);
             if (valid) {
                 this.update();
@@ -1498,9 +1636,16 @@ export class RunEditor extends React.Component<Props, State> {
         }
     }
 
-    private renameComparison(comparison: string) {
-        const newName = prompt("Comparison Name:", comparison);
-        if (newName) {
+    private async renameComparison(comparison: string) {
+        const [result, newName] = await showDialog({
+            title: "Rename Comparison",
+            description: "Specify the new name of the comparison:",
+            textInput: true,
+            buttons: ["Rename", "Cancel"],
+            defaultText: comparison,
+        });
+
+        if (result === 0) {
             const valid = this.props.editor.renameComparison(comparison, newName);
             if (valid) {
                 this.update();
@@ -1517,7 +1662,15 @@ export class RunEditor extends React.Component<Props, State> {
 
     private async changeSegmentIcon(index: number) {
         this.props.editor.selectOnly(index);
-        const [file] = await openFileAsArrayBuffer();
+        const maybeFile = await openFileAsArrayBuffer(FILE_EXT_IMAGES);
+        if (maybeFile === undefined) {
+            return;
+        }
+        if (maybeFile instanceof Error) {
+            toast.error(`Failed to read the file: ${maybeFile.message}`);
+            return;
+        }
+        const [file] = maybeFile;
         this.props.editor.activeSetIconFromArray(new Uint8Array(file));
         this.update();
     }
@@ -1532,7 +1685,15 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private async changeGameIcon() {
-        const [file] = await openFileAsArrayBuffer();
+        const maybeFile = await openFileAsArrayBuffer(FILE_EXT_IMAGES);
+        if (maybeFile === undefined) {
+            return;
+        }
+        if (maybeFile instanceof Error) {
+            toast.error(`Failed to read the file: ${maybeFile.message}`);
+            return;
+        }
+        const [file] = maybeFile;
         this.props.editor.setGameIconFromArray(new Uint8Array(file));
         this.maybeUpdate();
     }
@@ -1553,22 +1714,26 @@ export class RunEditor extends React.Component<Props, State> {
      * the leaderboards. We don't want to update the editor if it has been
      * disposed in the meantime.
      */
-    private maybeUpdate(switchTab?: Tab) {
+    private maybeUpdate(options: { switchTab?: Tab, search?: boolean } = {}) {
         if (this.props.editor.ptr === 0) {
             return;
         }
-        this.update(switchTab);
+        this.update(options);
     }
 
-    private update(switchTab?: Tab) {
-        const intendedTab = switchTab ?? this.state.tab;
+    private update(options: { switchTab?: Tab, search?: boolean } = {}) {
+        const intendedTab = options.switchTab ?? this.state.tab;
         const shouldShowTab = this.shouldShowTab(intendedTab);
         const newActiveTab = shouldShowTab ? intendedTab : Tab.RealTime;
 
-        const state = this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache);
+        const state: LiveSplit.RunEditorStateJson = this.props.editor.stateAsJson(
+            this.props.runEditorUrlCache.imageCache,
+        );
+        if (options.search) {
+            this.setState({ foundGames: searchGames(state.game) });
+        }
         this.props.runEditorUrlCache.collect();
         this.setState({
-            ...this.state,
             editor: state,
             tab: newActiveTab,
         });
@@ -1583,7 +1748,7 @@ export class RunEditor extends React.Component<Props, State> {
             this.refreshLeaderboard(event.target.value, this.state.editor.category);
             this.resetTotalLeaderboardState();
         }
-        this.update();
+        this.update({ search: true });
     }
 
     private handleCategoryChange(event: any) {
@@ -1599,7 +1764,6 @@ export class RunEditor extends React.Component<Props, State> {
     private handleOffsetChange(event: any) {
         const valid = this.props.editor.parseAndSetOffset(event.target.value);
         this.setState({
-            ...this.state,
             editor: {
                 ...this.state.editor,
                 offset: event.target.value,
@@ -1610,7 +1774,6 @@ export class RunEditor extends React.Component<Props, State> {
 
     private handleOffsetBlur() {
         this.setState({
-            ...this.state,
             editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
             offsetIsValid: true,
         });
@@ -1620,7 +1783,6 @@ export class RunEditor extends React.Component<Props, State> {
     private handleAttemptsChange(event: any) {
         const valid = this.props.editor.parseAndSetAttemptCount(event.target.value);
         this.setState({
-            ...this.state,
             attemptCountIsValid: valid,
             editor: {
                 ...this.state.editor,
@@ -1631,7 +1793,6 @@ export class RunEditor extends React.Component<Props, State> {
 
     private handleAttemptsBlur() {
         this.setState({
-            ...this.state,
             attemptCountIsValid: true,
             editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
         });
@@ -1658,7 +1819,6 @@ export class RunEditor extends React.Component<Props, State> {
         };
 
         this.setState({
-            ...this.state,
             editor,
             rowState,
         });
@@ -1671,7 +1831,6 @@ export class RunEditor extends React.Component<Props, State> {
 
     private handleSplitTimeChange(event: any) {
         this.setState({
-            ...this.state,
             rowState: {
                 ...this.state.rowState,
                 splitTime: event.target.value,
@@ -1682,7 +1841,6 @@ export class RunEditor extends React.Component<Props, State> {
 
     private handleSegmentTimeChange(event: any) {
         this.setState({
-            ...this.state,
             rowState: {
                 ...this.state.rowState,
                 segmentTime: event.target.value,
@@ -1693,7 +1851,6 @@ export class RunEditor extends React.Component<Props, State> {
 
     private handleBestSegmentTimeChange(event: any) {
         this.setState({
-            ...this.state,
             rowState: {
                 ...this.state.rowState,
                 bestSegmentTime: event.target.value,
@@ -1710,7 +1867,6 @@ export class RunEditor extends React.Component<Props, State> {
         comparisonTimesChanged[comparisonIndex] = true;
 
         this.setState({
-            ...this.state,
             rowState: {
                 ...this.state.rowState,
                 comparisonTimes,
@@ -1725,7 +1881,6 @@ export class RunEditor extends React.Component<Props, State> {
         }
 
         this.setState({
-            ...this.state,
             editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
             rowState: {
                 ...this.state.rowState,
@@ -1742,7 +1897,6 @@ export class RunEditor extends React.Component<Props, State> {
         }
 
         this.setState({
-            ...this.state,
             editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
             rowState: {
                 ...this.state.rowState,
@@ -1759,7 +1913,6 @@ export class RunEditor extends React.Component<Props, State> {
         }
 
         this.setState({
-            ...this.state,
             editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
             rowState: {
                 ...this.state.rowState,
@@ -1780,7 +1933,6 @@ export class RunEditor extends React.Component<Props, State> {
         comparisonTimesChanged[comparisonIndex] = false;
 
         this.setState({
-            ...this.state,
             editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
             rowState: {
                 ...this.state.rowState,
@@ -1837,7 +1989,7 @@ export class RunEditor extends React.Component<Props, State> {
             }
         }
         this.resetTotalLeaderboardState();
-        this.update(tab);
+        this.update({ switchTab: tab });
     }
 
     private shouldShowTab(tab: Tab) {
@@ -1874,48 +2026,90 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private async downloadBoxArt() {
-        const gameName = this.state.editor.game;
-        await downloadGameInfo(gameName);
-        const game = getGameInfo(gameName);
-        if (game !== undefined) {
-            const uri = game.assets["cover-medium"].uri;
-            if (uri.startsWith("https://")) {
-                const response = await fetch(uri);
-                const buffer = await response.arrayBuffer();
-                this.props.editor.setGameIconFromArray(new Uint8Array(buffer));
-                this.maybeUpdate();
+        const signal = this.state.abortController.signal;
+        try {
+            const gameName = this.state.editor.game;
+            await downloadGameInfo(gameName);
+            const game = getGameInfo(gameName);
+            if (game !== undefined) {
+                const uri = game.assets["cover-medium"].uri;
+                if (uri.startsWith("https://") && uri !== "https://www.speedrun.com/images/blankcover.png") {
+                    const response = await fetch(uri, { signal });
+                    const buffer = await response.arrayBuffer();
+                    if (this.props.editor.ptr === 0) {
+                        return;
+                    }
+                    this.props.editor.setGameIconFromArray(new Uint8Array(buffer));
+                    this.maybeUpdate();
+                } else {
+                    toast.error("The game doesn't have a box art.");
+                }
+            } else {
+                toast.error("Couldn't find the game.");
             }
+        } catch {
+            if (signal.aborted) {
+                return;
+            }
+            toast.error("Couldn't download the box art.");
         }
     }
 
     private async downloadIcon() {
-        const gameName = this.state.editor.game;
-        await downloadGameInfo(gameName);
-        const game = getGameInfo(gameName);
-        if (game !== undefined) {
-            const uri = game.assets.icon.uri;
-            if (uri.startsWith("https://")) {
-                const response = await fetch(uri);
-                const buffer = await response.arrayBuffer();
-                this.props.editor.setGameIconFromArray(new Uint8Array(buffer));
-                this.maybeUpdate();
+        const signal = this.state.abortController.signal;
+        try {
+            const gameName = this.state.editor.game;
+            await downloadGameInfo(gameName);
+            const game = getGameInfo(gameName);
+            if (game !== undefined) {
+                const uri = game.assets.icon.uri;
+                if (uri.startsWith("https://") && uri !== "https://www.speedrun.com/images/1st.png") {
+                    const response = await fetch(uri, { signal });
+                    const buffer = await response.arrayBuffer();
+                    if (this.props.editor.ptr === 0) {
+                        return;
+                    }
+                    this.props.editor.setGameIconFromArray(new Uint8Array(buffer));
+                    this.maybeUpdate();
+                } else {
+                    toast.error("The game doesn't have an icon.");
+                }
+            } else {
+                toast.error("Couldn't find the game.");
             }
+        } catch {
+            if (signal.aborted) {
+                return;
+            }
+            toast.error("Couldn't download the icon.");
         }
     }
 
     private async refreshGameList() {
+        const before = gameListLength();
         await downloadGameList();
-        this.maybeUpdate();
+        const after = gameListLength();
+        if (before !== after) {
+            this.maybeUpdate({ search: true });
+        }
     }
 
     private async refreshPlatformList() {
+        const before = platformListLength();
         await downloadPlatformList();
-        this.maybeUpdate();
+        const after = platformListLength();
+        if (before !== after) {
+            this.maybeUpdate();
+        }
     }
 
     private async refreshRegionList() {
+        const before = regionListLength();
         await downloadRegionList();
-        this.maybeUpdate();
+        const after = regionListLength();
+        if (before !== after) {
+            this.maybeUpdate();
+        }
     }
 
     private async refreshGameInfo(gameName: string) {
@@ -1953,10 +2147,11 @@ export class RunEditor extends React.Component<Props, State> {
         const baseUri = "https://splits.io/api/v3/runs/";
         assert(apiUri.startsWith(baseUri), "Unexpected Splits.io URL");
         const splitsId = apiUri.slice(baseUri.length);
+        const signal = this.state.abortController.signal;
         try {
             const gameName = this.state.editor.game;
             const categoryName = this.state.editor.category;
-            const runDownload = downloadById(splitsId);
+            const runDownload = downloadById(splitsId, signal);
             const platformListDownload = downloadPlatformList();
             const regionListDownload = downloadRegionList();
             const gameInfoDownload = downloadGameInfo(gameName);
@@ -1983,7 +2178,10 @@ export class RunEditor extends React.Component<Props, State> {
             } else {
                 toast.error("The downloaded splits are not suitable for being edited.");
             }
-        } catch (_) {
+        } catch {
+            if (signal.aborted) {
+                return;
+            }
             toast.error("Failed to download the splits.");
         }
 
@@ -1991,7 +2189,7 @@ export class RunEditor extends React.Component<Props, State> {
             ...this.state,
             isLoading: false,
         });
-        this.maybeUpdate(Tab.RealTime);
+        this.maybeUpdate({ switchTab: Tab.RealTime });
     }
 
     private toggleExpandLeaderboardRow(rowIndex: number) {
@@ -2035,8 +2233,14 @@ export class RunEditor extends React.Component<Props, State> {
             return;
         }
 
-        const idOrUrl = prompt("Specify the speedrun.com ID or URL of the run:");
-        if (idOrUrl === null) {
+        const [result, idOrUrl] = await showDialog({
+            title: "Associate Run",
+            description: "Specify the speedrun.com ID or URL of the run:",
+            textInput: true,
+            buttons: ["Associate", "Cancel"],
+        });
+
+        if (result !== 0) {
             return;
         }
         const pattern = /^(?:(?:https?:\/\/)?(?:www\.)?speedrun\.com\/(?:\w+\/)?run\/)?(\w+)$/;

@@ -1,6 +1,6 @@
 import { openDB, IDBPDatabase } from "idb";
 import { Option, assert } from "../util/OptionUtil";
-import { RunRef, Run } from "../livesplit-core";
+import { RunRef, Run, TimingMethod } from "../livesplit-core";
 import { GeneralSettings } from "../ui/SettingsEditor";
 import { FRAME_RATE_AUTOMATIC } from "../util/FrameRate";
 
@@ -185,10 +185,16 @@ export async function copySplits(key: number) {
     await tx.done;
 }
 
-export async function storeLayout(layout: LayoutSettings) {
+export async function storeLayout(
+    layout: LayoutSettings,
+    layoutWidth: number,
+    layoutHeight: number,
+) {
     const db = await getDb();
 
     await db.put("settings", layout, "layout");
+    await db.put("settings", layoutWidth, "layoutWidth");
+    await db.put("settings", layoutHeight, "layoutHeight");
 }
 
 export async function loadLayout(): Promise<LayoutSettings | undefined> {
@@ -207,13 +213,6 @@ export async function loadHotkeys(): Promise<HotkeyConfigSettings | undefined> {
     const db = await getDb();
 
     return await db.get("settings", "hotkeys");
-}
-
-export async function storeLayoutDims(layoutWidth: number, layoutHeight: number) {
-    const db = await getDb();
-
-    await db.put("settings", layoutWidth, "layoutWidth");
-    await db.put("settings", layoutHeight, "layoutHeight");
 }
 
 export async function loadLayoutDims(): Promise<[number, number]> {
@@ -252,7 +251,33 @@ export async function loadGeneralSettings(): Promise<GeneralSettings> {
         frameRate: generalSettings.frameRate ?? FRAME_RATE_AUTOMATIC,
         showControlButtons: generalSettings.showControlButtons ?? true,
         showManualGameTime: generalSettings.showManualGameTime ?? false,
+        saveOnReset: generalSettings.saveOnReset ?? false,
         speedrunComIntegration: generalSettings.speedrunComIntegration ?? true,
         splitsIoIntegration: generalSettings.splitsIoIntegration ?? true,
+        serverUrl: generalSettings.serverUrl,
     };
+}
+
+export async function storeTimingMethod(timingMethod: TimingMethod) {
+    const db = await getDb();
+
+    await db.put("settings", timingMethod, "timingMethod");
+}
+
+export async function loadTimingMethod(): Promise<TimingMethod> {
+    const db = await getDb();
+
+    return await db.get("settings", "timingMethod") ?? TimingMethod.RealTime;
+}
+
+export async function storeComparison(comparison: string) {
+    const db = await getDb();
+
+    await db.put("settings", comparison, "comparison");
+}
+
+export async function loadComparison(): Promise<string | undefined> {
+    const db = await getDb();
+
+    return await db.get("settings", "comparison");
 }

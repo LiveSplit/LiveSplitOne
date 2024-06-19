@@ -23,16 +23,29 @@ body {
   background: $main-background-color;
 }
 
-.toast-class {
-  border-radius: 2px !important;
-  min-height: 48px !important;
+.Toastify {
+  .toast-class {
+    font-family: "fira", sans-serif;
+    background: $sidebar-background-color !important;
+    border: 2px solid $border-color !important;
+    border-radius: 10px !important;
+    min-height: 48px !important;
+
+    &.toast-bug {
+      border-color: red !important;
+
+      a {
+        color: red;
+      }
+    }
+  }
 }
 
 .toast-body {
-  margin: 10px 5px 10px 5px !important;
+  margin: 5px 5px 5px 5px !important;
 }
 
-.toast-class > button {
+.toast-class>button {
   margin-bottom: initial;
   margin-top: initial;
 }
@@ -47,7 +60,7 @@ td#dif {
 }
 
 table {
-  border-spacing: 0px 2px;
+  border-spacing: 0 2px;
 }
 
 button:active,
@@ -71,6 +84,7 @@ button {
   color: $button-text-color;
   cursor: pointer;
   font-size: 20px;
+  line-height: 1.1;
   border-width: 1px;
   border-style: solid;
   border-color: $border-color;
@@ -78,7 +92,8 @@ button {
   border-radius: 5px;
   font-weight: bold;
   font-family: "fira", sans-serif;
-  height: $button-height;
+  min-height: $button-height;
+  padding: 5px $ui-margin;
 }
 
 a {
@@ -90,8 +105,8 @@ a:hover {
   text-decoration: underline;
 }
 
-button.disabled,
-button.disabled:active {
+button:disabled,
+button:disabled:active {
   background: $button-disabled-color;
   color: $button-disabled-text-color;
   cursor: default;
@@ -112,7 +127,7 @@ button.disabled:active {
 ::-webkit-scrollbar-thumb {
   background-clip: padding-box;
   background-color: #303030;
-  border: 0px solid #0000;
+  border: 0 solid #0000;
   border-radius: 10px;
 }
 
