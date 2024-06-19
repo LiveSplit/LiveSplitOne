@@ -37,6 +37,7 @@ export interface Props {
 }
 export interface State {
     editor: LiveSplit.RunEditorStateJson,
+    isLoading: boolean,
     foundGames: string[],
     offsetIsValid: boolean,
     attemptCountIsValid: boolean,
@@ -47,6 +48,7 @@ export interface State {
 
 interface Callbacks {
     renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
+    replaceRunEditor(editor: LiveSplit.RunEditor): void,
     closeRunEditor(save: boolean): void,
 }
 
@@ -93,6 +95,7 @@ export class RunEditor extends React.Component<Props, State> {
         this.state = {
             attemptCountIsValid: true,
             editor: state,
+            isLoading: false,
             foundGames,
             offsetIsValid: true,
             rowState: {
@@ -127,6 +130,17 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private renderView() {
+        if (this.state.isLoading) {
+            return (
+                <div className="run-editor">
+                    <div className="loading">
+                        <div className="fa fa-spinner fa-spin"></div>
+                        <div className="loading-text">Loading...</div>
+                    </div>
+                </div>
+            );
+        }
+
         const gameIcon = this.getGameIcon();
 
         let gameIconContextTrigger: any = null;
@@ -2118,6 +2132,18 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private async downloadSplits<T>(apiRun: Run<T>, apiUri: string) {
+        // FIXME: Determine whether there are any unsaved changes in the Run Editor
+        if (!confirm(
+            "Are you sure you want to load these splits? Any unsaved changes will be lost.",
+        )) {
+            return;
+        }
+
+        this.setState({
+            ...this.state,
+            isLoading: true,
+        });
+
         const baseUri = "https://splits.io/api/v3/runs/";
         assert(apiUri.startsWith(baseUri), "Unexpected Splits.io URL");
         const splitsId = apiUri.slice(baseUri.length);
@@ -2129,10 +2155,16 @@ export class RunEditor extends React.Component<Props, State> {
             const platformListDownload = downloadPlatformList();
             const regionListDownload = downloadRegionList();
             const gameInfoDownload = downloadGameInfo(gameName);
+
             await gameInfoDownload;
             await platformListDownload;
             await regionListDownload;
             using run = await runDownload;
+
+            if (this.props.editor.ptr === 0) {
+                // Old editor is already disposed, so do not continue
+                return;
+            }
             const newEditor = LiveSplit.RunEditor.new(run);
             if (newEditor !== null) {
                 associateRun(
@@ -2142,11 +2174,7 @@ export class RunEditor extends React.Component<Props, State> {
                     apiRun,
                 );
 
-                // TODO Oh no, not internal pointer stuff
-                this.props.editor[Symbol.dispose]();
-                this.props.editor.ptr = newEditor.ptr;
-
-                this.update();
+                this.props.callbacks.replaceRunEditor(newEditor);
             } else {
                 toast.error("The downloaded splits are not suitable for being edited.");
             }
@@ -2156,6 +2184,12 @@ export class RunEditor extends React.Component<Props, State> {
             }
             toast.error("Failed to download the splits.");
         }
+
+        this.setState({
+            ...this.state,
+            isLoading: false,
+        });
+        this.maybeUpdate({ switchTab: Tab.RealTime });
     }
 
     private toggleExpandLeaderboardRow(rowIndex: number) {

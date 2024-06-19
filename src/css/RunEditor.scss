@@ -1,6 +1,7 @@
 @use 'sass:math';
 
 @import "ContextMenu";
+@import "Loading";
 @import "Markdown";
 @import "mobile";
 @import "Table";
@@ -19,6 +20,7 @@ $small-button-padding: 1px 3px 1px 3px;
 
 .run-editor {
   @include context-menu;
+  @include loading;
   @include markdown;
   @include table;
   @include toggle;

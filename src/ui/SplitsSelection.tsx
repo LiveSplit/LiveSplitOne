@@ -17,7 +17,8 @@ import { showDialog } from "./Dialog";
 import "../css/SplitsSelection.scss";
 
 export interface EditingInfo {
-    splitsKey?: number,
+    splitsKey: number | undefined,
+    persistChanges: boolean,
     run: Run,
 }
 
@@ -191,7 +192,11 @@ export class SplitsSelection extends React.Component<Props, State> {
                         return;
                     }
                     const run = this.props.eventSink.getRun().clone();
-                    this.props.callbacks.openRunEditor({ run });
+                    this.props.callbacks.openRunEditor({
+                        run,
+                        splitsKey: this.props.openedSplitsKey,
+                        persistChanges: false,
+                    });
                 }}>
                     <i className="fa fa-edit" aria-hidden="true" /> Edit
                 </button>
@@ -286,7 +291,11 @@ export class SplitsSelection extends React.Component<Props, State> {
     private async editSplits(splitsKey: number) {
         const run = await this.getRunFromKey(splitsKey);
         if (run !== undefined) {
-            this.props.callbacks.openRunEditor({ splitsKey, run });
+            this.props.callbacks.openRunEditor({
+                splitsKey,
+                persistChanges: true,
+                run,
+            });
         }
     }
 
