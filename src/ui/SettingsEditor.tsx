@@ -7,7 +7,7 @@ import { UrlCache } from "../util/UrlCache";
 import { FRAME_RATE_AUTOMATIC as FRAME_RATE_BATTERY_AWARE, FRAME_RATE_MATCH_SCREEN as FRAME_RATE_MATCH_SCREEN, FrameRateSetting } from "../util/FrameRate";
 import { LiveSplitServer } from "../api/LiveSplitServer";
 import { Option } from "../util/OptionUtil";
-import { LSOEventSink } from "./LSOEventSink";
+import { LSOCommandSink } from "./LSOCommandSink";
 
 import "../css/SettingsEditor.scss";
 
@@ -27,7 +27,7 @@ export interface Props {
     urlCache: UrlCache,
     callbacks: Callbacks,
     serverConnection: Option<LiveSplitServer>,
-    eventSink: LSOEventSink,
+    commandSink: LSOCommandSink,
     allComparisons: string[],
 }
 
@@ -229,7 +229,7 @@ export class SettingsEditor extends React.Component<Props, State> {
                                             value.String,
                                             () => this.forceUpdate(),
                                             () => this.props.callbacks.onServerConnectionClosed(),
-                                            this.props.eventSink,
+                                            this.props.commandSink,
                                         ));
                                     } catch {
                                         // It's fine if it fails.
