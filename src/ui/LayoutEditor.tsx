@@ -6,7 +6,7 @@ import { UrlCache } from "../util/UrlCache";
 import Layout from "../layout/Layout";
 import { WebRenderer } from "../livesplit-core/livesplit_core";
 import { GeneralSettings } from "./SettingsEditor";
-import { LSOEventSink } from "./LSOEventSink";
+import { LSOCommandSink } from "./LSOCommandSink";
 
 import "../css/LayoutEditor.scss";
 
@@ -20,7 +20,7 @@ export interface Props {
     generalSettings: GeneralSettings,
     allComparisons: string[],
     isDesktop: boolean,
-    eventSink: LSOEventSink,
+    commandSink: LSOCommandSink,
     renderer: WebRenderer,
     callbacks: Callbacks,
 }
@@ -319,7 +319,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                 <div className="layout-container">
                     <Layout
                         getState={() => {
-                            this.props.eventSink.updateLayoutEditorLayoutState(
+                            this.props.commandSink.updateLayoutEditorLayoutState(
                                 this.props.editor,
                                 this.props.layoutState,
                                 this.props.layoutUrlCache.imageCache,

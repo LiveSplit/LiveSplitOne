@@ -4,6 +4,7 @@ import {
     HotkeySystem, Layout, LayoutEditor, Run, RunEditor, Segment,
     Timer, HotkeyConfig, LayoutState, LayoutStateJson,
     TimingMethod, TimerPhase,
+    Event,
 } from "../livesplit-core";
 import { FILE_EXT_LAYOUTS, convertFileToArrayBuffer, convertFileToString, exportFile, openFileAsString } from "../util/FileUtil";
 import { Option, assertNull, expect, maybeDisposeAndThen, panic } from "../util/OptionUtil";
@@ -20,7 +21,7 @@ import * as Storage from "../storage";
 import { UrlCache } from "../util/UrlCache";
 import { WebRenderer } from "../livesplit-core/livesplit_core";
 import { LiveSplitServer } from "../api/LiveSplitServer";
-import { LSOEventSink } from "./LSOEventSink";
+import { LSOCommandSink } from "./LSOCommandSink";
 import DialogContainer from "./Dialog";
 
 import variables from "../css/variables.scss";
@@ -90,7 +91,7 @@ export interface State {
     sidebarTransitionsEnabled: boolean,
     storedLayoutWidth: number,
     storedLayoutHeight: number,
-    eventSink: LSOEventSink,
+    commandSink: LSOCommandSink,
     renderer: WebRenderer,
     generalSettings: GeneralSettings,
     serverConnection: Option<LiveSplitServer>,
@@ -144,15 +145,9 @@ export class LiveSplit extends React.Component<Props, State> {
             "The Default Run should be a valid Run",
         );
 
-        const eventSink = new LSOEventSink(
+        const commandSink = new LSOCommandSink(
             timer,
-            () => this.currentComparisonChanged(),
-            () => this.currentTimingMethodChanged(),
-            () => this.currentPhaseChanged(),
-            () => this.currentSplitChanged(),
-            () => this.comparisonListChanged(),
-            () => this.splitsModifiedChanged(),
-            () => this.onReset(),
+            this,
         );
 
         const hotkeys = props.hotkeys;
@@ -160,13 +155,13 @@ export class LiveSplit extends React.Component<Props, State> {
             if (hotkeys !== undefined) {
                 const config = HotkeyConfig.parseJson(hotkeys);
                 if (config !== null) {
-                    hotkeySystem = HotkeySystem.withConfig(eventSink.getEventSink(), config);
+                    hotkeySystem = HotkeySystem.withConfig(commandSink.getCommandSink(), config);
                 }
             }
         } catch (_) { /* Looks like the storage has no valid data */ }
         if (hotkeySystem == null) {
             hotkeySystem = expect(
-                HotkeySystem.new(eventSink.getEventSink()),
+                HotkeySystem.new(commandSink.getCommandSink()),
                 "Couldn't initialize the hotkeys",
             );
         }
@@ -177,7 +172,7 @@ export class LiveSplit extends React.Component<Props, State> {
             loadingRun.setCategoryName("Loading...");
             loadingRun.pushSegment(Segment.new("Time"));
             assertNull(
-                eventSink.setRun(loadingRun),
+                commandSink.setRun(loadingRun),
                 "The Default Loading Run should be a valid Run",
             );
             this.loadFromSplitsIO(window.location.hash.substring("#/splits-io/".length));
@@ -185,7 +180,7 @@ export class LiveSplit extends React.Component<Props, State> {
             using result = Run.parseArray(props.splits, "");
             if (result.parsedSuccessfully()) {
                 using r = result.unwrap();
-                eventSink.setRun(r)?.[Symbol.dispose]();
+                commandSink.setRun(r)?.[Symbol.dispose]();
             }
         }
 
@@ -226,18 +221,18 @@ export class LiveSplit extends React.Component<Props, State> {
             sidebarTransitionsEnabled: false,
             storedLayoutWidth: props.layoutWidth,
             storedLayoutHeight: props.layoutHeight,
-            eventSink,
+            commandSink,
             hotkeySystem,
             openedSplitsKey: props.splitsKey,
             renderer,
             generalSettings: props.generalSettings,
             serverConnection: null,
-            currentComparison: eventSink.currentComparison(),
-            currentTimingMethod: eventSink.currentTimingMethod(),
-            currentPhase: eventSink.currentPhase(),
-            currentSplitIndex: eventSink.currentSplitIndex(),
-            allComparisons: eventSink.getAllComparisons(),
-            splitsModified: eventSink.hasBeenModified(),
+            currentComparison: commandSink.currentComparison(),
+            currentTimingMethod: commandSink.currentTimingMethod(),
+            currentPhase: commandSink.currentPhase(),
+            currentSplitIndex: commandSink.currentSplitIndex(),
+            allComparisons: commandSink.getAllComparisons(),
+            splitsModified: commandSink.hasBeenModified(),
             layoutModified: false,
         };
 
@@ -310,7 +305,7 @@ export class LiveSplit extends React.Component<Props, State> {
             "resize",
             expect(this.resizeEvent, "A Resize Event should exist"),
         );
-        this.state.eventSink[Symbol.dispose]();
+        this.state.commandSink[Symbol.dispose]();
         this.state.layout[Symbol.dispose]();
         this.state.layoutState[Symbol.dispose]();
         this.state.hotkeySystem?.[Symbol.dispose]();
@@ -346,7 +341,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 generalSettings={this.state.generalSettings}
                 allComparisons={this.state.allComparisons}
                 isDesktop={this.state.isDesktop}
-                eventSink={this.state.eventSink}
+                commandSink={this.state.commandSink}
                 renderer={this.state.renderer}
                 callbacks={this}
             />;
@@ -356,7 +351,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 hotkeyConfig={this.state.menu.config}
                 urlCache={this.state.layoutUrlCache}
                 callbacks={this}
-                eventSink={this.state.eventSink}
+                commandSink={this.state.commandSink}
                 serverConnection={this.state.serverConnection}
                 allComparisons={this.state.allComparisons}
             />;
@@ -365,7 +360,7 @@ export class LiveSplit extends React.Component<Props, State> {
         } else if (this.state.menu.kind === MenuKind.Splits) {
             view = <SplitsSelection
                 generalSettings={this.state.generalSettings}
-                eventSink={this.state.eventSink}
+                commandSink={this.state.commandSink}
                 openedSplitsKey={this.state.openedSplitsKey}
                 callbacks={this}
                 splitsModified={this.state.splitsModified}
@@ -381,7 +376,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 isDesktop={this.state.isDesktop}
                 renderWithSidebar={true}
                 sidebarOpen={this.state.sidebarOpen}
-                eventSink={this.state.eventSink}
+                commandSink={this.state.commandSink}
                 renderer={this.state.renderer}
                 serverConnection={this.state.serverConnection}
                 callbacks={this}
@@ -404,7 +399,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 isDesktop={this.state.isDesktop}
                 renderWithSidebar={true}
                 sidebarOpen={this.state.sidebarOpen}
-                eventSink={this.state.eventSink}
+                commandSink={this.state.commandSink}
                 renderer={this.state.renderer}
                 serverConnection={this.state.serverConnection}
                 callbacks={this}
@@ -463,11 +458,14 @@ export class LiveSplit extends React.Component<Props, State> {
         );
     }
 
-    private changeMenu(menu: Menu) {
+    private changeMenu(menu: Menu, closeSidebar: boolean = true) {
         const wasLocked = isMenuLocked(this.state.menu.kind);
         const isLocked = isMenuLocked(menu.kind);
 
-        this.setState({ menu, sidebarOpen: false });
+        this.setState({ menu });
+        if (closeSidebar) {
+            this.setState({ sidebarOpen: false });
+        }
 
         if (!wasLocked && isLocked) {
             this.lockTimerInteraction();
@@ -485,7 +483,7 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     public openLayoutView() {
-        this.changeMenu({ kind: MenuKind.Layout });
+        this.changeMenu({ kind: MenuKind.Layout }, false);
     }
 
     public openAboutView() {
@@ -493,7 +491,7 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     private lockTimerInteraction() {
-        if (!this.state.eventSink.isLocked()) {
+        if (!this.state.commandSink.isLocked()) {
             // We need to schedule this to happen in the next micro task,
             // because the hotkey system itself may be what triggered this
             // function, so the hotkey system might still be in use, which would
@@ -501,12 +499,12 @@ export class LiveSplit extends React.Component<Props, State> {
             // system.
             setTimeout(() => this.state.hotkeySystem.deactivate());
         }
-        this.state.eventSink.lockInteraction();
+        this.state.commandSink.lockInteraction();
     }
 
     private unlockTimerInteraction() {
-        this.state.eventSink.unlockInteraction();
-        if (!this.state.eventSink.isLocked()) {
+        this.state.commandSink.unlockInteraction();
+        if (!this.state.commandSink.isLocked()) {
             // We need to schedule this to happen in the next micro task,
             // because the hotkey system itself may be what triggered this
             // function, so the hotkey system might still be in use, which would
@@ -593,7 +591,7 @@ export class LiveSplit extends React.Component<Props, State> {
         if (save) {
             if (splitsKey == null) {
                 assertNull(
-                    this.state.eventSink.setRun(run),
+                    this.state.commandSink.setRun(run),
                     "The Run Editor should always return a valid Run.",
                 );
             } else {
@@ -764,7 +762,7 @@ export class LiveSplit extends React.Component<Props, State> {
 
     private setRun(run: Run, callback: () => void) {
         maybeDisposeAndThen(
-            this.state.eventSink.setRun(run),
+            this.state.commandSink.setRun(run),
             callback,
         );
         this.setSplitsKey(undefined);
@@ -817,8 +815,8 @@ export class LiveSplit extends React.Component<Props, State> {
         try {
             const openedSplitsKey = await Storage.storeSplits(
                 (callback) => {
-                    callback(this.state.eventSink.getRun(), this.state.eventSink.saveAsLssBytes());
-                    this.state.eventSink.markAsUnmodified();
+                    callback(this.state.commandSink.getRun(), this.state.commandSink.saveAsLssBytes());
+                    this.state.commandSink.markAsUnmodified();
                 },
                 this.state.openedSplitsKey,
             );
@@ -838,9 +836,78 @@ export class LiveSplit extends React.Component<Props, State> {
         this.setState({ serverConnection: null });
     }
 
-    currentComparisonChanged(): void {
+    handleEvent(event: Event): void {
+        switch (event) {
+            case Event.Started:
+                this.splitsModifiedChanged();
+                this.currentSplitChanged();
+                this.currentPhaseChanged();
+                break;
+            case Event.Splitted:
+                this.currentSplitChanged();
+                break;
+            case Event.SplitSkipped:
+                this.currentSplitChanged();
+                break;
+            case Event.SplitUndone:
+                this.currentPhaseChanged();
+                this.currentSplitChanged();
+                break;
+            case Event.Resumed:
+                this.currentPhaseChanged();
+                break;
+            case Event.Paused:
+                this.currentPhaseChanged();
+                break;
+            case Event.Finished:
+                this.currentPhaseChanged();
+                this.currentSplitChanged();
+                break;
+            case Event.Reset:
+                this.currentPhaseChanged();
+                this.currentSplitChanged();
+                this.onReset();
+                break;
+            case Event.PausesUndoneAndResumed:
+                this.currentPhaseChanged();
+                break;
+            case Event.ComparisonChanged:
+                this.currentComparisonChanged();
+                break;
+            case Event.TimingMethodChanged:
+                this.currentTimingMethodChanged();
+                break;
+            case Event.PausesUndone:
+            case Event.GameTimeInitialized:
+            case Event.GameTimeSet:
+            case Event.GameTimePaused:
+            case Event.GameTimeResumed:
+            case Event.LoadingTimesSet:
+            case Event.CustomVariableSet:
+            default:
+                break;
+        }
+
+        if (this.state.serverConnection != null) {
+            this.state.serverConnection.sendEvent(event);
+        }
+    }
+
+    runChanged(): void {
+        this.currentComparisonChanged();
+        this.currentPhaseChanged();
+        this.currentSplitChanged();
+        this.comparisonListChanged();
+        this.splitsModifiedChanged();
+    }
+
+    runNotModifiedAnymore(): void {
+        this.splitsModifiedChanged();
+    }
+
+    private currentComparisonChanged(): void {
         if (this.state != null) {
-            const currentComparison = this.state.eventSink.currentComparison();
+            const currentComparison = this.state.commandSink.currentComparison();
 
             (async () => {
                 try {
@@ -854,9 +921,9 @@ export class LiveSplit extends React.Component<Props, State> {
         }
     }
 
-    currentTimingMethodChanged(): void {
+    private currentTimingMethodChanged(): void {
         if (this.state != null) {
-            const currentTimingMethod = this.state.eventSink.currentTimingMethod();
+            const currentTimingMethod = this.state.commandSink.currentTimingMethod();
 
             (async () => {
                 try {
@@ -870,31 +937,31 @@ export class LiveSplit extends React.Component<Props, State> {
         }
     }
 
-    currentPhaseChanged(): void {
+    private currentPhaseChanged(): void {
         if (this.state != null) {
             this.setState({
-                currentPhase: this.state.eventSink.currentPhase(),
+                currentPhase: this.state.commandSink.currentPhase(),
             });
         }
     }
 
-    currentSplitChanged(): void {
+    private currentSplitChanged(): void {
         if (this.state != null) {
             this.setState({
-                currentSplitIndex: this.state.eventSink.currentSplitIndex(),
+                currentSplitIndex: this.state.commandSink.currentSplitIndex(),
             });
         }
     }
 
-    comparisonListChanged(): void {
+    private comparisonListChanged(): void {
         if (this.state != null) {
             this.setState({
-                allComparisons: this.state.eventSink.getAllComparisons(),
+                allComparisons: this.state.commandSink.getAllComparisons(),
             });
         }
     }
 
-    onReset(): void {
+    private onReset(): void {
         if (this.state.generalSettings.saveOnReset) {
             this.saveSplits();
         }
@@ -902,7 +969,7 @@ export class LiveSplit extends React.Component<Props, State> {
 
     splitsModifiedChanged(): void {
         if (this.state != null) {
-            const splitsModified = this.state.eventSink.hasBeenModified();
+            const splitsModified = this.state.commandSink.hasBeenModified();
             this.setState({ splitsModified }, () => this.updateBadge());
         }
     }

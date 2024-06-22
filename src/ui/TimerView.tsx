@@ -8,7 +8,7 @@ import { UrlCache } from "../util/UrlCache";
 import { WebRenderer } from "../livesplit-core/livesplit_core";
 import { GeneralSettings } from "./SettingsEditor";
 import { LiveSplitServer } from "../api/LiveSplitServer";
-import { LSOEventSink } from "./LSOEventSink";
+import { LSOCommandSink } from "./LSOCommandSink";
 
 import LiveSplitIcon from "../assets/icon.svg";
 
@@ -24,7 +24,7 @@ export interface Props {
     generalSettings: GeneralSettings,
     renderWithSidebar: boolean,
     sidebarOpen: boolean,
-    eventSink: LSOEventSink,
+    commandSink: LSOCommandSink,
     renderer: WebRenderer,
     callbacks: Callbacks,
     serverConnection: Option<LiveSplitServer>,
@@ -81,7 +81,7 @@ export class TimerView extends React.Component<Props, State> {
                 <div
                     onClick={(_) => {
                         if (this.props.generalSettings.showControlButtons) {
-                            this.props.eventSink.splitOrStart();
+                            this.props.commandSink.splitOrStart();
                         }
                     }}
                     style={{
@@ -95,7 +95,7 @@ export class TimerView extends React.Component<Props, State> {
                             // dropped. We need to wait for it to be replaced
                             // with the new layout.
                             if (this.props.layout.ptr !== 0) {
-                                this.props.eventSink.updateLayoutState(
+                                this.props.commandSink.updateLayoutState(
                                     this.props.layout,
                                     this.props.layoutState,
                                     this.props.layoutUrlCache.imageCache,
@@ -125,7 +125,7 @@ export class TimerView extends React.Component<Props, State> {
                                     : "Pause"
                             }
                             disabled={this.props.currentPhase === TimerPhase.Ended}
-                            onClick={(_) => this.props.eventSink.togglePauseOrStart()}
+                            onClick={(_) => this.props.commandSink.togglePauseOrStart()}
                         >
                             <i
                                 className={
@@ -140,7 +140,7 @@ export class TimerView extends React.Component<Props, State> {
                         <button
                             aria-label="Undo Split"
                             disabled={this.props.currentSplitIndex <= 0}
-                            onClick={(_) => this.props.eventSink.undoSplit()}
+                            onClick={(_) => this.props.commandSink.undoSplit()}
                         >
                             <i className="fa fa-arrow-up" aria-hidden="true" />
                         </button>
@@ -149,7 +149,7 @@ export class TimerView extends React.Component<Props, State> {
                         <button
                             aria-label="Reset"
                             disabled={this.props.currentPhase === TimerPhase.NotRunning}
-                            onClick={(_) => this.props.eventSink.reset()}
+                            onClick={(_) => this.props.commandSink.reset()}
                         >
                             <i className="fa fa-times" aria-hidden="true" />
                         </button>
@@ -157,9 +157,9 @@ export class TimerView extends React.Component<Props, State> {
                             aria-label="Skip Split"
                             disabled={
                                 this.props.currentPhase === TimerPhase.NotRunning ||
-                                this.props.currentSplitIndex + 1 >= this.props.eventSink.segmentsCount()
+                                this.props.currentSplitIndex + 1 >= this.props.commandSink.segmentsCount()
                             }
-                            onClick={(_) => this.props.eventSink.skipSplit()}
+                            onClick={(_) => this.props.commandSink.skipSplit()}
                         >
                             <i className="fa fa-arrow-down" aria-hidden="true" />
                         </button>
@@ -180,7 +180,7 @@ export class TimerView extends React.Component<Props, State> {
                         }}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
-                                const timer = this.props.eventSink;
+                                const timer = this.props.commandSink;
                                 if (timer.currentPhase() === LiveSplit.TimerPhase.NotRunning) {
                                     timer.start();
                                     timer.pauseGameTime();
@@ -232,7 +232,7 @@ export class TimerView extends React.Component<Props, State> {
                 <h2>Compare Against</h2>
                 <select
                     value={this.props.currentComparison}
-                    onChange={(e) => this.props.eventSink.setCurrentComparison(e.target.value)}
+                    onChange={(e) => this.props.commandSink.setCurrentComparison(e.target.value)}
                     className="choose-comparison"
                 >
                     {this.props.allComparisons.map((comparison) => <option>{comparison}</option>)}
@@ -240,7 +240,7 @@ export class TimerView extends React.Component<Props, State> {
                 <div className="small">
                     <button
                         onClick={(_) => {
-                            this.props.eventSink.setCurrentTimingMethod(TimingMethod.RealTime);
+                            this.props.commandSink.setCurrentTimingMethod(TimingMethod.RealTime);
                         }}
                         className={
                             (this.props.currentTimingMethod === TimingMethod.RealTime ? "button-pressed" : "") +
@@ -251,7 +251,7 @@ export class TimerView extends React.Component<Props, State> {
                     </button>
                     <button
                         onClick={(_) => {
-                            this.props.eventSink.setCurrentTimingMethod(TimingMethod.GameTime);
+                            this.props.commandSink.setCurrentTimingMethod(TimingMethod.GameTime);
                         }}
                         className={
                             (this.props.currentTimingMethod === TimingMethod.GameTime ? "button-pressed" : "") +

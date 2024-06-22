@@ -11,7 +11,7 @@ import { Option, bug, maybeDisposeAndThen } from "../util/OptionUtil";
 import DragUpload from "./DragUpload";
 import { ContextMenuTrigger, ContextMenu, MenuItem } from "react-contextmenu";
 import { GeneralSettings } from "./SettingsEditor";
-import { LSOEventSink } from "./LSOEventSink";
+import { LSOCommandSink } from "./LSOCommandSink";
 import { showDialog } from "./Dialog";
 
 import "../css/SplitsSelection.scss";
@@ -22,7 +22,7 @@ export interface EditingInfo {
 }
 
 export interface Props {
-    eventSink: LSOEventSink,
+    commandSink: LSOCommandSink,
     openedSplitsKey?: number,
     callbacks: Callbacks,
     generalSettings: GeneralSettings,
@@ -186,11 +186,11 @@ export class SplitsSelection extends React.Component<Props, State> {
                 <h1>Splits</h1>
                 <hr />
                 <button onClick={(_) => {
-                    if (this.props.eventSink.currentPhase() !== TimerPhase.NotRunning) {
+                    if (this.props.commandSink.currentPhase() !== TimerPhase.NotRunning) {
                         toast.error("You can't edit your run while the timer is running.");
                         return;
                     }
-                    const run = this.props.eventSink.getRun().clone();
+                    const run = this.props.commandSink.getRun().clone();
                     this.props.callbacks.openRunEditor({ run });
                 }}>
                     <i className="fa fa-edit" aria-hidden="true" /> Edit
@@ -236,7 +236,7 @@ export class SplitsSelection extends React.Component<Props, State> {
     }
 
     private async openSplits(key: number) {
-        const isModified = this.props.eventSink.hasBeenModified();
+        const isModified = this.props.commandSink.hasBeenModified();
         if (isModified) {
             const [result] = await showDialog({
                 title: "Discard Changes?",
@@ -253,7 +253,7 @@ export class SplitsSelection extends React.Component<Props, State> {
             return;
         }
         maybeDisposeAndThen(
-            this.props.eventSink.setRun(run),
+            this.props.commandSink.setRun(run),
             () => toast.error("The loaded splits are invalid."),
         );
         this.props.callbacks.setSplitsKey(key);
@@ -273,9 +273,9 @@ export class SplitsSelection extends React.Component<Props, State> {
     }
 
     private exportTimerSplits() {
-        this.props.eventSink.markAsUnmodified();
-        const name = this.props.eventSink.extendedFileName(true);
-        const lss = this.props.eventSink.saveAsLssBytes();
+        this.props.commandSink.markAsUnmodified();
+        const name = this.props.commandSink.extendedFileName(true);
+        const lss = this.props.commandSink.saveAsLssBytes();
         try {
             exportFile(name + ".lss", lss);
         } catch (_) {
@@ -374,7 +374,7 @@ export class SplitsSelection extends React.Component<Props, State> {
     }
 
     private async uploadTimerToSplitsIO(): Promise<Option<Window>> {
-        const lss = this.props.eventSink.saveAsLssBytes();
+        const lss = this.props.commandSink.saveAsLssBytes();
 
         try {
             const claimUri = await SplitsIO.uploadLss(new Blob([lss]));

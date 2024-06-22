@@ -6,7 +6,7 @@ import { WebRenderer } from "../livesplit-core/livesplit_core";
 import { GeneralSettings } from "./SettingsEditor";
 import { LiveSplitServer } from "../api/LiveSplitServer";
 import { Option } from "../util/OptionUtil";
-import { LSOEventSink } from "./LSOEventSink";
+import { LSOCommandSink } from "./LSOCommandSink";
 
 export interface Props {
     isDesktop: boolean,
@@ -18,7 +18,7 @@ export interface Props {
     generalSettings: GeneralSettings,
     renderWithSidebar: boolean,
     sidebarOpen: boolean,
-    eventSink: LSOEventSink,
+    commandSink: LSOCommandSink,
     renderer: WebRenderer,
     serverConnection: Option<LiveSplitServer>,
     callbacks: Callbacks,
@@ -62,7 +62,7 @@ export class LayoutView extends React.Component<Props> {
             isDesktop={this.props.isDesktop}
             renderWithSidebar={false}
             sidebarOpen={this.props.sidebarOpen}
-            eventSink={this.props.eventSink}
+            commandSink={this.props.commandSink}
             renderer={this.props.renderer}
             serverConnection={this.props.serverConnection}
             callbacks={this.props.callbacks}

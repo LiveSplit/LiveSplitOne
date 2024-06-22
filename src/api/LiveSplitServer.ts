@@ -1,5 +1,7 @@
 import { toast } from "react-toastify";
-import { LSOEventSink } from "../ui/LSOEventSink";
+import { LSOCommandSink } from "../ui/LSOCommandSink";
+import { ServerProtocol } from "../livesplit-core/livesplit_core";
+import { Event } from "../livesplit-core";
 
 export class LiveSplitServer {
     private connection: WebSocket;
@@ -9,7 +11,7 @@ export class LiveSplitServer {
         url: string,
         private forceUpdate: () => void,
         onServerConnectionClosed: () => void,
-        eventSink: LSOEventSink,
+        commandSink: LSOCommandSink,
     ) {
         try {
             this.connection = new WebSocket(url);
@@ -29,38 +31,31 @@ export class LiveSplitServer {
         };
 
         this.connection.onerror = () => {
-            // The onerror event does not contain any useful information.
-            toast.error("An error while communicating with the server occurred.");
+            if (wasConnected) {
+                // The onerror event does not contain any useful information.
+                toast.error("An error while communicating with the server occurred.");
+            }
         };
+
+        let sendQueue = Promise.resolve();
 
         this.connection.onmessage = (e) => {
             if (typeof e.data === "string") {
-                const index = e.data.indexOf(" ");
-                let command = e.data;
-                let arg = "";
-                if (index >= 0) {
-                    command = e.data.substring(0, index);
-                    arg = e.data.substring(index + 1);
-                }
-                switch (command) {
-                    case "start": eventSink.start(); break;
-                    case "split": eventSink.split(); break;
-                    case "splitorstart": eventSink.splitOrStart(); break;
-                    case "reset": eventSink.reset(); break;
-                    case "togglepause": eventSink.togglePauseOrStart(); break;
-                    case "undo": eventSink.undoSplit(); break;
-                    case "skip": eventSink.skipSplit(); break;
-                    case "initgametime": eventSink.initializeGameTime(); break;
-                    case "setgametime": eventSink.setGameTimeString(arg ?? ""); break;
-                    case "setloadingtimes": eventSink.setLoadingTimesString(arg ?? ""); break;
-                    case "pausegametime": eventSink.pauseGameTime(); break;
-                    case "resumegametime": eventSink.resumeGameTime(); break;
-                    case "setvariable": {
-                        const [key, value] = JSON.parse(arg ?? "");
-                        eventSink.setCustomVariable(key, value);
-                        break;
+                // Handle and enqueue the command handling immediately, but send
+                // the response only after all previous responses have been
+                // sent.
+
+                const promise = ServerProtocol.handleCommand(e.data, commandSink.getCommandSink().ptr);
+                sendQueue = sendQueue.then(async () => {
+                    const message = await promise;
+                    if (this.connection.readyState === WebSocket.OPEN) {
+                        this.connection.send(message);
                     }
-                }
+                });
+            } else {
+                sendQueue = sendQueue.then(() => {
+                    this.connection.send('{"Err":{"code":"InvalidCommand"}}');
+                });
             }
         };
 
@@ -80,7 +75,7 @@ export class LiveSplitServer {
         };
     }
 
-    close(): void {
+    public close(): void {
         if (this.connection.readyState === WebSocket.OPEN) {
             this.wasIntendingToDisconnect = true;
             this.connection.close();
@@ -88,7 +83,16 @@ export class LiveSplitServer {
         }
     }
 
-    getConnectionState(): number {
+    public getConnectionState(): number {
         return this.connection.readyState;
+    }
+
+    public sendEvent(event: Event) {
+        if (this.connection.readyState === WebSocket.OPEN) {
+            const message = ServerProtocol.encodeEvent(event);
+            if (message !== undefined) {
+                this.connection.send(message);
+            }
+        }
     }
 }
