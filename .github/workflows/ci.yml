@@ -4,115 +4,189 @@ on:
   pull_request:
   push:
     branches:
-      - 'master'
+      - "master"
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        label:
+          - Web
+          - Tauri on Windows
+          - Tauri on Linux
+          - Tauri on macOS ARM
+
+        include:
+          - label: Web
+            platform: web
+            dist_path: dist
+            os: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+            binaryen: x86_64-linux
+            cargo_bin: /home/runner/.cargo/bin
+
+          - label: Tauri on Windows
+            platform: tauri
+            dist_path: src-tauri/target/dist
+            os: windows-latest
+            target: x86_64-pc-windows-msvc
+            binaryen: x86_64-windows
+            cargo_bin: C:/Users/runneradmin/.cargo/bin
+
+          - label: Tauri on Linux
+            platform: tauri
+            dist_path: src-tauri/target/dist
+            os: ubuntu-latest
+            target: x86_64-unknown-linux-musl
+            binaryen: x86_64-linux
+            cargo_bin: /home/runner/.cargo/bin
+
+          - label: Tauri on macOS ARM
+            platform: tauri
+            dist_path: src-tauri/target/dist
+            os: macos-latest
+            target: aarch64-apple-darwin
+            binaryen: arm64-macos
+            cargo_bin: /Users/runner/.cargo/bin
 
     steps:
-    - name: Checkout commit
-      uses: actions/checkout@v4
-      with:
-        submodules: recursive
-        # This forces the entire history to be cloned, which is necessary for
-        # the changelog generation to work correctly.
-        fetch-depth: 0
+      - name: Checkout commit
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          # This forces the entire history to be cloned, which is necessary for
+          # the changelog generation to work correctly.
+          fetch-depth: 0
 
-    - name: Install Node
-      uses: actions/setup-node@v4
-      with:
-        node-version: 'lts/*'
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "lts/*"
 
-    - name: Install Rust
-      uses: hecrj/setup-rust-action@v2
-      with:
-        rust-version: nightly
-        components: rust-src
-        targets: wasm32-unknown-unknown
+      - name: Install Rust
+        uses: hecrj/setup-rust-action@v2
+        with:
+          rust-version: nightly
+          components: rust-src
+          targets: wasm32-unknown-unknown
 
-    - name: Download binaryen
-      if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
-      uses: robinraju/release-downloader@v1.10
-      with:
-        repository: "WebAssembly/binaryen"
-        latest: true
-        fileName: "binaryen-*-x86_64-linux.tar.gz"
-        out-file-path: "/home/runner/.cargo/bin"
+      - name: Download binaryen
+        if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
+        uses: robinraju/release-downloader@v1.10
+        with:
+          repository: "WebAssembly/binaryen"
+          latest: true
+          fileName: "binaryen-*-${{ matrix.binaryen }}.tar.gz"
+          out-file-path: ${{ matrix.cargo_bin }}
 
-    - name: Install binaryen
-      if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
-      run: |
-        cd ~/.cargo/bin
-        tar -xzf binaryen-*-x86_64-linux.tar.gz
-        mv binaryen*/bin/wasm* .
+      - name: Install binaryen
+        if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
+        run: |
+          cd ~/.cargo/bin
+          tar -xzf binaryen-*-${{ matrix.binaryen }}.tar.gz
+          mv binaryen*/bin/wasm* .
 
-    - name: Choose wasm-bindgen-cli version
-      run: echo "version=$(cd livesplit-core && cargo tree -i wasm-bindgen --features wasm-web --target wasm32-unknown-unknown --depth 0 | sed 's/.* v//g')" >> $GITHUB_OUTPUT
-      id: wasm-bindgen
+      - name: Choose wasm-bindgen-cli version
+        shell: bash
+        run: echo "version=$(cd livesplit-core && cargo tree -i wasm-bindgen --features wasm-web --target wasm32-unknown-unknown --depth 0 | sed 's/.* v//g')" >> $GITHUB_OUTPUT
+        id: wasm-bindgen
 
-    - name: Download wasm-bindgen-cli
-      uses: robinraju/release-downloader@v1.9
-      with:
-        repository: "rustwasm/wasm-bindgen"
-        tag: ${{ steps.wasm-bindgen.outputs.version }}
-        fileName: "wasm-bindgen-${{ steps.wasm-bindgen.outputs.version }}-x86_64-unknown-linux-musl.tar.gz"
-        out-file-path: "/home/runner/.cargo/bin"
+      - name: Download wasm-bindgen-cli
+        uses: robinraju/release-downloader@v1.9
+        with:
+          repository: "rustwasm/wasm-bindgen"
+          tag: ${{ steps.wasm-bindgen.outputs.version }}
+          fileName: "wasm-bindgen-${{ steps.wasm-bindgen.outputs.version }}-${{ matrix.target }}.tar.gz"
+          out-file-path: ${{ matrix.cargo_bin }}
 
-    - name: Install wasm-bindgen-cli
-      run: |
-        cd ~/.cargo/bin
-        tar -xzf wasm-bindgen-${{ steps.wasm-bindgen.outputs.version }}-x86_64-unknown-linux-musl.tar.gz
-        mv wasm-bindgen-${{ steps.wasm-bindgen.outputs.version }}-x86_64-unknown-linux-musl/wasm* .
+      - name: Install wasm-bindgen-cli
+        shell: bash
+        run: |
+          cd ${{ matrix.cargo_bin }}
+          tar -xzf wasm-bindgen-${{ steps.wasm-bindgen.outputs.version }}-${{ matrix.target }}.tar.gz
+          mv wasm-bindgen-${{ steps.wasm-bindgen.outputs.version }}-${{ matrix.target }}/wasm* .
 
-    - name: Install npm packages
-      run: npm ci -f
-      env:
-        DETECT_CHROMEDRIVER_VERSION: true
+      - name: Install npm packages
+        run: npm ci -f
+        env:
+          DETECT_CHROMEDRIVER_VERSION: true
 
-    - name: Build Core
-      run: npm run build:core:deploy
+      - name: Install native dependencies (Tauri)
+        if: matrix.platform == 'tauri' && matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt update
+          sudo apt install libwebkit2gtk-4.0-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libssl-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev
 
-    - name: Run eslint
-      run: npm run lint
+      - name: Build Core
+        run: npm run build:core:deploy
 
-    - name: Build Frontend
-      run: npm run publish
+      - name: Run eslint (Web)
+        if: matrix.platform == 'web'
+        run: npm run lint
 
-    - name: Cache screenshots
-      uses: actions/cache@v4
-      with:
-        path: test/screenshots
-        key: ${{ runner.os }}-screenshots-${{ hashFiles('test/rendering-test.js') }}
-        restore-keys: ${{ runner.os }}-screenshots-
+      - name: Build Frontend (Web)
+        if: matrix.platform == 'web'
+        run: npm run publish
 
-    - name: Run tests
-      run: |
-        echo "::add-matcher::.github/workflows/test-failures.json"
-        npm run test
+      - name: Build Frontend (Tauri)
+        if: matrix.platform == 'tauri'
+        run: npm run tauri:build-html
 
-    - name: Upload screenshots
-      if: success() || failure()
-      uses: actions/upload-artifact@v4
-      with:
-        name: Screenshots
-        path: test/screenshots
+      - name: Generate Icons (Tauri)
+        if: matrix.platform == 'tauri'
+        run: npm run tauri:icons
 
-    - name: Optimize
-      if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
-      run: |
-        WASM_FILE=$(ls dist/*.wasm)
-        wasm-opt --all-features -O4 "$WASM_FILE" -o "$WASM_FILE"
+      - name: Cache screenshots (Web)
+        if: matrix.platform == 'web'
+        uses: actions/cache@v4
+        with:
+          path: test/screenshots
+          key: ${{ runner.os }}-screenshots-${{ hashFiles('test/rendering-test.js') }}
+          restore-keys: ${{ runner.os }}-screenshots-
 
-    - name: Add CNAME file
-      if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
-      run: cp ./.github/workflows/CNAME ./dist/CNAME
+      - name: Run tests (Web)
+        if: matrix.platform == 'web'
+        run: |
+          echo "::add-matcher::.github/workflows/test-failures.json"
+          npm run test
 
-    - name: Deploy
-      if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
-      uses: peaceiris/actions-gh-pages@v4
-      with:
-        deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-        publish_branch: gh-pages
-        publish_dir: ./dist
-        force_orphan: true
+      - name: Upload screenshots (Web)
+        if: matrix.platform == 'web' && (success() || failure())
+        uses: actions/upload-artifact@v4
+        with:
+          name: Screenshots
+          path: test/screenshots
+
+      - name: Optimize
+        if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
+        shell: bash
+        run: |
+          WASM_FILE=$(ls ${{ matrix.dist_path }}/*.wasm)
+          wasm-opt --all-features -O4 "$WASM_FILE" -o "$WASM_FILE"
+
+      - name: Build (Tauri)
+        if: matrix.platform == 'tauri'
+        run: npm run tauri:publish
+
+      - name: Add CNAME file (Web)
+        if: matrix.platform == 'web' && github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
+        run: cp ./.github/workflows/CNAME ./${{ matrix.dist_path }}/CNAME
+
+      - name: Deploy (Web)
+        if: matrix.platform == 'web' && github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+          publish_branch: gh-pages
+          publish_dir: ./${{ matrix.dist_path }}
+          force_orphan: true

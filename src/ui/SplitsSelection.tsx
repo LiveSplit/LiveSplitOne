@@ -10,7 +10,7 @@ import { openFileAsArrayBuffer, exportFile, convertFileToArrayBuffer, FILE_EXT_S
 import { Option, bug, maybeDisposeAndThen } from "../util/OptionUtil";
 import DragUpload from "./DragUpload";
 import { ContextMenuTrigger, ContextMenu, MenuItem } from "react-contextmenu";
-import { GeneralSettings } from "./SettingsEditor";
+import { GeneralSettings } from "./MainSettings";
 import { LSOCommandSink } from "./LSOCommandSink";
 import { showDialog } from "./Dialog";
 
@@ -187,7 +187,7 @@ export class SplitsSelection extends React.Component<Props, State> {
                 <hr />
                 <button onClick={(_) => {
                     if (this.props.commandSink.currentPhase() !== TimerPhase.NotRunning) {
-                        toast.error("You can't edit your run while the timer is running.");
+                        toast.error("You can't edit your splits while the timer is running.");
                         return;
                     }
                     const run = this.props.commandSink.getRun().clone();

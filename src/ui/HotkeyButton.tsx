@@ -4,7 +4,7 @@ import { hotkeySystem } from "./LiveSplit";
 
 import "../css/HotkeyButton.scss";
 
-function resolveKey(keyCode: string): string {
+function resolveKey(keyCode: string): Promise<string> | string {
     return expect(hotkeySystem, "The Hotkey System should always be initialized.").resolve(keyCode);
 }
 
@@ -16,6 +16,7 @@ export interface Props {
 export interface State {
     listener: Option<EventListenerObject>,
     intervalHandle: Option<number>,
+    resolvedKey: Option<string>,
 }
 
 export default class HotkeyButton extends React.Component<Props, State> {
@@ -25,19 +26,34 @@ export default class HotkeyButton extends React.Component<Props, State> {
         this.state = {
             listener: null,
             intervalHandle: null,
+            resolvedKey: null,
         };
+
+        this.updateResolvedKey(props.value);
+    }
+    public componentDidUpdate(previousProps: Props) {
+        if (previousProps.value !== this.props.value) {
+            this.updateResolvedKey(this.props.value);
+        }
     }
 
-    public render() {
-        const value = this.props.value;
-        let buttonText = null;
+    private async updateResolvedKey(value: Option<string>): Promise<void> {
+        let resolvedKey = "";
         if (value != null) {
             const matches = value.match(/(.+)\+\s*(.+)$/);
             if (matches != null) {
-                buttonText = `${matches[1]}+ ${resolveKey(matches[2])}`;
+                resolvedKey = `${matches[1]}+ ${await resolveKey(matches[2])}`;
             } else {
-                buttonText = resolveKey(value);
+                resolvedKey = await resolveKey(value);
             }
+        }
+        this.setState({ resolvedKey });
+    }
+
+    public render() {
+        let buttonText: Option<string> | JSX.Element = null;
+        if (this.props.value != null) {
+            buttonText = this.state.resolvedKey;
         } else if (this.state.listener != null) {
             buttonText = <i className="fa fa-circle" aria-hidden="true" />;
         }

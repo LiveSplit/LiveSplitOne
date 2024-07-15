@@ -1,0 +1,43 @@
+{
+  "build": {
+    "devPath": "target/dist",
+    "distDir": "target/dist",
+    "withGlobalTauri": true
+  },
+  "package": {
+    "productName": "LiveSplit One",
+    "version": "0.1.0"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false,
+      "http": {
+        "all": true,
+        "request": true,
+        "scope": ["https://www.speedrun.com/static/*"]
+      }
+    },
+    "windows": [
+      {
+        "title": "LiveSplit One",
+        "width": 850,
+        "height": 750
+      }
+    ],
+    "security": {
+      "csp": null
+    },
+    "bundle": {
+      "active": true,
+      "targets": "all",
+      "identifier": "org.livesplit.one",
+      "icon": [
+        "icons/32x32.png",
+        "icons/128x128.png",
+        "icons/128x128@2x.png",
+        "icons/icon.icns",
+        "icons/icon.ico"
+      ]
+    }
+  }
+}

@@ -83,7 +83,11 @@ export default async (env, argv) => {
     const basePath = path.dirname(fileURLToPath(import.meta.url));
 
     const isProduction = argv.mode === "production";
-    const distPath = path.join(basePath, "dist");
+    const isTauri = env.TAURI === "true";
+    const distPath = path.join(...[
+        basePath,
+        ...(isTauri ? ["src-tauri", "target", "dist"] : ["dist"]),
+    ]);
 
     return {
         entry: {
@@ -107,8 +111,11 @@ export default async (env, argv) => {
         },
 
         plugins: [
-            ...(isProduction ? [new CleanWebpackPlugin()] : []),
-            new FaviconsWebpackPlugin({
+            ...(isProduction ? [new CleanWebpackPlugin({
+                protectWebpackAssets: false,
+                cleanAfterEveryBuildPatterns: ['*.LICENSE.txt'],
+            })] : []),
+            ...(isTauri ? [] : [new FaviconsWebpackPlugin({
                 logo: path.resolve("src/assets/icon.svg"),
                 inject: true,
                 logoMaskable: path.resolve("src/assets/maskable.svg"),
@@ -133,7 +140,7 @@ export default async (env, argv) => {
                     },
                     start_url: "/",
                 },
-            }),
+            })]),
             new HtmlWebpackPlugin({
                 template: "./src/index.html",
             }),
@@ -147,7 +154,7 @@ export default async (env, argv) => {
                 new HtmlInlineScriptPlugin({
                     scriptMatchPattern: ['^bundle.js$'],
                 }),
-                new WorkboxPlugin.GenerateSW({
+                ...(isTauri ? [] : [new WorkboxPlugin.GenerateSW({
                     clientsClaim: true,
                     skipWaiting: true,
                     maximumFileSizeToCacheInBytes: 100 * 1024 * 1024,
@@ -163,9 +170,9 @@ export default async (env, argv) => {
                         },
                         handler: "CacheFirst",
                     }],
-                })
+                })])
             ] : []),
-            ...(!isProduction ? [new ReactRefreshWebpackPlugin()] : [])
+            ...(!isProduction ? [new ReactRefreshWebpackPlugin()] : []),
         ],
 
         module: {

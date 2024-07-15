@@ -38,13 +38,13 @@ export interface State {
 
 interface Callbacks {
     renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
-    closeSettingsEditor(save: boolean, newGeneralSettings: GeneralSettings): void,
+    closeMainSettings(save: boolean, newGeneralSettings: GeneralSettings): void,
     onServerConnectionOpened(serverConnection: LiveSplitServer): void,
     onServerConnectionClosed(): void,
     forceUpdate(): void,
 }
 
-export class SettingsEditor extends React.Component<Props, State> {
+export class MainSettings extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
 
@@ -257,13 +257,13 @@ export class SettingsEditor extends React.Component<Props, State> {
                 <div className="small">
                     <button
                         className="toggle-left"
-                        onClick={(_) => this.props.callbacks.closeSettingsEditor(true, this.state.generalSettings)}
+                        onClick={(_) => this.props.callbacks.closeMainSettings(true, this.state.generalSettings)}
                     >
                         <i className="fa fa-check" aria-hidden="true" /> OK
                     </button>
                     <button
                         className="toggle-right"
-                        onClick={(_) => this.props.callbacks.closeSettingsEditor(false, this.state.generalSettings)}
+                        onClick={(_) => this.props.callbacks.closeMainSettings(false, this.state.generalSettings)}
                     >
                         <i className="fa fa-times" aria-hidden="true" /> Cancel
                     </button>

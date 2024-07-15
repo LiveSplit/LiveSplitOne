@@ -6,7 +6,7 @@ import DragUpload from "./DragUpload";
 import Layout from "../layout/Layout";
 import { UrlCache } from "../util/UrlCache";
 import { WebRenderer } from "../livesplit-core/livesplit_core";
-import { GeneralSettings } from "./SettingsEditor";
+import { GeneralSettings } from "./MainSettings";
 import { LiveSplitServer } from "../api/LiveSplitServer";
 import { LSOCommandSink } from "./LSOCommandSink";
 
@@ -47,7 +47,7 @@ interface Callbacks {
     openAboutView(): void,
     openLayoutView(): void,
     openSplitsView(): void,
-    openSettingsEditor(): void,
+    openMainSettings(): void,
     renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
     onServerConnectionClosed(): void,
     onServerConnectionOpened(serverConnection: LiveSplitServer): void,
@@ -262,7 +262,7 @@ export class TimerView extends React.Component<Props, State> {
                     </button>
                 </div>
                 <hr />
-                <button onClick={() => this.props.callbacks.openSettingsEditor()}>
+                <button onClick={() => this.props.callbacks.openMainSettings()}>
                     <i className="fa fa-cog" aria-hidden="true" /> Settings
                 </button>
                 <button onClick={(_) => this.props.callbacks.openAboutView()}>

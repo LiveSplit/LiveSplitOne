@@ -3,7 +3,7 @@ import { Layout, LayoutStateRefMut, TimerPhase, TimingMethod } from "../livespli
 import { TimerView } from "./TimerView";
 import { UrlCache } from "../util/UrlCache";
 import { WebRenderer } from "../livesplit-core/livesplit_core";
-import { GeneralSettings } from "./SettingsEditor";
+import { GeneralSettings } from "./MainSettings";
 import { LiveSplitServer } from "../api/LiveSplitServer";
 import { Option } from "../util/OptionUtil";
 import { LSOCommandSink } from "./LSOCommandSink";
@@ -42,7 +42,7 @@ interface Callbacks {
     openLayoutEditor(): void,
     openLayoutView(): void,
     openSplitsView(): void,
-    openSettingsEditor(): void,
+    openMainSettings(): void,
     openTimerView(): void,
     renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
     saveLayout(): void,
