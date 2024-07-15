@@ -5,7 +5,7 @@ import { WebRenderer } from "../livesplit-core/livesplit_core";
 import AutoRefresh from "../util/AutoRefresh";
 import { UrlCache } from "../util/UrlCache";
 import "../css/Layout.scss";
-import { GeneralSettings } from "../ui/SettingsEditor";
+import { GeneralSettings } from "../ui/MainSettings";
 
 export interface Props {
     getState: () => LayoutStateRef,

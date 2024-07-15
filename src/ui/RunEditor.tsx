@@ -23,8 +23,9 @@ import {
 } from "./Settings";
 import { renderMarkdown, replaceFlag } from "../util/Markdown";
 import { UrlCache } from "../util/UrlCache";
-import { GeneralSettings } from "./SettingsEditor";
+import { GeneralSettings } from "./MainSettings";
 import { showDialog } from "./Dialog";
+import { corsBustingFetch } from "../platform/CORS";
 
 import "../css/RunEditor.scss";
 
@@ -2020,8 +2021,7 @@ export class RunEditor extends React.Component<Props, State> {
             if (game !== undefined) {
                 const uri = game.assets["cover-medium"].uri;
                 if (uri.startsWith("https://") && uri !== "https://www.speedrun.com/images/blankcover.png") {
-                    const response = await fetch(uri, { signal });
-                    const buffer = await response.arrayBuffer();
+                    const buffer = await corsBustingFetch(uri, signal);
                     if (this.props.editor.ptr === 0) {
                         return;
                     }
@@ -2050,8 +2050,7 @@ export class RunEditor extends React.Component<Props, State> {
             if (game !== undefined) {
                 const uri = game.assets.icon.uri;
                 if (uri.startsWith("https://") && uri !== "https://www.speedrun.com/images/1st.png") {
-                    const response = await fetch(uri, { signal });
-                    const buffer = await response.arrayBuffer();
+                    const buffer = await corsBustingFetch(uri, signal);
                     if (this.props.editor.ptr === 0) {
                         return;
                     }

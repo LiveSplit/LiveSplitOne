@@ -13,7 +13,11 @@
     "publish": "webpack --mode production",
     "serve": "webpack serve",
     "start": "webpack serve --open",
-    "test": "mocha --exit test/**/*.js"
+    "test": "mocha --exit test/**/*.js",
+    "tauri:icons": "tauri icon src/assets/icon.png",
+    "tauri:build-html": "webpack --mode production --env TAURI=true",
+    "tauri:watch": "tauri dev",
+    "tauri:publish": "tauri build"
   },
   "author": "",
   "license": "ISC",
@@ -42,6 +46,7 @@
   },
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.13",
+    "@tauri-apps/cli": "^1.6.0",
     "@types/node": "^20.12.7",
     "@types/selenium-webdriver": "^4.1.21",
     "@typescript-eslint/eslint-plugin": "^7.7.0",

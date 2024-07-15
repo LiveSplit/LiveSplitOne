@@ -5,7 +5,7 @@ import { SettingsComponent } from "./Settings";
 import { UrlCache } from "../util/UrlCache";
 import Layout from "../layout/Layout";
 import { WebRenderer } from "../livesplit-core/livesplit_core";
-import { GeneralSettings } from "./SettingsEditor";
+import { GeneralSettings } from "./MainSettings";
 import { LSOCommandSink } from "./LSOCommandSink";
 
 import "../css/LayoutEditor.scss";

@@ -1,7 +1,7 @@
 import * as React from "react";
 import Sidebar from "react-sidebar";
 import {
-    HotkeySystem, Layout, LayoutEditor, Run, RunEditor, Segment,
+    Layout, LayoutEditor, Run, RunEditor, Segment,
     Timer, HotkeyConfig, LayoutState, LayoutStateJson,
     TimingMethod, TimerPhase,
     Event,
@@ -11,7 +11,7 @@ import { Option, assertNull, expect, maybeDisposeAndThen, panic } from "../util/
 import * as SplitsIO from "../util/SplitsIO";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
-import { GeneralSettings, SettingsEditor as SettingsEditorComponent } from "./SettingsEditor";
+import { GeneralSettings, MainSettings as SettingsEditorComponent } from "./MainSettings";
 import { TimerView } from "./TimerView";
 import { About } from "./About";
 import { SplitsSelection, EditingInfo } from "./SplitsSelection";
@@ -19,10 +19,11 @@ import { LayoutView } from "./LayoutView";
 import { ToastContainer, toast } from "react-toastify";
 import * as Storage from "../storage";
 import { UrlCache } from "../util/UrlCache";
-import { WebRenderer } from "../livesplit-core/livesplit_core";
+import { ServerProtocol, WebRenderer } from "../livesplit-core/livesplit_core";
 import { LiveSplitServer } from "../api/LiveSplitServer";
 import { LSOCommandSink } from "./LSOCommandSink";
 import DialogContainer from "./Dialog";
+import { createHotkeys, HotkeyImplementation } from "../platform/Hotkeys";
 
 import variables from "../css/variables.scss";
 
@@ -39,7 +40,7 @@ export enum MenuKind {
     RunEditor,
     Layout,
     LayoutEditor,
-    SettingsEditor,
+    MainSettings,
     About,
 }
 
@@ -59,7 +60,7 @@ type Menu =
     { kind: MenuKind.RunEditor, editor: RunEditor, splitsKey?: number } |
     { kind: MenuKind.Layout } |
     { kind: MenuKind.LayoutEditor, editor: LayoutEditor } |
-    { kind: MenuKind.SettingsEditor, config: HotkeyConfig } |
+    { kind: MenuKind.MainSettings, config: HotkeyConfig } |
     { kind: MenuKind.About };
 
 export interface Props {
@@ -75,7 +76,7 @@ export interface Props {
 }
 
 export interface State {
-    hotkeySystem: HotkeySystem,
+    hotkeySystem: HotkeyImplementation,
     isBrowserSource: boolean,
     isDesktop: boolean,
     layout: Layout,
@@ -104,7 +105,7 @@ export interface State {
     layoutModified: boolean,
 }
 
-export let hotkeySystem: Option<HotkeySystem> = null;
+export let hotkeySystem: Option<HotkeyImplementation> = null;
 
 export class LiveSplit extends React.Component<Props, State> {
     public static async loadStoredData() {
@@ -150,21 +151,7 @@ export class LiveSplit extends React.Component<Props, State> {
             this,
         );
 
-        const hotkeys = props.hotkeys;
-        try {
-            if (hotkeys !== undefined) {
-                const config = HotkeyConfig.parseJson(hotkeys);
-                if (config !== null) {
-                    hotkeySystem = HotkeySystem.withConfig(commandSink.getCommandSink(), config);
-                }
-            }
-        } catch (_) { /* Looks like the storage has no valid data */ }
-        if (hotkeySystem == null) {
-            hotkeySystem = expect(
-                HotkeySystem.new(commandSink.getCommandSink()),
-                "Couldn't initialize the hotkeys",
-            );
-        }
+        hotkeySystem = createHotkeys(commandSink.getCommandSink(), props.hotkeys);
 
         if (window.location.hash.indexOf("#/splits-io/") === 0) {
             const loadingRun = Run.new();
@@ -235,6 +222,13 @@ export class LiveSplit extends React.Component<Props, State> {
             splitsModified: commandSink.hasBeenModified(),
             layoutModified: false,
         };
+
+        if (window.__TAURI__ != null) {
+            window.__TAURI__.event.listen("command", (event) => {
+                const payloadString = JSON.stringify(event.payload);
+                ServerProtocol.handleCommand(payloadString, commandSink.getCommandSink().ptr);
+            });
+        }
 
         this.updateBadge();
 
@@ -308,7 +302,6 @@ export class LiveSplit extends React.Component<Props, State> {
         this.state.commandSink[Symbol.dispose]();
         this.state.layout[Symbol.dispose]();
         this.state.layoutState[Symbol.dispose]();
-        this.state.hotkeySystem?.[Symbol.dispose]();
 
         // This is bound in the constructor
         // eslint-disable-next-line @typescript-eslint/unbound-method
@@ -345,7 +338,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 renderer={this.state.renderer}
                 callbacks={this}
             />;
-        } else if (this.state.menu.kind === MenuKind.SettingsEditor) {
+        } else if (this.state.menu.kind === MenuKind.MainSettings) {
             view = <SettingsEditorComponent
                 generalSettings={this.state.generalSettings}
                 hotkeyConfig={this.state.menu.config}
@@ -635,24 +628,24 @@ export class LiveSplit extends React.Component<Props, State> {
         this.openTimerView();
     }
 
-    public openSettingsEditor() {
+    public async openMainSettings() {
         this.changeMenu({
-            kind: MenuKind.SettingsEditor,
-            config: this.state.hotkeySystem.config(),
+            kind: MenuKind.MainSettings,
+            config: await this.state.hotkeySystem.config(),
         });
     }
 
-    public async closeSettingsEditor(save: boolean, generalSettings: GeneralSettings) {
+    public async closeMainSettings(save: boolean, generalSettings: GeneralSettings) {
         const menu = this.state.menu;
 
-        if (menu.kind !== MenuKind.SettingsEditor) {
+        if (menu.kind !== MenuKind.MainSettings) {
             panic("No Settings Editor to close.");
         }
 
         if (save) {
             try {
-                const hotkeys = menu.config.asJson();
-                await Storage.storeHotkeys(hotkeys);
+                const config = menu.config.asJson();
+                await Storage.storeHotkeys(config);
             } catch {
                 toast.error("Failed to save the hotkey settings.");
             }
