@@ -83,8 +83,9 @@ jobs:
 
       - name: Install binaryen
         if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
+        shell: bash
         run: |
-          cd ~/.cargo/bin
+          cd ${{ matrix.cargo_bin }}
           tar -xzf binaryen-*-${{ matrix.binaryen }}.tar.gz
           mv binaryen*/bin/wasm* .
 
@@ -128,6 +129,8 @@ jobs:
             librsvg2-dev
 
       - name: Build Core
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npm run build:core:deploy
 
       - name: Run eslint (Web)

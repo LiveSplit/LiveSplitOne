@@ -44,7 +44,11 @@ function parseChangelog() {
 
 export default async (env, argv) => {
     const getContributorsForRepo = async (repoName) => {
-        const contributorsData = await fetch(`https://api.github.com/repos/LiveSplit/${repoName}/contributors`);
+        const contributorsData = await fetch(`https://api.github.com/repos/LiveSplit/${repoName}/contributors`, {
+            headers: {
+                "Authorization": env.GITHUB_TOKEN ? `Bearer ${env.GITHUB_TOKEN}` : undefined,
+            },
+        });
         return contributorsData.json();
     }
 
