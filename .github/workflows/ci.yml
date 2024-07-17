@@ -85,9 +85,11 @@ jobs:
         if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
         shell: bash
         run: |
-          cd ${{ matrix.cargo_bin }}
-          tar -xzf binaryen-*-${{ matrix.binaryen }}.tar.gz
-          mv binaryen*/bin/wasm* .
+          cd ${{ matrix.cargo_bin }}/..
+          tar -xzf bin/binaryen-*-${{ matrix.binaryen }}.tar.gz
+          mkdir -p lib
+          cp -R binaryen-*/bin/* bin
+          cp -R binaryen-*/lib/* lib
 
       - name: Choose wasm-bindgen-cli version
         shell: bash
