@@ -62,6 +62,13 @@ fn resolve_hotkey(state: tauri::State<'_, State>, key_code: String) -> Cow<'stat
     key_code.into()
 }
 
+#[tauri::command]
+fn settings_changed(state: tauri::State<'_, State>, always_on_top: bool) {
+    if let Some(window) = &*state.window.read().unwrap() {
+        window.set_always_on_top(always_on_top).unwrap();
+    }
+}
+
 #[derive(Clone)]
 struct TauriCommandSink(Arc<RwLock<Option<Window>>>);
 
@@ -219,6 +226,7 @@ fn main() {
             set_hotkey_activation,
             get_hotkey_config,
             resolve_hotkey,
+            settings_changed,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

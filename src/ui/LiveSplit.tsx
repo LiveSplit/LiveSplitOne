@@ -223,12 +223,12 @@ export class LiveSplit extends React.Component<Props, State> {
             layoutModified: false,
         };
 
-        if (window.__TAURI__ != null) {
-            window.__TAURI__.event.listen("command", (event) => {
-                const payloadString = JSON.stringify(event.payload);
-                ServerProtocol.handleCommand(payloadString, commandSink.getCommandSink().ptr);
-            });
-        }
+        window.__TAURI__?.event.listen("command", (event) => {
+            const payloadString = JSON.stringify(event.payload);
+            ServerProtocol.handleCommand(payloadString, commandSink.getCommandSink().ptr);
+        });
+
+        this.updateTauriSettings(props.generalSettings);
 
         this.updateBadge();
 
@@ -658,11 +658,18 @@ export class LiveSplit extends React.Component<Props, State> {
 
             this.state.hotkeySystem.setConfig(menu.config);
             this.setState({ generalSettings });
+            this.updateTauriSettings(generalSettings);
         } else {
             menu.config[Symbol.dispose]();
         }
 
         this.openTimerView();
+    }
+
+    private updateTauriSettings(generalSettings: GeneralSettings) {
+        window.__TAURI__?.tauri.invoke("settings_changed", {
+            alwaysOnTop: generalSettings.alwaysOnTop,
+        });
     }
 
     public onResize(width: number, height: number) {
