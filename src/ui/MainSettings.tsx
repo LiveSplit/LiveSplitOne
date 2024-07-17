@@ -18,7 +18,8 @@ export interface GeneralSettings {
     saveOnReset: boolean,
     speedrunComIntegration: boolean,
     splitsIoIntegration: boolean,
-    serverUrl: string | undefined,
+    serverUrl?: string,
+    alwaysOnTop?: boolean,
 }
 
 export interface Props {
@@ -112,6 +113,11 @@ export class MainSettings extends React.Component<Props, State> {
                                     Bool: this.state.generalSettings.saveOnReset,
                                 },
                             },
+                            ...((window.__TAURI__ != null) ? [{
+                                text: "Always On Top",
+                                tooltip: "Keeps the window always on top of other windows.",
+                                value: { Bool: this.state.generalSettings.alwaysOnTop! },
+                            }] : []),
                         ],
                     }}
                     editorUrlCache={this.props.urlCache}
@@ -158,6 +164,16 @@ export class MainSettings extends React.Component<Props, State> {
                                         generalSettings: {
                                             ...this.state.generalSettings,
                                             saveOnReset: value.Bool,
+                                        },
+                                    });
+                                }
+                                break;
+                            case 4:
+                                if ("Bool" in value) {
+                                    this.setState({
+                                        generalSettings: {
+                                            ...this.state.generalSettings,
+                                            alwaysOnTop: value.Bool,
                                         },
                                     });
                                 }
