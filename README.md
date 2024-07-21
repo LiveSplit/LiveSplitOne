@@ -9,7 +9,7 @@ works on a lot of different platforms.
 
 The web version of LiveSplit One is available [here](https://one.livesplit.org/).
 
-The latest desktop version of LiveSplit One, with support for global hotkeys, can be downloaded [here](https://github.com/LiveSplit/LiveSplitOne/releases/latest).
+The latest desktop version of LiveSplit One, with support for global hotkeys, can be downloaded [here](https://github.com/LiveSplit/LiveSplitOne/releases/latest). (Note: this is not yet optimized much for web usage. It's mostly the same as the web version, and there is no update mechanism.)
 
 ## Build Instructions
 
