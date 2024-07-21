@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
     strategy:
       fail-fast: false
       matrix:
@@ -195,3 +197,20 @@ jobs:
           publish_branch: gh-pages
           publish_dir: ./${{ matrix.dist_path }}
           force_orphan: true
+
+      - name: Prepare Release (Tauri)
+        if: matrix.platform == 'tauri' && github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
+        shell: bash
+        run: .github/workflows/build_zip.sh
+        env:
+          OS_NAME: ${{ matrix.os }}
+          TARGET: ${{ matrix.binaryen }}
+
+      - name: Release (Tauri)
+        if: matrix.platform == 'tauri' && github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: LiveSplitOne-*.*
+          name: Latest
+          tag_name: latest
+          body: The latest desktop version of LiveSplit One, which has support for global hotkeys.
