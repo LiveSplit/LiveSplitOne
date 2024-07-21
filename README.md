@@ -9,6 +9,8 @@ works on a lot of different platforms.
 
 The web version of LiveSplit One is available [here](https://one.livesplit.org/).
 
+The latest desktop version of LiveSplit One, with support for global hotkeys, can be downloaded [here](https://github.com/LiveSplit/LiveSplitOne/releases/latest).
+
 ## Build Instructions
 
 In order to build LiveSplit One, you need to install
