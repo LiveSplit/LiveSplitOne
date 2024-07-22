@@ -11,10 +11,15 @@
   "tauri": {
     "allowlist": {
       "all": false,
+      "dialog": {
+        "all": true
+      },
       "http": {
         "all": true,
         "request": true,
-        "scope": ["https://www.speedrun.com/static/*"]
+        "scope": [
+          "https://www.speedrun.com/static/*"
+        ]
       }
     },
     "windows": [
