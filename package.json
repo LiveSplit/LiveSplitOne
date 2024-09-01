@@ -47,7 +47,7 @@
   "devDependencies": {
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.13",
     "@tauri-apps/cli": "^1.6.0",
-    "@types/node": "^20.12.7",
+    "@types/node": "^22.5.1",
     "@types/selenium-webdriver": "^4.1.21",
     "@typescript-eslint/eslint-plugin": "^7.7.0",
     "@typescript-eslint/parser": "^7.10.0",
