@@ -1,7 +1,7 @@
 import { openDB, IDBPDatabase } from "idb";
 import { Option, assert } from "../util/OptionUtil";
 import { RunRef, Run, TimingMethod } from "../livesplit-core";
-import { GeneralSettings } from "../ui/MainSettings";
+import { GeneralSettings, MANUAL_GAME_TIME_SETTINGS_DEFAULT } from "../ui/MainSettings";
 import { FRAME_RATE_AUTOMATIC } from "../util/FrameRate";
 
 export type HotkeyConfigSettings = unknown;
@@ -248,6 +248,10 @@ export async function loadGeneralSettings(): Promise<GeneralSettings> {
     const generalSettings = await db.get("settings", "generalSettings") ?? {};
 
     const isTauri = window.__TAURI__ != null;
+
+    if (generalSettings.showManualGameTime === true) {
+        generalSettings.showManualGameTime = MANUAL_GAME_TIME_SETTINGS_DEFAULT;
+    }
 
     return {
         frameRate: generalSettings.frameRate ?? FRAME_RATE_AUTOMATIC,

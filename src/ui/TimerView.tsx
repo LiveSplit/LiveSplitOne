@@ -6,7 +6,7 @@ import DragUpload from "./DragUpload";
 import Layout from "../layout/Layout";
 import { UrlCache } from "../util/UrlCache";
 import { WebRenderer } from "../livesplit-core/livesplit_core";
-import { GeneralSettings } from "./MainSettings";
+import { GeneralSettings, MANUAL_GAME_TIME_MODE_SEGMENT_TIMES } from "./MainSettings";
 import { LiveSplitServer } from "../api/LiveSplitServer";
 import { LSOCommandSink } from "./LSOCommandSink";
 
@@ -73,6 +73,8 @@ export class TimerView extends React.Component<Props, State> {
     }
 
     private renderView() {
+        const showManualGameTime = this.props.generalSettings.showManualGameTime;
+
         return <DragUpload
             importLayout={(file) => this.props.callbacks.importLayoutFromFile(file)}
             importSplits={(file) => this.props.callbacks.importSplitsFromFile(file)}
@@ -167,7 +169,7 @@ export class TimerView extends React.Component<Props, State> {
                 </div>
             }
             {
-                this.props.generalSettings.showManualGameTime && <div className="buttons" style={{ width: this.props.layoutWidth }}>
+                showManualGameTime && <div className="buttons" style={{ width: this.props.layoutWidth }}>
                     <input
                         type="text"
                         className="manual-game-time"
@@ -191,6 +193,12 @@ export class TimerView extends React.Component<Props, State> {
                                 } else {
                                     using gameTime = TimeSpan.parse(this.state.manualGameTime);
                                     if (gameTime !== null) {
+                                        if (showManualGameTime.mode === MANUAL_GAME_TIME_MODE_SEGMENT_TIMES) {
+                                            const currentGameTime = timer.currentTime().gameTime();
+                                            if (currentGameTime !== null) {
+                                                gameTime.addAssign(currentGameTime);
+                                            }
+                                        }
                                         timer.setGameTimeInner(gameTime);
                                         timer.split();
                                         this.setState({ manualGameTime: "" });
