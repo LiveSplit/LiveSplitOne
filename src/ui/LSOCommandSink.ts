@@ -1,4 +1,4 @@
-import { CommandError, CommandResult, CommandSink, CommandSinkRef, Event, ImageCacheRefMut, LayoutEditorRefMut, LayoutRefMut, LayoutStateRefMut, Run, RunRef, TimeSpan, TimeSpanRef, Timer, TimerPhase, TimingMethod, isEvent } from "../livesplit-core";
+import { CommandError, CommandResult, CommandSink, CommandSinkRef, Event, ImageCacheRefMut, LayoutEditorRefMut, LayoutRefMut, LayoutStateRefMut, Run, RunRef, TimeRef, TimeSpan, TimeSpanRef, Timer, TimerPhase, TimingMethod, isEvent } from "../livesplit-core";
 import { WebCommandSink } from "../livesplit-core/livesplit_core";
 import { assert } from "../util/OptionUtil";
 import { showDialog } from "./Dialog";
@@ -408,6 +408,10 @@ export class LSOCommandSink {
         imageCache: ImageCacheRefMut,
     ): void {
         layoutEditor.updateLayoutState(layoutState, imageCache, this.timer);
+    }
+
+    public currentTime(): TimeRef {
+        return this.timer.currentTime();
     }
 
     public currentSplitIndex(): number {

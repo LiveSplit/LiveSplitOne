@@ -14,13 +14,23 @@ import "../css/SettingsEditor.scss";
 export interface GeneralSettings {
     frameRate: FrameRateSetting,
     showControlButtons: boolean,
-    showManualGameTime: boolean,
+    showManualGameTime: ManualGameTimeSettings | false,
     saveOnReset: boolean,
     speedrunComIntegration: boolean,
     splitsIoIntegration: boolean,
     serverUrl?: string,
     alwaysOnTop?: boolean,
 }
+
+export interface ManualGameTimeSettings {
+    mode: string,
+}
+
+export const MANUAL_GAME_TIME_MODE_SEGMENT_TIMES = "Segment Times";
+export const MANUAL_GAME_TIME_MODE_SPLIT_TIMES = "Split Times";
+export const MANUAL_GAME_TIME_SETTINGS_DEFAULT: ManualGameTimeSettings = {
+    mode: MANUAL_GAME_TIME_MODE_SEGMENT_TIMES,
+};
 
 export interface Props {
     generalSettings: GeneralSettings,
@@ -62,6 +72,63 @@ export class MainSettings extends React.Component<Props, State> {
     }
 
     private renderView() {
+        const generalFields = [
+            {
+                text: "Frame Rate",
+                tooltip: "Determines the frame rate at which to display the timer. \"Battery Aware\" tries determining the type of device and charging status to select a good frame rate. \"Match Screen\" makes the timer match the screen's refresh rate.",
+                value: {
+                    CustomCombobox: {
+                        value: this.state.generalSettings.frameRate === FRAME_RATE_MATCH_SCREEN ? FRAME_RATE_MATCH_SCREEN : this.state.generalSettings.frameRate === FRAME_RATE_BATTERY_AWARE ? FRAME_RATE_BATTERY_AWARE : this.state.generalSettings.frameRate.toString() + " FPS",
+                        list: [FRAME_RATE_BATTERY_AWARE, "30 FPS", "60 FPS", "120 FPS", FRAME_RATE_MATCH_SCREEN],
+                        mandatory: true,
+                    }
+                },
+            },
+            {
+                text: "Save On Reset",
+                tooltip: "Determines whether to automatically save the splits when resetting the timer.",
+                value: {
+                    Bool: this.state.generalSettings.saveOnReset,
+                },
+            },
+            {
+                text: "Show Control Buttons",
+                tooltip: "Determines whether to show buttons beneath the timer that allow controlling it. When disabled, you have to use the hotkeys instead.",
+                value: { Bool: this.state.generalSettings.showControlButtons },
+            },
+            {
+                text: "Show Manual Game Time Input",
+                tooltip: "Shows a text box beneath the timer that allows you to manually input the game time. You start the timer and do splits by pressing the Enter key in the text box. Make sure to compare against \"Game Time\".",
+                value: { Bool: this.state.generalSettings.showManualGameTime !== false },
+            },
+        ];
+
+        let manualGameTimeModeIndex = 0;
+        if (this.state.generalSettings.showManualGameTime) {
+            manualGameTimeModeIndex = generalFields.length;
+            generalFields.push({
+                text: "Manual Game Time Mode",
+                tooltip: "Determines whether to input the manual game time as segment times or split times.",
+                value: {
+                    CustomCombobox: {
+                        value: this.state.generalSettings.showManualGameTime.mode,
+                        list: [MANUAL_GAME_TIME_MODE_SEGMENT_TIMES, MANUAL_GAME_TIME_MODE_SPLIT_TIMES],
+                        mandatory: false,
+                    }
+                },
+            });
+        }
+
+        let alwaysOnTopIndex = 0;
+        if (window.__TAURI__ != null) {
+            alwaysOnTopIndex = generalFields.length;
+            generalFields.push({
+                text: "Always On Top",
+                tooltip: "Keeps the window always on top of other windows.",
+                value: { Bool: this.state.generalSettings.alwaysOnTop! },
+            });
+        }
+
         return (
             <div className="settings-editor">
                 <h2>Hotkeys</h2>
@@ -84,41 +151,7 @@ export class MainSettings extends React.Component<Props, State> {
                     context="settings-editor-general"
                     factory={new JsonSettingValueFactory()}
                     state={{
-                        fields: [
-                            {
-                                text: "Frame Rate",
-                                tooltip: "Determines the frame rate at which to display the timer. \"Battery Aware\" tries determining the type of device and charging status to select a good frame rate. \"Match Screen\" makes the timer match the screen's refresh rate.",
-                                value: {
-                                    CustomCombobox: {
-                                        value: this.state.generalSettings.frameRate === FRAME_RATE_MATCH_SCREEN ? FRAME_RATE_MATCH_SCREEN : this.state.generalSettings.frameRate === FRAME_RATE_BATTERY_AWARE ? FRAME_RATE_BATTERY_AWARE : this.state.generalSettings.frameRate.toString() + " FPS",
-                                        list: [FRAME_RATE_BATTERY_AWARE, "30 FPS", "60 FPS", "120 FPS", FRAME_RATE_MATCH_SCREEN],
-                                        mandatory: true,
-                                    }
-                                },
-                            },
-                            {
-                                text: "Show Control Buttons",
-                                tooltip: "Determines whether to show buttons beneath the timer that allow controlling it. When disabled, you have to use the hotkeys instead.",
-                                value: { Bool: this.state.generalSettings.showControlButtons },
-                            },
-                            {
-                                text: "Show Manual Game Time Input",
-                                tooltip: "Shows a text box beneath the timer that allows you to manually input the game time. You start the timer and do splits by pressing the Enter key in the text box. Make sure to compare against \"Game Time\".",
-                                value: { Bool: this.state.generalSettings.showManualGameTime },
-                            },
-                            {
-                                text: "Save On Reset",
-                                tooltip: "Determines whether to automatically save the splits when resetting the timer.",
-                                value: {
-                                    Bool: this.state.generalSettings.saveOnReset,
-                                },
-                            },
-                            ...((window.__TAURI__ != null) ? [{
-                                text: "Always On Top",
-                                tooltip: "Keeps the window always on top of other windows.",
-                                value: { Bool: this.state.generalSettings.alwaysOnTop! },
-                            }] : []),
-                        ],
+                        fields: generalFields,
                     }}
                     editorUrlCache={this.props.urlCache}
                     allComparisons={this.props.allComparisons}
@@ -143,7 +176,7 @@ export class MainSettings extends React.Component<Props, State> {
                                     this.setState({
                                         generalSettings: {
                                             ...this.state.generalSettings,
-                                            showControlButtons: value.Bool,
+                                            saveOnReset: value.Bool,
                                         },
                                     });
                                 }
@@ -153,7 +186,7 @@ export class MainSettings extends React.Component<Props, State> {
                                     this.setState({
                                         generalSettings: {
                                             ...this.state.generalSettings,
-                                            showManualGameTime: value.Bool,
+                                            showControlButtons: value.Bool,
                                         },
                                     });
                                 }
@@ -163,17 +196,27 @@ export class MainSettings extends React.Component<Props, State> {
                                     this.setState({
                                         generalSettings: {
                                             ...this.state.generalSettings,
-                                            saveOnReset: value.Bool,
+                                            showManualGameTime: value.Bool ?
+                                                MANUAL_GAME_TIME_SETTINGS_DEFAULT : false,
                                         },
                                     });
                                 }
                                 break;
-                            case 4:
-                                if ("Bool" in value) {
+                            default:
+                                if (index === alwaysOnTopIndex && "Bool" in value) {
                                     this.setState({
                                         generalSettings: {
                                             ...this.state.generalSettings,
                                             alwaysOnTop: value.Bool,
+                                        },
+                                    });
+                                } else if (index === manualGameTimeModeIndex && "String" in value) {
+                                    this.setState({
+                                        generalSettings: {
+                                            ...this.state.generalSettings,
+                                            showManualGameTime: {
+                                                mode: value.String,
+                                            },
                                         },
                                     });
                                 }
