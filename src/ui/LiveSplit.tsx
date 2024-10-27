@@ -101,6 +101,7 @@ export interface State {
     currentPhase: TimerPhase,
     currentSplitIndex: number,
     allComparisons: string[],
+    allVariables: Set<string>,
     splitsModified: boolean,
     layoutModified: boolean,
 }
@@ -219,6 +220,7 @@ export class LiveSplit extends React.Component<Props, State> {
             currentPhase: commandSink.currentPhase(),
             currentSplitIndex: commandSink.currentSplitIndex(),
             allComparisons: commandSink.getAllComparisons(),
+            allVariables: commandSink.getAllCustomVariables(),
             splitsModified: commandSink.hasBeenModified(),
             layoutModified: false,
         };
@@ -321,6 +323,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 callbacks={this}
                 runEditorUrlCache={this.state.runEditorUrlCache}
                 allComparisons={this.state.allComparisons}
+                allVariables={this.state.allVariables}
                 generalSettings={this.state.generalSettings}
             />;
         } else if (this.state.menu.kind === MenuKind.LayoutEditor) {
@@ -333,6 +336,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 layoutHeight={this.state.layoutHeight}
                 generalSettings={this.state.generalSettings}
                 allComparisons={this.state.allComparisons}
+                allVariables={this.state.allVariables}
                 isDesktop={this.state.isDesktop}
                 commandSink={this.state.commandSink}
                 renderer={this.state.renderer}
@@ -347,6 +351,7 @@ export class LiveSplit extends React.Component<Props, State> {
                 commandSink={this.state.commandSink}
                 serverConnection={this.state.serverConnection}
                 allComparisons={this.state.allComparisons}
+                allVariables={this.state.allVariables}
             />;
         } else if (this.state.menu.kind === MenuKind.About) {
             view = <About callbacks={this} />;
@@ -899,10 +904,25 @@ export class LiveSplit extends React.Component<Props, State> {
         this.currentSplitChanged();
         this.comparisonListChanged();
         this.splitsModifiedChanged();
+
+        if (this.state != null) {
+            this.setState({
+                allVariables: this.state.commandSink.getAllCustomVariables(),
+            });
+        }
     }
 
     runNotModifiedAnymore(): void {
         this.splitsModifiedChanged();
+    }
+
+    encounteredCustomVariable(name: string): void {
+        if (this.state.allVariables.has(name)) {
+            return;
+        }
+        this.setState({
+            allVariables: new Set([...this.state.allVariables, name]),
+        });
     }
 
     private currentComparisonChanged(): void {

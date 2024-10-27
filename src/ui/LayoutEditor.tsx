@@ -19,6 +19,7 @@ export interface Props {
     layoutHeight: number,
     generalSettings: GeneralSettings,
     allComparisons: string[],
+    allVariables: Set<string>,
     isDesktop: boolean,
     commandSink: LSOCommandSink,
     renderer: WebRenderer,
@@ -105,6 +106,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                     state={this.state.editor.component_settings}
                     editorUrlCache={this.props.layoutEditorUrlCache}
                     allComparisons={this.props.allComparisons}
+                    allVariables={this.props.allVariables}
                     setValue={(index, value) => {
                         this.props.editor.setComponentSettingsValue(index, value);
                         this.update();
@@ -117,6 +119,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                     state={this.state.editor.general_settings}
                     editorUrlCache={this.props.layoutEditorUrlCache}
                     allComparisons={this.props.allComparisons}
+                    allVariables={this.props.allVariables}
                     setValue={(index, value) => {
                         this.props.editor.setGeneralSettingsValue(
                             index,
@@ -234,6 +237,21 @@ export class LayoutEditor extends React.Component<Props, State> {
                                         Shows the total amount of time that the current category has been played for.
                                     </span>
                                 </MenuItem>
+                                {
+                                    this.props.allVariables.size > 0 && <MenuItem divider />
+                                }
+                                {
+                                    this.props.allVariables.size > 0 && Array.from(this.props.allVariables).map((name) => {
+                                        return (
+                                            <MenuItem className="tooltip" key={name} onClick={(_) => this.addVariable(name)}>
+                                                {name}
+                                                <span className="tooltip-text">
+                                                    Creates a text component that shows the value of the custom variable "{name}".
+                                                </span>
+                                            </MenuItem>
+                                        );
+                                    })
+                                }
                                 <MenuItem divider />
                                 <MenuItem className="tooltip" onClick={(_) => this.addComponent(LiveSplit.BlankSpaceComponent)}>
                                     Blank Space
@@ -378,6 +396,13 @@ export class LayoutEditor extends React.Component<Props, State> {
 
     private addComponent(componentClass: any) {
         this.props.editor.addComponent(componentClass.new().intoGeneric());
+        this.update(true);
+    }
+
+    private addVariable(name: string) {
+        const textComponent = LiveSplit.TextComponent.new();
+        textComponent.useVariable(name, true);
+        this.props.editor.addComponent(textComponent.intoGeneric());
         this.update(true);
     }
 

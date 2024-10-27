@@ -34,6 +34,7 @@ export interface Props {
     callbacks: Callbacks,
     runEditorUrlCache: UrlCache,
     allComparisons: string[],
+    allVariables: Set<string>,
     generalSettings: GeneralSettings,
 }
 export interface State {
@@ -870,6 +871,7 @@ export class RunEditor extends React.Component<Props, State> {
                     state={{ fields }}
                     editorUrlCache={this.props.runEditorUrlCache}
                     allComparisons={this.props.allComparisons}
+                    allVariables={this.props.allVariables}
                     setValue={(index, value) => {
                         function unwrapString(value: ExtendedSettingsDescriptionValueJson): string {
                             if ("String" in value) {

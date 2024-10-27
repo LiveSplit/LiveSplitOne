@@ -21,6 +21,7 @@ export interface Props<T> {
     factory: SettingValueFactory<T>,
     editorUrlCache: UrlCache,
     allComparisons: string[],
+    allVariables: Set<string>,
 }
 
 export interface ExtendedSettingsDescriptionJson {
@@ -246,19 +247,53 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     </div>
                 );
             } else if ("String" in value) {
-                component = (
-                    <div className="settings-value-box">
-                        <input
-                            value={value.String}
-                            onChange={(e) => {
-                                this.props.setValue(
-                                    valueIndex,
-                                    factory.fromString(e.target.value),
-                                );
-                            }}
-                        />
-                    </div>
-                );
+                // FIXME: This is a hack that we need for now until the way
+                // settings are represented is refactored.
+                if (typeof (field.text) === "string" && /^Variable/.test(field.text)) {
+                    if (this.props.allVariables.size === 0) {
+                        component = <div className="settings-value-box">
+                            <span className="tooltip" style={{ textAlign: "center" }} >
+                                No variables available
+                                <span className="tooltip-text">
+                                    Custom variables can be defined in the Variables tab when
+                                    editing splits. Additional custom variables can be provided
+                                    automatically by auto splitters.
+                                </span>
+                            </span>
+                        </div>;
+                    } else {
+                        component = <div className="settings-value-box">
+                            <select
+                                value={value.String ?? ""}
+                                onChange={(e) => {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        factory.fromString(e.target.value),
+                                    );
+                                }}
+                            >
+                                <option value="" />
+                                {Array.from(this.props.allVariables).map((variable) =>
+                                    <option>{variable}</option>
+                                )}
+                            </select>
+                        </div>;
+                    }
+                } else {
+                    component = (
+                        <div className="settings-value-box">
+                            <input
+                                value={value.String}
+                                onChange={(e) => {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        factory.fromString(e.target.value),
+                                    );
+                                }}
+                            />
+                        </div>
+                    );
+                }
             } else if ("OptionalString" in value) {
                 // FIXME: This is a hack that we need for now until the way
                 // settings are represented is refactored.

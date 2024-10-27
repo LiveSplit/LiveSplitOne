@@ -7,6 +7,7 @@ interface Callbacks {
     handleEvent(event: Event): void,
     runChanged(): void,
     runNotModifiedAnymore(): void,
+    encounteredCustomVariable(name: string): void,
 }
 
 
@@ -361,6 +362,7 @@ export class LSOCommandSink {
         const result = Event.CustomVariableSet;
 
         this.callbacks.handleEvent(result);
+        this.callbacks.encounteredCustomVariable(name);
 
         return result;
     }
@@ -438,6 +440,19 @@ export class LSOCommandSink {
             comparisons.push(run.comparison(i));
         }
         return comparisons;
+    }
+
+    public getAllCustomVariables(): Set<string> {
+        const customVariables = new Set<string>();
+        using customVariablesIter = this.getRun().metadata().customVariables();
+        while (true) {
+            const element = customVariablesIter.next();
+            if (element === null) {
+                break;
+            }
+            customVariables.add(element.name());
+        }
+        return customVariables;
     }
 
     public currentTimingMethod(): TimingMethod {
