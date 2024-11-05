@@ -1,3 +1,5 @@
+import { preloadWasm } from "./livesplit-core/preload";
+
 // FIXME: Remove the polyfill later.
 
 if (typeof Symbol.dispose !== "symbol") {
@@ -21,6 +23,8 @@ if (typeof Symbol.asyncDispose !== "symbol") {
 if (process.env.NODE_ENV === "production" && window.__TAURI__ == null && "serviceWorker" in navigator) {
     navigator.serviceWorker.register("/service-worker.js");
 }
+
+preloadWasm();
 
 import "./css/main.scss";
 import("./css/font-awesome.css");
