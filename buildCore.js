@@ -4,8 +4,9 @@ import fs from "fs";
 let toolchain = "";
 let profile = "debug";
 let cargoFlags = "";
+// Keep .github/workflows/ci.yml in sync with these flags, so wasm-opt works.
 let rustFlags =
-    "-C target-feature=+bulk-memory,+mutable-globals,+nontrapping-fptoint,+sign-ext,+simd128,+extended-const,+multivalue";
+    "-C target-feature=+bulk-memory,+mutable-globals,+nontrapping-fptoint,+sign-ext,+simd128,+extended-const,+multivalue,+reference-types";
 let wasmBindgenFlags = "--encode-into always --target web --reference-types";
 let target = "wasm32-unknown-unknown";
 let targetFolder = target;
