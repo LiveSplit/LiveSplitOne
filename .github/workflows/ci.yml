@@ -179,7 +179,19 @@ jobs:
         shell: bash
         run: |
           WASM_FILE=$(ls ${{ matrix.dist_path }}/*.wasm)
-          wasm-opt --all-features -O4 "$WASM_FILE" -o "$WASM_FILE"
+          wasm-opt \
+            --enable-bulk-memory \
+            --enable-mutable-globals \
+            --enable-nontrapping-float-to-int \
+            --enable-sign-ext \
+            --enable-simd \
+            --enable-extended-const \
+            --enable-multivalue \
+            --enable-reference-types \
+            --strip-dwarf \
+            --strip-producers \
+            --strip-target-features \
+            -O4 "$WASM_FILE" -o "$WASM_FILE"
 
       - name: Build (Tauri)
         if: matrix.platform == 'tauri'
