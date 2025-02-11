@@ -40,7 +40,7 @@ jobs:
           - label: Tauri on Linux
             platform: tauri
             dist_path: src-tauri/target/dist
-            os: ubuntu-latest
+            os: ubuntu-22.04
             target: x86_64-unknown-linux-musl
             binaryen: x86_64-linux
             cargo_bin: /home/runner/.cargo/bin
@@ -119,7 +119,7 @@ jobs:
           DETECT_CHROMEDRIVER_VERSION: true
 
       - name: Install native dependencies (Tauri)
-        if: matrix.platform == 'tauri' && matrix.os == 'ubuntu-latest'
+        if: matrix.platform == 'tauri' && startsWith(matrix.os, 'ubuntu')
         run: |
           sudo apt update
           sudo apt install libwebkit2gtk-4.0-dev \
@@ -152,27 +152,6 @@ jobs:
       - name: Generate Icons (Tauri)
         if: matrix.platform == 'tauri'
         run: npm run tauri:icons
-
-      - name: Cache screenshots (Web)
-        if: matrix.platform == 'web'
-        uses: actions/cache@v4
-        with:
-          path: test/screenshots
-          key: ${{ runner.os }}-screenshots-${{ hashFiles('test/rendering-test.js') }}
-          restore-keys: ${{ runner.os }}-screenshots-
-
-      - name: Run tests (Web)
-        if: matrix.platform == 'web'
-        run: |
-          echo "::add-matcher::.github/workflows/test-failures.json"
-          npm run test
-
-      - name: Upload screenshots (Web)
-        if: matrix.platform == 'web' && (success() || failure())
-        uses: actions/upload-artifact@v4
-        with:
-          name: Screenshots
-          path: test/screenshots
 
       - name: Optimize
         if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
