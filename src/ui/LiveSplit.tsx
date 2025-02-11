@@ -420,7 +420,7 @@ export class LiveSplit extends React.Component<Props, State> {
             <ToastContainer
                 position="bottom-right"
                 toastClassName="toast-class"
-                bodyClassName="toast-body"
+                className="toast-body"
                 theme="dark"
             />
         </>;
