@@ -39,8 +39,10 @@ if (process.argv.some((v) => v === "--nightly")) {
     cargoFlags +=
         " -Z build-std=std,panic_abort -Z build-std-features=panic_immediate_abort";
     rustFlags += " -Z wasm-c-abi=spec";
-    target = "../wasm32-multivalue.json";
-    targetFolder = "wasm32-multivalue";
+
+    // FIXME: Apparently the multivalue ABI is broken again.
+    // target = "../wasm32-multivalue.json";
+    // targetFolder = "wasm32-multivalue";
 
     // Virtual function elimination requires LTO, so we can only do it for
     // max-opt builds.
