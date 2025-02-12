@@ -25,7 +25,7 @@ import { LSOCommandSink } from "./LSOCommandSink";
 import DialogContainer from "./Dialog";
 import { createHotkeys, HotkeyImplementation } from "../platform/Hotkeys";
 
-import variables from "../css/variables.scss";
+import * as variables from "../css/variables.scss";
 
 import "react-toastify/dist/ReactToastify.css";
 import "../css/LiveSplit.scss";

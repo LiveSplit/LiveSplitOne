@@ -1,5 +1,5 @@
-@import 'mobile';
-@import 'variables';
+@use 'mobile';
+@use 'variables';
 
 .tooltip {
     position: relative;
@@ -8,15 +8,15 @@
 .tooltip .tooltip-text {
     visibility: hidden;
     width: 300px;
-    background-color: $sidebar-background-color;
-    border: 1px solid $border-color;
+    background-color: variables.$sidebar-background-color;
+    border: 1px solid variables.$border-color;
     color: #fff;
     text-align: center;
     border-radius: 6px;
-    padding: $ui-margin;
+    padding: variables.$ui-margin;
     position: absolute;
     z-index: 1;
-    bottom: calc(100% + $ui-margin);
+    bottom: calc(100% + variables.$ui-margin);
     left: 50%;
     margin-left: -150px;
     opacity: 0;
@@ -25,7 +25,7 @@
     text-wrap: initial;
     font-weight: initial;
 
-    @include mobile {
+    @include mobile.mobile {
         left: 0;
         margin-left: 0;
     }
@@ -33,7 +33,7 @@
 
 .react-contextmenu-item.tooltip .tooltip-text {
     bottom: initial;
-    left: calc(100% + $ui-margin);
+    left: calc(100% + variables.$ui-margin);
     margin-left: 0;
     top: 0;
 }

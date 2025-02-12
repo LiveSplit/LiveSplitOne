@@ -1,19 +1,20 @@
-@import 'mobile';
-@import 'ContextMenu';
-@import 'Table';
-@import 'Toggle';
+@use 'mobile';
+@use 'ContextMenu';
+@use 'Table';
+@use 'Toggle';
+@use "variables";
 
 .layout-editor-outer {
   display: inline-flex;
 
-  @include context-menu;
-  @include table;
-  @include toggle;
+  @include ContextMenu.context-menu;
+  @include Table.table;
+  @include Toggle.toggle;
 
   .layout-editor-inner {
-    width: $settings-table-width;
+    width: variables.$settings-table-width;
     display: inline-flex;
-    margin-bottom: $ui-large-margin - $ui-margin;
+    margin-bottom: variables.$ui-large-margin - variables.$ui-margin;
 
     table {
       width: 100%;
@@ -33,18 +34,18 @@
         margin-top: 0;
       }
 
-      @include mobile {
+      @include mobile.mobile {
         flex-direction: row;
-        margin-left: $ui-margin;
-        margin-top: $ui-margin;
+        margin-left: variables.$ui-margin;
+        margin-top: variables.$ui-margin;
 
         button {
-          margin: 0 $ui-margin $ui-large-margin 0;
+          margin: 0 variables.$ui-margin variables.$ui-large-margin 0;
         }
       }
     }
 
-    @include mobile {
+    @include mobile.mobile {
       flex-wrap: wrap;
       width: 100%;
       margin-bottom: 0;
@@ -52,11 +53,11 @@
   }
 
   .layout-editor-component-list {
-    margin-left: $ui-large-margin;
+    margin-left: variables.$ui-large-margin;
 
-    @include mobile {
+    @include mobile.mobile {
       margin-left: 0;
-      margin-bottom: $ui-large-margin;
+      margin-bottom: variables.$ui-large-margin;
     }
   }
 
@@ -65,15 +66,15 @@
   }
 
   .layout-container {
-    margin-left: $ui-large-margin;
+    margin-left: variables.$ui-large-margin;
 
-    @include mobile {
+    @include mobile.mobile {
       margin-left: 0;
-      margin-top: $ui-large-margin;
+      margin-top: variables.$ui-large-margin;
     }
   }
 
-  @include mobile {
+  @include mobile.mobile {
     flex-wrap: wrap;
 
     .layout-editor-inner-container {

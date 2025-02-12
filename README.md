@@ -11,7 +11,7 @@ The web version of LiveSplit One is available [here](https://one.livesplit.org/)
 
 The latest desktop version of LiveSplit One, with support for global hotkeys, can be downloaded [here](https://github.com/LiveSplit/LiveSplitOne/releases/latest).
 
-> [!NOTE]  
+> [!NOTE]
 > This is not yet optimized for desktop usage. It's mostly the same as the web version and there is no update mechanism.
 
 ## Build Instructions
@@ -52,11 +52,8 @@ npm run build:core
 Now you can build and host LiveSplit One:
 
 ```bash
-npm run start
+npm run serve
 ```
-
-A browser tab with LiveSplit One should now open. Alternatively, you can use `npm
-run serve` to just host it without opening a browser tab.
 
 ## Browser Support
 

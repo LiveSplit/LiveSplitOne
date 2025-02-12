@@ -1,5 +1,5 @@
-@import 'mobile';
-@import 'variables';
+@use 'mobile';
+@use 'variables';
 
 #upload-drop-zone {
   position: absolute;
@@ -10,9 +10,9 @@
 
   #upload-drop-zone-overlay {
     position: absolute;
-    width: calc(100% + 2 * #{$main-content-margin});
-    height: calc(100% + 2 * #{$main-content-margin});
-    margin: -$main-content-margin;
+    width: calc(100% + 2 * #{variables.$main-content-margin});
+    height: calc(100% + 2 * #{variables.$main-content-margin});
+    margin: -(variables.$main-content-margin);
     visibility: hidden;
     pointer-events: none;
     background-color: rgba(50, 50, 50, 0.7);
@@ -21,7 +21,7 @@
     justify-content: center;
     align-items: center;
 
-    @include mobile {
+    @include mobile.mobile {
       width: 100%;
       height: 100%;
       margin: 0;

@@ -1,9 +1,9 @@
 @use 'sass:math';
 
-@import 'mobile';
-@import 'variables';
-@import 'Table';
-@import 'ContextMenu';
+@use 'mobile';
+@use 'variables';
+@use 'Table';
+@use 'ContextMenu';
 
 $loading-text-font-size: 40px;
 $splits-row-width: 500px;
@@ -16,7 +16,7 @@ $splits-row-height: 40px;
     font-size: $loading-text-font-size;
 
     .loading-text {
-      margin-left: $ui-margin;
+      margin-left: variables.$ui-margin;
     }
   }
 
@@ -31,36 +31,36 @@ $splits-row-height: 40px;
 
       button {
         margin-top: 0;
-        margin-bottom: math.div($ui-large-margin, 2);
-        margin-right: $ui-margin;
+        margin-bottom: math.div(variables.$ui-large-margin, 2);
+        margin-right: variables.$ui-margin;
       }
 
-      @include mobile {
-        margin-top: $ui-margin;
-        margin-left: $ui-margin;
+      @include mobile.mobile {
+        margin-top: variables.$ui-margin;
+        margin-left: variables.$ui-margin;
       }
     }
 
     .splits-table {
-      background-color: $dark-row-color;
-      border: 1px solid $border-color;
-      margin: math.div($ui-large-margin, 2) 0;
+      background-color: variables.$dark-row-color;
+      border: 1px solid variables.$border-color;
+      margin: math.div(variables.$ui-large-margin, 2) 0;
       width: fit-content;
 
       .splits-row {
         display: flex;
         flex-wrap: nowrap;
         align-items: center;
-        padding: $ui-margin;
+        padding: variables.$ui-margin;
         height: $splits-row-height;
         width: $splits-row-width;
 
         &:nth-of-type(odd) {
-          background-color: $light-row-color;
+          background-color: variables.$light-row-color;
         }
 
         &.selected {
-          background: $selected-row-color;
+          background: variables.$selected-row-color;
         }
 
         .splits-title-text {
@@ -73,7 +73,7 @@ $splits-row-height: 40px;
             text-overflow: ellipsis;
 
             &.splits-game {
-              margin-bottom: $ui-margin;
+              margin-bottom: variables.$ui-margin;
             }
           }
         }
@@ -84,9 +84,9 @@ $splits-row-height: 40px;
 
         .splits-row-buttons {
           flex-shrink: 0;
-          margin-left: $ui-large-margin;
+          margin-left: variables.$ui-large-margin;
 
-          @include context-menu;
+          @include ContextMenu.context-menu;
 
           button {
             background: transparent;
@@ -101,19 +101,19 @@ $splits-row-height: 40px;
             }
 
             &:not(:last-child) {
-              margin-right: $ui-margin;
+              margin-right: variables.$ui-margin;
             }
           }
         }
 
-        @include mobile {
+        @include mobile.mobile {
           width: 100%;
           box-sizing: border-box;
-          height: $splits-row-height + 2 * $ui-margin;
+          height: $splits-row-height + 2 * variables.$ui-margin;
         }
       }
 
-      @include mobile {
+      @include mobile.mobile {
         width: 100%;
         box-sizing: border-box;
       }

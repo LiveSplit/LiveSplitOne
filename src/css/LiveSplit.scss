@@ -1,14 +1,14 @@
-@import 'mobile';
-@import 'Sidebar';
-@import 'variables';
+@use 'mobile';
+@use 'Sidebar';
+@use 'variables';
 
 $sidebar-button-height: 42px;
 
 .livesplit-container {
   .sidebar-button {
     position: fixed;
-    bottom: $ui-margin;
-    left: $ui-margin;
+    bottom: variables.$ui-margin;
+    left: variables.$ui-margin;
     z-index: 10;
     font-size: 24px;
     padding: 8px;
@@ -20,15 +20,15 @@ $sidebar-button-height: 42px;
     position: relative;
     display: inline-block;
     vertical-align: top;
-    min-width: calc(100% - 2 * #{$main-content-margin});
-    min-height: calc(100% - 2 * #{$main-content-margin});
-    margin: $main-content-margin;
+    min-width: calc(100% - 2 * #{variables.$main-content-margin});
+    min-height: calc(100% - 2 * #{variables.$main-content-margin});
+    margin: variables.$main-content-margin;
 
-    @include mobile {
+    @include mobile.mobile {
       display: block;
-      margin: 0 0 ($sidebar-button-height + 2 * $ui-margin) 0;
+      margin: 0 0 ($sidebar-button-height + 2 * variables.$ui-margin) 0;
       min-width: 100%;
-      min-height: calc(100% - #{$sidebar-button-height + 2 * $ui-margin});
+      min-height: calc(100% - #{$sidebar-button-height + 2 * variables.$ui-margin});
     }
   }
 }

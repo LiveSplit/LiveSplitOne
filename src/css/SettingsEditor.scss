@@ -1,10 +1,10 @@
-@import 'mobile';
-@import 'Table';
+@use 'mobile';
+@use 'Table';
 
 .settings-editor {
-  @include table;
+  @include Table.table;
 
-  @include mobile {
+  @include mobile.mobile {
     .settings-table {
       width: 100%;
   

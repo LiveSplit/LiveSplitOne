@@ -2,7 +2,7 @@ import * as React from "react";
 
 import LiveSplitIcon from "../assets/icon.svg";
 import { renderMarkdown } from "../util/Markdown";
-import variables from "../css/variables.scss";
+import * as variables from "../css/variables.scss";
 
 import "../css/About.scss";
 

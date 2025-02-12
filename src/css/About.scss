@@ -1,5 +1,5 @@
-@import 'mobile';
-@import 'variables';
+@use 'mobile';
+@use 'variables';
 
 $icon-size: 40px;
 $title-font-size: 40px;
@@ -8,9 +8,9 @@ $link-color: #56b0ff;
 
 .about {
   .about-inner-container {
-    background-color: $light-row-color;
-    padding: $ui-large-margin;
-    border: 1px solid $border-color;
+    background-color: variables.$light-row-color;
+    padding: variables.$ui-large-margin;
+    border: 1px solid variables.$border-color;
     width: fit-content;
 
     .livesplit-title {
@@ -19,7 +19,7 @@ $link-color: #56b0ff;
 
       .livesplit-icon {
         height: $icon-size;
-        margin-right: $ui-margin;
+        margin-right: variables.$ui-margin;
 
         img {
           height: 100%;
@@ -37,7 +37,7 @@ $link-color: #56b0ff;
     }
 
     h2 {
-      margin-bottom: $ui-large-margin;
+      margin-bottom: variables.$ui-large-margin;
     }
 
     a {
@@ -45,10 +45,10 @@ $link-color: #56b0ff;
     }
 
     .changelog {
-      margin-left: $ui-large-margin;
+      margin-left: variables.$ui-large-margin;
 
       >div {
-        margin: $ui-large-margin 0 $ui-large-margin $ui-large-margin;
+        margin: variables.$ui-large-margin 0 variables.$ui-large-margin variables.$ui-large-margin;
       }
     }
 
@@ -68,21 +68,21 @@ $link-color: #56b0ff;
         gap: 4px;
 
         img {
-          width: $contributor-avatar-size;
-          height: $contributor-avatar-size;
+          width: variables.$contributor-avatar-size;
+          height: variables.$contributor-avatar-size;
           border-radius: 50%;
         }
       }
     }
 
-    @include mobile {
+    @include mobile.mobile {
       box-sizing: border-box;
     }
   }
 
   max-width: 700px;
 
-  @include mobile {
+  @include mobile.mobile {
     max-width: 100%;
   }
 }

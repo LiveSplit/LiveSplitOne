@@ -1,7 +1,7 @@
 @use 'sass:math';
 
-@import 'browser_source';
-@import 'variables';
+@use 'browser_source';
+@use 'variables';
 
 @font-face {
   font-family: timer;
@@ -19,14 +19,14 @@ body {
   font-family: "fira", sans-serif;
   color: #eee;
   text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
-  background: $main-background-color;
+  background: variables.$main-background-color;
 }
 
 .Toastify {
   .toast-class {
     font-family: "fira", sans-serif;
-    background: $sidebar-background-color !important;
-    border: 2px solid $border-color !important;
+    background: variables.$sidebar-background-color !important;
+    border: 2px solid variables.$border-color !important;
     border-radius: 10px !important;
     min-height: 48px !important;
 
@@ -64,7 +64,7 @@ table {
 
 button:active,
 button:active:hover {
-  background: $button-active-color;
+  background: variables.$button-active-color;
 }
 
 button:focus,
@@ -73,26 +73,26 @@ div:focus {
 }
 
 button:hover {
-  background: $button-hover-color;
+  background: variables.$button-hover-color;
 }
 
 button {
-  margin-bottom: math.div($ui-margin, 2);
-  margin-top: math.div($ui-margin, 2);
-  background: $button-color;
-  color: $button-text-color;
+  margin-bottom: math.div(variables.$ui-margin, 2);
+  margin-top: math.div(variables.$ui-margin, 2);
+  background: variables.$button-color;
+  color: variables.$button-text-color;
   cursor: pointer;
   font-size: 20px;
   line-height: 1.1;
   border-width: 1px;
   border-style: solid;
-  border-color: $border-color;
+  border-color: variables.$border-color;
   border-image: initial;
   border-radius: 5px;
   font-weight: bold;
   font-family: "fira", sans-serif;
-  min-height: $button-height;
-  padding: 5px $ui-margin;
+  min-height: variables.$button-height;
+  padding: 5px variables.$ui-margin;
 }
 
 a {
@@ -106,8 +106,8 @@ a:hover {
 
 button:disabled,
 button:disabled:active {
-  background: $button-disabled-color;
-  color: $button-disabled-text-color;
+  background: variables.$button-disabled-color;
+  color: variables.$button-disabled-text-color;
   cursor: default;
 }
 
