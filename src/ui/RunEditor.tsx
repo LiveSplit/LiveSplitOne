@@ -21,7 +21,7 @@ import {
     SettingsComponent, JsonSettingValueFactory, ExtendedSettingsDescriptionFieldJson,
     ExtendedSettingsDescriptionValueJson,
 } from "./Settings";
-import { renderMarkdown, replaceFlag } from "../util/Markdown";
+import { Markdown, replaceFlag } from "../util/Markdown";
 import { UrlCache } from "../util/UrlCache";
 import { GeneralSettings } from "./MainSettings";
 import { showDialog } from "./Dialog";
@@ -1042,7 +1042,6 @@ export class RunEditor extends React.Component<Props, State> {
                                 embed = resolveEmbed(videoUri);
                             }
                             const comment = run.comment ?? "";
-                            const renderedComment = renderMarkdown(comment);
 
                             expandedRow =
                                 <tr key={`${run.id}_expanded`} className={`leaderboard-expanded-row ${evenOdd}`}>
@@ -1050,7 +1049,9 @@ export class RunEditor extends React.Component<Props, State> {
                                         {embed}
                                         <div className="markdown" style={{
                                             minHeight: 5,
-                                        }}>{renderedComment}</div>
+                                        }}>
+                                            <Markdown markdown={comment} />
+                                        </div>
                                         <table className="run-meta-table">
                                             <tbody>
                                                 <tr>
@@ -1179,7 +1180,7 @@ export class RunEditor extends React.Component<Props, State> {
     private renderRulesTab(category: Option<Category>): JSX.Element {
         let rules = null;
         if (category != null && category.rules != null) {
-            rules = renderMarkdown(category.rules);
+            rules = <Markdown markdown={category.rules} />;
         }
         const gameInfo = getGameInfo(this.state.editor.game);
         let gameRules = null;
@@ -1209,7 +1210,7 @@ export class RunEditor extends React.Component<Props, State> {
                     const currentValue = this.state.editor.metadata.speedrun_com_variables[variable.name];
                     const foundValue = Object.values(variable.values.values).find((v) => v.label === currentValue);
                     if (foundValue?.rules != null) {
-                        subcategoryRules.push(renderMarkdown(`## ${foundValue.label} Rules\n${foundValue.rules}`));
+                        subcategoryRules.push(<Markdown markdown={`## ${foundValue.label} Rules\n${foundValue.rules}`} />);
                     }
                 }
             }
