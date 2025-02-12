@@ -1,10 +1,27 @@
 import * as React from "react";
-import { Parser as CommonMarkParser } from "commonmark";
-import CommonMarkRenderer from "commonmark-react-renderer";
+import markdownit from "markdown-it";
 import { emoteList } from "../api/EmoteList";
-import Linkifier from "react-linkifier";
 
-export function replaceTwitchEmotes(text: string): string {
+const UNSAFE = markdownit({ html: true, breaks: false, linkify: true });
+const SAFE = markdownit({ html: false, breaks: true, linkify: true });
+
+const unsafeDefault = UNSAFE.renderer.rules.link_open || function (tokens, idx, options, _env, self) {
+  return self.renderToken(tokens, idx, options);
+};
+UNSAFE.renderer.rules.link_open = function (tokens, idx, options, env, self) {
+  tokens[idx].attrSet('target', '_blank');
+  return unsafeDefault(tokens, idx, options, env, self);
+};
+
+const safeDefault = SAFE.renderer.rules.link_open || function (tokens, idx, options, _env, self) {
+  return self.renderToken(tokens, idx, options);
+};
+SAFE.renderer.rules.link_open = function (tokens, idx, options, env, self) {
+  tokens[idx].attrSet('target', '_blank');
+  return safeDefault(tokens, idx, options, env, self);
+};
+
+function replaceTwitchEmotes(text: string): string {
     return text.replace(/[A-Za-z0-9<):(\\;_>#/\]|]+/g, (matched) => {
         const emoteId = emoteList[matched];
         if (emoteId === undefined) {
@@ -22,21 +39,13 @@ export function replaceFlag(countryCode: string): JSX.Element {
     return <img className="flag" src={url} alt={countryCode} />;
 }
 
-export function renderMarkdown(markdown: string, options: {
-    softBreak?: boolean,
-    escapeHtml?: boolean,
-} = {}): JSX.Element {
-    const markdownWithEmotes = replaceTwitchEmotes(markdown);
-    const parsed = new CommonMarkParser().parse(markdownWithEmotes);
-    const renderedMarkdown = new CommonMarkRenderer({
-        escapeHtml: options.escapeHtml ?? true,
-        linkTarget: "_blank",
-        softBreak: options.softBreak === false ? undefined : "br",
-    }).render(parsed);
+export const Markdown = React.memo(renderMarkdown);
 
-    return (
-        <Linkifier target="_blank">
-            {renderedMarkdown}
-        </Linkifier>
-    );
+export function renderMarkdown({ markdown, unsafe }: { markdown: string,
+    unsafe?: boolean,
+}): JSX.Element {
+    const markdownWithEmotes = replaceTwitchEmotes(markdown);
+    const html = (unsafe ? UNSAFE : SAFE).render(markdownWithEmotes);
+
+    return <div dangerouslySetInnerHTML={{ __html: html }} />;
 }

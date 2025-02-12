@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import LiveSplitIcon from "../assets/icon.svg";
-import { renderMarkdown } from "../util/Markdown";
+import { Markdown } from "../util/Markdown";
 import * as variables from "../css/variables.scss";
 
 import "../css/About.scss";
@@ -14,11 +14,6 @@ interface Callbacks {
     renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
     openTimerView(): void,
 }
-
-const changelogRenderSettings = {
-    softBreak: false,
-    escapeHtml: false,
-};
 
 const contributorAvatarSize = parseFloat(variables.contributorAvatarSize);
 
@@ -61,9 +56,7 @@ export class About extends React.Component<Props> {
                                     <a href={`https://github.com/LiveSplit/LiveSplitOne/commit/${change.id}`} target="_blank">
                                         {change.date}
                                     </a>
-                                    <div>
-                                        {renderMarkdown(change.message, changelogRenderSettings)}
-                                    </div>
+                                    <Markdown markdown={change.message} unsafe={true} />
                                 </>
                             ))
                         }
