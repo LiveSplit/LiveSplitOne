@@ -1,14 +1,14 @@
 import { Run } from "../livesplit-core";
 import { PostRunResponse } from "./json/PostRunResponse";
 
-function mapPromiseErr<T, E>(promise: Promise<T>, err: E): Promise<T> {
-    return promise.catch((_) => { throw err; });
+function mapPromiseErr<T>(promise: Promise<T>, err: string): Promise<T> {
+    return promise.catch((_) => { throw new Error(err); });
 }
 
-async function validatedFetch<E>(
+async function validatedFetch(
     input: RequestInfo,
     init: RequestInit | undefined,
-    err: E,
+    err: string,
 ): Promise<Response> {
     const r = await mapPromiseErr(
         fetch(input, init),
@@ -16,16 +16,10 @@ async function validatedFetch<E>(
     );
 
     if (!r.ok) {
-        throw err;
+        throw new Error(err);
     }
 
     return r;
-}
-
-export enum UploadError {
-    ApiRequestErrored,
-    InvalidJsonResponse,
-    UploadRequestErrored,
 }
 
 export async function uploadLss(lss: string | Blob): Promise<string> {
@@ -34,12 +28,12 @@ export async function uploadLss(lss: string | Blob): Promise<string> {
         {
             method: "POST",
         },
-        UploadError.ApiRequestErrored,
+        "API request errored",
     );
 
     const json: PostRunResponse = await mapPromiseErr(
         response.json(),
-        UploadError.InvalidJsonResponse,
+        "Invalid JSON response",
     );
 
     const claimUri = json.uris.claim_uri;
@@ -62,16 +56,10 @@ export async function uploadLss(lss: string | Blob): Promise<string> {
             method: request.method,
             body: formData,
         },
-        UploadError.UploadRequestErrored,
+        "Upload request errored",
     );
 
     return claimUri;
-}
-
-export enum DownloadError {
-    ApiRequestErrored,
-    InvalidBuffer,
-    FailedParsing,
 }
 
 export async function downloadById(id: string, signal?: AbortSignal): Promise<Run> {
@@ -83,18 +71,18 @@ export async function downloadById(id: string, signal?: AbortSignal): Promise<Ru
             }),
             signal,
         },
-        DownloadError.ApiRequestErrored,
+        "API request errored",
     );
 
     const data = await mapPromiseErr(
         response.arrayBuffer(),
-        DownloadError.InvalidBuffer,
+        "Invalid buffer",
     );
 
     using result = Run.parseArray(new Uint8Array(data), "");
     if (result.parsedSuccessfully()) {
         return result.unwrap();
     } else {
-        throw DownloadError.FailedParsing;
+        throw new Error("Failed parsing");
     }
 }
