@@ -1,30 +1,30 @@
 @use 'sass:math';
 
-@import 'mobile';
-@import 'variables';
+@use 'mobile';
+@use 'variables';
 
 .buttons {
-  margin-top: $ui-large-margin - math.div($ui-margin, 2);
+  margin-top: variables.$ui-large-margin - math.div(variables.$ui-margin, 2);
 
   .small {
     button {
-      width: calc(50% - #{math.div($ui-margin, 2)});
-      max-width: $button-max-width;
+      width: calc(50% - #{math.div(variables.$ui-margin, 2)});
+      max-width: variables.$button-max-width;
     }
 
     button:first-child {
-      margin-right: math.div($ui-margin, 2);
+      margin-right: math.div(variables.$ui-margin, 2);
     }
 
     button:last-child {
-      margin-left: math.div($ui-margin, 2);
+      margin-left: math.div(variables.$ui-margin, 2);
     }
   }
 
   .manual-game-time {
-    width: calc(100% - math.div($ui-margin, 2));
-    max-width: 2 * $button-max-width + math.div($ui-margin, 2);
-    color: $button-text-color;
+    width: calc(100% - math.div(variables.$ui-margin, 2));
+    max-width: 2 * variables.$button-max-width + math.div(variables.$ui-margin, 2);
+    color: variables.$button-text-color;
     background-color: transparent;
     border: none;
     border-bottom: 2px solid #aaa;
@@ -32,7 +32,7 @@
     font-family: "fira", sans-serif;
     font-weight: bold;
     font-size: 25px;
-    height: $manual-game-time-height;
+    height: variables.$manual-game-time-height;
   }
 
   .manual-game-time:focus {
@@ -43,8 +43,8 @@
     font-size: 15px;
   }
 
-  @include mobile {
-    padding: 0 $ui-margin;
-    width: calc(100% - #{2 * $ui-margin}) !important;
+  @include mobile.mobile {
+    padding: 0 variables.$ui-margin;
+    width: calc(100% - #{2 * variables.$ui-margin}) !important;
   }
 }

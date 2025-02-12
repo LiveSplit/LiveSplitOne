@@ -1,4 +1,4 @@
-@import 'variables';
+@use 'variables';
 
 .hotkey-box {
   button {
@@ -15,5 +15,5 @@
 
   display: grid;
   grid-template-columns: 1fr 30px;
-  column-gap: $ui-margin;
+  column-gap: variables.$ui-margin;
 }

@@ -9,7 +9,6 @@ import webpack from "webpack";
 import { execSync } from "child_process";
 import path from "path";
 import { fileURLToPath } from 'url';
-import * as sass from "sass";
 
 function parseChangelog() {
     return execSync("git log --grep \"^Changelog: \" -10")
@@ -206,13 +205,7 @@ export default async (env, argv) => {
                                 modules: "icss",
                             },
                         },
-                        {
-                            loader: "sass-loader",
-                            options: {
-                                // Prefer `dart-sass`
-                                implementation: sass,
-                            },
-                        },
+                        "sass-loader",
                     ],
                 },
                 {
@@ -220,11 +213,6 @@ export default async (env, argv) => {
                     type: 'asset/resource'
                 },
             ],
-        },
-
-        experiments: {
-            syncWebAssembly: true,
-            topLevelAwait: true,
         },
 
         mode: isProduction ? "production" : "development",

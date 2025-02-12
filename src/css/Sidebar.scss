@@ -1,7 +1,7 @@
 @use 'sass:math';
 
-@import 'Toggle';
-@import 'variables';
+@use 'Toggle';
+@use 'variables';
 
 $h1-font-size: 24px;
 $h2-font-size: 22px;
@@ -11,12 +11,12 @@ $h2-font-size: 22px;
 }
 
 .sidebar {
-  background: $sidebar-background-color;
-  padding: $ui-margin;
+  background: variables.$sidebar-background-color;
+  padding: variables.$ui-margin;
   width: 250px;
   z-index: 4 !important;
 
-  @include toggle;
+  @include Toggle.toggle;
 
   >div>div.small {
     display: flex;
@@ -29,8 +29,8 @@ $h2-font-size: 22px;
 
   .sidebar-buttons {
     hr {
-      border-color: $border-color;
-      margin: ($ui-large-margin - math.div($ui-margin, 2)) 0;
+      border-color: variables.$border-color;
+      margin: (variables.$ui-large-margin - math.div(variables.$ui-margin, 2)) 0;
 
       &.livesplit-title-separator {
         margin-top: 0;
@@ -40,8 +40,8 @@ $h2-font-size: 22px;
     h1,
     h2 {
       text-align: center;
-      margin-top: $ui-large-margin;
-      margin-bottom: $ui-large-margin;
+      margin-top: variables.$ui-large-margin;
+      margin-bottom: variables.$ui-large-margin;
     }
 
     h1 {
@@ -50,7 +50,7 @@ $h2-font-size: 22px;
 
     h2 {
       font-size: $h2-font-size;
-      margin-bottom: $ui-margin;
+      margin-bottom: variables.$ui-margin;
     }
 
     >button {
@@ -64,7 +64,7 @@ $h2-font-size: 22px;
 
       .livesplit-icon {
         height: 40px;
-        margin-right: $ui-margin;
+        margin-right: variables.$ui-margin;
 
         img {
           height: 100%;
@@ -80,13 +80,13 @@ $h2-font-size: 22px;
   }
 
   .choose-comparison {
-    margin-bottom: math.div($ui-margin, 2);
+    margin-bottom: math.div(variables.$ui-margin, 2);
     padding: 0 6px 0 6px;
     width: 100%;
     height: 40px;
     appearance: none;
-    background: $button-middle-color;
-    border: 1px solid $border-color;
+    background: variables.$button-middle-color;
+    border: 1px solid variables.$border-color;
     border-radius: 5px;
     color: white;
     cursor: pointer;

@@ -1,7 +1,7 @@
-@import 'variables';
+@use 'variables';
 
-$inactive-color: $button-disabled-color;
-$inactive-hover-color: $hover-row-color;
+$inactive-color: variables.$button-disabled-color;
+$inactive-hover-color: variables.$hover-row-color;
 $active-color: #1e4491;
 $active-hover-color: #2356bd;
 
@@ -14,7 +14,7 @@ $active-hover-color: #2356bd;
     .react-toggle-track {
       background: $inactive-color;
       width: 36px;
-      height: $settings-row-height;
+      height: variables.$settings-row-height;
       border-radius: 20px;
     }
   

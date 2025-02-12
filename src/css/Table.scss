@@ -1,23 +1,23 @@
 @use 'sass:math';
 
-@import 'mobile';
-@import 'variables';
+@use 'mobile';
+@use 'variables';
 
 @mixin table {
   .table {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     display: table;
-    border: 1px solid $border-color;
+    border: 1px solid variables.$border-color;
     border-collapse: collapse;
 
     .table-row-even {
       display: table-row;
-      background: $dark-row-color !important;
+      background: variables.$dark-row-color !important;
     }
 
     .table-row-odd {
       display: table-row;
-      background: $light-row-color !important;
+      background: variables.$light-row-color !important;
     }
   }
 
@@ -26,23 +26,23 @@
 
     >tr {
       display: table-row;
-      background: $dark-row-color;
+      background: variables.$dark-row-color;
 
       >td {
-        padding: math.div($ui-margin, 2) math.div($ui-margin, 2);
+        padding: math.div(variables.$ui-margin, 2) math.div(variables.$ui-margin, 2);
         display: table-cell;
 
         &:first-child {
-          padding-left: $ui-margin;
+          padding-left: variables.$ui-margin;
         }
 
         &:last-child {
-          padding-right: $ui-margin;
+          padding-right: variables.$ui-margin;
         }
       }
 
       &:nth-of-type(odd) {
-        background: $light-row-color;
+        background: variables.$light-row-color;
       }
     }
   }
@@ -54,7 +54,7 @@
   }
 
   .selected {
-    background: $selected-row-color !important;
+    background: variables.$selected-row-color !important;
   }
 
   .tab-bar>button {
@@ -89,16 +89,16 @@
   }
 
   select {
-    background: $dark-row-color;
+    background: variables.$dark-row-color;
     font-size: 15px;
-    border: 1px solid $border-color;
+    border: 1px solid variables.$border-color;
     color: white;
     text-overflow: ellipsis;
     font-family: "fira", sans-serif;
   }
 
   .settings-table {
-    width: $settings-table-width;
+    width: variables.$settings-table-width;
 
     tr {
       height: 30px;
@@ -108,14 +108,14 @@
       }
 
       .settings-value-box {
-        width: math.div($settings-table-width, 2) - 2*$ui-margin;
+        width: math.div(variables.$settings-table-width, 2) - 2*variables.$ui-margin;
         display: grid;
-        column-gap: $ui-margin;
-        row-gap: $ui-margin;
+        column-gap: variables.$ui-margin;
+        row-gap: variables.$ui-margin;
         grid-template-columns: 100%;
 
         input {
-          height: $settings-row-height;
+          height: variables.$settings-row-height;
           box-sizing: border-box;
 
           &:focus {
@@ -124,7 +124,7 @@
         }
 
         select {
-          height: $settings-row-height;
+          height: variables.$settings-row-height;
           min-width: 80px;
         }
 
@@ -146,7 +146,7 @@
           button {
             margin: 0;
             font-size: 12px;
-            min-height: $settings-row-height;
+            min-height: variables.$settings-row-height;
             padding-top: 0;
             padding-bottom: 0;
           }
@@ -154,7 +154,7 @@
       }
     }
 
-    @include mobile {
+    @include mobile.mobile {
       width: 100%;
     }
   }

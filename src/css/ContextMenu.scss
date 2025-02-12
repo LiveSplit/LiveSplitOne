@@ -1,17 +1,17 @@
 @use 'sass:math';
 
-@import 'variables';
+@use 'variables';
 
 @mixin context-menu {
   .react-contextmenu {
     min-width: 160px;
-    padding: math.div($ui-margin, 2) 0;
+    padding: math.div(variables.$ui-margin, 2) 0;
     margin: 2px 0 0;
     font-size: 16px;
     text-align: left;
-    background-color: $dark-row-color;
+    background-color: variables.$dark-row-color;
     background-clip: padding-box;
-    border: 1px solid $border-color;
+    border: 1px solid variables.$border-color;
     border-radius: 0.25rem;
     outline: none;
     opacity: 0;
@@ -25,7 +25,7 @@
     }
 
     .react-contextmenu-item {
-      padding: math.div($ui-margin, 2) $ui-margin;
+      padding: math.div(variables.$ui-margin, 2) variables.$ui-margin;
       font-weight: 400;
       text-align: inherit;
       white-space: nowrap;
@@ -35,14 +35,14 @@
     }
 
     .react-contextmenu-item--divider {
-      margin-bottom: math.div($ui-margin, 2);
-      padding: math.div($ui-margin, 2) 0 0 0;
-      border-bottom: 1px solid $border-color;
+      margin-bottom: math.div(variables.$ui-margin, 2);
+      padding: math.div(variables.$ui-margin, 2) 0 0 0;
+      border-bottom: 1px solid variables.$border-color;
       cursor: inherit;
     }
 
     .react-contextmenu-item--selected {
-      background: $selected-row-color;
+      background: variables.$selected-row-color;
     }
   }
 }

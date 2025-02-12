@@ -1,13 +1,13 @@
 @use 'sass:math';
 
-@import "ContextMenu";
-@import "Markdown";
-@import "mobile";
-@import "Table";
-@import "Toggle";
-@import "variables";
+@use "ContextMenu";
+@use "Markdown";
+@use "mobile";
+@use "Table";
+@use "Toggle";
+@use "variables";
 
-$tab-bar-height: 30px + math.div($ui-margin, 2);
+$tab-bar-height: 30px + math.div(variables.$ui-margin, 2);
 $tab-width: 625px;
 $button-width: 160px;
 $label-size: 14px;
@@ -18,13 +18,13 @@ $small-font-size: 13px;
 $small-button-padding: 1px 3px 1px 3px;
 
 .run-editor {
-  @include context-menu;
-  @include markdown;
-  @include table;
-  @include toggle;
+  @include ContextMenu.context-menu;
+  @include Markdown.markdown;
+  @include Table.table;
+  @include Toggle.toggle;
 
   thead.table-header {
-    border-bottom: solid 1px $border-color;
+    border-bottom: solid 1px variables.$border-color;
   }
 
   .table-header {
@@ -42,37 +42,37 @@ $small-button-padding: 1px 3px 1px 3px;
 
   .table>.table-header>tr {
     display: table-row;
-    background: $header-row-color;
+    background: variables.$header-row-color;
 
     >th {
-      padding: math.div($ui-margin, 2) math.div($ui-margin, 2);
+      padding: math.div(variables.$ui-margin, 2) math.div(variables.$ui-margin, 2);
       display: table-cell;
 
       &:first-child {
-        padding-left: $ui-margin;
+        padding-left: variables.$ui-margin;
       }
 
       &:last-child {
-        padding-right: $ui-margin;
+        padding-right: variables.$ui-margin;
       }
     }
   }
 
   .run-editor-additional-info {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    background-color: $light-row-color;
+    background-color: variables.$light-row-color;
     width: $tab-width;
 
     .run-editor-rules {
-      padding-left: $ui-margin;
-      padding-right: $ui-margin;
-      border: 1px solid $border-color;
+      padding-left: variables.$ui-margin;
+      padding-right: variables.$ui-margin;
+      border: 1px solid variables.$border-color;
       border-collapse: collapse;
     }
   }
 
   .run-editor-tab {
-    margin-left: math.div($ui-large-margin, 2);
+    margin-left: math.div(variables.$ui-large-margin, 2);
     min-width: $tab-width;
     box-sizing: border-box;
 
@@ -80,7 +80,7 @@ $small-button-padding: 1px 3px 1px 3px;
       width: 100%;
     }
 
-    @include mobile {
+    @include mobile.mobile {
       width: 100%;
       min-width: 0;
       margin-left: 0;
@@ -90,7 +90,7 @@ $small-button-padding: 1px 3px 1px 3px;
   .video-outer-container {
     width: 100%;
     padding-top: calc(100% * 9 / 16);
-    margin-top: math.div($ui-margin, 2);
+    margin-top: math.div(variables.$ui-margin, 2);
     position: relative;
 
     .video-inner-container {
@@ -109,29 +109,29 @@ $small-button-padding: 1px 3px 1px 3px;
   .run-editor-info {
     display: inline-flex;
     align-items: flex-start;
-    margin-bottom: $ui-large-margin - math.div($ui-margin, 2);
+    margin-bottom: variables.$ui-large-margin - math.div(variables.$ui-margin, 2);
 
     .game-icon-container {
-      background-color: $light-row-color;
-      border: 1px solid $border-color;
+      background-color: variables.$light-row-color;
+      border: 1px solid variables.$border-color;
       cursor: pointer;
       box-sizing: border-box;
       width: $button-width;
       height: $button-width;
-      padding: $ui-margin;
+      padding: variables.$ui-margin;
 
       .game-icon-image {
         object-fit: contain;
-        width: $button-width - 2 * $ui-margin;
-        height: $button-width - 2 * $ui-margin;
+        width: $button-width - 2 * variables.$ui-margin;
+        height: $button-width - 2 * variables.$ui-margin;
 
-        @include mobile {
-          width: $mobile-game-icon-size - 2 * $ui-margin;
-          height: $mobile-game-icon-size - 2 * $ui-margin;
+        @include mobile.mobile {
+          width: $mobile-game-icon-size - 2 * variables.$ui-margin;
+          height: $mobile-game-icon-size - 2 * variables.$ui-margin;
         }
       }
 
-      @include mobile {
+      @include mobile.mobile {
         width: $mobile-game-icon-size;
         height: $mobile-game-icon-size;
         flex-shrink: 0;
@@ -139,7 +139,7 @@ $small-button-padding: 1px 3px 1px 3px;
     }
 
     .run-editor-info-table {
-      margin-left: $ui-large-margin;
+      margin-left: variables.$ui-large-margin;
       width: $tab-width;
       display: flex;
       flex-wrap: wrap;
@@ -150,19 +150,19 @@ $small-button-padding: 1px 3px 1px 3px;
         display: flex;
 
         .info-table-cell {
-          padding: 0 $ui-margin $ui-margin 0;
+          padding: 0 variables.$ui-margin variables.$ui-margin 0;
           flex-grow: 1;
         }
 
         .info-table-cell:last-child {
           padding-right: 0;
 
-          @include mobile {
-            padding-right: $ui-margin;
+          @include mobile.mobile {
+            padding-right: variables.$ui-margin;
           }
         }
 
-        @include mobile {
+        @include mobile.mobile {
           flex-wrap: wrap;
         }
       }
@@ -170,20 +170,20 @@ $small-button-padding: 1px 3px 1px 3px;
       .info-table-row:last-child .info-table-cell {
         padding-bottom: 0;
 
-        @include mobile {
-          padding-bottom: $ui-margin;
+        @include mobile.mobile {
+          padding-bottom: variables.$ui-margin;
         }
       }
 
-      @include mobile {
+      @include mobile.mobile {
         width: 100%;
-        margin-left: $ui-margin;
-        margin-bottom: $ui-large-margin - $ui-margin;
+        margin-left: variables.$ui-margin;
+        margin-bottom: variables.$ui-large-margin - variables.$ui-margin;
       }
     }
 
-    @include mobile {
-      margin: $ui-margin 0 0 $ui-margin;
+    @include mobile.mobile {
+      margin: variables.$ui-margin 0 0 variables.$ui-margin;
     }
   }
 
@@ -199,7 +199,7 @@ $small-button-padding: 1px 3px 1px 3px;
         width: 100%;
         text-overflow: ellipsis;
 
-        @include mobile {
+        @include mobile.mobile {
           font-size: $small-font-size;
         }
       }
@@ -220,7 +220,7 @@ $small-button-padding: 1px 3px 1px 3px;
       }
     }
 
-    @include mobile {
+    @include mobile.mobile {
       font-size: $small-font-size;
     }
   }
@@ -231,10 +231,10 @@ $small-button-padding: 1px 3px 1px 3px;
 
     .editor-group {
       .tab-bar {
-        margin-left: math.div($ui-large-margin, 2);
+        margin-left: math.div(variables.$ui-large-margin, 2);
         height: $tab-bar-height;
 
-        @include mobile {
+        @include mobile.mobile {
           height: inherit;
           margin-left: 0;
 
@@ -246,13 +246,13 @@ $small-button-padding: 1px 3px 1px 3px;
         }
       }
 
-      @include mobile {
+      @include mobile.mobile {
         min-width: 100%;
-        margin-top: $ui-large-margin - $ui-margin;
+        margin-top: variables.$ui-large-margin - variables.$ui-margin;
       }
     }
 
-    @include mobile {
+    @include mobile.mobile {
       .side-buttons {
         width: 100%;
       }
@@ -263,7 +263,7 @@ $small-button-padding: 1px 3px 1px 3px;
     display: flex;
     flex-direction: column;
     margin-top: $tab-bar-height;
-    margin-right: math.div($ui-large-margin, 2);
+    margin-right: math.div(variables.$ui-large-margin, 2);
     width: $button-width;
 
     button {
@@ -272,11 +272,11 @@ $small-button-padding: 1px 3px 1px 3px;
       margin-right: 0;
       min-height: 30px;
 
-      @include mobile {
+      @include mobile.mobile {
         margin-top: 0;
-        margin-bottom: $ui-margin;
-        margin-right: $ui-margin;
-        width: calc(50% - #{$ui-margin})
+        margin-bottom: variables.$ui-margin;
+        margin-right: variables.$ui-margin;
+        width: calc(50% - #{variables.$ui-margin})
       }
     }
 
@@ -284,12 +284,12 @@ $small-button-padding: 1px 3px 1px 3px;
       margin-top: 0;
     }
 
-    @include mobile {
-      width: calc(100% - #{$ui-margin});
+    @include mobile.mobile {
+      width: calc(100% - #{variables.$ui-margin});
       flex-direction: row;
       flex-wrap: wrap;
       margin-top: 0;
-      margin-left: $ui-margin;
+      margin-left: variables.$ui-margin;
     }
   }
 
@@ -299,7 +299,7 @@ $small-button-padding: 1px 3px 1px 3px;
 
   .leaderboard-table {
     .leaderboard-row:hover {
-      background: $hover-row-color !important;
+      background: variables.$hover-row-color !important;
     }
 
     .leaderboard-rank-column,
@@ -323,8 +323,8 @@ $small-button-padding: 1px 3px 1px 3px;
       }
 
       .run-meta-table {
-        border-spacing: $ui-margin 2px;
-        margin-left: -$ui-margin;
+        border-spacing: variables.$ui-margin 2px;
+        margin-left: -(variables.$ui-margin);
       }
     }
 
@@ -333,18 +333,18 @@ $small-button-padding: 1px 3px 1px 3px;
       color: silver;
     }
 
-    @include mobile {
+    @include mobile.mobile {
       font-size: $small-font-size;
     }
   }
 
   .group {
     position: relative;
-    border-bottom: 1px solid $border-color;
+    border-bottom: 1px solid variables.$border-color;
 
     >input {
       font-size: 18px;
-      padding: $label-size+$ui-margin 0 math.div($ui-margin, 2) math.div($ui-margin, 2);
+      padding: $label-size+variables.$ui-margin 0 math.div(variables.$ui-margin, 2) math.div(variables.$ui-margin, 2);
       display: block;
       width: 100%;
       border: none;
@@ -363,7 +363,7 @@ $small-button-padding: 1px 3px 1px 3px;
       font-weight: normal;
       position: absolute;
       pointer-events: none;
-      left: math.div($ui-margin, 2);
+      left: math.div(variables.$ui-margin, 2);
       top: 0;
       transition: 0.2s ease all;
       -moz-transition: 0.2s ease all;
@@ -417,63 +417,63 @@ $small-button-padding: 1px 3px 1px 3px;
   }
 
   .filter-table {
-    margin-top: math.div($ui-margin, 2);
-    margin-bottom: math.div($ui-margin, 2);
+    margin-top: math.div(variables.$ui-margin, 2);
+    margin-bottom: math.div(variables.$ui-margin, 2);
     width: 100%;
 
     &.table {
       td {
-        padding: math.div($ui-margin, 2) $ui-margin;
+        padding: math.div(variables.$ui-margin, 2) variables.$ui-margin;
       }
 
       tr:first-child>td {
-        padding-top: $ui-margin;
+        padding-top: variables.$ui-margin;
       }
 
       tr:last-child>td {
-        padding-bottom: $ui-margin;
+        padding-bottom: variables.$ui-margin;
       }
 
       >tbody.table-body>tr {
-        background-color: $light-row-color;
+        background-color: variables.$light-row-color;
       }
 
       >thead.table-header>tr {
-        background-color: $header-row-color;
+        background-color: variables.$header-row-color;
       }
 
       &.subcategory-table {
         >tbody>tr {
-          border: 1px solid $border-color;
+          border: 1px solid variables.$border-color;
           text-align: center;
           cursor: pointer;
         }
 
         tr:first-child>td {
-          padding-top: math.div($ui-margin, 2);
+          padding-top: math.div(variables.$ui-margin, 2);
         }
 
         tr:last-child>td {
-          padding-bottom: math.div($ui-margin, 2);
+          padding-bottom: math.div(variables.$ui-margin, 2);
         }
 
         >tbody.table-body>tr {
           >td:hover {
-            background: $hover-row-color;
+            background: variables.$hover-row-color;
           }
 
           >td.selected:hover {
-            background: $selected-row-hover-color !important;
+            background: variables.$selected-row-hover-color !important;
           }
         }
       }
     }
 
-    @include mobile {
-      margin: 0 0 $ui-margin (
-        -$ui-margin
+    @include mobile.mobile {
+      margin: 0 0 variables.$ui-margin (
+        -(variables.$ui-margin)
       );
-    width: calc(100% + #{$ui-margin});
+    width: calc(100% + #{variables.$ui-margin});
   }
 }
 }
