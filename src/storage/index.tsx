@@ -197,7 +197,7 @@ export async function storeLayout(
     await db.put("settings", layoutHeight, "layoutHeight");
 }
 
-export async function loadLayout(): Promise<LayoutSettings | undefined> {
+export async function loadLayout(): Promise<LayoutSettings> {
     const db = await getDb();
 
     return await db.get("settings", "layout");
@@ -209,7 +209,7 @@ export async function storeHotkeys(hotkeys: HotkeyConfigSettings) {
     await db.put("settings", hotkeys, "hotkeys");
 }
 
-export async function loadHotkeys(): Promise<HotkeyConfigSettings | undefined> {
+export async function loadHotkeys(): Promise<HotkeyConfigSettings> {
     const db = await getDb();
 
     return await db.get("settings", "hotkeys");

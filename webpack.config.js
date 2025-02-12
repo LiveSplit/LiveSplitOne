@@ -7,9 +7,7 @@ import ReactRefreshTypeScript from 'react-refresh-typescript';
 import ReactRefreshWebpackPlugin from '@pmmmwh/react-refresh-webpack-plugin';
 import webpack from "webpack";
 import { execSync } from "child_process";
-import moment from "moment";
 import path from "path";
-import fetch from "node-fetch";
 import { fileURLToPath } from 'url';
 import * as sass from "sass";
 
@@ -27,7 +25,8 @@ function parseChangelog() {
             if (!dateString) {
                 throw `Date not found in commit:\n${commit}`;
             }
-            const date = moment(new Date(dateString)).utc().format("YYYY-MM-DD");
+            const dateValue = new Date(dateString);
+            const date = dateValue.toISOString().split('T')[0];
             const id = commit.substring(0, commit.indexOf("\n"));
             const message = commit
                 .substring(changelogIndex + 15)
@@ -80,7 +79,7 @@ export default async (env, argv) => {
             return { id: user.id, name: user.login };
         });
     const commitHash = execSync("git rev-parse --short HEAD").toString();
-    const date = moment.utc().format("YYYY-MM-DD kk:mm:ss z");
+    const date = new Date().toISOString().replace("T", " ").replace(/\..+/, " UTC");
 
     const changelog = parseChangelog();
 
