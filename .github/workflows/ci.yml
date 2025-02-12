@@ -167,6 +167,7 @@ jobs:
             --enable-extended-const \
             --enable-multivalue \
             --enable-reference-types \
+            --enable-tail-call \
             --strip-dwarf \
             --strip-producers \
             --strip-target-features \
