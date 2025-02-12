@@ -6,7 +6,7 @@ let profile = "debug";
 let cargoFlags = "";
 // Keep .github/workflows/ci.yml in sync with these flags, so wasm-opt works.
 let rustFlags =
-    "-C target-feature=+bulk-memory,+mutable-globals,+nontrapping-fptoint,+sign-ext,+simd128,+extended-const,+multivalue,+reference-types";
+  "-C target-feature=+bulk-memory,+mutable-globals,+nontrapping-fptoint,+sign-ext,+simd128,+extended-const,+multivalue,+reference-types,+tail-call";
 let wasmBindgenFlags = "--encode-into always --target web --reference-types";
 let target = "wasm32-unknown-unknown";
 let targetFolder = target;
@@ -28,9 +28,6 @@ if (process.argv.some((v) => v === "--max-opt")) {
 if (process.argv.some((v) => v === "--unstable")) {
     // Relaxed SIMD is not supported by Firefox and Safari yet.
     rustFlags += ",+relaxed-simd";
-
-    // Tail calls are not supported by Safari yet until 18.2 (early December).
-    rustFlags += ",+tail-call";
 }
 
 // Use the nightly toolchain, which enables some more optimizations.
@@ -41,6 +38,7 @@ if (process.argv.some((v) => v === "--nightly")) {
     rustFlags += " -Z wasm-c-abi=spec";
 
     // FIXME: Apparently the multivalue ABI is broken again.
+    // Caused by: https://github.com/rust-lang/rust/pull/135534
     // target = "../wasm32-multivalue.json";
     // targetFolder = "wasm32-multivalue";
 
