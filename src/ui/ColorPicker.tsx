@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { colorToCss } from "../util/ColorUtil";
 import { Color } from "../livesplit-core";
 
@@ -73,6 +73,7 @@ function GradientSelector({ color, setColor }: { color: Color, setColor: (color:
 
     const handleMouseDown = (e: React.MouseEvent) => {
         e.preventDefault();
+        (document.activeElement as any)?.blur();
         setMouseDown(true);
         updateColor(e);
     };
@@ -249,19 +250,25 @@ function ControlPanel({ color, setColor }: { color: Color, setColor: (color: Col
     );
 }
 
-function setHex(color: (color: [number, number, number, number]) => void, hex: string, alpha: number) {
+function parseHex(hex: string): [number, number, number] | undefined {
     hex = hex.startsWith("#") ? hex.slice(1) : hex;
-    if (hex.length !== 6) {
-        return;
-    }
     const num = parseInt(hex, 16);
     if (isNaN(num)) {
         return;
     }
-    const r = ((num >> 16) & 0xFF) / 255;
-    const g = ((num >> 8) & 0xFF) / 255;
-    const b = (num & 0xFF) / 255;
-    color([r, g, b, alpha]);
+    if (hex.length === 6) {
+        const r = ((num >> 16) & 0xFF) / 255;
+        const g = ((num >> 8) & 0xFF) / 255;
+        const b = (num & 0xFF) / 255;
+        return [r, g, b];
+    } else if (hex.length === 3) {
+        const r = ((num >> 8) & 0xF) * 0x11 / 255;
+        const g = ((num >> 4) & 0xF) * 0x11 / 255;
+        const b = (num & 0xF) * 0x11 / 255;
+        return [r, g, b];
+    } else {
+        return;
+    }
 }
 
 function ColorPreview({ color, setColor }: { color: Color, setColor: (color: Color) => void }) {
@@ -279,7 +286,10 @@ function ColorPreview({ color, setColor }: { color: Color, setColor: (color: Col
                             const eyeDropper = new EyeDropper();
                             const result = await eyeDropper.open();
                             if (result?.sRGBHex) {
-                                setHex(setColor, result.sRGBHex, 1.0);
+                                const parsed = parseHex(result.sRGBHex);
+                                if (parsed) {
+                                    setColor([...parsed, 1]);
+                                }
                             }
                         } catch { }
                     }}
@@ -408,18 +418,20 @@ function Rgba({ color, setColor }: { color: Color, setColor: (color: Color) => v
 function Hex({ color, setColor }: { color: Color, setColor: (color: Color) => void }) {
     const [r, g, b, a] = color;
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const hex = e.target.value;
-        setHex(setColor, hex, a);
-    };
-
     return (
         <>
             <div className="color-input" title="Hexadecimal">
-                <input
-                    value={`#${Math.round(255 * r).toString(16).padStart(2, '0')}${Math.round(255 * g).toString(16).padStart(2, '0')}${Math.round(255 * b).toString(16).padStart(2, '0')}`.toUpperCase()}
-                    onClick={(e) => e.stopPropagation()}
-                    onChange={handleInputChange}
+                <FormattedInput
+                    value={color}
+                    format={([r, g, b, _]: Color) => `#${Math.round(255 * r).toString(16).padStart(2, '0')}${Math.round(255 * g).toString(16).padStart(2, '0')}${Math.round(255 * b).toString(16).padStart(2, '0')}`.toUpperCase()}
+                    parse={(value: string) => {
+                        const parsed = parseHex(value);
+                        if (parsed) {
+                            return [...parsed, a];
+                        }
+                        return undefined;
+                    }}
+                    setValue={setColor}
                 />
                 HEX
             </div>
@@ -436,23 +448,66 @@ function Hex({ color, setColor }: { color: Color, setColor: (color: Color) => vo
     );
 }
 
-type Format = "Degree" | "Percent" | "Byte";
+function FormattedInput<T>({ value, format, parse, setValue }: {
+    value: T,
+    format: (value: T) => string,
+    parse: (value: string) => T | undefined,
+    setValue: (value: T) => void,
+}) {
+    const [formatted, setFormatted] = useState(() => format(value));
+    const [isValid, setIsValid] = useState(true);
 
-function ColorComponent({ title, short, kind, value, setValue }: { title: string, short: string, kind: Format, value: number, setValue: (value: number) => void }) {
+    useEffect(() => {
+        const oldValue = parse(formatted);
+        if (oldValue === undefined || format(oldValue) !== format(value)) {
+            setFormatted(format(value));
+            setIsValid(true);
+        }
+    }, [value]);
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValue = parseFloat(e.target.value.replace(/[^0-9.]/g, ''));
-        const max = kind === "Degree" ? 360 : kind === "Percent" ? 100 : 255;
-        const scale = kind === "Degree" ? 1 : kind === "Percent" ? 0.01 : 1 / 255;
-        if (newValue < 0 || newValue > max) return;
-        setValue(newValue * scale);
+        const formatted = e.target.value;
+        setFormatted(formatted);
+        const newValue = parse(formatted);
+        const isValid = newValue !== undefined;
+        setIsValid(isValid);
+        if (isValid) {
+            setValue(newValue);
+        }
     };
 
     return (
+        <input
+            style={{
+                color: isValid ? "" : "#F33",
+            }}
+            onClick={(e) => e.stopPropagation()}
+            value={formatted}
+            onChange={handleInputChange}
+            onBlur={() => {
+                setFormatted(format(value))
+                setIsValid(true);
+            }}
+        />
+    )
+}
+
+type Format = "Degree" | "Percent" | "Byte";
+
+function ColorComponent({ title, short, kind, value, setValue }: { title: string, short: string, kind: Format, value: number, setValue: (value: number) => void }) {
+    return (
         <div className="color-input" title={title}>
-            <input
-                value={kind === "Degree" ? `${value.toFixed(0)}°` : kind === "Percent" ? `${(100 * value).toFixed(0)}%` : `${(255 * value).toFixed(0)}`}
-                onClick={(e) => e.stopPropagation()}
-                onChange={handleInputChange}
+            <FormattedInput
+                value={value}
+                format={(value) => kind === "Degree" ? `${value.toFixed(0)}°` : kind === "Percent" ? `${(100 * value).toFixed(0)}%` : `${(255 * value).toFixed(0)}`}
+                parse={(value) => {
+                    const newValue = parseFloat(value.replace(/[^0-9.]/g, ''));
+                    const max = kind === "Degree" ? 360 : kind === "Percent" ? 100 : 255;
+                    const scale = kind === "Degree" ? 1 : kind === "Percent" ? 0.01 : 1 / 255;
+                    if (newValue < 0 || newValue > max || isNaN(newValue)) return undefined;
+                    return newValue * scale;
+                }}
+                setValue={setValue}
             />
             {short}
         </div>
