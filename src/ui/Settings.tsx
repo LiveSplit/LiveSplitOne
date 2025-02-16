@@ -3,13 +3,13 @@ import { Color, SettingsDescriptionValueJson } from "../livesplit-core";
 import { assertNever, expect, Option } from "../util/OptionUtil";
 import ColorPicker from "./ColorPicker";
 import HotkeyButton from "./HotkeyButton";
-import ToggleCheckbox from "./ToggleCheckbox";
 import { UrlCache } from "../util/UrlCache";
 import { FILE_EXT_IMAGES, openFileAsArrayBuffer } from "../util/FileUtil";
 import * as FontList from "../util/FontList";
 import { LiveSplitServer } from "../api/LiveSplitServer";
 import { showDialog } from "./Dialog";
 import { toast } from "react-toastify";
+import Switch from "./Switch";
 
 import "../css/Tooltip.scss";
 import "../css/LiveSplitServerButton.scss";
@@ -202,9 +202,9 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
             if ("Bool" in value) {
                 component = (
                     <div className="settings-value-box">
-                        <ToggleCheckbox
-                            value={value.Bool}
-                            setValue={(value) => {
+                        <Switch
+                            checked={value.Bool}
+                            setIsChecked={(value) => {
                                 this.props.setValue(
                                     valueIndex,
                                     factory.fromBool(value)
@@ -323,9 +323,9 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     </div>;
                 } else {
                     const children = [
-                        <ToggleCheckbox
-                            value={value.OptionalString !== null}
-                            setValue={(value) => {
+                        <Switch
+                            checked={value.OptionalString !== null}
+                            setIsChecked={(value) => {
                                 if (value) {
                                     this.props.setValue(
                                         valueIndex,
@@ -482,9 +482,9 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
 
                 component = (
                     <div className="settings-value-box optional-value">
-                        <ToggleCheckbox
-                            value={value.OptionalColor !== null}
-                            setValue={(value) => {
+                        <Switch
+                            checked={value.OptionalColor !== null}
+                            setIsChecked={(value) => {
                                 if (value) {
                                     this.props.setValue(
                                         valueIndex,
@@ -743,9 +743,9 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                 }
             } else if ("OptionalTimingMethod" in value) {
                 const children = [
-                    <ToggleCheckbox
-                        value={value.OptionalTimingMethod !== null}
-                        setValue={(value) => {
+                    <Switch
+                        checked={value.OptionalTimingMethod !== null}
+                        setIsChecked={(value) => {
                             if (value) {
                                 this.props.setValue(
                                     valueIndex,
@@ -964,9 +964,9 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                 );
             } else if ("Font" in value) {
                 const children = [
-                    <ToggleCheckbox
-                        value={value.Font !== null}
-                        setValue={(value) => {
+                    <Switch
+                        checked={value.Font !== null}
+                        setIsChecked={(value) => {
                             if (value) {
                                 this.props.setValue(
                                     valueIndex,
