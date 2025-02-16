@@ -1,0 +1,49 @@
+.switch {
+    position: relative;
+    width: 35px;
+    height: 20px;
+    display: inline-block;
+
+    span {
+        position: absolute;
+        background-color: #ffffff20;
+        border-radius: 20px;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        transition: background-color .25s;
+    }
+
+    span::before {
+        background-color: white;
+        border-radius: 50%;
+        content: "";
+        position: absolute;
+        transition: all .25s;
+        left: 3px;
+        bottom: 3px;
+        height: 14px;
+        width: 14px;
+    }
+
+    &:hover input+span {
+        background-color: #ffffff40;
+    }
+
+    &:hover input:checked+span {
+        background-color: #ffffff80;
+    }
+
+    input:checked+span {
+        background-color: #ffffff60;
+    }
+
+    input:checked+span::before {
+        transform: translateX(15px);
+    }
+
+    input {
+        display: none;
+    }
+}
