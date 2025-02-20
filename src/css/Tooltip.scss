@@ -1,5 +1,5 @@
 @use 'mobile';
-@use 'variables';
+@use 'variables.icss';
 
 .tooltip {
     position: relative;
@@ -8,8 +8,9 @@
 .tooltip .tooltip-text {
     visibility: hidden;
     width: 300px;
-    background-color: variables.$sidebar-background-color;
-    border: 1px solid variables.$border-color;
+    background-color: rgba(28, 28, 28, .8);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, .25);
     color: #fff;
     text-align: center;
     border-radius: 6px;
@@ -31,7 +32,7 @@
     }
 }
 
-.react-contextmenu-item.tooltip .tooltip-text {
+.contextmenu-item.tooltip .tooltip-text {
     bottom: initial;
     left: calc(100% + variables.$ui-margin);
     margin-left: 0;

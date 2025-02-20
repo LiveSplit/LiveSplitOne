@@ -70,7 +70,7 @@ jobs:
       - name: Install Rust
         uses: hecrj/setup-rust-action@v2
         with:
-          rust-version: nightly
+          rust-version: nightly-2025-02-17
           components: rust-src
           targets: wasm32-unknown-unknown
 
@@ -114,7 +114,7 @@ jobs:
           mv wasm-bindgen-${{ steps.wasm-bindgen.outputs.version }}-${{ matrix.target }}/wasm* .
 
       - name: Install npm packages
-        run: npm ci -f
+        run: npm ci
         env:
           DETECT_CHROMEDRIVER_VERSION: true
 

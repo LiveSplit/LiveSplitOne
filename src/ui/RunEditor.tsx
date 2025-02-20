@@ -1,5 +1,4 @@
 import * as React from "react";
-import { ContextMenu, ContextMenuTrigger, MenuItem } from "react-contextmenu";
 import * as LiveSplit from "../livesplit-core";
 import { FILE_EXT_IMAGES, FILE_EXT_SPLITS, openFileAsArrayBuffer } from "../util/FileUtil";
 import { TextBox } from "./TextBox";
@@ -26,6 +25,7 @@ import { UrlCache } from "../util/UrlCache";
 import { GeneralSettings } from "./MainSettings";
 import { showDialog } from "./Dialog";
 import { corsBustingFetch } from "../platform/CORS";
+import { ContextMenu, MenuItem, Position } from "./ContextMenu";
 
 import "../css/RunEditor.scss";
 
@@ -48,7 +48,7 @@ export interface State {
 }
 
 interface Callbacks {
-    renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
+    renderViewWithSidebar(renderedView: React.JSX.Element, sidebarContent: React.JSX.Element): React.JSX.Element,
     closeRunEditor(save: boolean): void,
 }
 
@@ -131,13 +131,6 @@ export class RunEditor extends React.Component<Props, State> {
     private renderView() {
         const gameIcon = this.getGameIcon();
 
-        let gameIconContextTrigger: any = null;
-        const gameIconToggleMenu = (e: any) => {
-            if (gameIconContextTrigger) {
-                gameIconContextTrigger.handleContextClick(e);
-            }
-        };
-
         const tab = this.getTab();
 
         const { category, categoryNames } = this.getCurrentCategoriesInfo();
@@ -145,58 +138,14 @@ export class RunEditor extends React.Component<Props, State> {
         return (
             <div className="run-editor">
                 <div className="run-editor-info">
-                    <div
-                        className="game-icon-container"
-                        onClick={(e) => {
-                            gameIconToggleMenu(e);
-                        }}
-                    >
-                        <ContextMenuTrigger
-                            id="game-icon-context-menu"
-                            ref={(c) => gameIconContextTrigger = c}
-                        >
-                            {
-                                gameIcon !== undefined &&
-                                <img
-                                    src={gameIcon}
-                                    className="game-icon-image"
-                                />
-                            }
-                        </ContextMenuTrigger>
-                    </div>
-                    <ContextMenu id="game-icon-context-menu">
-                        <MenuItem className="tooltip" onClick={(_) => this.changeGameIcon()}>
-                            Set Icon
-                            <span className="tooltip-text">
-                                Allows you to choose an image file to set as the game's icon. Certain file formats may not work everywhere.
-                            </span>
-                        </MenuItem>
-                        {
-                            this.props.generalSettings.speedrunComIntegration && <>
-                                <MenuItem className="tooltip" onClick={(_) => this.downloadBoxArt()}>
-                                    Download Box Art
-                                    <span className="tooltip-text">
-                                        Attempts to download the box art of the game from speedrun.com, to set as the game's icon.
-                                    </span>
-                                </MenuItem>
-                                <MenuItem className="tooltip" onClick={(_) => this.downloadIcon()}>
-                                    Download Icon
-                                    <span className="tooltip-text">
-                                        Attempts to download the icon of the game from speedrun.com.
-                                    </span>
-                                </MenuItem>
-                            </>
-                        }
-                        {
-                            gameIcon !== undefined &&
-                            <MenuItem className="tooltip" onClick={(_) => this.removeGameIcon()}>
-                                Remove Icon
-                                <span className="tooltip-text">
-                                    Removes the icon of the game.
-                                </span>
-                            </MenuItem>
-                        }
-                    </ContextMenu>
+                    <GameIcon
+                        gameIcon={gameIcon}
+                        speedrunComIntegration={this.props.generalSettings.speedrunComIntegration}
+                        changeGameIcon={() => this.changeGameIcon()}
+                        downloadBoxArt={() => this.downloadBoxArt()}
+                        downloadIcon={() => this.downloadIcon()}
+                        removeGameIcon={() => this.removeGameIcon()}
+                    />
                     <div className="run-editor-info-table">
                         <div className="info-table-row">
                             <div className="info-table-cell">
@@ -322,21 +271,7 @@ export class RunEditor extends React.Component<Props, State> {
         });
     }
 
-    private renderSegmentListButtons(): JSX.Element {
-        let otherButtonContextTrigger: any = null;
-        const otherButtonToggleMenu = (e: any) => {
-            if (otherButtonContextTrigger) {
-                otherButtonContextTrigger.handleContextClick(e);
-            }
-        };
-
-        let comparisonsButtonContextTrigger: any = null;
-        const comparisonsButtonToggleMenu = (e: any) => {
-            if (comparisonsButtonContextTrigger) {
-                comparisonsButtonContextTrigger.handleContextClick(e);
-            }
-        };
-
+    private renderSegmentListButtons(): React.JSX.Element {
         return (
             <div className="btn-group">
                 <button onClick={(_) => this.insertSegmentAbove()}>
@@ -363,73 +298,22 @@ export class RunEditor extends React.Component<Props, State> {
                 >
                     Move Down
                 </button>
-                <button onClick={(e) => comparisonsButtonToggleMenu(e)}>
-                    <ContextMenuTrigger
-                        id="comparisons-button-context-menu"
-                        ref={(c) => comparisonsButtonContextTrigger = c}
-                    >
-                        Comparisons…
-                    </ContextMenuTrigger>
-                </button>
-                <button onClick={(e) => otherButtonToggleMenu(e)}>
-                    <ContextMenuTrigger
-                        id="other-button-context-menu"
-                        ref={(c) => otherButtonContextTrigger = c}
-                    >
-                        Cleaning…
-                    </ContextMenuTrigger>
-                </button>
-                <ContextMenu id="comparisons-button-context-menu">
-                    <MenuItem className="tooltip" onClick={(_) => this.addComparison()}>
-                        Add Comparison
-                        <span className="tooltip-text">
-                            Adds a new custom comparison where you can store any times that you would like.
-                        </span>
-                    </MenuItem>
-                    <MenuItem className="tooltip" onClick={(_) => this.importComparison()}>
-                        Import Comparison
-                        <span className="tooltip-text">
-                            Imports the Personal Best of a splits file you provide as a comparison.
-                        </span>
-                    </MenuItem>
-                    <MenuItem className="tooltip" onClick={(_) => this.generateGoalComparison()}>
-                        Generate Goal Comparison
-                        <span className="tooltip-text">
-                            Generates a custom goal comparison based on a goal time that you can specify. The comparison's times are automatically balanced based on the segment history such that it roughly represents what the split times for the goal time would look like. Since it is populated by the segment history, the goal times are capped to a range between the sum of the best segments and the sum of the worst segments. The comparison is only populated for the selected timing method. The other timing method's comparison times are not modified by this, so you can generate it again with the other timing method to generate the comparison times for both timing methods.
-                        </span>
-                    </MenuItem>
-                    <MenuItem className="tooltip" onClick={(_) => this.copyComparison()}>
-                        Copy Comparison
-                        <span className="tooltip-text">
-                            Copies any existing comparison, including the Personal Best or even any other automatically provided comparison as a new custom comparison. You could for example use this to keep the Latest Run around as a comparison that exists for as long as you want it to.
-                        </span>
-                    </MenuItem>
-                </ContextMenu>
-                <ContextMenu id="other-button-context-menu">
-                    <MenuItem className="tooltip" onClick={(_) => this.clearHistory()}>
-                        Clear Only History
-                        <span className="tooltip-text">
-                            Splits store the entire history of all runs, including every segment time. This information is used by various components. You can clear the history with this. The personal best, the best segment times, and the comparisons will not be affected.
-                        </span>
-                    </MenuItem>
-                    <MenuItem className="tooltip" onClick={(_) => this.clearTimes()}>
-                        Clear All Times
-                        <span className="tooltip-text">
-                            This removes all the times from the splits, including all the history, such that the splits are completely empty, as if they were just created.
-                        </span>
-                    </MenuItem>
-                    <MenuItem className="tooltip" onClick={(_) => this.cleanSumOfBest()}>
-                        Clean Sum of Best
-                        <span className="tooltip-text">
-                            Allows you to interactively remove potential issues in the segment history that lead to an inaccurate Sum of Best. If you skip a split, whenever you will do the next split, the combined segment time might be faster than the sum of the individual best segments. This will point out all such occurrences and allow you to delete them individually if any of them seem wrong.
-                        </span>
-                    </MenuItem>
-                </ContextMenu>
+                <ComparisonsButton
+                    addComparison={() => this.addComparison()}
+                    importComparison={() => this.importComparison()}
+                    generateGoalComparison={() => this.generateGoalComparison()}
+                    copyComparison={() => this.copyComparison()}
+                />
+                <CleaningButton
+                    clearHistory={() => this.clearHistory()}
+                    clearTimes={() => this.clearTimes()}
+                    cleanSumOfBest={() => this.cleanSumOfBest()}
+                />
             </div>
         );
     }
 
-    private renderAssociateRunButton(): JSX.Element {
+    private renderAssociateRunButton(): React.JSX.Element {
         if (this.props.generalSettings.speedrunComIntegration) {
             return (
                 <button onClick={(_) => this.interactiveAssociateRunOrOpenPage()}>
@@ -441,7 +325,7 @@ export class RunEditor extends React.Component<Props, State> {
         }
     }
 
-    private renderRulesButtons(): JSX.Element {
+    private renderRulesButtons(): React.JSX.Element {
         return (
             <div className="btn-group">
                 {this.renderAssociateRunButton()}
@@ -449,7 +333,7 @@ export class RunEditor extends React.Component<Props, State> {
         );
     }
 
-    private renderVariablesButtons(): JSX.Element {
+    private renderVariablesButtons(): React.JSX.Element {
         return (
             <div className="btn-group">
                 {this.renderAssociateRunButton()}
@@ -473,7 +357,7 @@ export class RunEditor extends React.Component<Props, State> {
         }
     }
 
-    private renderSideButtons(tab: Tab, category: Option<Category>): JSX.Element {
+    private renderSideButtons(tab: Tab, category: Option<Category>): React.JSX.Element {
         switch (tab) {
             case Tab.RealTime:
             case Tab.GameTime:
@@ -487,7 +371,7 @@ export class RunEditor extends React.Component<Props, State> {
         }
     }
 
-    private renderTab(tab: Tab, category: Option<Category>): JSX.Element {
+    private renderTab(tab: Tab, category: Option<Category>): React.JSX.Element {
         switch (tab) {
             case Tab.RealTime:
             case Tab.GameTime:
@@ -501,7 +385,7 @@ export class RunEditor extends React.Component<Props, State> {
         }
     }
 
-    private renderLeaderboardButtons(category: Option<Category>): JSX.Element {
+    private renderLeaderboardButtons(category: Option<Category>): React.JSX.Element {
         const gameInfo = getGameInfo(this.state.editor.game);
         if (gameInfo === undefined) {
             return this.renderRulesButtons();
@@ -745,7 +629,7 @@ export class RunEditor extends React.Component<Props, State> {
         this.update();
     }
 
-    private renderVariablesTab(category: Option<Category>): JSX.Element {
+    private renderVariablesTab(category: Option<Category>): React.JSX.Element {
         const metadata = this.state.editor.metadata;
         const gameInfo = getGameInfo(this.state.editor.game);
         const fields: ExtendedSettingsDescriptionFieldJson[] = [];
@@ -927,7 +811,7 @@ export class RunEditor extends React.Component<Props, State> {
         );
     }
 
-    private renderLeaderboard(category: Option<Category>): JSX.Element {
+    private renderLeaderboard(category: Option<Category>): React.JSX.Element {
         const leaderboard = this.getCurrentLeaderboard(category);
         if (leaderboard === undefined) {
             return <div />;
@@ -1177,7 +1061,7 @@ export class RunEditor extends React.Component<Props, State> {
         );
     }
 
-    private renderRulesTab(category: Option<Category>): JSX.Element {
+    private renderRulesTab(category: Option<Category>): React.JSX.Element {
         let rules = null;
         if (category != null && category.rules != null) {
             rules = <Markdown markdown={category.rules} />;
@@ -1223,7 +1107,7 @@ export class RunEditor extends React.Component<Props, State> {
         );
     }
 
-    private renderSegmentsTable(): JSX.Element {
+    private renderSegmentsTable(): React.JSX.Element {
         return (
             <table className="table run-editor-tab run-editor-table">
                 <thead className="table-header">
@@ -1235,29 +1119,12 @@ export class RunEditor extends React.Component<Props, State> {
                         <th>Best Segment</th>
                         {
                             this.state.editor.comparison_names.map((comparison, comparisonIndex) => {
-                                let contextTrigger: any = null;
-                                const toggleMenu = (e: any) => {
-                                    if (contextTrigger) {
-                                        contextTrigger.handleContextClick(e);
-                                    }
-                                };
-                                const id = `comparison-${comparisonIndex}-context-menu`;
                                 return (
-                                    <th
-                                        style={{
-                                            cursor: "pointer",
-                                        }}
-                                        onClick={(e) => toggleMenu(e)}
-                                        draggable
+                                    <CustomComparison
+                                        comparison={comparison}
                                         onDragStart={(e) => {
                                             e.dataTransfer.setData("text/plain", "");
                                             this.dragIndex = comparisonIndex;
-                                        }}
-                                        onDragOver={(e) => {
-                                            if (e.preventDefault) {
-                                                e.preventDefault();
-                                            }
-                                            e.dataTransfer.dropEffect = "move";
                                         }}
                                         onDragEnd={(_) => this.update()}
                                         onDrop={(e) => {
@@ -1267,40 +1134,10 @@ export class RunEditor extends React.Component<Props, State> {
                                             this.props.editor.moveComparison(this.dragIndex, comparisonIndex);
                                             return false;
                                         }}
-                                    >
-                                        <ContextMenuTrigger
-                                            id={id}
-                                            ref={(c) => contextTrigger = c}
-                                        >
-                                            {comparison}
-                                        </ContextMenuTrigger>
-                                        <ContextMenu id={id}>
-                                            <MenuItem className="tooltip" onClick={(_) =>
-                                                this.renameComparison(comparison)
-                                            }>
-                                                Rename
-                                                <span className="tooltip-text">
-                                                    Choose a new name for the custom comparison. There are reserved names that can't be used. You also can't have duplicate names.
-                                                </span>
-                                            </MenuItem>
-                                            <MenuItem className="tooltip" onClick={(_) =>
-                                                this.copyComparison(comparison)
-                                            }>
-                                                Copy
-                                                <span className="tooltip-text">
-                                                    Creates a copy of the custom comparison.
-                                                </span>
-                                            </MenuItem>
-                                            <MenuItem className="tooltip" onClick={(_) =>
-                                                this.removeComparison(comparison)
-                                            }>
-                                                Remove
-                                                <span className="tooltip-text">
-                                                    Removes the custom comparison.
-                                                </span>
-                                            </MenuItem>
-                                        </ContextMenu>
-                                    </th>
+                                        renameComparison={() => this.renameComparison(comparison)}
+                                        copyComparison={() => this.copyComparison(comparison)}
+                                        removeComparison={() => this.removeComparison(comparison)}
+                                    />
                                 );
                             })
                         }
@@ -1310,15 +1147,7 @@ export class RunEditor extends React.Component<Props, State> {
                     {
                         this.state.editor.segments.map((s, segmentIndex) => {
                             const segmentIcon = this.getSegmentIconUrl(segmentIndex);
-                            const segmentIconContextMenuId = `segment-icon-${segmentIndex}-context-menu`;
-                            let segmentIconContextTrigger: any = null;
-                            const segmentIconToggleMenu = (e: any) => {
-                                if (segmentIconContextTrigger) {
-                                    segmentIconContextTrigger.handleContextClick(e);
-                                    this.props.editor.selectOnly(segmentIndex);
-                                    this.update();
-                                }
-                            };
+
                             return (
                                 <tr
                                     key={segmentIndex.toString()}
@@ -1329,46 +1158,14 @@ export class RunEditor extends React.Component<Props, State> {
                                     }
                                     onClick={(e) => this.changeSegmentSelection(e, segmentIndex)}
                                 >
-                                    <td
-                                        className="segment-icon-container"
-                                        onClick={(e) => {
-                                            if (segmentIcon !== undefined) {
-                                                segmentIconToggleMenu(e);
-                                            } else {
-                                                this.changeSegmentIcon(segmentIndex);
-                                            }
-                                        }}
-                                    >
-                                        <ContextMenuTrigger
-                                            id={segmentIconContextMenuId}
-                                            ref={(c) => segmentIconContextTrigger = c}
-                                        >
-                                            {
-                                                segmentIcon !== undefined &&
-                                                <img
-                                                    className="segment-icon"
-                                                    src={segmentIcon}
-                                                />
-                                            }
-                                        </ContextMenuTrigger>
-                                        <ContextMenu id={segmentIconContextMenuId}>
-                                            <MenuItem className="tooltip" onClick={(_) => this.changeSegmentIcon(segmentIndex)}>
-                                                Set Icon
-                                                <span className="tooltip-text">
-                                                    Allows you to choose an image file to set as the segment's icon. Certain file formats may not work everywhere.
-                                                </span>
-                                            </MenuItem>
-                                            <MenuItem className="tooltip" onClick={(_) => this.removeSegmentIcon(segmentIndex)}>
-                                                Remove Icon
-                                                <span className="tooltip-text">
-                                                    Removes the segment's icon.
-                                                </span>
-                                            </MenuItem>
-                                        </ContextMenu>
-                                    </td>
+                                    <SegmentIcon
+                                        segmentIcon={segmentIcon}
+                                        changeSegmentIcon={() => this.changeSegmentIcon(segmentIndex)}
+                                        removeSegmentIcon={() => this.removeSegmentIcon(segmentIndex)}
+                                    />
                                     <td>
                                         <input
-                                            className="name"
+                                            className="name text-box"
                                             type="text"
                                             value={s.name}
                                             onFocus={(_) => this.focusSegment(segmentIndex)}
@@ -1377,7 +1174,7 @@ export class RunEditor extends React.Component<Props, State> {
                                     </td>
                                     <td>
                                         <input
-                                            className="number"
+                                            className="number text-box"
                                             type="text"
                                             value={segmentIndex === this.state.rowState.index &&
                                                 this.state.rowState.splitTimeChanged
@@ -1394,8 +1191,8 @@ export class RunEditor extends React.Component<Props, State> {
                                                 ((segmentIndex !== this.state.rowState.index ||
                                                     !this.state.rowState.segmentTimeChanged) &&
                                                     s.segment_time === s.best_segment_time)
-                                                    ? "number best-segment-time"
-                                                    : "number"
+                                                    ? "number text-box best-segment-time"
+                                                    : "number text-box"
                                             }
                                             type="text"
                                             value={segmentIndex === this.state.rowState.index &&
@@ -1409,7 +1206,7 @@ export class RunEditor extends React.Component<Props, State> {
                                     </td>
                                     <td>
                                         <input
-                                            className="number"
+                                            className="number text-box"
                                             type="text"
                                             value={segmentIndex === this.state.rowState.index &&
                                                 this.state.rowState.bestSegmentTimeChanged
@@ -1429,7 +1226,7 @@ export class RunEditor extends React.Component<Props, State> {
                                             .map((comparisonTime, comparisonIndex) => (
                                                 <td>
                                                     <input
-                                                        className="number"
+                                                        className="number text-box"
                                                         type="text"
                                                         value={segmentIndex === this.state.rowState.index &&
                                                             this.state.rowState.comparisonTimesChanged[comparisonIndex]
@@ -2285,4 +2082,282 @@ function associateRun<T>(
     }
     // Needs to be set last in order for it not to dissociate again
     editor.setRunId(apiRun.id);
+}
+
+function GameIcon({
+    gameIcon,
+    speedrunComIntegration,
+    changeGameIcon,
+    downloadBoxArt,
+    downloadIcon,
+    removeGameIcon,
+}: {
+    gameIcon: string | undefined;
+    speedrunComIntegration: boolean;
+    changeGameIcon: () => void;
+    downloadBoxArt: () => void;
+    downloadIcon: () => void;
+    removeGameIcon: () => void;
+}) {
+    const [position, setPosition] = React.useState<Position | null>(null);
+
+    return (
+        <>
+            <div
+                className="game-icon-container"
+                onClick={(e) => setPosition({ x: e.clientX, y: e.clientY })}
+            >
+                {
+                    gameIcon !== undefined &&
+                    <img
+                        src={gameIcon}
+                        className="game-icon-image"
+                    />
+                }
+            </div>
+            {position && (
+                <ContextMenu position={position} onClose={() => setPosition(null)}>
+                    <MenuItem className="contextmenu-item tooltip" onClick={changeGameIcon}>
+                        Set Icon
+                        <span className="tooltip-text">
+                            Allows you to choose an image file to set as the game's icon. Certain file formats may not work everywhere.
+                        </span>
+                    </MenuItem>
+                    {
+                        speedrunComIntegration && <>
+                            <MenuItem className="contextmenu-item tooltip" onClick={downloadBoxArt}>
+                                Download Box Art
+                                <span className="tooltip-text">
+                                    Attempts to download the box art of the game from speedrun.com, to set as the game's icon.
+                                </span>
+                            </MenuItem>
+                            <MenuItem className="contextmenu-item tooltip" onClick={downloadIcon}>
+                                Download Icon
+                                <span className="tooltip-text">
+                                    Attempts to download the icon of the game from speedrun.com.
+                                </span>
+                            </MenuItem>
+                        </>
+                    }
+                    {
+                        gameIcon !== undefined &&
+                        <MenuItem className="contextmenu-item tooltip" onClick={removeGameIcon}>
+                            Remove Icon
+                            <span className="tooltip-text">
+                                Removes the icon of the game.
+                            </span>
+                        </MenuItem>
+                    }
+                </ContextMenu>
+            )}
+        </>
+    );
+}
+
+function CleaningButton({
+    clearHistory,
+    clearTimes,
+    cleanSumOfBest,
+}: {
+    clearHistory: () => void;
+    clearTimes: () => void;
+    cleanSumOfBest: () => void;
+}) {
+    const [position, setPosition] = React.useState<Position | null>(null);
+
+    return (
+        <>
+            <button onClick={(e) => setPosition({ x: e.clientX, y: e.clientY })}>
+                Cleaning…
+            </button>
+            {position && (
+                <ContextMenu position={position} onClose={() => setPosition(null)}>
+                    <MenuItem className="contextmenu-item tooltip" onClick={clearHistory}>
+                        Clear Only History
+                        <span className="tooltip-text">
+                            Splits store the entire history of all runs, including every segment time. This information is used by various components. You can clear the history with this. The personal best, the best segment times, and the comparisons will not be affected.
+                        </span>
+                    </MenuItem>
+                    <MenuItem className="contextmenu-item tooltip" onClick={clearTimes}>
+                        Clear All Times
+                        <span className="tooltip-text">
+                            This removes all the times from the splits, including all the history, such that the splits are completely empty, as if they were just created.
+                        </span>
+                    </MenuItem>
+                    <MenuItem className="contextmenu-item tooltip" onClick={cleanSumOfBest}>
+                        Clean Sum of Best
+                        <span className="tooltip-text">
+                            Allows you to interactively remove potential issues in the segment history that lead to an inaccurate Sum of Best. If you skip a split, whenever you will do the next split, the combined segment time might be faster than the sum of the individual best segments. This will point out all such occurrences and allow you to delete them individually if any of them seem wrong.
+                        </span>
+                    </MenuItem>
+                </ContextMenu>
+            )}
+        </>
+    );
+}
+
+function ComparisonsButton({
+    addComparison,
+    importComparison,
+    generateGoalComparison,
+    copyComparison,
+}: {
+    addComparison: () => void;
+    importComparison: () => void;
+    generateGoalComparison: () => void;
+    copyComparison: () => void;
+}) {
+    const [position, setPosition] = React.useState<Position | null>(null);
+
+    return (
+        <>
+            <button onClick={(e) => setPosition({ x: e.clientX, y: e.clientY })}>
+                Comparisons…
+            </button>
+            {position && (
+                <ContextMenu position={position} onClose={() => setPosition(null)}>
+                    <MenuItem className="contextmenu-item tooltip" onClick={addComparison}>
+                        Add Comparison
+                        <span className="tooltip-text">
+                            Adds a new custom comparison where you can store any times that you would like.
+                        </span>
+                    </MenuItem>
+                    <MenuItem className="contextmenu-item tooltip" onClick={importComparison}>
+                        Import Comparison
+                        <span className="tooltip-text">
+                            Imports the Personal Best of a splits file you provide as a comparison.
+                        </span>
+                    </MenuItem>
+                    <MenuItem className="contextmenu-item tooltip" onClick={generateGoalComparison}>
+                        Generate Goal Comparison
+                        <span className="tooltip-text">
+                            Generates a custom goal comparison based on a goal time that you can specify. The comparison's times are automatically balanced based on the segment history such that it roughly represents what the split times for the goal time would look like. Since it is populated by the segment history, the goal times are capped to a range between the sum of the best segments and the sum of the worst segments. The comparison is only populated for the selected timing method. The other timing method's comparison times are not modified by this, so you can generate it again with the other timing method to generate the comparison times for both timing methods.
+                        </span>
+                    </MenuItem>
+                    <MenuItem className="contextmenu-item tooltip" onClick={copyComparison}>
+                        Copy Comparison
+                        <span className="tooltip-text">
+                            Copies any existing comparison, including the Personal Best or even any other automatically provided comparison as a new custom comparison. You could for example use this to keep the Latest Run around as a comparison that exists for as long as you want it to.
+                        </span>
+                    </MenuItem>
+                </ContextMenu>
+            )}
+        </>
+    );
+}
+
+function SegmentIcon({
+    segmentIcon,
+    changeSegmentIcon,
+    removeSegmentIcon,
+}: {
+    segmentIcon: string | undefined;
+    changeSegmentIcon: () => void;
+    removeSegmentIcon: () => void;
+}) {
+    const [position, setPosition] = React.useState<Position | null>(null);
+
+    return (
+        <td
+            className="segment-icon-container"
+            onClick={(e) => {
+                if (position !== null) {
+                    return;
+                }
+                if (segmentIcon !== undefined) {
+                    setPosition({ x: e.clientX, y: e.clientY });
+                } else {
+                    changeSegmentIcon();
+                }
+            }}
+        >
+            {
+                segmentIcon !== undefined &&
+                <img src={segmentIcon} />
+            }
+            {position && (
+                <ContextMenu position={position} onClose={() => setPosition(null)}>
+                    <MenuItem className="contextmenu-item tooltip" onClick={changeSegmentIcon}>
+                        Set Icon
+                        <span className="tooltip-text">
+                            Allows you to choose an image file to set as the segment's icon. Certain file formats may not work everywhere.
+                        </span>
+                    </MenuItem>
+                    <MenuItem className="contextmenu-item tooltip" onClick={removeSegmentIcon}>
+                        Remove Icon
+                        <span className="tooltip-text">
+                            Removes the segment's icon.
+                        </span>
+                    </MenuItem>
+                </ContextMenu>
+            )}
+        </td>
+    );
+}
+
+function CustomComparison({
+    comparison,
+    onDragStart,
+    onDragEnd,
+    onDrop,
+    renameComparison,
+    copyComparison,
+    removeComparison,
+}: {
+    comparison: string;
+    onDragStart: (e: React.DragEvent) => void;
+    onDragEnd: (e: React.DragEvent) => void;
+    onDrop: (e: React.DragEvent) => void;
+    renameComparison: () => void;
+    copyComparison: () => void;
+    removeComparison: () => void;
+}) {
+    const [position, setPosition] = React.useState<Position | null>(null);
+
+    return (
+        <th
+            style={{
+                cursor: "pointer",
+            }}
+            onClick={(e) => {
+                if (position === null) {
+                    setPosition({ x: e.clientX, y: e.clientY });
+                }
+            }}
+            draggable
+            onDragStart={onDragStart}
+            onDragOver={(e) => {
+                if (e.preventDefault) {
+                    e.preventDefault();
+                }
+                e.dataTransfer.dropEffect = "move";
+            }}
+            onDragEnd={onDragEnd}
+            onDrop={onDrop}
+        >
+            {comparison}
+            {position && (
+                <ContextMenu position={position} onClose={() => setPosition(null)}>
+                    <MenuItem className="contextmenu-item tooltip" onClick={renameComparison}>
+                        Rename
+                        <span className="tooltip-text">
+                            Choose a new name for the custom comparison. There are reserved names that can't be used. You also can't have duplicate names.
+                        </span>
+                    </MenuItem>
+                    <MenuItem className="contextmenu-item tooltip" onClick={copyComparison}>
+                        Copy
+                        <span className="tooltip-text">
+                            Creates a copy of the custom comparison.
+                        </span>
+                    </MenuItem>
+                    <MenuItem className="contextmenu-item tooltip" onClick={removeComparison}>
+                        Remove
+                        <span className="tooltip-text">
+                            Removes the custom comparison.
+                        </span>
+                    </MenuItem>
+                </ContextMenu>
+            )}
+        </th>
+    );
 }

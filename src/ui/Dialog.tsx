@@ -8,8 +8,8 @@ export interface Props {
 }
 
 export interface Options {
-    title: string | JSX.Element,
-    description: string | JSX.Element,
+    title: string | React.JSX.Element,
+    description: string | React.JSX.Element,
     textInput?: boolean,
     defaultText?: string,
     buttons: string[],
@@ -71,7 +71,7 @@ export default class DialogContainer extends React.Component<Props, State> {
 
     public render() {
         return <dialog
-            ref={(element) => dialogElement = element}
+            ref={(element) => { dialogElement = element; }}
             onKeyDown={(e) => {
                 if (e?.key === "ArrowLeft") {
                     e.preventDefault();

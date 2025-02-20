@@ -1,9 +1,9 @@
-import * as React from "react";
+import React, { ChangeEvent, MouseEvent } from "react";
 import { useEffect, useState } from "react";
 import { colorToCss } from "../util/ColorUtil";
 import { Color } from "../livesplit-core";
 
-import "../css/ColorPicker.scss";
+import * as classes from "../css/ColorPicker.module.scss";
 
 const EyeDropper = (window as any).EyeDropper;
 const hasEyeDropper = !!EyeDropper;
@@ -13,14 +13,11 @@ export default function ColorPicker({ color, setColor }: { color: Color, setColo
     return (
         <div>
             <div
-                className="color-picker-button"
+                className={classes.colorPickerButton}
                 style={{ background: colorToCss(color) }}
                 onClick={() => setIsShowing(true)}
             />
-            <div style={{
-                margin: "0 auto",
-                width: "0",
-            }}>
+            <div className={classes.colorPickerDialogPositioning}>
                 {isShowing && <ColorPickerDialog color={color} setColor={setColor} close={() => setIsShowing(false)} />}
             </div>
         </div>
@@ -29,67 +26,48 @@ export default function ColorPicker({ color, setColor }: { color: Color, setColo
 
 function ColorPickerDialog({ color, setColor, close }: { color: Color, setColor: (color: Color) => void, close: () => void }) {
     return (
-        <div style={{ margin: "0 auto", width: 0 }} className="color-picker">
-            <div className="overlay" onClick={() => close()}></div>
-            <div
-                className="blur"
-                style={{
-                    zIndex: 1,
-                    position: "absolute",
-                    marginTop: "5px",
-                    marginLeft: "-113.5px",
-                    border: "1px solid rgba(255, 255, 255, 0.25)",
-                    boxShadow: "0 5px 10px 0px rgba(28, 28, 28, 0.8)",
-                }}
-            >
+        <>
+            <div className={classes.overlay} onClick={close} />
+            <div className={classes.glassPanel} >
                 <GradientSelector color={color} setColor={setColor} />
                 <Hr />
                 <ControlPanel color={color} setColor={setColor} />
                 <Hr />
                 <PredefinedColors setColor={setColor} />
             </div>
-        </div>
+        </>
     );
 }
 
 function Hr() {
-    return (
-        <hr
-            style={{
-                margin: 0,
-                height: "1px",
-                borderWidth: "0px",
-                background: "rgba(255, 255, 255, 0.25)",
-            }}
-        />
-    );
+    return <hr className={classes.hr} />;
 }
 
 function GradientSelector({ color, setColor }: { color: Color, setColor: (color: Color) => void }) {
     const [r, g, b, a] = color;
     const [h, s, v] = rgbToHsv(r, g, b);
-    const [r1, g1, b1] = hsvToRgb(h, 1.0, 1.0);
+    const [r1, g1, b1] = hsvToRgb(h, 1, 1);
     const [mouseDown, setMouseDown] = useState(false);
 
-    const handleMouseDown = (e: React.MouseEvent) => {
+    const handleMouseDown = (e: MouseEvent) => {
         e.preventDefault();
-        (document.activeElement as any)?.blur();
+        (document.activeElement as any)?.blur?.();
         setMouseDown(true);
         updateColor(e);
     };
 
-    const handleMouseUp = (e: React.MouseEvent) => {
+    const handleMouseUp = (e: MouseEvent) => {
         e.preventDefault();
         setMouseDown(false);
     };
 
-    const handleMouseMove = (e: React.MouseEvent) => {
+    const handleMouseMove = (e: MouseEvent) => {
         e.preventDefault();
         if (!mouseDown) return;
         updateColor(e);
     };
 
-    const updateColor = (e: React.MouseEvent) => {
+    const updateColor = (e: MouseEvent) => {
         const pos = e.currentTarget.getBoundingClientRect();
         const x = Math.min(Math.max(e.clientX - pos.left, 0), 225);
         const y = Math.min(Math.max(e.clientY - pos.top, 0), 125);
@@ -104,41 +82,19 @@ function GradientSelector({ color, setColor }: { color: Color, setColor: (color:
             onMouseDown={handleMouseDown}
             onMouseUp={handleMouseUp}
             onMouseMove={handleMouseMove}
+            className={classes.gradientSelector}
             style={{
                 background: `rgb(${255 * r1}, ${255 * g1}, ${255 * b1})`,
-                overflow: "hidden",
-                position: "relative",
                 cursor: mouseDown ? "grabbing" : "grab",
             }}
         >
-            <div style={{ background: "linear-gradient(to right, white, transparent)" }}>
-                <div
-                    style={{
-                        pointerEvents: "none",
-                        position: "absolute",
-                        transform: `translate(${s * 225 - 6}px, ${125 - v * 125 - 6}px)`,
-                        width: "12px",
-                        height: "12px",
-                        borderRadius: "6px",
-                        boxShadow: "black 0 0 0 2px inset",
-                    }}
-                >
-                    <div
-                        style={{
-                            width: "100%",
-                            height: "100%",
-                            borderRadius: "6px",
-                            boxShadow: "white 0 0 0 1px inset",
-                        }}
-                    />
+            <div className={classes.whiteGradient}>
+                <div className={classes.cursor} style={{
+                    transform: `translate(${s * 225 - 6}px, ${125 - v * 125 - 6}px)`,
+                }}>
+                    <div />
                 </div>
-                <div
-                    style={{
-                        width: "225px",
-                        height: "125px",
-                        background: "linear-gradient(to top, black, transparent)",
-                    }}
-                />
+                <div className={classes.blackGradient} />
             </div>
         </div>
     );
@@ -155,31 +111,23 @@ function ControlPanel({ color, setColor }: { color: Color, setColor: (color: Col
     const [h, s, v] = rgbToHsv(r, g, b);
     const [mode, setMode] = useState<Mode>("Hex");
 
-    const handleHueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleHueChange = (e: ChangeEvent<HTMLInputElement>) => {
         const newH = parseFloat(e.target.value);
         const [newR, newG, newB] = hsvToRgb(newH, s, v);
         setColor([newR, newG, newB, a]);
     };
 
-    const handleAlphaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleAlphaChange = (e: ChangeEvent<HTMLInputElement>) => {
         const newA = parseFloat(e.target.value);
         setColor([r, g, b, newA]);
     };
 
     return (
-        <div style={{ margin: "10px", display: "flex", flexDirection: "column", gap: "10px" }}>
-            <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
+        <div className={classes.controlPanel}>
+            <div className={classes.controlPanelTop}>
                 <ColorPreview color={color} setColor={setColor} />
-                <div style={{ flexGrow: 1, display: "flex", flexDirection: "column", gap: "10px" }}>
-                    <div
-                        style={{
-                            background: "linear-gradient(to right, #f00 0%, #ff0 17%, #0f0 33%, #0ff 50%, #00f 67%, #f0f 83%, #f00 100%)",
-                            height: "18px",
-                            position: "relative",
-                            borderRadius: "9px",
-                        }}
-                        title="Hue"
-                    >
+                <div className={classes.sliders}>
+                    <div className={classes.hueSlider} title="Hue">
                         <input
                             type="range"
                             min="0"
@@ -187,27 +135,10 @@ function ControlPanel({ color, setColor }: { color: Color, setColor: (color: Col
                             step="1"
                             value={h}
                             onChange={handleHueChange}
-                            style={{
-                                margin: 0,
-                                background: "none",
-                                height: "16px",
-                                position: "absolute",
-                                top: "1px",
-                                left: "1px",
-                            }}
                         />
                     </div>
-                    <div
-                        style={{
-                            background: "white",
-                            borderRadius: "9px",
-                            overflow: "hidden",
-                            height: "18px",
-                            position: "relative",
-                        }}
-                        title="Alpha"
-                    >
-                        <div className="checker">
+                    <div className={classes.alphaSlider} title="Alpha">
+                        <div className={classes.checker}>
                             <div
                                 style={{
                                     height: "18px",
@@ -222,20 +153,12 @@ function ControlPanel({ color, setColor }: { color: Color, setColor: (color: Col
                             step="0.01"
                             value={a}
                             onChange={handleAlphaChange}
-                            style={{
-                                margin: 0,
-                                background: "none",
-                                height: "16px",
-                                position: "absolute",
-                                top: "1px",
-                                left: "1px",
-                            }}
                         />
                     </div>
                 </div>
             </div>
             <div
-                style={{ display: "flex", gap: "10px", cursor: "ew-resize" }}
+                className={classes.controlPanelBottom}
                 onClick={() => setMode(nextMode(mode))}
             >
                 {mode === "Rgb" ? (
@@ -296,23 +219,14 @@ function ColorPreview({ color, setColor }: { color: Color, setColor: (color: Col
                 />
             )}
             <div
-                style={{
-                    border: "1px solid rgba(255, 255, 255, 0.25)",
-                    borderRadius: "50%",
-                    background: "white",
-                    position: "relative",
-                    overflow: "hidden",
-                }}
+                className={classes.colorPreview}
+                title="Color Preview"
             >
-                <div className="checker">
+                <div className={classes.checker}>
                     <div
+                        className={classes.colorPreviewInner}
                         style={{
-                            width: "35px",
-                            height: "35px",
                             backgroundColor: `rgba(${255 * r}, ${255 * g}, ${255 * b}, ${a})`,
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
                         }}
                     />
                 </div>
@@ -332,7 +246,7 @@ function Hsva({ color, setColor }: { color: Color, setColor: (color: Color) => v
                 short="H"
                 kind="Degree"
                 value={h}
-                setValue={(newH: number) => {
+                setValue={(newH) => {
                     const [newR, newG, newB] = hsvToRgb(newH, s, v);
                     setColor([newR, newG, newB, a]);
                 }}
@@ -342,7 +256,7 @@ function Hsva({ color, setColor }: { color: Color, setColor: (color: Color) => v
                 short="S"
                 kind="Percent"
                 value={s}
-                setValue={(newS: number) => {
+                setValue={(newS) => {
                     const [newR, newG, newB] = hsvToRgb(h, newS, v);
                     setColor([newR, newG, newB, a]);
                 }}
@@ -352,7 +266,7 @@ function Hsva({ color, setColor }: { color: Color, setColor: (color: Color) => v
                 short="V"
                 kind="Percent"
                 value={v}
-                setValue={(newV: number) => {
+                setValue={(newV) => {
                     const [newR, newG, newB] = hsvToRgb(h, s, newV);
                     setColor([newR, newG, newB, a]);
                 }}
@@ -362,7 +276,7 @@ function Hsva({ color, setColor }: { color: Color, setColor: (color: Color) => v
                 short="A"
                 kind="Percent"
                 value={a}
-                setValue={(newA: number) => {
+                setValue={(newA) => {
                     setColor([r, g, b, newA]);
                 }}
             />
@@ -380,7 +294,7 @@ function Rgba({ color, setColor }: { color: Color, setColor: (color: Color) => v
                 short="R"
                 kind="Byte"
                 value={r}
-                setValue={(newR: number) => {
+                setValue={(newR) => {
                     setColor([newR, g, b, a]);
                 }}
             />
@@ -389,7 +303,7 @@ function Rgba({ color, setColor }: { color: Color, setColor: (color: Color) => v
                 short="G"
                 kind="Byte"
                 value={g}
-                setValue={(newG: number) => {
+                setValue={(newG) => {
                     setColor([r, newG, b, a]);
                 }}
             />
@@ -398,7 +312,7 @@ function Rgba({ color, setColor }: { color: Color, setColor: (color: Color) => v
                 short="B"
                 kind="Byte"
                 value={b}
-                setValue={(newB: number) => {
+                setValue={(newB) => {
                     setColor([r, g, newB, a]);
                 }}
             />
@@ -407,7 +321,7 @@ function Rgba({ color, setColor }: { color: Color, setColor: (color: Color) => v
                 short="A"
                 kind="Percent"
                 value={a}
-                setValue={(newA: number) => {
+                setValue={(newA) => {
                     setColor([r, g, b, newA]);
                 }}
             />
@@ -420,11 +334,11 @@ function Hex({ color, setColor }: { color: Color, setColor: (color: Color) => vo
 
     return (
         <>
-            <div className="color-input" title="Hexadecimal">
+            <div className={classes.colorInput} title="Hexadecimal">
                 <FormattedInput
                     value={color}
-                    format={([r, g, b, _]: Color) => `#${Math.round(255 * r).toString(16).padStart(2, '0')}${Math.round(255 * g).toString(16).padStart(2, '0')}${Math.round(255 * b).toString(16).padStart(2, '0')}`.toUpperCase()}
-                    parse={(value: string) => {
+                    format={([r, g, b, _]) => `#${Math.round(255 * r).toString(16).padStart(2, '0')}${Math.round(255 * g).toString(16).padStart(2, '0')}${Math.round(255 * b).toString(16).padStart(2, '0')}`.toUpperCase()}
+                    parse={(value) => {
                         const parsed = parseHex(value);
                         if (parsed) {
                             return [...parsed, a];
@@ -440,7 +354,7 @@ function Hex({ color, setColor }: { color: Color, setColor: (color: Color) => vo
                 short="A"
                 kind="Percent"
                 value={a}
-                setValue={(newA: number) => {
+                setValue={(newA) => {
                     setColor([r, g, b, newA]);
                 }}
             />
@@ -465,7 +379,7 @@ function FormattedInput<T>({ value, format, parse, setValue }: {
         }
     }, [value]);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         const formatted = e.target.value;
         setFormatted(formatted);
         const newValue = parse(formatted);
@@ -496,7 +410,7 @@ type Format = "Degree" | "Percent" | "Byte";
 
 function ColorComponent({ title, short, kind, value, setValue }: { title: string, short: string, kind: Format, value: number, setValue: (value: number) => void }) {
     return (
-        <div className="color-input" title={title}>
+        <div className={classes.colorInput} title={title}>
             <FormattedInput
                 value={value}
                 format={(value) => kind === "Degree" ? `${value.toFixed(0)}°` : kind === "Percent" ? `${(100 * value).toFixed(0)}%` : `${(255 * value).toFixed(0)}`}
@@ -517,40 +431,40 @@ function ColorComponent({ title, short, kind, value, setValue }: { title: string
 function PredefinedColors({ setColor }: { setColor: (color: Color) => void }) {
     const predefinedColors = [
         [
-            [4.0, 0.79, 0.96],
-            [340.0, 0.86, 0.91],
-            [291.0, 0.78, 0.69],
-            [262.0, 0.68, 0.71],
-            [231.0, 0.65, 0.71],
-            [207.0, 0.87, 0.95],
-            [199.0, 0.99, 0.95],
+            ["Red", 244, 67, 54],
+            ["Pink", 233, 30, 99],
+            ["Purple", 156, 39, 176],
+            ["Deep Purple", 103, 58, 183],
+            ["Indigo", 63, 81, 181],
+            ["Blue", 33, 150, 243],
+            ["Light Blue", 3, 169, 244],
         ],
         [
-            [187.0, 1.0, 0.84],
-            [174.0, 1.0, 0.58],
-            [122.0, 0.56, 0.68],
-            [88.0, 0.61, 0.77],
-            [66.0, 0.75, 0.86],
-            [54.0, 0.76, 1.0],
-            [45.0, 0.98, 1.0],
+            ["Cyan", 0, 188, 212],
+            ["Teal", 0, 150, 136],
+            ["Green", 76, 175, 80],
+            ["Light Green", 139, 195, 74],
+            ["Lime", 205, 220, 57],
+            ["Yellow", 255, 235, 59],
+            ["Amber", 255, 193, 7],
         ],
         [
-            [36.0, 1.0, 1.0],
-            [14.0, 0.86, 1.0],
-            [16.0, 0.40, 0.48],
-            [0.0, 0.0, 0.62],
-            [200.0, 0.31, 0.54],
-            [0.0, 0.0, 0.0],
-            [0.0, 0.0, 1.0],
+            ["Orange", 255, 152, 0],
+            ["Deep Orange", 255, 87, 34],
+            ["Brown", 121, 85, 72],
+            ["Grey", 158, 158, 158],
+            ["Blue Grey", 96, 125, 139],
+            ["Black", 0, 0, 0],
+            ["White", 255, 255, 255],
         ],
-    ] as unknown as [[[number, number, number]]];
+    ] as unknown as [[[string, number, number, number]]];
 
     return (
-        <div style={{ margin: "10px", display: "flex", flexDirection: "column", gap: "10px" }}>
+        <div className={classes.predefinedColors}>
             {predefinedColors.map((hsv, index) => (
-                <div key={index} style={{ display: "flex", justifyContent: "space-between" }}>
+                <div key={index} className={classes.predefinedColorsRow}>
                     {hsv.map((color, i) => (
-                        <PredefinedColor key={i} hsv={color} setColor={setColor} />
+                        <PredefinedColor key={i} color={color} setColor={setColor} />
                     ))}
                 </div>
             ))}
@@ -558,36 +472,34 @@ function PredefinedColors({ setColor }: { setColor: (color: Color) => void }) {
     );
 }
 
-function PredefinedColor({ hsv, setColor }: { hsv: [number, number, number], setColor: (color: Color) => void }) {
-    const [h, s, v] = hsv;
-    const [r, g, b] = hsvToRgb(h, s, v);
-
+function PredefinedColor({ color: [title, r, g, b], setColor }: { color: [string, number, number, number], setColor: (color: Color) => void }) {
     return (
         <button
-            className="predefined-color"
-            style={{ backgroundColor: `rgb(${255 * r}, ${255 * g}, ${255 * b})` }}
-            onClick={() => setColor([r, g, b, 1.0])}
+            className={classes.predefinedColor}
+            style={{ backgroundColor: `rgb(${r}, ${g}, ${b})` }}
+            onClick={() => setColor([r / 255, g / 255, b / 255, 1])}
+            title={title}
         />
     );
 }
 
 function hsvToRgb(h: number, s: number, v: number) {
-    const RECIP_60 = 1 / 60;
-    const x_div_c = 1 - Math.abs((h * RECIP_60) % 2 - 1);
+    const xDivC = 1 - Math.abs((h / 60) % 2 - 1);
+
     const [rc, rx, gc, gx, bc, bx] = h < 60 ? [1, 0, 0, 1, 0, 0] :
         h < 120 ? [0, 1, 1, 0, 0, 0] :
         h < 180 ? [0, 0, 1, 0, 0, 1] :
         h < 240 ? [0, 0, 0, 1, 1, 0] :
         h < 300 ? [0, 1, 0, 0, 1, 0] :
         [1, 0, 0, 0, 0, 1];
-    const value_times_255 = v;
-    const c_times_255 = value_times_255 * s;
-    const x_times_255 = x_div_c * c_times_255;
-    const m_times_255 = value_times_255 - c_times_255;
 
-    const r = rc * c_times_255 + rx * x_times_255 + m_times_255;
-    const g = gc * c_times_255 + gx * x_times_255 + m_times_255;
-    const b = bc * c_times_255 + bx * x_times_255 + m_times_255;
+    const c = v * s;
+    const x = xDivC * c;
+    const m = v - c;
+
+    const r = rc * c + rx * x + m;
+    const g = gc * c + gx * x + m;
+    const b = bc * c + bx * x + m;
 
     return [r, g, b];
 }

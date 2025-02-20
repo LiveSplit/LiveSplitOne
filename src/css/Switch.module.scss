@@ -1,3 +1,10 @@
+.label {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 .switch {
     position: relative;
     width: 35px;

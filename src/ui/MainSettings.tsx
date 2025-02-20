@@ -49,7 +49,7 @@ export interface State {
 }
 
 interface Callbacks {
-    renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
+    renderViewWithSidebar(renderedView: React.JSX.Element, sidebarContent: React.JSX.Element): React.JSX.Element,
     closeMainSettings(save: boolean, newGeneralSettings: GeneralSettings): void,
     onServerConnectionOpened(serverConnection: LiveSplitServer): void,
     onServerConnectionClosed(): void,

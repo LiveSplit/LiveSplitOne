@@ -2,7 +2,7 @@ import * as React from "react";
 
 import LiveSplitIcon from "../assets/icon.svg";
 import { Markdown } from "../util/Markdown";
-import * as variables from "../css/variables.scss";
+import * as variables from "../css/variables.icss.scss";
 
 import "../css/About.scss";
 
@@ -11,7 +11,7 @@ export interface Props {
 }
 
 interface Callbacks {
-    renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
+    renderViewWithSidebar(renderedView: React.JSX.Element, sidebarContent: React.JSX.Element): React.JSX.Element,
     openTimerView(): void,
 }
 

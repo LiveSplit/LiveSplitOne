@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import {
     getSplitsInfos, SplitsInfo, deleteSplits, copySplits, loadSplits,
     storeRunWithoutDisposing, storeSplitsKey,
@@ -9,10 +9,10 @@ import { toast } from "react-toastify";
 import { openFileAsArrayBuffer, exportFile, convertFileToArrayBuffer, FILE_EXT_SPLITS } from "../util/FileUtil";
 import { Option, bug, maybeDisposeAndThen } from "../util/OptionUtil";
 import DragUpload from "./DragUpload";
-import { ContextMenuTrigger, ContextMenu, MenuItem } from "react-contextmenu";
 import { GeneralSettings } from "./MainSettings";
 import { LSOCommandSink } from "./LSOCommandSink";
 import { showDialog } from "./Dialog";
+import { ContextMenu, MenuItem, Position } from "./ContextMenu";
 
 import "../css/SplitsSelection.scss";
 
@@ -37,7 +37,7 @@ interface Callbacks {
     openRunEditor(editingInfo: EditingInfo): void,
     setSplitsKey(newKey?: number): void,
     openTimerView(): void,
-    renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
+    renderViewWithSidebar(renderedView: React.JSX.Element, sidebarContent: React.JSX.Element): React.JSX.Element,
     saveSplits(): Promise<void>,
 }
 
@@ -112,14 +112,6 @@ export class SplitsSelection extends React.Component<Props, State> {
     private renderSavedSplitsRow(key: number, info: SplitsInfo) {
         const isOpened = key === this.props.openedSplitsKey;
 
-        const segmentIconContextMenuId = `splits-${key}-context-menu`;
-        let exportContextTrigger: any = null;
-        const exportButtonToggleMenu = (e: any) => {
-            if (exportContextTrigger) {
-                exportContextTrigger.handleContextClick(e);
-            }
-        };
-
         return (
             <div className={isOpened ? "splits-row selected" : "splits-row"} key={key}>
                 {this.splitsTitle(info)}
@@ -134,30 +126,11 @@ export class SplitsSelection extends React.Component<Props, State> {
                                 <button aria-label="Edit Splits" onClick={() => this.editSplits(key)}>
                                     <i className="fa fa-edit" aria-hidden="true" />
                                 </button>
-                                <button aria-label="Export Splits" onClick={(e) => exportButtonToggleMenu(e)}>
-                                    <ContextMenuTrigger
-                                        id={segmentIconContextMenuId}
-                                        ref={(c) => exportContextTrigger = c}
-                                    >
-                                        <i className="fa fa-upload" aria-hidden="true" />
-                                    </ContextMenuTrigger>
-                                </button>
-                                <ContextMenu id={segmentIconContextMenuId}>
-                                    <MenuItem className="tooltip" onClick={(_) => this.exportSplits(key, info)}>
-                                        Export to File
-                                        <span className="tooltip-text">
-                                            Export the splits to a file on your computer.
-                                        </span>
-                                    </MenuItem>
-                                    {
-                                        this.props.generalSettings.splitsIoIntegration && <MenuItem className="tooltip" onClick={(_) => this.uploadSplitsToSplitsIO(key)}>
-                                            Upload to Splits.io
-                                            <span className="tooltip-text">
-                                                Upload the splits to splits.io.
-                                            </span>
-                                        </MenuItem>
-                                    }
-                                </ContextMenu>
+                                <ExportButton
+                                    splitsIoIntegration={this.props.generalSettings.splitsIoIntegration}
+                                    exportSplits={() => this.exportSplits(key, info)}
+                                    uploadSplitsToSplitsIO={() => this.uploadSplitsToSplitsIO(key)}
+                                />
                             </>
                     }
                     <button aria-label="Copy Splits" onClick={() => this.copySplits(key)}>
@@ -427,4 +400,43 @@ export class SplitsSelection extends React.Component<Props, State> {
             run[Symbol.dispose]();
         }
     }
+}
+
+function ExportButton({
+    splitsIoIntegration,
+    exportSplits,
+    uploadSplitsToSplitsIO,
+}: {
+    splitsIoIntegration: boolean;
+    exportSplits: () => void;
+    uploadSplitsToSplitsIO: () => void;
+}) {
+    const [position, setPosition] = useState<Position | null>(null);
+
+    return (
+        <>
+            <button aria-label="Export Splits" onClick={(e) => setPosition({ x: e.clientX, y: e.clientY })}>
+                <i className="fa fa-upload" aria-hidden="true" />
+            </button>
+            {position && (
+                <ContextMenu position={position} onClose={() => setPosition(null)}>
+                    <MenuItem className="contextmenu-item tooltip" onClick={exportSplits}>
+                        Export to File
+                        <span className="tooltip-text">
+                            Export the splits to a file on your computer.
+                        </span>
+                    </MenuItem>
+                    {splitsIoIntegration && (
+                        <MenuItem className="contextmenu-item tooltip" onClick={uploadSplitsToSplitsIO}>
+                            Upload to Splits.io
+                            <span className="tooltip-text">
+                                Upload the splits to splits.io.
+                            </span>
+                        </MenuItem>
+                    )}
+                </ContextMenu>
+
+            )}
+        </>
+    );
 }

@@ -29,8 +29,8 @@ export interface ExtendedSettingsDescriptionJson {
 }
 
 export interface ExtendedSettingsDescriptionFieldJson {
-    text: string | JSX.Element,
-    tooltip: string | JSX.Element,
+    text: string | React.JSX.Element,
+    tooltip: string | React.JSX.Element,
     value: ExtendedSettingsDescriptionValueJson,
 }
 
@@ -193,7 +193,7 @@ export class JsonSettingValueFactory implements SettingValueFactory<ExtendedSett
 
 export class SettingsComponent<T> extends React.Component<Props<T>> {
     public render() {
-        const settingsRows: JSX.Element[] = [];
+        const settingsRows: React.JSX.Element[] = [];
         const { factory } = this.props;
 
         this.props.state.fields.forEach((field, valueIndex) => {
@@ -218,7 +218,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     <div className="settings-value-box">
                         <input
                             type="number"
-                            className="number"
+                            className="number text-box"
                             value={value.UInt}
                             min="0"
                             onChange={(e) => {
@@ -235,7 +235,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     <div className="settings-value-box">
                         <input
                             type="number"
-                            className="number"
+                            className="number text-box"
                             value={value.Int}
                             onChange={(e) => {
                                 this.props.setValue(
@@ -283,6 +283,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     component = (
                         <div className="settings-value-box">
                             <input
+                                className="text-box"
                                 value={value.String}
                                 onChange={(e) => {
                                     this.props.setValue(
@@ -344,6 +345,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     if (value.OptionalString !== null) {
                         children.push(
                             <input
+                                className="text-box"
                                 value={value.OptionalString}
                                 onChange={(e) => {
                                     this.props.setValue(
@@ -365,6 +367,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                 component = (
                     <div className="settings-value-box removable-string">
                         <input
+                            className="text-box"
                             value={value.RemovableString || ""}
                             onChange={(e) => {
                                 if (factory.fromRemovableString) {
@@ -551,7 +554,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     }
                 };
 
-                const children: JSX.Element[] = [
+                const children: React.JSX.Element[] = [
                     <select
                         value={type}
                         onChange={(e) => {
@@ -676,7 +679,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     }
                 };
 
-                const children: JSX.Element[] = [
+                const children: React.JSX.Element[] = [
                     <select
                         value={type}
                         onChange={(e) => {
@@ -1020,6 +1023,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     } else {
                         children.push(
                             <input
+                                className="text-box"
                                 value={family}
                                 onChange={(e) => {
                                     this.props.setValue(
@@ -1154,7 +1158,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     }
                 };
 
-                const children: JSX.Element[] = [
+                const children: React.JSX.Element[] = [
                     <select
                         value={type}
                         onChange={(e) => {
@@ -1231,7 +1235,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                 let blur = 0;
                 const gradient = value.LayoutBackground;
 
-                const children: JSX.Element[] = [];
+                const children: React.JSX.Element[] = [];
 
                 const colorsToValue = (
                     type: string,

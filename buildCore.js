@@ -28,11 +28,17 @@ if (process.argv.some((v) => v === "--max-opt")) {
 if (process.argv.some((v) => v === "--unstable")) {
     // Relaxed SIMD is not supported by Firefox and Safari yet.
     rustFlags += ",+relaxed-simd";
+
+    // Not supported by any browser yet.
+    rustFlags += ",+wide-arithmetic";
 }
 
 // Use the nightly toolchain, which enables some more optimizations.
 if (process.argv.some((v) => v === "--nightly")) {
-    toolchain = "+nightly";
+    // FIXME: Nightly is broken since the LLVM 20 upgrade. We need to wait for
+    // stdarch (which has the fix already) to be updated:
+    // https://github.com/rust-lang/stdarch/pull/1719
+    toolchain = "+nightly-2025-02-17";
     cargoFlags +=
         " -Z build-std=std,panic_abort -Z build-std-features=panic_immediate_abort";
     rustFlags += " -Z wasm-c-abi=spec";

@@ -9,6 +9,7 @@ import webpack from "webpack";
 import { execSync } from "child_process";
 import path from "path";
 import { fileURLToPath } from 'url';
+import { defineReactCompilerLoaderOption, reactCompilerLoader } from "react-compiler-webpack";
 
 function parseChangelog() {
     return execSync("git log --grep \"^Changelog: \" -10")
@@ -182,6 +183,16 @@ export default async (env, argv) => {
                 {
                     test: /\.tsx?$/,
                     use: [
+                        ...(isProduction ? [{
+                            loader: reactCompilerLoader,
+                            options: defineReactCompilerLoaderOption({
+                                babelTransFormOpt: {
+                                    plugins: [
+                                        "@babel/plugin-proposal-explicit-resource-management",
+                                    ],
+                                },
+                            }),
+                        }] : []),
                         {
                             loader: "ts-loader",
                             options: {
@@ -202,7 +213,9 @@ export default async (env, argv) => {
                             loader: "css-loader",
                             options: {
                                 importLoaders: 1,
-                                modules: "icss",
+                                modules: {
+                                    auto: true,
+                                },
                             },
                         },
                         "sass-loader",

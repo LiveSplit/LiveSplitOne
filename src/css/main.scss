@@ -1,7 +1,7 @@
 @use 'sass:math';
 
 @use 'browser_source';
-@use 'variables';
+@use 'variables.icss';
 
 @font-face {
   font-family: timer;
@@ -25,8 +25,9 @@ body {
 .Toastify {
   .toast-class {
     font-family: "fira", sans-serif;
-    background: variables.$sidebar-background-color !important;
-    border: 2px solid variables.$border-color !important;
+    background: rgba(28, 28, 28, .8) !important;
+    backdrop-filter: blur(5px);
+    border: 2px solid rgba(255, 255, 255, .25) !important;
     border-radius: 10px !important;
     min-height: 48px !important;
 

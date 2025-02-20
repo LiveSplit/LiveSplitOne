@@ -1,11 +1,10 @@
 @use 'sass:math';
 
-@use "ContextMenu";
 @use "Markdown";
 @use "mobile";
 @use "Table";
 @use "Toggle";
-@use "variables";
+@use "variables.icss";
 
 $tab-bar-height: 30px + math.div(variables.$ui-margin, 2);
 $tab-width: 625px;
@@ -18,7 +17,6 @@ $small-font-size: 13px;
 $small-button-padding: 1px 3px 1px 3px;
 
 .run-editor {
-  @include ContextMenu.context-menu;
   @include Markdown.markdown;
   @include Table.table;
   @include Toggle.toggle;
@@ -205,18 +203,10 @@ $small-button-padding: 1px 3px 1px 3px;
       }
 
       &.segment-icon-container {
-        width: $segment-icon-size;
+        height: $segment-icon-size;
         cursor: pointer;
-
-        div {
-          height: $segment-icon-size;
-
-          .segment-icon {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-          }
-        }
+        display: flex;
+        justify-content: center;
       }
     }
 

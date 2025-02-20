@@ -1,13 +1,11 @@
 @use 'mobile';
-@use 'ContextMenu';
 @use 'Table';
 @use 'Toggle';
-@use "variables";
+@use "variables.icss";
 
 .layout-editor-outer {
   display: inline-flex;
 
-  @include ContextMenu.context-menu;
   @include Table.table;
   @include Toggle.toggle;
 

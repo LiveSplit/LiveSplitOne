@@ -48,7 +48,7 @@ interface Callbacks {
     openLayoutView(): void,
     openSplitsView(): void,
     openMainSettings(): void,
-    renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element): JSX.Element,
+    renderViewWithSidebar(renderedView: React.JSX.Element, sidebarContent: React.JSX.Element): React.JSX.Element,
     onServerConnectionClosed(): void,
     onServerConnectionOpened(serverConnection: LiveSplitServer): void,
 }

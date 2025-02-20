@@ -40,7 +40,7 @@ cargo install wasm-bindgen-cli
 You need to set up some npm modules before compiling the project:
 
 ```bash
-npm install -f
+npm install
 ```
 
 You are now ready to build livesplit-core, which powers LiveSplit One:

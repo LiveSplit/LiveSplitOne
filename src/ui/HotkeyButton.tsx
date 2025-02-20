@@ -51,7 +51,7 @@ export default class HotkeyButton extends React.Component<Props, State> {
     }
 
     public render() {
-        let buttonText: Option<string> | JSX.Element = null;
+        let buttonText: Option<string> | React.JSX.Element = null;
         if (this.props.value != null) {
             buttonText = this.state.resolvedKey;
         } else if (this.state.listener != null) {
