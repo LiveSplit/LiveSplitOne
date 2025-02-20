@@ -33,7 +33,7 @@ export class TextBox extends React.Component<Props> {
             <div className={className}>
                 <input
                     list={name}
-                    type="text"
+                    type="text text-box"
                     required
                     className={this.props.className}
                     value={this.props.value}

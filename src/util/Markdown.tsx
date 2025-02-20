@@ -33,7 +33,7 @@ function replaceTwitchEmotes(text: string): string {
     });
 }
 
-export function replaceFlag(countryCode: string): JSX.Element {
+export function replaceFlag(countryCode: string): React.JSX.Element {
     const url = `https://www.speedrun.com/images/flags/${countryCode}.png`;
 
     return <img className="flag" src={url} alt={countryCode} />;
@@ -43,7 +43,7 @@ export const Markdown = React.memo(renderMarkdown);
 
 export function renderMarkdown({ markdown, unsafe }: { markdown: string,
     unsafe?: boolean,
-}): JSX.Element {
+}): React.JSX.Element {
     const markdownWithEmotes = replaceTwitchEmotes(markdown);
     const html = (unsafe ? UNSAFE : SAFE).render(markdownWithEmotes);
 

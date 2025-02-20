@@ -1,14 +1,14 @@
 import React from "react";
 
-import "../css/Switch.scss";
+import * as classes from "../css/Switch.module.scss";
 
 export default function Switch({ checked, setIsChecked }: {
     checked: boolean,
     setIsChecked: (checked: boolean) => void,
 }) {
     return (
-        <label style={{ cursor: "pointer", display: "flex", justifyContent: "center", alignItems: "center" }}>
-            <div className="switch">
+        <label className={classes.label}>
+            <div className={classes.switch}>
                 <input type="checkbox" checked={checked} onChange={(e) => setIsChecked(e.target.checked)} />
                 <span />
             </div>

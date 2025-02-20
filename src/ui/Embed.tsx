@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Option } from "../util/OptionUtil";
 
-export function resolveEmbed(uri: string): Option<JSX.Element> {
+export function resolveEmbed(uri: string): Option<React.JSX.Element> {
     const youtube = tryYoutubeFromUri(uri);
     if (youtube != null) {
         return youtube;
@@ -13,7 +13,7 @@ export function resolveEmbed(uri: string): Option<JSX.Element> {
     return <p><a href={uri} target="_blank">{uri}</a></p>;
 }
 
-function tryYoutubeFromUri(uri: string): Option<JSX.Element> {
+function tryYoutubeFromUri(uri: string): Option<React.JSX.Element> {
     const youtubeBase = /https?:\/\/www\.youtube\.com\/watch\?v=([A-z0-9-]+)&?/;
     let result = youtubeBase.exec(uri);
     if (result === null) {
@@ -26,7 +26,7 @@ function tryYoutubeFromUri(uri: string): Option<JSX.Element> {
     return null;
 }
 
-function tryTwitchFromUri(uri: string): Option<JSX.Element> {
+function tryTwitchFromUri(uri: string): Option<React.JSX.Element> {
     const twitchBase = /https?:\/\/(www\.)?(go\.)?twitch\.tv\/.*\/v\/(\w+)&?/;
     const twitchBase2 = /https?:\/\/(www\.)?(go\.)?twitch\.tv\/videos\/(\w+)&?/;
     let result = twitchBase.exec(uri);
@@ -39,7 +39,7 @@ function tryTwitchFromUri(uri: string): Option<JSX.Element> {
     return null;
 }
 
-function videoIframe(videoSource: string): JSX.Element {
+function videoIframe(videoSource: string): React.JSX.Element {
     return (
         <div className="video-outer-container">
             <div className="video-inner-container">
@@ -55,11 +55,11 @@ function videoIframe(videoSource: string): JSX.Element {
     );
 }
 
-function resolveYoutube(videoId: string): JSX.Element {
+function resolveYoutube(videoId: string): React.JSX.Element {
     return videoIframe(`https://www.youtube.com/embed/${videoId}?wmode=transparent`);
 }
 
-function resolveTwitch(videoId: string): JSX.Element {
+function resolveTwitch(videoId: string): React.JSX.Element {
     const domain = window.location.hostname;
     return videoIframe(`https://player.twitch.tv/?video=${videoId}&parent=${domain}&autoplay=false`);
 }

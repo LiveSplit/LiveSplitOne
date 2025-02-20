@@ -25,7 +25,7 @@ import { LSOCommandSink } from "./LSOCommandSink";
 import DialogContainer from "./Dialog";
 import { createHotkeys, HotkeyImplementation } from "../platform/Hotkeys";
 
-import * as variables from "../css/variables.scss";
+import * as variables from "../css/variables.icss.scss";
 
 import "react-toastify/dist/ReactToastify.css";
 import "../css/LiveSplit.scss";
@@ -426,7 +426,7 @@ export class LiveSplit extends React.Component<Props, State> {
         </>;
     }
 
-    public renderViewWithSidebar(renderedView: JSX.Element, sidebarContent: JSX.Element) {
+    public renderViewWithSidebar(renderedView: React.JSX.Element, sidebarContent: React.JSX.Element) {
         return (
             <div className={this.state.isDesktop ? "" : "is-mobile"}>
                 <Sidebar

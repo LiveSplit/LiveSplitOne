@@ -1,9 +1,8 @@
 @use 'sass:math';
 
 @use 'mobile';
-@use 'variables';
+@use 'variables.icss';
 @use 'Table';
-@use 'ContextMenu';
 
 $loading-text-font-size: 40px;
 $splits-row-width: 500px;
@@ -85,8 +84,6 @@ $splits-row-height: 40px;
         .splits-row-buttons {
           flex-shrink: 0;
           margin-left: variables.$ui-large-margin;
-
-          @include ContextMenu.context-menu;
 
           button {
             background: transparent;

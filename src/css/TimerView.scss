@@ -1,7 +1,7 @@
 @use 'sass:math';
 
 @use 'mobile';
-@use 'variables';
+@use 'variables.icss';
 
 .buttons {
   margin-top: variables.$ui-large-margin - math.div(variables.$ui-margin, 2);

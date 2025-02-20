@@ -36,7 +36,7 @@ export default class Layout extends React.Component<Props, unknown> {
                 <div className="layout" style={{ width: this.props.width, height: this.props.height }}>
                     <div
                         style={{ width: "inherit", height: "inherit" }}
-                        ref={(element) => element?.appendChild(this.props.renderer.element())}
+                        ref={(element) => { element?.appendChild(this.props.renderer.element()); }}
                     />
                     {
                         this.props.allowResize && <div className="resizable-layout">
