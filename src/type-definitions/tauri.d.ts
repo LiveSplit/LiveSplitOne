@@ -1,13 +1,13 @@
 declare var __TAURI__: GlobalTauri | undefined;
 
 declare interface GlobalTauri {
-    tauri: TauriModule;
+    core: CoreModule;
     event: TauriEventModule;
     notification: TauriNotificationModule;
     http: TauriHttpModule;
 }
 
-declare interface TauriModule {
+declare interface CoreModule {
     invoke<T>(cmd: string, args?: Record<string, unknown>): Promise<T>;
 }
 
@@ -27,15 +27,7 @@ declare interface TauriNotification {
 }
 
 declare interface TauriHttpModule {
-    fetch(url: string, options: { responseType: 3 }): Promise<TauriResponse<Array<number>>>;
-}
-
-declare interface TauriResponse<T> {
-    data: T,
-}
-
-declare interface TauriHttpOptions {
-    responseType: number;
+    fetch(url: string, init?: RequestInit): Promise<Response>;
 }
 
 declare interface TauriEvent {

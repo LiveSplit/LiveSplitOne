@@ -13,11 +13,11 @@ use livesplit_core::{
     networking::server_protocol::Command,
     HotkeyConfig, HotkeySystem, TimeSpan, TimingMethod,
 };
-use tauri::{Manager, Window};
+use tauri::{Emitter, Manager, WebviewWindow};
 
 struct State {
     hotkey_system: RwLock<Option<HotkeySystem<TauriCommandSink>>>,
-    window: RwLock<Option<Window>>,
+    window: RwLock<Option<WebviewWindow>>,
 }
 
 #[tauri::command]
@@ -70,7 +70,7 @@ fn settings_changed(state: tauri::State<'_, State>, always_on_top: bool) {
 }
 
 #[derive(Clone)]
-struct TauriCommandSink(Arc<RwLock<Option<Window>>>);
+struct TauriCommandSink(Arc<RwLock<Option<WebviewWindow>>>);
 
 impl TauriCommandSink {
     fn send(&self, command: Command) {
@@ -207,12 +207,14 @@ fn main() {
     let sink = TauriCommandSink(Arc::new(RwLock::new(None)));
     let hotkey_system = RwLock::new(HotkeySystem::new(sink.clone()).ok());
     tauri::Builder::default()
+        .plugin(tauri_plugin_http::init())
+        .plugin(tauri_plugin_dialog::init())
         .manage(State {
             hotkey_system,
             window: RwLock::new(None),
         })
         .setup(move |app| {
-            let main_window = app.windows().values().next().unwrap().clone();
+            let main_window = app.webview_windows().values().next().unwrap().clone();
             app.state::<State>()
                 .window
                 .write()
