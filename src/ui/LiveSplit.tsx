@@ -672,7 +672,7 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     private updateTauriSettings(generalSettings: GeneralSettings) {
-        window.__TAURI__?.tauri.invoke("settings_changed", {
+        window.__TAURI__?.core.invoke("settings_changed", {
             alwaysOnTop: generalSettings.alwaysOnTop,
         });
     }

@@ -8,18 +8,17 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [build-dependencies]
-tauri-build = { version = "1", features = [] }
+tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "1", features = [
-    "dialog-all",
-    "http-all",
-    "linux-protocol-headers",
+tauri = { version = "2", features = [
 ] }
 serde = { version = "1" }
 serde_derive = { version = "1" }
 serde_json = "1"
 livesplit-core = { path = "../livesplit-core" }
+tauri-plugin-dialog = "2"
+tauri-plugin-http = "2"
 
 [features]
 # This feature is used for production builds or when a dev server is not specified, DO NOT REMOVE!!

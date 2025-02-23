@@ -14,12 +14,12 @@ class GlobalHotkeys implements HotkeyImplementation {
 
     public async config(): Promise<HotkeyConfig> {
         return expect(HotkeyConfig.parseJson(
-            await window.__TAURI__!.tauri.invoke("get_hotkey_config"),
+            await window.__TAURI__!.core.invoke("get_hotkey_config"),
         ), "Couldn't parse the hotkey config.");
     }
 
     public setConfig(config: HotkeyConfig): void {
-        window.__TAURI__!.tauri.invoke("set_hotkey_config", { config: config.asJson() });
+        window.__TAURI__!.core.invoke("set_hotkey_config", { config: config.asJson() });
         if (this.hotkeySystem != null) {
             this.hotkeySystem.setConfig(config);
         } else {
@@ -28,7 +28,7 @@ class GlobalHotkeys implements HotkeyImplementation {
     }
 
     setConfigJson(configJson: unknown): void {
-        window.__TAURI__!.tauri.invoke("set_hotkey_config", { config: configJson });
+        window.__TAURI__!.core.invoke("set_hotkey_config", { config: configJson });
         if (this.hotkeySystem != null) {
             const config = HotkeyConfig.parseJson(configJson);
             if (config != null) {
@@ -38,17 +38,17 @@ class GlobalHotkeys implements HotkeyImplementation {
     }
 
     public activate(): void {
-        window.__TAURI__!.tauri.invoke("set_hotkey_activation", { active: true });
+        window.__TAURI__!.core.invoke("set_hotkey_activation", { active: true });
         this.hotkeySystem?.activate();
     }
 
     public deactivate(): void {
-        window.__TAURI__!.tauri.invoke("set_hotkey_activation", { active: false });
+        window.__TAURI__!.core.invoke("set_hotkey_activation", { active: false });
         this.hotkeySystem?.deactivate();
     }
 
     public resolve(keyCode: string): Promise<string> {
-        return window.__TAURI__!.tauri.invoke("resolve_hotkey", { keyCode });
+        return window.__TAURI__!.core.invoke("resolve_hotkey", { keyCode });
     }
 }
 

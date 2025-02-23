@@ -1,15 +1,9 @@
 export async function corsBustingFetch(url: string, signal?: AbortSignal): Promise<ArrayBuffer> {
+    let response: Response | undefined;
     if (window.__TAURI__ != null) {
-        const response = await window.__TAURI__.http.fetch(
-            url,
-            { responseType: 3 },
-        );
-        if (signal != null) {
-            signal.throwIfAborted();
-        }
-        return new Uint8Array(response.data);
+        response = await window.__TAURI__.http.fetch(url, { signal });
     } else {
-        const response = await fetch(url, { signal });
-        return response.arrayBuffer();
+        response = await fetch(url, { signal });
     }
+    return response.arrayBuffer();
 }
