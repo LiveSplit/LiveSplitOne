@@ -21,7 +21,7 @@
     "react-dom": "^19.0.0",
     "react-resizable": "^3.0.4",
     "react-sidebar": "^3.0.2",
-    "react-toastify": "^11.0.3"
+    "react-toastify": "^11.0.5"
   },
   "devDependencies": {
     "@babel/plugin-proposal-explicit-resource-management": "^7.25.9",
