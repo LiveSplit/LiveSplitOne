@@ -89,12 +89,16 @@
   }
 
   select {
-    background: variables.$dark-row-color;
+    background: variables.$dark-row-color url("data:image/svg+xml;charset=UTF-8,%3Csvg width='12' height='12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='0,4 2,4 5,7 8,4 10,4 5,9' fill='%23fff'/%3E%3C/svg%3E") no-repeat right 4px center;
     font-size: 15px;
     border: 1px solid variables.$border-color;
     color: white;
     text-overflow: ellipsis;
     font-family: inherit;
+    padding-left: 4px;
+    padding-right: 20px;
+    border-radius: 0;
+    appearance: none;
   }
 
   .settings-table {
