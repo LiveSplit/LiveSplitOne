@@ -12,8 +12,7 @@ import {
     regionListLength,
 } from "../api/GameList";
 import { Category, Run, Variable, getRun } from "../api/SpeedrunCom";
-import { Option, expect, map, assert } from "../util/OptionUtil";
-import { downloadById } from "../util/SplitsIO";
+import { Option, expect, map } from "../util/OptionUtil";
 import { formatLeaderboardTime } from "../util/TimeUtil";
 import { resolveEmbed } from "./Embed";
 import {
@@ -26,7 +25,7 @@ import { GeneralSettings } from "./MainSettings";
 import { showDialog } from "./Dialog";
 import { corsBustingFetch } from "../platform/CORS";
 import { ContextMenu, MenuItem, Position } from "./ContextMenu";
-import { Check, Download, X } from "lucide-react";
+import { Check, X } from "lucide-react";
 
 import "../css/RunEditor.scss";
 
@@ -855,7 +854,6 @@ export class RunEditor extends React.Component<Props, State> {
                         <th>Player</th>
                         <th>Time</th>
                         {variableColumns?.map((variable) => <th>{variable.name}</th>)}
-                        {this.props.generalSettings.splitsIoIntegration && <th>Splits</th>}
                     </tr>
                 </thead>
                 <tbody className="table-body">
@@ -1038,26 +1036,6 @@ export class RunEditor extends React.Component<Props, State> {
                                     </a>
                                 </td>
                                 {renderedVariables}
-                                {
-                                    this.props.generalSettings.splitsIoIntegration && <td className="splits-download-column" style={{
-                                        padding: 0,
-                                        paddingTop: 0.8,
-                                    }}>
-                                        {
-                                            map(run.splits, (s) => <Download
-                                                size={20}
-                                                strokeWidth={2.5}
-                                                onClick={(e) => {
-                                                    e.stopPropagation();
-                                                    this.downloadSplits(run, s.uri);
-                                                }}
-                                                style={{
-                                                    cursor: "pointer",
-                                                }}
-                                            />)
-                                        }
-                                    </td>
-                                }
                             </tr>,
                             expandedRow,
                         ];
@@ -1920,47 +1898,6 @@ export class RunEditor extends React.Component<Props, State> {
 
     private getTab(): Tab {
         return this.state.tab;
-    }
-
-    private async downloadSplits<T>(apiRun: Run<T>, apiUri: string) {
-        const baseUri = "https://splits.io/api/v3/runs/";
-        assert(apiUri.startsWith(baseUri), "Unexpected Splits.io URL");
-        const splitsId = apiUri.slice(baseUri.length);
-        const signal = this.state.abortController.signal;
-        try {
-            const gameName = this.state.editor.game;
-            const categoryName = this.state.editor.category;
-            const runDownload = downloadById(splitsId, signal);
-            const platformListDownload = downloadPlatformList();
-            const regionListDownload = downloadRegionList();
-            const gameInfoDownload = downloadGameInfo(gameName);
-            await gameInfoDownload;
-            await platformListDownload;
-            await regionListDownload;
-            using run = await runDownload;
-            const newEditor = LiveSplit.RunEditor.new(run);
-            if (newEditor !== null) {
-                associateRun(
-                    newEditor,
-                    gameName,
-                    categoryName,
-                    apiRun,
-                );
-
-                // TODO Oh no, not internal pointer stuff
-                this.props.editor[Symbol.dispose]();
-                this.props.editor.ptr = newEditor.ptr;
-
-                this.update();
-            } else {
-                toast.error("The downloaded splits are not suitable for being edited.");
-            }
-        } catch {
-            if (signal.aborted) {
-                return;
-            }
-            toast.error("Failed to download the splits.");
-        }
     }
 
     private toggleExpandLeaderboardRow(rowIndex: number) {

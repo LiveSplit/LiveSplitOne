@@ -8,7 +8,6 @@ import {
 } from "../livesplit-core";
 import { FILE_EXT_LAYOUTS, convertFileToArrayBuffer, convertFileToString, exportFile, openFileAsString } from "../util/FileUtil";
 import { Option, assertNull, expect, maybeDisposeAndThen, panic } from "../util/OptionUtil";
-import * as SplitsIO from "../util/SplitsIO";
 import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
 import { RunEditor as RunEditorComponent } from "./RunEditor";
 import { GeneralSettings, MainSettings as SettingsEditorComponent } from "./MainSettings";
@@ -155,17 +154,7 @@ export class LiveSplit extends React.Component<Props, State> {
 
         hotkeySystem = createHotkeys(commandSink.getCommandSink(), props.hotkeys);
 
-        if (window.location.hash.indexOf("#/splits-io/") === 0) {
-            const loadingRun = Run.new();
-            loadingRun.setGameName("Loading...");
-            loadingRun.setCategoryName("Loading...");
-            loadingRun.pushSegment(Segment.new("Time"));
-            assertNull(
-                commandSink.setRun(loadingRun),
-                "The Default Loading Run should be a valid Run",
-            );
-            this.loadFromSplitsIO(window.location.hash.substring("#/splits-io/".length));
-        } else if (props.splits !== undefined) {
+        if (props.splits !== undefined) {
             using result = Run.parseArray(props.splits, "");
             if (result.parsedSuccessfully()) {
                 using r = result.unwrap();
@@ -784,15 +773,6 @@ export class LiveSplit extends React.Component<Props, State> {
             this.setRun(run, () => { throw Error("Empty Splits are not supported."); });
         } else {
             throw Error("Couldn't parse the splits.");
-        }
-    }
-
-    private async loadFromSplitsIO(id: string) {
-        try {
-            const run = await SplitsIO.downloadById(id);
-            this.setRun(run, () => toast.error("The downloaded splits are not valid."));
-        } catch (_) {
-            toast.error("Failed to download the splits.");
         }
     }
 

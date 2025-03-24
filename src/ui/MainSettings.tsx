@@ -18,7 +18,6 @@ export interface GeneralSettings {
     showManualGameTime: ManualGameTimeSettings | false,
     saveOnReset: boolean,
     speedrunComIntegration: boolean,
-    splitsIoIntegration: boolean,
     serverUrl?: string,
     alwaysOnTop?: boolean,
 }
@@ -240,11 +239,6 @@ export class MainSettings extends React.Component<Props, State> {
                                 value: { Bool: this.state.generalSettings.speedrunComIntegration },
                             },
                             {
-                                text: "Splits.io Integration",
-                                tooltip: "Allows you to upload splits to and download splits from splits.io.",
-                                value: { Bool: this.state.generalSettings.splitsIoIntegration },
-                            },
-                            {
                                 text: <div style={{
                                     display: "flex",
                                     alignItems: "center",
@@ -281,16 +275,6 @@ export class MainSettings extends React.Component<Props, State> {
                                 }
                                 break;
                             case 1:
-                                if ("Bool" in value) {
-                                    this.setState({
-                                        generalSettings: {
-                                            ...this.state.generalSettings,
-                                            splitsIoIntegration: value.Bool,
-                                        },
-                                    });
-                                }
-                                break;
-                            case 2:
                                 if ("String" in value) {
                                     try {
                                         this.props.callbacks.onServerConnectionOpened(new LiveSplitServer(
