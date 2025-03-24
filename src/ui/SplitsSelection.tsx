@@ -1,10 +1,9 @@
-import React, { useState } from "react";
+import * as React from "react";
 import {
     getSplitsInfos, SplitsInfo, deleteSplits, copySplits, loadSplits,
     storeRunWithoutDisposing, storeSplitsKey,
 } from "../storage";
 import { Run, Segment, TimerPhase } from "../livesplit-core";
-import * as SplitsIO from "../util/SplitsIO";
 import { toast } from "react-toastify";
 import { openFileAsArrayBuffer, exportFile, convertFileToArrayBuffer, FILE_EXT_SPLITS } from "../util/FileUtil";
 import { Option, bug, maybeDisposeAndThen } from "../util/OptionUtil";
@@ -12,8 +11,7 @@ import DragUpload from "./DragUpload";
 import { GeneralSettings } from "./MainSettings";
 import { LSOCommandSink } from "./LSOCommandSink";
 import { showDialog } from "./Dialog";
-import { ContextMenu, MenuItem, Position } from "./ContextMenu";
-import { ArrowLeft, Circle, Copy, Download, DownloadCloud, FolderOpen, Plus, Save, SquarePen, Trash, Upload, UploadCloud } from "lucide-react";
+import { ArrowLeft, Circle, Copy, Download, FolderOpen, Plus, Save, SquarePen, Trash, Upload } from "lucide-react";
 
 import "../css/SplitsSelection.scss";
 
@@ -75,11 +73,6 @@ export class SplitsSelection extends React.Component<Props, State> {
                         <button onClick={() => this.importSplits()}>
                             <Download strokeWidth={2.5} /> Import
                         </button>
-                        {
-                            this.props.generalSettings.splitsIoIntegration && <button onClick={() => this.importSplitsFromSplitsIO()}>
-                                <DownloadCloud strokeWidth={2.5} /> From Splits.io
-                            </button>
-                        }
                     </div>
                     {
                         this.state.splitsInfos?.length > 0 &&
@@ -126,11 +119,9 @@ export class SplitsSelection extends React.Component<Props, State> {
                                 <button aria-label="Edit Splits" onClick={() => this.editSplits(key)}>
                                     <SquarePen strokeWidth={2.5} />
                                 </button>
-                                <ExportButton
-                                    splitsIoIntegration={this.props.generalSettings.splitsIoIntegration}
-                                    exportSplits={() => this.exportSplits(key, info)}
-                                    uploadSplitsToSplitsIO={() => this.uploadSplitsToSplitsIO(key)}
-                                />
+                                <button aria-label="Export Splits" onClick={() => this.exportSplits(key, info)}>
+                                    <Upload strokeWidth={2.5} />
+                                </button>
                             </>
                     }
                     <button aria-label="Copy Splits" onClick={() => this.copySplits(key)}>
@@ -181,11 +172,6 @@ export class SplitsSelection extends React.Component<Props, State> {
                 <button onClick={(_) => this.exportTimerSplits()}>
                     <Upload strokeWidth={2.5} /> Export
                 </button>
-                {
-                    this.props.generalSettings.splitsIoIntegration && <button onClick={(_) => this.uploadTimerToSplitsIO()}>
-                        <UploadCloud strokeWidth={2.5} /> Upload to Splits.io
-                    </button>
-                }
                 <hr />
                 <button onClick={(_) => this.props.callbacks.openTimerView()}>
                     <ArrowLeft strokeWidth={2.5} /> Back
@@ -334,57 +320,6 @@ export class SplitsSelection extends React.Component<Props, State> {
         this.refreshDb();
     }
 
-    private async uploadSplitsToSplitsIO(key: number): Promise<Option<Window>> {
-        try {
-            const splitsData = await loadSplits(key);
-            if (splitsData === undefined) {
-                throw Error("The splits key is invalid.");
-            }
-
-            const claimUri = await SplitsIO.uploadLss(new Blob([splitsData]));
-            return window.open(claimUri);
-        } catch (_) {
-            toast.error("Failed to upload the splits.");
-            return null;
-        }
-    }
-
-    private async uploadTimerToSplitsIO(): Promise<Option<Window>> {
-        const lss = this.props.commandSink.saveAsLssBytes();
-
-        try {
-            const claimUri = await SplitsIO.uploadLss(new Blob([lss]));
-            return window.open(claimUri);
-        } catch (_) {
-            toast.error("Failed to upload the splits.");
-            return null;
-        }
-    }
-
-    private async importSplitsFromSplitsIO() {
-        const response = await showDialog({
-            title: "Import Splits from Splits.io",
-            description: "Specify the Splits.io URL or ID:",
-            textInput: true,
-            buttons: ["Import", "Cancel"],
-        });
-        const result = response[0];
-        let id = response[1];
-
-        if (result !== 0) {
-            return;
-        }
-        if (id.indexOf("https://splits.io/") === 0) {
-            id = id.substring("https://splits.io/".length);
-        }
-        try {
-            const run = await SplitsIO.downloadById(id);
-            await this.storeRun(run);
-        } catch (_) {
-            toast.error("Failed to download the splits.");
-        }
-    }
-
     private async addNewSplits() {
         const run = Run.new();
         run.pushSegment(Segment.new("Time"));
@@ -403,43 +338,4 @@ export class SplitsSelection extends React.Component<Props, State> {
             run[Symbol.dispose]();
         }
     }
-}
-
-function ExportButton({
-    splitsIoIntegration,
-    exportSplits,
-    uploadSplitsToSplitsIO,
-}: {
-    splitsIoIntegration: boolean;
-    exportSplits: () => void;
-    uploadSplitsToSplitsIO: () => void;
-}) {
-    const [position, setPosition] = useState<Position | null>(null);
-
-    return (
-        <>
-            <button aria-label="Export Splits" onClick={(e) => setPosition({ x: e.clientX, y: e.clientY })}>
-                <Upload strokeWidth={2.5} />
-            </button>
-            {position && (
-                <ContextMenu position={position} onClose={() => setPosition(null)}>
-                    <MenuItem className="contextmenu-item tooltip" onClick={exportSplits}>
-                        Export to File
-                        <span className="tooltip-text">
-                            Export the splits to a file on your computer.
-                        </span>
-                    </MenuItem>
-                    {splitsIoIntegration && (
-                        <MenuItem className="contextmenu-item tooltip" onClick={uploadSplitsToSplitsIO}>
-                            Upload to Splits.io
-                            <span className="tooltip-text">
-                                Upload the splits to splits.io.
-                            </span>
-                        </MenuItem>
-                    )}
-                </ContextMenu>
-
-            )}
-        </>
-    );
 }

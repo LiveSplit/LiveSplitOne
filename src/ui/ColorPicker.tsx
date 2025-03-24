@@ -1,6 +1,5 @@
 import React, { ChangeEvent, MouseEvent } from "react";
 import { useEffect, useState } from "react";
-import { colorToCss } from "../util/ColorUtil";
 import { Color } from "../livesplit-core";
 import { Pipette } from "lucide-react";
 
@@ -8,6 +7,15 @@ import * as classes from "../css/ColorPicker.module.scss";
 
 const EyeDropper = (window as any).EyeDropper;
 const hasEyeDropper = !!EyeDropper;
+
+function colorToCss(color: Color): string {
+    const r = Math.round(color[0] * 255);
+    const g = Math.round(color[1] * 255);
+    const b = Math.round(color[2] * 255);
+    const a = color[3];
+
+    return `rgba(${r},${g},${b},${a})`;
+}
 
 export default function ColorPicker({ color, setColor }: { color: Color, setColor: (color: Color) => void }) {
     const [isShowing, setIsShowing] = useState(false);

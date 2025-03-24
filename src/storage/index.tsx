@@ -259,7 +259,6 @@ export async function loadGeneralSettings(): Promise<GeneralSettings> {
         showManualGameTime: generalSettings.showManualGameTime ?? false,
         saveOnReset: generalSettings.saveOnReset ?? false,
         speedrunComIntegration: generalSettings.speedrunComIntegration ?? true,
-        splitsIoIntegration: generalSettings.splitsIoIntegration ?? true,
         serverUrl: generalSettings.serverUrl,
         alwaysOnTop: generalSettings.alwaysOnTop ?? (isTauri ? true : undefined),
     };
