@@ -9,6 +9,7 @@ import { WebRenderer } from "../livesplit-core/livesplit_core";
 import { GeneralSettings, MANUAL_GAME_TIME_MODE_SEGMENT_TIMES } from "./MainSettings";
 import { LiveSplitServer } from "../api/LiveSplitServer";
 import { LSOCommandSink } from "./LSOCommandSink";
+import { ArrowDown, ArrowUp, Circle, Info, Layers, List, Pause, Play, Settings, X } from "lucide-react";
 
 import LiveSplitIcon from "../assets/icon.svg";
 
@@ -118,7 +119,7 @@ export class TimerView extends React.Component<Props, State> {
             </div>
             {
                 this.props.generalSettings.showControlButtons && <div className="buttons" style={{ width: this.props.layoutWidth }}>
-                    <div className="small">
+                    <div className="control-buttons">
                         <button
                             aria-label={this.props.currentPhase === TimerPhase.NotRunning
                                 ? "Start"
@@ -129,31 +130,26 @@ export class TimerView extends React.Component<Props, State> {
                             disabled={this.props.currentPhase === TimerPhase.Ended}
                             onClick={(_) => this.props.commandSink.togglePauseOrStart()}
                         >
-                            <i
-                                className={
-                                    this.props.currentPhase === TimerPhase.NotRunning ||
-                                        this.props.currentPhase === TimerPhase.Paused
-                                        ? "fa fa-play"
-                                        : "fa fa-pause"
-                                }
-                                aria-hidden="true"
-                            />
+                            {
+                                (this.props.currentPhase === TimerPhase.NotRunning ||
+                                    this.props.currentPhase === TimerPhase.Paused)
+                                    ? <Play fill="currentColor" strokeWidth={0} />
+                                    : <Pause fill="currentColor" strokeWidth={0} />
+                            }
                         </button>
                         <button
                             aria-label="Undo Split"
                             disabled={this.props.currentSplitIndex <= 0}
                             onClick={(_) => this.props.commandSink.undoSplit()}
                         >
-                            <i className="fa fa-arrow-up" aria-hidden="true" />
+                            <ArrowUp strokeWidth={3.5} />
                         </button>
-                    </div>
-                    <div className="small">
                         <button
                             aria-label="Reset"
                             disabled={this.props.currentPhase === TimerPhase.NotRunning}
                             onClick={(_) => this.props.commandSink.reset()}
                         >
-                            <i className="fa fa-times" aria-hidden="true" />
+                            <X strokeWidth={3.5} />
                         </button>
                         <button
                             aria-label="Skip Split"
@@ -163,7 +159,7 @@ export class TimerView extends React.Component<Props, State> {
                             }
                             onClick={(_) => this.props.commandSink.skipSplit()}
                         >
-                            <i className="fa fa-arrow-down" aria-hidden="true" />
+                            <ArrowDown strokeWidth={3.5} />
                         </button>
                     </div>
                 </div>
@@ -219,22 +215,28 @@ export class TimerView extends React.Component<Props, State> {
                     <span className="livesplit-icon">
                         <img src={LiveSplitIcon} alt="LiveSplit Logo" />
                     </span>
-                    <h1> LiveSplit One</h1>
+                    <h1>LiveSplit One</h1>
                 </div>
                 <hr className="livesplit-title-separator" />
                 <button onClick={(_) => this.props.callbacks.openSplitsView()}>
-                    <i className="fa fa-list" aria-hidden="true" /> Splits
-                    {
-                        this.props.splitsModified &&
-                        <i className="fa fa-circle modified-icon" aria-hidden="true" />
-                    }
+                    <List strokeWidth={2.5} />
+                    <span>
+                        Splits
+                        {
+                            this.props.splitsModified &&
+                                <Circle strokeWidth={0} size={12} fill="currentColor" className="modified-icon" />
+                        }
+                    </span>
                 </button>
                 <button onClick={(_) => this.props.callbacks.openLayoutView()}>
-                    <i className="fa fa-layer-group" aria-hidden="true" /> Layout
-                    {
-                        this.props.layoutModified &&
-                        <i className="fa fa-circle modified-icon" aria-hidden="true" />
-                    }
+                    <Layers strokeWidth={2.5} />
+                    <span>
+                        Layout
+                        {
+                            this.props.layoutModified &&
+                                <Circle strokeWidth={0} size={12} fill="currentColor" className="modified-icon" />
+                        }
+                    </span>
                 </button>
                 <hr />
                 <h2>Compare Against</h2>
@@ -271,10 +273,10 @@ export class TimerView extends React.Component<Props, State> {
                 </div>
                 <hr />
                 <button onClick={() => this.props.callbacks.openMainSettings()}>
-                    <i className="fa fa-cog" aria-hidden="true" /> Settings
+                    <Settings strokeWidth={2.5} /> Settings
                 </button>
                 <button onClick={(_) => this.props.callbacks.openAboutView()}>
-                    <i className="fa fa-info-circle" aria-hidden="true" /> About
+                    <Info strokeWidth={2.5} /> About
                 </button>
             </div>
         );

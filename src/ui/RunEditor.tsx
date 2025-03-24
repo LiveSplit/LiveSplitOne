@@ -26,6 +26,7 @@ import { GeneralSettings } from "./MainSettings";
 import { showDialog } from "./Dialog";
 import { corsBustingFetch } from "../platform/CORS";
 import { ContextMenu, MenuItem, Position } from "./ContextMenu";
+import { Check, Download, X } from "lucide-react";
 
 import "../css/RunEditor.scss";
 
@@ -229,13 +230,13 @@ export class RunEditor extends React.Component<Props, State> {
                         className="toggle-left"
                         onClick={(_) => this.close(true)}
                     >
-                        <i className="fa fa-check" aria-hidden="true" /> OK
+                        <Check strokeWidth={2.5} /> OK
                     </button>
                     <button
                         className="toggle-right"
                         onClick={(_) => this.close(false)}
                     >
-                        <i className="fa fa-times" aria-hidden="true" /> Cancel
+                        <X strokeWidth={2.5} /> Cancel
                     </button>
                 </div>
             </div>
@@ -1038,16 +1039,21 @@ export class RunEditor extends React.Component<Props, State> {
                                 </td>
                                 {renderedVariables}
                                 {
-                                    this.props.generalSettings.splitsIoIntegration && <td className="splits-download-column">
+                                    this.props.generalSettings.splitsIoIntegration && <td className="splits-download-column" style={{
+                                        padding: 0,
+                                        paddingTop: 0.8,
+                                    }}>
                                         {
-                                            map(run.splits, (s) => <i
+                                            map(run.splits, (s) => <Download
+                                                size={20}
+                                                strokeWidth={2.5}
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     this.downloadSplits(run, s.uri);
                                                 }}
-                                                className="fa fa-download"
-                                                style={{ cursor: "pointer" }}
-                                                aria-hidden="true"
+                                                style={{
+                                                    cursor: "pointer",
+                                                }}
                                             />)
                                         }
                                     </td>

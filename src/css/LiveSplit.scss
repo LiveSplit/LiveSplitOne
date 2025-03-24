@@ -2,18 +2,18 @@
 @use 'Sidebar';
 @use 'variables.icss';
 
-$sidebar-button-height: 42px;
+$sidebar-button-size: 40px;
 
 .livesplit-container {
-  .sidebar-button {
+  .open-sidebar-button {
     position: fixed;
     bottom: variables.$ui-margin;
     left: variables.$ui-margin;
     z-index: 10;
     font-size: 24px;
-    padding: 8px;
-    margin: 0;
-    height: $sidebar-button-height;
+    padding: 0;
+    width: $sidebar-button-size;
+    height: $sidebar-button-size;
   }
 
   .view-container {
@@ -26,9 +26,9 @@ $sidebar-button-height: 42px;
 
     @include mobile.mobile {
       display: block;
-      margin: 0 0 ($sidebar-button-height + 2 * variables.$ui-margin) 0;
+      margin: 0 0 ($sidebar-button-size + 2 * variables.$ui-margin) 0;
       min-width: 100%;
-      min-height: calc(100% - #{$sidebar-button-height + 2 * variables.$ui-margin});
+      min-height: calc(100% - #{$sidebar-button-size + 2 * variables.$ui-margin});
     }
   }
 }

@@ -6,7 +6,7 @@
 @use "Toggle";
 @use "variables.icss";
 
-$tab-bar-height: 30px + math.div(variables.$ui-margin, 2);
+$tab-bar-height: 30px;
 $tab-width: 625px;
 $button-width: 160px;
 $label-size: 14px;
@@ -242,8 +242,9 @@ $small-button-padding: 1px 3px 1px 3px;
       }
     }
 
-    @include mobile.mobile {
-      .side-buttons {
+    .side-buttons {
+      margin-bottom: variables.$ui-margin;
+      @include mobile.mobile {
         width: 100%;
       }
     }
@@ -252,6 +253,7 @@ $small-button-padding: 1px 3px 1px 3px;
   .btn-group {
     display: flex;
     flex-direction: column;
+    gap: variables.$ui-margin;
     margin-top: $tab-bar-height;
     margin-right: math.div(variables.$ui-large-margin, 2);
     width: $button-width;
@@ -259,25 +261,17 @@ $small-button-padding: 1px 3px 1px 3px;
     button {
       font-size: 15px;
       width: $button-width;
-      margin-right: 0;
       min-height: 30px;
 
       @include mobile.mobile {
-        margin-top: 0;
-        margin-bottom: variables.$ui-margin;
-        margin-right: variables.$ui-margin;
-        width: calc(50% - #{variables.$ui-margin})
+        width: 100%;
       }
     }
 
-    button:nth-child(1) {
-      margin-top: 0;
-    }
-
     @include mobile.mobile {
-      width: calc(100% - #{variables.$ui-margin});
-      flex-direction: row;
-      flex-wrap: wrap;
+      width: calc(100% - 2 * #{variables.$ui-margin});
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       margin-top: 0;
       margin-left: variables.$ui-margin;
     }
@@ -407,8 +401,6 @@ $small-button-padding: 1px 3px 1px 3px;
   }
 
   .filter-table {
-    margin-top: math.div(variables.$ui-margin, 2);
-    margin-bottom: math.div(variables.$ui-margin, 2);
     width: 100%;
 
     &.table {

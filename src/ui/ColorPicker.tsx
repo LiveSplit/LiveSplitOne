@@ -2,6 +2,7 @@ import React, { ChangeEvent, MouseEvent } from "react";
 import { useEffect, useState } from "react";
 import { colorToCss } from "../util/ColorUtil";
 import { Color } from "../livesplit-core";
+import { Pipette } from "lucide-react";
 
 import * as classes from "../css/ColorPicker.module.scss";
 
@@ -199,24 +200,27 @@ function ColorPreview({ color, setColor }: { color: Color, setColor: (color: Col
     return (
         <>
             {hasEyeDropper && (
-                <i
+                <div
                     style={{ cursor: "pointer" }}
                     title="Eye Dropper"
-                    className="fa fa-eye-dropper"
-                    aria-hidden="true"
-                    onClick={async () => {
-                        try {
-                            const eyeDropper = new EyeDropper();
-                            const result = await eyeDropper.open();
-                            if (result?.sRGBHex) {
-                                const parsed = parseHex(result.sRGBHex);
-                                if (parsed) {
-                                    setColor([...parsed, 1]);
+                >
+                    <Pipette
+                        size={20}
+                        aria-hidden="true"
+                        onClick={async () => {
+                            try {
+                                const eyeDropper = new EyeDropper();
+                                const result = await eyeDropper.open();
+                                if (result?.sRGBHex) {
+                                    const parsed = parseHex(result.sRGBHex);
+                                    if (parsed) {
+                                        setColor([...parsed, 1]);
+                                    }
                                 }
-                            }
-                        } catch { }
-                    }}
-                />
+                            } catch { }
+                        }}
+                    />
+                </div>
             )}
             <div
                 className={classes.colorPreview}

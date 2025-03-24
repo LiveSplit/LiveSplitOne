@@ -70,7 +70,7 @@ jobs:
       - name: Install Rust
         uses: hecrj/setup-rust-action@v2
         with:
-          rust-version: nightly-2025-02-17
+          rust-version: nightly
           components: rust-src
           targets: wasm32-unknown-unknown
 

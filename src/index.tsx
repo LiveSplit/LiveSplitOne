@@ -27,7 +27,6 @@ if (process.env.NODE_ENV === "production" && window.__TAURI__ == null && "servic
 preloadWasm();
 
 import "./css/main.scss";
-import("./css/font-awesome.css");
 
 try {
     const { LiveSplit, React, createRoot } = await import("./indexDelayed");

@@ -5,25 +5,20 @@
 
 .buttons {
   margin-top: variables.$ui-large-margin - math.div(variables.$ui-margin, 2);
+  max-width: 2 * variables.$button-max-width + math.div(variables.$ui-margin, 2);
 
-  .small {
+  .control-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: variables.$ui-margin;
+
     button {
-      width: calc(50% - #{math.div(variables.$ui-margin, 2)});
-      max-width: variables.$button-max-width;
-    }
-
-    button:first-child {
-      margin-right: math.div(variables.$ui-margin, 2);
-    }
-
-    button:last-child {
-      margin-left: math.div(variables.$ui-margin, 2);
+      width: 100%;
     }
   }
 
   .manual-game-time {
     width: calc(100% - math.div(variables.$ui-margin, 2));
-    max-width: 2 * variables.$button-max-width + math.div(variables.$ui-margin, 2);
     color: variables.$button-text-color;
     background-color: transparent;
     border: none;

@@ -8,6 +8,7 @@ import { FRAME_RATE_AUTOMATIC as FRAME_RATE_BATTERY_AWARE, FRAME_RATE_MATCH_SCRE
 import { LiveSplitServer } from "../api/LiveSplitServer";
 import { Option } from "../util/OptionUtil";
 import { LSOCommandSink } from "./LSOCommandSink";
+import { Check, FlaskConical, X } from "lucide-react";
 
 import "../css/SettingsEditor.scss";
 
@@ -244,9 +245,13 @@ export class MainSettings extends React.Component<Props, State> {
                                 value: { Bool: this.state.generalSettings.splitsIoIntegration },
                             },
                             {
-                                text: <>
-                                    Server Connection <i className="fa fa-flask" style={{ color: "#07bc0c" }} aria-hidden="true" />
-                                </>,
+                                text: <div style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: "0.25em",
+                                }}>
+                                    Server Connection <FlaskConical size={16} color="#07bc0c" strokeWidth={2.5} />
+                                </div>,
                                 tooltip: <>
                                     Allows you to connect to a WebSocket server that can control the timer by sending various commands. The commands are currently a subset of the commands the original LiveSplit supports.<br /><br />
                                     This feature is <b>experimental</b> and the protocol will likely change in the future.
@@ -322,13 +327,13 @@ export class MainSettings extends React.Component<Props, State> {
                         className="toggle-left"
                         onClick={(_) => this.props.callbacks.closeMainSettings(true, this.state.generalSettings)}
                     >
-                        <i className="fa fa-check" aria-hidden="true" /> OK
+                        <Check strokeWidth={2.5} /> OK
                     </button>
                     <button
                         className="toggle-right"
                         onClick={(_) => this.props.callbacks.closeMainSettings(false, this.state.generalSettings)}
                     >
-                        <i className="fa fa-times" aria-hidden="true" /> Cancel
+                        <X strokeWidth={2.5} /> Cancel
                     </button>
                 </div>
             </div>

@@ -1,6 +1,7 @@
 import * as React from "react";
 import { Option, map, expect } from "../util/OptionUtil";
 import { hotkeySystem } from "./LiveSplit";
+import { Circle, Trash } from "lucide-react";
 
 import "../css/HotkeyButton.scss";
 
@@ -55,7 +56,7 @@ export default class HotkeyButton extends React.Component<Props, State> {
         if (this.props.value != null) {
             buttonText = this.state.resolvedKey;
         } else if (this.state.listener != null) {
-            buttonText = <i className="fa fa-circle" aria-hidden="true" />;
+            buttonText = <Circle strokeWidth={0} size={16} fill="currentColor" />;
         }
 
         return (
@@ -72,12 +73,7 @@ export default class HotkeyButton extends React.Component<Props, State> {
                 </button>
                 {
                     map(this.props.value, () => (
-                        <button
-                            className="hotkey-clear"
-                            onClick={() => this.props.setValue(null)}
-                        >
-                            <i className="fa fa-trash" aria-hidden="true" />
-                        </button>
+                        <Trash className="trash" strokeWidth={2.5} size={20} onClick={() => this.props.setValue(null)} />
                     ))
                 }
                 {this.state.listener != null &&
