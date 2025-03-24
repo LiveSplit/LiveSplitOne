@@ -7,6 +7,7 @@ import { WebRenderer } from "../livesplit-core/livesplit_core";
 import { GeneralSettings } from "./MainSettings";
 import { LSOCommandSink } from "./LSOCommandSink";
 import { ContextMenu, MenuItem, Separator, Position } from "./ContextMenu";
+import { ArrowDown, ArrowUp, Check, Copy, Plus, Trash, X } from "lucide-react";
 
 import "../css/LayoutEditor.scss";
 
@@ -139,27 +140,27 @@ export class LayoutEditor extends React.Component<Props, State> {
                                 onClick={(_) => this.removeComponent()}
                                 disabled={!this.state.editor.buttons.can_remove}
                             >
-                                <i className="fa fa-minus" aria-hidden="true"></i>
+                                <Trash strokeWidth={2.5} />
                             </button>
                             <button
                                 aria-label="Duplicate Component"
                                 onClick={(_) => this.duplicateComponent()}
                             >
-                                <i className="fa fa-clone" aria-hidden="true"></i>
+                                <Copy strokeWidth={2.5} />
                             </button>
                             <button
                                 aria-label="Move Component Up"
                                 onClick={(_) => this.moveComponentUp()}
                                 disabled={!this.state.editor.buttons.can_move_up}
                             >
-                                <i className="fa fa-arrow-up" aria-hidden="true"></i>
+                                <ArrowUp strokeWidth={2.5} />
                             </button>
                             <button
                                 aria-label="Move Component Down"
                                 onClick={(_) => this.moveComponentDown()}
                                 disabled={!this.state.editor.buttons.can_move_down}
                             >
-                                <i className="fa fa-arrow-down" aria-hidden="true"></i>
+                                <ArrowDown strokeWidth={2.5} />
                             </button>
                         </div>
                         <table className="layout-editor-component-list table">
@@ -236,13 +237,13 @@ export class LayoutEditor extends React.Component<Props, State> {
                         className="toggle-left"
                         onClick={(_) => this.props.callbacks.closeLayoutEditor(true)}
                     >
-                        <i className="fa fa-check" aria-hidden="true" /> OK
+                        <Check strokeWidth={2.5} /> OK
                     </button>
                     <button
                         className="toggle-right"
                         onClick={(_) => this.props.callbacks.closeLayoutEditor(false)}
                     >
-                        <i className="fa fa-times" aria-hidden="true" /> Cancel
+                        <X strokeWidth={2.5} /> Cancel
                     </button>
                 </div>
             </div>
@@ -312,7 +313,7 @@ function AddComponentButton({
                 aria-label="Add Component"
                 onClick={(e) => setPosition({ x: e.clientX, y: e.clientY })}
             >
-                <i className="fa fa-plus" aria-hidden="true"></i>
+                <Plus strokeWidth={2.5} />
             </button>
             {position && (
                 <ContextMenu position={position} onClose={() => setPosition(null)}>

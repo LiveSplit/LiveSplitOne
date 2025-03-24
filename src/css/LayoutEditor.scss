@@ -12,7 +12,7 @@
   .layout-editor-inner {
     width: variables.$settings-table-width;
     display: inline-flex;
-    margin-bottom: variables.$ui-large-margin - variables.$ui-margin;
+    margin-bottom: variables.$ui-large-margin;
 
     table {
       width: 100%;
@@ -21,25 +21,16 @@
     .btn-group {
       display: flex;
       flex-direction: column;
+      gap: variables.$ui-margin;
 
       button {
         width: 40px;
         font-size: 15px;
-        display: block;
-      }
-
-      button:nth-child(1) {
-        margin-top: 0;
       }
 
       @include mobile.mobile {
         flex-direction: row;
-        margin-left: variables.$ui-margin;
-        margin-top: variables.$ui-margin;
-
-        button {
-          margin: 0 variables.$ui-margin variables.$ui-large-margin 0;
-        }
+        margin: variables.$ui-large-margin;
       }
     }
 

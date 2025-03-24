@@ -13,6 +13,7 @@ import { GeneralSettings } from "./MainSettings";
 import { LSOCommandSink } from "./LSOCommandSink";
 import { showDialog } from "./Dialog";
 import { ContextMenu, MenuItem, Position } from "./ContextMenu";
+import { ArrowLeft, Circle, Copy, Download, DownloadCloud, FolderOpen, Plus, Save, SquarePen, Trash, Upload, UploadCloud } from "lucide-react";
 
 import "../css/SplitsSelection.scss";
 
@@ -61,7 +62,6 @@ export class SplitsSelection extends React.Component<Props, State> {
         if (this.state.splitsInfos == null) {
             content = (
                 <div className="loading">
-                    <div className="fa fa-spinner fa-spin"></div>
                     <div className="loading-text">Loading...</div>
                 </div>
             );
@@ -70,14 +70,14 @@ export class SplitsSelection extends React.Component<Props, State> {
                 <div className="splits-selection-container">
                     <div className="main-actions">
                         <button onClick={() => this.addNewSplits()}>
-                            <i className="fa fa-plus" aria-hidden="true" /> Add
+                            <Plus strokeWidth={2.5} /> Add
                         </button>
                         <button onClick={() => this.importSplits()}>
-                            <i className="fa fa-download" aria-hidden="true" /> Import
+                            <Download strokeWidth={2.5} /> Import
                         </button>
                         {
                             this.props.generalSettings.splitsIoIntegration && <button onClick={() => this.importSplitsFromSplitsIO()}>
-                                <i className="fa fa-download" aria-hidden="true" /> From Splits.io
+                                <DownloadCloud strokeWidth={2.5} /> From Splits.io
                             </button>
                         }
                     </div>
@@ -121,10 +121,10 @@ export class SplitsSelection extends React.Component<Props, State> {
                             ? null
                             : <>
                                 <button aria-label="Open Splits" onClick={() => this.openSplits(key)}>
-                                    <i className="fa fa-folder-open" aria-hidden="true" />
+                                    <FolderOpen strokeWidth={2.5} />
                                 </button>
                                 <button aria-label="Edit Splits" onClick={() => this.editSplits(key)}>
-                                    <i className="fa fa-edit" aria-hidden="true" />
+                                    <SquarePen strokeWidth={2.5} />
                                 </button>
                                 <ExportButton
                                     splitsIoIntegration={this.props.generalSettings.splitsIoIntegration}
@@ -134,10 +134,10 @@ export class SplitsSelection extends React.Component<Props, State> {
                             </>
                     }
                     <button aria-label="Copy Splits" onClick={() => this.copySplits(key)}>
-                        <i className="fa fa-clone" aria-hidden="true" />
+                        <Copy strokeWidth={2.5} />
                     </button>
                     <button aria-label="Remove Splits" onClick={() => this.deleteSplits(key)}>
-                        <i className="fa fa-trash" aria-hidden="true" />
+                        <Trash strokeWidth={2.5} />
                     </button>
                 </div>
             </div>
@@ -166,26 +166,29 @@ export class SplitsSelection extends React.Component<Props, State> {
                     const run = this.props.commandSink.getRun().clone();
                     this.props.callbacks.openRunEditor({ run });
                 }}>
-                    <i className="fa fa-edit" aria-hidden="true" /> Edit
+                    <SquarePen strokeWidth={2.5} /> Edit
                 </button>
                 <button onClick={(_) => this.saveSplits()}>
-                    <i className="fa fa-save" aria-hidden="true" /> Save
-                    {
-                        this.props.splitsModified &&
-                        <i className="fa fa-circle modified-icon" aria-hidden="true" />
-                    }
+                    <Save strokeWidth={2.5} />
+                    <span>
+                        Save
+                        {
+                            this.props.splitsModified &&
+                                <Circle strokeWidth={0} size={12} fill="currentColor" className="modified-icon" />
+                        }
+                    </span>
                 </button>
                 <button onClick={(_) => this.exportTimerSplits()}>
-                    <i className="fa fa-upload" aria-hidden="true" /> Export
+                    <Upload strokeWidth={2.5} /> Export
                 </button>
                 {
                     this.props.generalSettings.splitsIoIntegration && <button onClick={(_) => this.uploadTimerToSplitsIO()}>
-                        <i className="fa fa-upload" aria-hidden="true" /> Upload to Splits.io
+                        <UploadCloud strokeWidth={2.5} /> Upload to Splits.io
                     </button>
                 }
                 <hr />
                 <button onClick={(_) => this.props.callbacks.openTimerView()}>
-                    <i className="fa fa-caret-left" aria-hidden="true" /> Back
+                    <ArrowLeft strokeWidth={2.5} /> Back
                 </button>
             </div>
         );
@@ -416,7 +419,7 @@ function ExportButton({
     return (
         <>
             <button aria-label="Export Splits" onClick={(e) => setPosition({ x: e.clientX, y: e.clientY })}>
-                <i className="fa fa-upload" aria-hidden="true" />
+                <Upload strokeWidth={2.5} />
             </button>
             {position && (
                 <ContextMenu position={position} onClose={() => setPosition(null)}>

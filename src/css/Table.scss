@@ -57,13 +57,16 @@
     background: variables.$selected-row-color !important;
   }
 
-  .tab-bar>button {
-    font-size: 15px;
-    min-height: 30px;
-    border-bottom-right-radius: 0;
-    border-bottom-left-radius: 0;
-    margin-bottom: 0;
-    border-bottom: 0;
+  .tab-bar {
+    display: flex;
+
+    >button {
+      font-size: 15px;
+      min-height: 30px;
+      border-bottom-right-radius: 0;
+      border-bottom-left-radius: 0;
+      border-bottom: 0;
+    }
   }
 
   tr>td>input {
@@ -145,7 +148,11 @@
         }
 
         &.removable-string {
-          grid-template-columns: 1fr 30px;
+          grid-template-columns: 1fr 20px;
+
+          .trash {
+            cursor: pointer;
+          }
 
           button {
             margin: 0;

@@ -7,6 +7,7 @@ import { GeneralSettings } from "./MainSettings";
 import { LiveSplitServer } from "../api/LiveSplitServer";
 import { Option } from "../util/OptionUtil";
 import { LSOCommandSink } from "./LSOCommandSink";
+import { ArrowLeft, Circle, Download, ListRestart, Save, SquarePen, Upload } from "lucide-react";
 
 export interface Props {
     isDesktop: boolean,
@@ -84,27 +85,30 @@ export class LayoutView extends React.Component<Props> {
                 <h1>Layout</h1>
                 <hr />
                 <button onClick={(_) => this.props.callbacks.openLayoutEditor()}>
-                    <i className="fa fa-edit" aria-hidden="true" /> Edit
+                    <SquarePen strokeWidth={2.5} /> Edit
                 </button>
                 <button onClick={(_) => this.props.callbacks.saveLayout()}>
-                    <i className="fa fa-save" aria-hidden="true" /> Save
-                    {
-                        this.props.layoutModified &&
-                        <i className="fa fa-circle modified-icon" aria-hidden="true" />
-                    }
+                    <Save strokeWidth={2.5} />
+                    <span>
+                        Save
+                        {
+                            this.props.layoutModified &&
+                                <Circle strokeWidth={0} size={12} fill="currentColor" className="modified-icon" />
+                        }
+                    </span>
                 </button>
                 <button onClick={(_) => this.props.callbacks.importLayout()}>
-                    <i className="fa fa-download" aria-hidden="true" /> Import
+                    <Download strokeWidth={2.5} /> Import
                 </button>
                 <button onClick={(_) => this.props.callbacks.exportLayout()}>
-                    <i className="fa fa-upload" aria-hidden="true" /> Export
+                    <Upload strokeWidth={2.5} /> Export
                 </button>
                 <button onClick={(_) => this.props.callbacks.loadDefaultLayout()}>
-                    <i className="fa fa-sync" aria-hidden="true" /> Default
+                    <ListRestart strokeWidth={2.5} /> Default
                 </button>
                 <hr />
                 <button onClick={(_) => this.props.callbacks.openTimerView()}>
-                    <i className="fa fa-caret-left" aria-hidden="true" /> Back
+                    <ArrowLeft strokeWidth={2.5} /> Back
                 </button>
             </div>
         );

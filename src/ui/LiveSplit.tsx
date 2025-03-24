@@ -24,6 +24,7 @@ import { LiveSplitServer } from "../api/LiveSplitServer";
 import { LSOCommandSink } from "./LSOCommandSink";
 import DialogContainer from "./Dialog";
 import { createHotkeys, HotkeyImplementation } from "../platform/Hotkeys";
+import { Menu } from "lucide-react";
 
 import * as variables from "../css/variables.icss.scss";
 
@@ -434,7 +435,7 @@ export class LiveSplit extends React.Component<Props, State> {
                     docked={this.state.isDesktop}
                     open={this.state.sidebarOpen}
                     transitions={this.state.sidebarTransitionsEnabled}
-                    onSetOpen={((e: boolean) => this.onSetSidebarOpen(e)) as any}
+                    onSetOpen={(e) => this.onSetSidebarOpen(e)}
                     sidebarClassName="sidebar"
                     contentClassName="livesplit-container"
                     overlayClassName="sidebar-overlay"
@@ -444,9 +445,11 @@ export class LiveSplit extends React.Component<Props, State> {
                         !this.state.sidebarOpen &&
                         <button
                             aria-label="Open Sidebar"
-                            className="sidebar-button fa fa-bars"
-                            onClick={(() => this.onSetSidebarOpen(true)) as any}
-                        />
+                            className="open-sidebar-button"
+                            onClick={() => this.onSetSidebarOpen(true)}
+                        >
+                            <Menu size={30} strokeWidth={2.5} />
+                        </button>
                     }
                     <div className="view-container">
                         {renderedView}

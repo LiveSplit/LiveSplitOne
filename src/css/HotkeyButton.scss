@@ -13,7 +13,11 @@
     color: red;
   }
 
+  .trash {
+    cursor: pointer;
+  }
+
   display: grid;
-  grid-template-columns: 1fr 30px;
+  grid-template-columns: 1fr 20px;
   column-gap: variables.$ui-margin;
 }

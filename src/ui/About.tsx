@@ -3,6 +3,7 @@ import * as React from "react";
 import LiveSplitIcon from "../assets/icon.svg";
 import { Markdown } from "../util/Markdown";
 import * as variables from "../css/variables.icss.scss";
+import { ArrowLeft } from "lucide-react";
 
 import "../css/About.scss";
 
@@ -86,7 +87,7 @@ export class About extends React.Component<Props> {
                 <h1>About</h1>
                 <hr />
                 <button onClick={(_) => this.props.callbacks.openTimerView()}>
-                    <i className="fa fa-caret-left" aria-hidden="true" /> Back
+                    <ArrowLeft strokeWidth={2.5} /> Back
                 </button>
             </div>
         );

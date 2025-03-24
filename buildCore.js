@@ -35,10 +35,7 @@ if (process.argv.some((v) => v === "--unstable")) {
 
 // Use the nightly toolchain, which enables some more optimizations.
 if (process.argv.some((v) => v === "--nightly")) {
-    // FIXME: Nightly is broken since the LLVM 20 upgrade. We need to wait for
-    // stdarch (which has the fix already) to be updated:
-    // https://github.com/rust-lang/stdarch/pull/1719
-    toolchain = "+nightly-2025-02-17";
+    toolchain = "+nightly";
     cargoFlags +=
         " -Z build-std=std,panic_abort -Z build-std-features=panic_immediate_abort";
     rustFlags += " -Z wasm-c-abi=spec";

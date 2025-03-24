@@ -10,6 +10,7 @@ import { LiveSplitServer } from "../api/LiveSplitServer";
 import { showDialog } from "./Dialog";
 import { toast } from "react-toastify";
 import Switch from "./Switch";
+import { Trash } from "lucide-react";
 
 import "../css/Tooltip.scss";
 import "../css/LiveSplitServerButton.scss";
@@ -380,20 +381,16 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 }
                             }}
                         />
-                        <button
-                            onClick={() => {
-                                if (factory.fromRemovableEmptyString) {
-                                    this.props.setValue(
-                                        valueIndex,
-                                        factory.fromRemovableEmptyString(),
-                                    );
-                                } else {
-                                    throw Error("Method is not implemented");
-                                }
-                            }}
-                        >
-                            <i className="fa fa-trash" aria-hidden="true" />
-                        </button>
+                        <Trash className="trash" strokeWidth={2.5} size={20} onClick={() => {
+                            if (factory.fromRemovableEmptyString) {
+                                this.props.setValue(
+                                    valueIndex,
+                                    factory.fromRemovableEmptyString(),
+                                );
+                            } else {
+                                throw Error("Method is not implemented");
+                            }
+                        }} />
                     </div>
                 );
             } else if ("Accuracy" in value) {
