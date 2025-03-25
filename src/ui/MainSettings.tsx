@@ -1,10 +1,18 @@
 import * as React from "react";
 
 import { JsonSettingValueFactory, SettingsComponent } from "./Settings";
-import { SettingsDescriptionJson, SettingValue, HotkeyConfig } from "../livesplit-core";
+import {
+    SettingsDescriptionJson,
+    SettingValue,
+    HotkeyConfig,
+} from "../livesplit-core";
 import { toast } from "react-toastify";
 import { UrlCache } from "../util/UrlCache";
-import { FRAME_RATE_AUTOMATIC as FRAME_RATE_BATTERY_AWARE, FRAME_RATE_MATCH_SCREEN as FRAME_RATE_MATCH_SCREEN, FrameRateSetting } from "../util/FrameRate";
+import {
+    FRAME_RATE_AUTOMATIC as FRAME_RATE_BATTERY_AWARE,
+    FRAME_RATE_MATCH_SCREEN as FRAME_RATE_MATCH_SCREEN,
+    FrameRateSetting,
+} from "../util/FrameRate";
 import { LiveSplitServer } from "../api/LiveSplitServer";
 import { Option } from "../util/OptionUtil";
 import { LSOCommandSink } from "./LSOCommandSink";
@@ -13,17 +21,17 @@ import { Check, FlaskConical, X } from "lucide-react";
 import "../css/SettingsEditor.scss";
 
 export interface GeneralSettings {
-    frameRate: FrameRateSetting,
-    showControlButtons: boolean,
-    showManualGameTime: ManualGameTimeSettings | false,
-    saveOnReset: boolean,
-    speedrunComIntegration: boolean,
-    serverUrl?: string,
-    alwaysOnTop?: boolean,
+    frameRate: FrameRateSetting;
+    showControlButtons: boolean;
+    showManualGameTime: ManualGameTimeSettings | false;
+    saveOnReset: boolean;
+    speedrunComIntegration: boolean;
+    serverUrl?: string;
+    alwaysOnTop?: boolean;
 }
 
 export interface ManualGameTimeSettings {
-    mode: string,
+    mode: string;
 }
 
 export const MANUAL_GAME_TIME_MODE_SEGMENT_TIMES = "Segment Times";
@@ -33,27 +41,30 @@ export const MANUAL_GAME_TIME_SETTINGS_DEFAULT: ManualGameTimeSettings = {
 };
 
 export interface Props {
-    generalSettings: GeneralSettings,
-    hotkeyConfig: HotkeyConfig,
-    urlCache: UrlCache,
-    callbacks: Callbacks,
-    serverConnection: Option<LiveSplitServer>,
-    commandSink: LSOCommandSink,
-    allComparisons: string[],
-    allVariables: Set<string>,
+    generalSettings: GeneralSettings;
+    hotkeyConfig: HotkeyConfig;
+    urlCache: UrlCache;
+    callbacks: Callbacks;
+    serverConnection: Option<LiveSplitServer>;
+    commandSink: LSOCommandSink;
+    allComparisons: string[];
+    allVariables: Set<string>;
 }
 
 export interface State {
-    settings: SettingsDescriptionJson,
-    generalSettings: GeneralSettings,
+    settings: SettingsDescriptionJson;
+    generalSettings: GeneralSettings;
 }
 
 interface Callbacks {
-    renderViewWithSidebar(renderedView: React.JSX.Element, sidebarContent: React.JSX.Element): React.JSX.Element,
-    closeMainSettings(save: boolean, newGeneralSettings: GeneralSettings): void,
-    onServerConnectionOpened(serverConnection: LiveSplitServer): void,
-    onServerConnectionClosed(): void,
-    forceUpdate(): void,
+    renderViewWithSidebar(
+        renderedView: React.JSX.Element,
+        sidebarContent: React.JSX.Element,
+    ): React.JSX.Element;
+    closeMainSettings(save: boolean, newGeneralSettings: GeneralSettings): void;
+    onServerConnectionOpened(serverConnection: LiveSplitServer): void;
+    onServerConnectionClosed(): void;
+    forceUpdate(): void;
 }
 
 export class MainSettings extends React.Component<Props, State> {
@@ -69,38 +80,62 @@ export class MainSettings extends React.Component<Props, State> {
     public render() {
         const renderedView = this.renderView();
         const sidebarContent = this.renderSidebarContent();
-        return this.props.callbacks.renderViewWithSidebar(renderedView, sidebarContent);
+        return this.props.callbacks.renderViewWithSidebar(
+            renderedView,
+            sidebarContent,
+        );
     }
 
     private renderView() {
         const generalFields = [
             {
                 text: "Frame Rate",
-                tooltip: "Determines the frame rate at which to display the timer. \"Battery Aware\" tries determining the type of device and charging status to select a good frame rate. \"Match Screen\" makes the timer match the screen's refresh rate.",
+                tooltip:
+                    'Determines the frame rate at which to display the timer. "Battery Aware" tries determining the type of device and charging status to select a good frame rate. "Match Screen" makes the timer match the screen\'s refresh rate.',
                 value: {
                     CustomCombobox: {
-                        value: this.state.generalSettings.frameRate === FRAME_RATE_MATCH_SCREEN ? FRAME_RATE_MATCH_SCREEN : this.state.generalSettings.frameRate === FRAME_RATE_BATTERY_AWARE ? FRAME_RATE_BATTERY_AWARE : this.state.generalSettings.frameRate.toString() + " FPS",
-                        list: [FRAME_RATE_BATTERY_AWARE, "30 FPS", "60 FPS", "120 FPS", FRAME_RATE_MATCH_SCREEN],
+                        value:
+                            this.state.generalSettings.frameRate ===
+                            FRAME_RATE_MATCH_SCREEN
+                                ? FRAME_RATE_MATCH_SCREEN
+                                : this.state.generalSettings.frameRate ===
+                                    FRAME_RATE_BATTERY_AWARE
+                                  ? FRAME_RATE_BATTERY_AWARE
+                                  : this.state.generalSettings.frameRate.toString() +
+                                    " FPS",
+                        list: [
+                            FRAME_RATE_BATTERY_AWARE,
+                            "30 FPS",
+                            "60 FPS",
+                            "120 FPS",
+                            FRAME_RATE_MATCH_SCREEN,
+                        ],
                         mandatory: true,
-                    }
+                    },
                 },
             },
             {
                 text: "Save On Reset",
-                tooltip: "Determines whether to automatically save the splits when resetting the timer.",
+                tooltip:
+                    "Determines whether to automatically save the splits when resetting the timer.",
                 value: {
                     Bool: this.state.generalSettings.saveOnReset,
                 },
             },
             {
                 text: "Show Control Buttons",
-                tooltip: "Determines whether to show buttons beneath the timer that allow controlling it. When disabled, you have to use the hotkeys instead.",
+                tooltip:
+                    "Determines whether to show buttons beneath the timer that allow controlling it. When disabled, you have to use the hotkeys instead.",
                 value: { Bool: this.state.generalSettings.showControlButtons },
             },
             {
                 text: "Show Manual Game Time Input",
-                tooltip: "Shows a text box beneath the timer that allows you to manually input the game time. You start the timer and do splits by pressing the Enter key in the text box. Make sure to compare against \"Game Time\".",
-                value: { Bool: this.state.generalSettings.showManualGameTime !== false },
+                tooltip:
+                    'Shows a text box beneath the timer that allows you to manually input the game time. You start the timer and do splits by pressing the Enter key in the text box. Make sure to compare against "Game Time".',
+                value: {
+                    Bool:
+                        this.state.generalSettings.showManualGameTime !== false,
+                },
             },
         ];
 
@@ -109,13 +144,18 @@ export class MainSettings extends React.Component<Props, State> {
             manualGameTimeModeIndex = generalFields.length;
             generalFields.push({
                 text: "Manual Game Time Mode",
-                tooltip: "Determines whether to input the manual game time as segment times or split times.",
+                tooltip:
+                    "Determines whether to input the manual game time as segment times or split times.",
                 value: {
                     CustomCombobox: {
-                        value: this.state.generalSettings.showManualGameTime.mode,
-                        list: [MANUAL_GAME_TIME_MODE_SEGMENT_TIMES, MANUAL_GAME_TIME_MODE_SPLIT_TIMES],
+                        value: this.state.generalSettings.showManualGameTime
+                            .mode,
+                        list: [
+                            MANUAL_GAME_TIME_MODE_SEGMENT_TIMES,
+                            MANUAL_GAME_TIME_MODE_SPLIT_TIMES,
+                        ],
                         mandatory: false,
-                    }
+                    },
                 },
             });
         }
@@ -165,11 +205,19 @@ export class MainSettings extends React.Component<Props, State> {
                                     this.setState({
                                         generalSettings: {
                                             ...this.state.generalSettings,
-                                            frameRate: value.String === FRAME_RATE_MATCH_SCREEN
-                                                ? FRAME_RATE_MATCH_SCREEN
-                                                : value.String === FRAME_RATE_BATTERY_AWARE
-                                                    ? FRAME_RATE_BATTERY_AWARE
-                                                    : parseInt(value.String.split(' ')[0], 10) as FrameRateSetting,
+                                            frameRate:
+                                                value.String ===
+                                                FRAME_RATE_MATCH_SCREEN
+                                                    ? FRAME_RATE_MATCH_SCREEN
+                                                    : value.String ===
+                                                        FRAME_RATE_BATTERY_AWARE
+                                                      ? FRAME_RATE_BATTERY_AWARE
+                                                      : (parseInt(
+                                                            value.String.split(
+                                                                " ",
+                                                            )[0],
+                                                            10,
+                                                        ) as FrameRateSetting),
                                         },
                                     });
                                 }
@@ -199,21 +247,28 @@ export class MainSettings extends React.Component<Props, State> {
                                     this.setState({
                                         generalSettings: {
                                             ...this.state.generalSettings,
-                                            showManualGameTime: value.Bool ?
-                                                MANUAL_GAME_TIME_SETTINGS_DEFAULT : false,
+                                            showManualGameTime: value.Bool
+                                                ? MANUAL_GAME_TIME_SETTINGS_DEFAULT
+                                                : false,
                                         },
                                     });
                                 }
                                 break;
                             default:
-                                if (index === alwaysOnTopIndex && "Bool" in value) {
+                                if (
+                                    index === alwaysOnTopIndex &&
+                                    "Bool" in value
+                                ) {
                                     this.setState({
                                         generalSettings: {
                                             ...this.state.generalSettings,
                                             alwaysOnTop: value.Bool,
                                         },
                                     });
-                                } else if (index === manualGameTimeModeIndex && "String" in value) {
+                                } else if (
+                                    index === manualGameTimeModeIndex &&
+                                    "String" in value
+                                ) {
                                     this.setState({
                                         generalSettings: {
                                             ...this.state.generalSettings,
@@ -235,27 +290,51 @@ export class MainSettings extends React.Component<Props, State> {
                         fields: [
                             {
                                 text: "Speedrun.com Integration",
-                                tooltip: "Queries the list of games, categories, and the leaderboards from speedrun.com.",
-                                value: { Bool: this.state.generalSettings.speedrunComIntegration },
+                                tooltip:
+                                    "Queries the list of games, categories, and the leaderboards from speedrun.com.",
+                                value: {
+                                    Bool: this.state.generalSettings
+                                        .speedrunComIntegration,
+                                },
                             },
                             {
-                                text: <div style={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: "0.25em",
-                                }}>
-                                    Server Connection <FlaskConical size={16} color="#07bc0c" strokeWidth={2.5} />
-                                </div>,
-                                tooltip: <>
-                                    Allows you to connect to a WebSocket server that can control the timer by sending various commands. The commands are currently a subset of the commands the original LiveSplit supports.<br /><br />
-                                    This feature is <b>experimental</b> and the protocol will likely change in the future.
-                                </>,
+                                text: (
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: "0.25em",
+                                        }}
+                                    >
+                                        Server Connection{" "}
+                                        <FlaskConical
+                                            size={16}
+                                            color="#07bc0c"
+                                            strokeWidth={2.5}
+                                        />
+                                    </div>
+                                ),
+                                tooltip: (
+                                    <>
+                                        Allows you to connect to a WebSocket
+                                        server that can control the timer by
+                                        sending various commands. The commands
+                                        are currently a subset of the commands
+                                        the original LiveSplit supports.
+                                        <br />
+                                        <br />
+                                        This feature is <b>experimental</b> and
+                                        the protocol will likely change in the
+                                        future.
+                                    </>
+                                ),
                                 value: {
                                     ServerConnection: {
-                                        url: this.props.generalSettings.serverUrl,
+                                        url: this.props.generalSettings
+                                            .serverUrl,
                                         connection: this.props.serverConnection,
                                     },
-                                }
+                                },
                             },
                         ],
                     }}
@@ -277,12 +356,15 @@ export class MainSettings extends React.Component<Props, State> {
                             case 1:
                                 if ("String" in value) {
                                     try {
-                                        this.props.callbacks.onServerConnectionOpened(new LiveSplitServer(
-                                            value.String,
-                                            () => this.forceUpdate(),
-                                            () => this.props.callbacks.onServerConnectionClosed(),
-                                            this.props.commandSink,
-                                        ));
+                                        this.props.callbacks.onServerConnectionOpened(
+                                            new LiveSplitServer(
+                                                value.String,
+                                                () => this.forceUpdate(),
+                                                () =>
+                                                    this.props.callbacks.onServerConnectionClosed(),
+                                                this.props.commandSink,
+                                            ),
+                                        );
                                     } catch {
                                         // It's fine if it fails.
                                     }
@@ -309,13 +391,23 @@ export class MainSettings extends React.Component<Props, State> {
                 <div className="small">
                     <button
                         className="toggle-left"
-                        onClick={(_) => this.props.callbacks.closeMainSettings(true, this.state.generalSettings)}
+                        onClick={(_) =>
+                            this.props.callbacks.closeMainSettings(
+                                true,
+                                this.state.generalSettings,
+                            )
+                        }
                     >
                         <Check strokeWidth={2.5} /> OK
                     </button>
                     <button
                         className="toggle-right"
-                        onClick={(_) => this.props.callbacks.closeMainSettings(false, this.state.generalSettings)}
+                        onClick={(_) =>
+                            this.props.callbacks.closeMainSettings(
+                                false,
+                                this.state.generalSettings,
+                            )
+                        }
                     >
                         <X strokeWidth={2.5} /> Cancel
                     </button>

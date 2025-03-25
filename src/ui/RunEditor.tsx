@@ -1,12 +1,27 @@
 import * as React from "react";
 import * as LiveSplit from "../livesplit-core";
-import { FILE_EXT_IMAGES, FILE_EXT_SPLITS, openFileAsArrayBuffer } from "../util/FileUtil";
+import {
+    FILE_EXT_IMAGES,
+    FILE_EXT_SPLITS,
+    openFileAsArrayBuffer,
+} from "../util/FileUtil";
 import { TextBox } from "./TextBox";
 import { toast } from "react-toastify";
 import {
-    downloadGameList, searchGames, getCategories, downloadCategories,
-    downloadLeaderboard, getLeaderboard, downloadPlatformList, getPlatforms,
-    downloadRegionList, getRegions, downloadGameInfo, getGameInfo, downloadGameInfoByGameId, downloadCategoriesByGameId,
+    downloadGameList,
+    searchGames,
+    getCategories,
+    downloadCategories,
+    downloadLeaderboard,
+    getLeaderboard,
+    downloadPlatformList,
+    getPlatforms,
+    downloadRegionList,
+    getRegions,
+    downloadGameInfo,
+    getGameInfo,
+    downloadGameInfoByGameId,
+    downloadCategoriesByGameId,
     gameListLength,
     platformListLength,
     regionListLength,
@@ -16,7 +31,9 @@ import { Option, expect, map } from "../util/OptionUtil";
 import { formatLeaderboardTime } from "../util/TimeUtil";
 import { resolveEmbed } from "./Embed";
 import {
-    SettingsComponent, JsonSettingValueFactory, ExtendedSettingsDescriptionFieldJson,
+    SettingsComponent,
+    JsonSettingValueFactory,
+    ExtendedSettingsDescriptionFieldJson,
     ExtendedSettingsDescriptionValueJson,
 } from "./Settings";
 import { Markdown, replaceFlag } from "../util/Markdown";
@@ -30,38 +47,41 @@ import { Check, X } from "lucide-react";
 import "../css/RunEditor.scss";
 
 export interface Props {
-    editor: LiveSplit.RunEditor,
-    callbacks: Callbacks,
-    runEditorUrlCache: UrlCache,
-    allComparisons: string[],
-    allVariables: Set<string>,
-    generalSettings: GeneralSettings,
+    editor: LiveSplit.RunEditor;
+    callbacks: Callbacks;
+    runEditorUrlCache: UrlCache;
+    allComparisons: string[];
+    allVariables: Set<string>;
+    generalSettings: GeneralSettings;
 }
 export interface State {
-    editor: LiveSplit.RunEditorStateJson,
-    foundGames: string[],
-    offsetIsValid: boolean,
-    attemptCountIsValid: boolean,
-    rowState: RowState,
-    tab: Tab,
-    abortController: AbortController,
+    editor: LiveSplit.RunEditorStateJson;
+    foundGames: string[];
+    offsetIsValid: boolean;
+    attemptCountIsValid: boolean;
+    rowState: RowState;
+    tab: Tab;
+    abortController: AbortController;
 }
 
 interface Callbacks {
-    renderViewWithSidebar(renderedView: React.JSX.Element, sidebarContent: React.JSX.Element): React.JSX.Element,
-    closeRunEditor(save: boolean): void,
+    renderViewWithSidebar(
+        renderedView: React.JSX.Element,
+        sidebarContent: React.JSX.Element,
+    ): React.JSX.Element;
+    closeRunEditor(save: boolean): void;
 }
 
 interface RowState {
-    splitTime: string,
-    splitTimeChanged: boolean,
-    segmentTime: string,
-    segmentTimeChanged: boolean,
-    bestSegmentTime: string,
-    bestSegmentTimeChanged: boolean,
-    comparisonTimes: string[],
-    comparisonTimesChanged: boolean[],
-    index: number,
+    splitTime: string;
+    splitTimeChanged: boolean;
+    segmentTime: string;
+    segmentTimeChanged: boolean;
+    bestSegmentTime: string;
+    bestSegmentTimeChanged: boolean;
+    comparisonTimes: string[];
+    comparisonTimesChanged: boolean[];
+    index: number;
 }
 
 enum Tab {
@@ -73,11 +93,11 @@ enum Tab {
 }
 
 interface Filters {
-    region?: string,
-    platform?: string,
-    isEmulated?: boolean,
-    showObsolete: boolean,
-    variables: Map<string, string>,
+    region?: string;
+    platform?: string;
+    isEmulated?: boolean;
+    showObsolete: boolean;
+    variables: Map<string, string>;
 }
 
 export class RunEditor extends React.Component<Props, State> {
@@ -88,7 +108,9 @@ export class RunEditor extends React.Component<Props, State> {
     constructor(props: Props) {
         super(props);
 
-        const state: LiveSplit.RunEditorStateJson = props.editor.stateAsJson(props.runEditorUrlCache.imageCache) as LiveSplit.RunEditorStateJson;
+        const state: LiveSplit.RunEditorStateJson = props.editor.stateAsJson(
+            props.runEditorUrlCache.imageCache,
+        ) as LiveSplit.RunEditorStateJson;
         const foundGames = searchGames(state.game);
         props.runEditorUrlCache.collect();
 
@@ -108,7 +130,10 @@ export class RunEditor extends React.Component<Props, State> {
                 splitTime: "",
                 splitTimeChanged: false,
             },
-            tab: state.timing_method === "RealTime" ? Tab.RealTime : Tab.GameTime,
+            tab:
+                state.timing_method === "RealTime"
+                    ? Tab.RealTime
+                    : Tab.GameTime,
             abortController: new AbortController(),
         };
 
@@ -125,7 +150,10 @@ export class RunEditor extends React.Component<Props, State> {
     public render() {
         const renderedView = this.renderView();
         const sidebarContent = this.renderSidebarContent();
-        return this.props.callbacks.renderViewWithSidebar(renderedView, sidebarContent);
+        return this.props.callbacks.renderViewWithSidebar(
+            renderedView,
+            sidebarContent,
+        );
     }
 
     private renderView() {
@@ -140,7 +168,9 @@ export class RunEditor extends React.Component<Props, State> {
                 <div className="run-editor-info">
                     <GameIcon
                         gameIcon={gameIcon}
-                        speedrunComIntegration={this.props.generalSettings.speedrunComIntegration}
+                        speedrunComIntegration={
+                            this.props.generalSettings.speedrunComIntegration
+                        }
                         changeGameIcon={() => this.changeGameIcon()}
                         downloadBoxArt={() => this.downloadBoxArt()}
                         downloadIcon={() => this.downloadIcon()}
@@ -164,7 +194,9 @@ export class RunEditor extends React.Component<Props, State> {
                                 <TextBox
                                     className="run-editor-category"
                                     value={this.state.editor.category}
-                                    onChange={(e) => this.handleCategoryChange(e)}
+                                    onChange={(e) =>
+                                        this.handleCategoryChange(e)
+                                    }
                                     label="Category"
                                     list={[
                                         "run-editor-category-list",
@@ -189,7 +221,9 @@ export class RunEditor extends React.Component<Props, State> {
                                 <TextBox
                                     className="run-editor-attempts"
                                     value={this.state.editor.attempts}
-                                    onChange={(e) => this.handleAttemptsChange(e)}
+                                    onChange={(e) =>
+                                        this.handleAttemptsChange(e)
+                                    }
                                     onBlur={(_) => this.handleAttemptsBlur()}
                                     small
                                     invalid={!this.state.attemptCountIsValid}
@@ -210,7 +244,7 @@ export class RunEditor extends React.Component<Props, State> {
                         {this.renderTab(tab, category)}
                     </div>
                 </div>
-            </div >
+            </div>
         );
     }
 
@@ -251,7 +285,9 @@ export class RunEditor extends React.Component<Props, State> {
             [Tab.Leaderboard]: "Leaderboard",
         };
 
-        const visibleTabs = Object.values(Tab).filter((tab) => this.shouldShowTab(tab as Tab));
+        const visibleTabs = Object.values(Tab).filter((tab) =>
+            this.shouldShowTab(tab as Tab),
+        );
         return visibleTabs.map((tab, index) => {
             let toggleClassName = "toggle-middle";
             if (index === 0) {
@@ -262,12 +298,14 @@ export class RunEditor extends React.Component<Props, State> {
 
             const buttonClassName = currentTab === tab ? " button-pressed" : "";
 
-            return (<button
-                className={toggleClassName + buttonClassName}
-                onClick={(_) => this.switchTab(tab as Tab)}
-            >
-                {tabNames[tab as Tab]}
-            </button>);
+            return (
+                <button
+                    className={toggleClassName + buttonClassName}
+                    onClick={(_) => this.switchTab(tab as Tab)}
+                >
+                    {tabNames[tab as Tab]}
+                </button>
+            );
         });
     }
 
@@ -316,8 +354,12 @@ export class RunEditor extends React.Component<Props, State> {
     private renderAssociateRunButton(): React.JSX.Element {
         if (this.props.generalSettings.speedrunComIntegration) {
             return (
-                <button onClick={(_) => this.interactiveAssociateRunOrOpenPage()}>
-                    {this.state.editor.metadata.run_id !== "" ? "Open PB Page" : "Associate Run"}
+                <button
+                    onClick={(_) => this.interactiveAssociateRunOrOpenPage()}
+                >
+                    {this.state.editor.metadata.run_id !== ""
+                        ? "Open PB Page"
+                        : "Associate Run"}
                 </button>
             );
         } else {
@@ -327,9 +369,7 @@ export class RunEditor extends React.Component<Props, State> {
 
     private renderRulesButtons(): React.JSX.Element {
         return (
-            <div className="btn-group">
-                {this.renderAssociateRunButton()}
-            </div>
+            <div className="btn-group">{this.renderAssociateRunButton()}</div>
         );
     }
 
@@ -347,7 +387,8 @@ export class RunEditor extends React.Component<Props, State> {
     private async addCustomVariable() {
         const [result, variableName] = await showDialog({
             title: "Add Variable",
-            description: "Specify the name of the custom variable you want to add:",
+            description:
+                "Specify the name of the custom variable you want to add:",
             textInput: true,
             buttons: ["OK", "Cancel"],
         });
@@ -357,7 +398,10 @@ export class RunEditor extends React.Component<Props, State> {
         }
     }
 
-    private renderSideButtons(tab: Tab, category: Option<Category>): React.JSX.Element {
+    private renderSideButtons(
+        tab: Tab,
+        category: Option<Category>,
+    ): React.JSX.Element {
         switch (tab) {
             case Tab.RealTime:
             case Tab.GameTime:
@@ -385,7 +429,9 @@ export class RunEditor extends React.Component<Props, State> {
         }
     }
 
-    private renderLeaderboardButtons(category: Option<Category>): React.JSX.Element {
+    private renderLeaderboardButtons(
+        category: Option<Category>,
+    ): React.JSX.Element {
         const gameInfo = getGameInfo(this.state.editor.game);
         if (gameInfo === undefined) {
             return this.renderRulesButtons();
@@ -418,7 +464,11 @@ export class RunEditor extends React.Component<Props, State> {
         }
 
         if (regionList.length > 2) {
-            filterList.push(<tr><td>Region:</td></tr>);
+            filterList.push(
+                <tr>
+                    <td>Region:</td>
+                </tr>,
+            );
             filterList.push(
                 <tr>
                     <td>
@@ -432,7 +482,9 @@ export class RunEditor extends React.Component<Props, State> {
                                 this.updateFilters();
                             }}
                         >
-                            {regionList.map((v) => <option value={v}>{v}</option>)}
+                            {regionList.map((v) => (
+                                <option value={v}>{v}</option>
+                            ))}
                         </select>
                     </td>
                 </tr>,
@@ -440,7 +492,11 @@ export class RunEditor extends React.Component<Props, State> {
         }
 
         if (platformList.length > 2) {
-            filterList.push(<tr><td>Platform:</td></tr>);
+            filterList.push(
+                <tr>
+                    <td>Platform:</td>
+                </tr>,
+            );
             filterList.push(
                 <tr>
                     <td>
@@ -454,7 +510,9 @@ export class RunEditor extends React.Component<Props, State> {
                                 this.updateFilters();
                             }}
                         >
-                            {platformList.map((v) => <option value={v}>{v}</option>)}
+                            {platformList.map((v) => (
+                                <option value={v}>{v}</option>
+                            ))}
                         </select>
                     </td>
                 </tr>,
@@ -462,7 +520,11 @@ export class RunEditor extends React.Component<Props, State> {
         }
 
         if (gameInfo.ruleset["emulators-allowed"]) {
-            filterList.push(<tr><td>Emulator:</td></tr>);
+            filterList.push(
+                <tr>
+                    <td>Emulator:</td>
+                </tr>,
+            );
             filterList.push(
                 <tr>
                     <td>
@@ -471,8 +533,8 @@ export class RunEditor extends React.Component<Props, State> {
                                 this.filters.isEmulated === true
                                     ? "Yes"
                                     : this.filters.isEmulated === false
-                                        ? "No"
-                                        : ""
+                                      ? "No"
+                                      : ""
                             }
                             style={{
                                 width: "100%",
@@ -489,28 +551,46 @@ export class RunEditor extends React.Component<Props, State> {
                                 this.updateFilters();
                             }}
                         >
-                            {["", "Yes", "No"].map((v) => <option value={v}>{v}</option>)}
+                            {["", "Yes", "No"].map((v) => (
+                                <option value={v}>{v}</option>
+                            ))}
                         </select>
                     </td>
                 </tr>,
             );
         }
 
-        const variables = expect(gameInfo.variables, "We need the variables to be embedded");
+        const variables = expect(
+            gameInfo.variables,
+            "We need the variables to be embedded",
+        );
         for (const variable of variables.data) {
             if (this.variableIsValidForCategory(variable, category)) {
                 if (variable["is-subcategory"]) {
-                    let currentFilterValue = this.filters.variables.get(variable.name);
+                    let currentFilterValue = this.filters.variables.get(
+                        variable.name,
+                    );
                     if (currentFilterValue === undefined) {
-                        const runValue = this.state.editor.metadata.speedrun_com_variables[variable.name];
+                        const runValue =
+                            this.state.editor.metadata.speedrun_com_variables[
+                                variable.name
+                            ];
                         if (runValue !== undefined) {
                             currentFilterValue = runValue;
-                            this.filters.variables.set(variable.name, currentFilterValue);
+                            this.filters.variables.set(
+                                variable.name,
+                                currentFilterValue,
+                            );
                         } else {
                             const defaultValueId = variable.values.default;
                             if (defaultValueId != null) {
-                                currentFilterValue = variable.values.values[defaultValueId].label;
-                                this.filters.variables.set(variable.name, currentFilterValue);
+                                currentFilterValue =
+                                    variable.values.values[defaultValueId]
+                                        .label;
+                                this.filters.variables.set(
+                                    variable.name,
+                                    currentFilterValue,
+                                );
                             }
                         }
                     }
@@ -522,43 +602,70 @@ export class RunEditor extends React.Component<Props, State> {
                                 </tr>
                             </thead>
                             <tbody className="table-body">
-                                {Object.values(variable.values.values).map(({ label }) => {
-                                    const isSelected = currentFilterValue === label;
-                                    return (
-                                        <tr>
-                                            <td
-                                                className={isSelected ? "selected" : ""}
-                                                onClick={(_) => {
-                                                    this.filters.variables.set(variable.name, isSelected ? "" : label);
-                                                    this.updateFilters();
-                                                }}
-                                            >
-                                                {label}
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
+                                {Object.values(variable.values.values).map(
+                                    ({ label }) => {
+                                        const isSelected =
+                                            currentFilterValue === label;
+                                        return (
+                                            <tr>
+                                                <td
+                                                    className={
+                                                        isSelected
+                                                            ? "selected"
+                                                            : ""
+                                                    }
+                                                    onClick={(_) => {
+                                                        this.filters.variables.set(
+                                                            variable.name,
+                                                            isSelected
+                                                                ? ""
+                                                                : label,
+                                                        );
+                                                        this.updateFilters();
+                                                    }}
+                                                >
+                                                    {label}
+                                                </td>
+                                            </tr>
+                                        );
+                                    },
+                                )}
                             </tbody>
                         </table>,
                     );
                 } else {
-                    filterList.push(<tr><td>{variable.name}:</td></tr>);
+                    filterList.push(
+                        <tr>
+                            <td>{variable.name}:</td>
+                        </tr>,
+                    );
                     filterList.push(
                         <tr>
                             <td>
                                 <select
-                                    value={this.filters.variables.get(variable.name) ?? ""}
+                                    value={
+                                        this.filters.variables.get(
+                                            variable.name,
+                                        ) ?? ""
+                                    }
                                     style={{
                                         width: "100%",
                                     }}
                                     onChange={(e) => {
-                                        this.filters.variables.set(variable.name, e.target.value);
+                                        this.filters.variables.set(
+                                            variable.name,
+                                            e.target.value,
+                                        );
                                         this.updateFilters();
                                     }}
                                 >
                                     <option value="" />
                                     {Object.values(variable.values.values).map(
-                                        ({ label }) => <option value={label}>{label}</option>,
+                                        ({ label }) => (
+                                            <option value={label}>
+                                                {label}
+                                            </option>
+                                        ),
                                     )}
                                 </select>
                             </td>
@@ -568,7 +675,11 @@ export class RunEditor extends React.Component<Props, State> {
             }
         }
 
-        filterList.push(<tr><td>Obsolete Runs:</td></tr>);
+        filterList.push(
+            <tr>
+                <td>Obsolete Runs:</td>
+            </tr>,
+        );
         filterList.push(
             <tr>
                 <td>
@@ -583,7 +694,9 @@ export class RunEditor extends React.Component<Props, State> {
                             this.updateFilters();
                         }}
                     >
-                        {["Shown", "Hidden"].map((v) => <option value={v}>{v}</option>)}
+                        {["Shown", "Hidden"].map((v) => (
+                            <option value={v}>{v}</option>
+                        ))}
                     </select>
                 </td>
             </tr>,
@@ -594,15 +707,22 @@ export class RunEditor extends React.Component<Props, State> {
                 <button
                     onClick={(_) => {
                         if (category != null) {
-                            window.open(`${gameInfo.weblink}?x=${category.id}`, "_blank");
+                            window.open(
+                                `${gameInfo.weblink}?x=${category.id}`,
+                                "_blank",
+                            );
                         }
                     }}
                     disabled={category == null}
                 >
                     Open Leaderboard
                 </button>
-                <button onClick={(_) => this.interactiveAssociateRunOrOpenPage()}>
-                    {this.state.editor.metadata.run_id !== "" ? "Open PB Page" : "Associate Run"}
+                <button
+                    onClick={(_) => this.interactiveAssociateRunOrOpenPage()}
+                >
+                    {this.state.editor.metadata.run_id !== ""
+                        ? "Open PB Page"
+                        : "Associate Run"}
                 </button>
                 {subcategoryBoxes}
                 <table className="table filter-table">
@@ -611,17 +731,21 @@ export class RunEditor extends React.Component<Props, State> {
                             <th>Filters</th>
                         </tr>
                     </thead>
-                    <tbody className="table-body">
-                        {filterList}
-                    </tbody>
+                    <tbody className="table-body">{filterList}</tbody>
                 </table>
             </div>
         );
     }
 
-    private variableIsValidForCategory(variable: Variable, category: Option<Category>) {
-        return (variable.category == null || variable.category === category?.id) &&
-            (variable.scope.type === "full-game" || variable.scope.type === "global");
+    private variableIsValidForCategory(
+        variable: Variable,
+        category: Option<Category>,
+    ) {
+        return (
+            (variable.category == null || variable.category === category?.id) &&
+            (variable.scope.type === "full-game" ||
+                variable.scope.type === "global")
+        );
     }
 
     private updateFilters() {
@@ -659,16 +783,28 @@ export class RunEditor extends React.Component<Props, State> {
                     }
                 }
             }
-            const variables = expect(gameInfo.variables, "We need the variables to be embedded");
+            const variables = expect(
+                gameInfo.variables,
+                "We need the variables to be embedded",
+            );
             for (const variable of variables.data) {
                 if (this.variableIsValidForCategory(variable, category)) {
                     speedrunComVariables.push({
                         text: variable.name,
-                        tooltip: "A variable on speedrun.com specific to the game.",
+                        tooltip:
+                            "A variable on speedrun.com specific to the game.",
                         value: {
                             CustomCombobox: {
-                                value: metadata.speedrun_com_variables[variable.name] || "",
-                                list: ["", ...Object.values(variable.values.values).map((v) => v.label)],
+                                value:
+                                    metadata.speedrun_com_variables[
+                                        variable.name
+                                    ] || "",
+                                list: [
+                                    "",
+                                    ...Object.values(
+                                        variable.values.values,
+                                    ).map((v) => v.label),
+                                ],
                                 mandatory: variable.mandatory,
                             },
                         },
@@ -708,7 +844,8 @@ export class RunEditor extends React.Component<Props, State> {
                 emulatorOffset = fields.length;
                 fields.push({
                     text: "Uses Emulator",
-                    tooltip: "Whether an emulator is being used to play the game.",
+                    tooltip:
+                        "Whether an emulator is being used to play the game.",
                     value: {
                         Bool: metadata.uses_emulator,
                     },
@@ -716,12 +853,16 @@ export class RunEditor extends React.Component<Props, State> {
             }
         }
 
-        for (const customVariableName of Object.keys(metadata.custom_variables)) {
-            const customVariableValue = metadata.custom_variables[customVariableName];
+        for (const customVariableName of Object.keys(
+            metadata.custom_variables,
+        )) {
+            const customVariableValue =
+                metadata.custom_variables[customVariableName];
             if (customVariableValue && customVariableValue.is_permanent) {
                 customVariables.push({
                     text: customVariableName,
-                    tooltip: "A custom variable specified by you. These can be displayed with the text component.",
+                    tooltip:
+                        "A custom variable specified by you. These can be displayed with the text component.",
                     value: {
                         RemovableString: customVariableValue.value,
                     },
@@ -737,18 +878,23 @@ export class RunEditor extends React.Component<Props, State> {
 
         return (
             <div className="run-editor-tab">
-                {
-                    fields.length === 0 &&
+                {fields.length === 0 && (
                     <table className="table">
                         <tbody className="table-body">
-                            <tr><td><p>
-                                {"There are currently no"}
-                                {this.props.generalSettings.speedrunComIntegration && " Speedrun.com variables or"}
-                                {" custom variables for this game."}
-                            </p></td></tr>
+                            <tr>
+                                <td>
+                                    <p>
+                                        {"There are currently no"}
+                                        {this.props.generalSettings
+                                            .speedrunComIntegration &&
+                                            " Speedrun.com variables or"}
+                                        {" custom variables for this game."}
+                                    </p>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
-                }
+                )}
                 <SettingsComponent
                     context="run-editor-variables"
                     factory={new JsonSettingValueFactory()}
@@ -757,25 +903,37 @@ export class RunEditor extends React.Component<Props, State> {
                     allComparisons={this.props.allComparisons}
                     allVariables={this.props.allVariables}
                     setValue={(index, value) => {
-                        function unwrapString(value: ExtendedSettingsDescriptionValueJson): string {
+                        function unwrapString(
+                            value: ExtendedSettingsDescriptionValueJson,
+                        ): string {
                             if ("String" in value) {
                                 return value.String;
                             } else {
-                                throw new Error("Expected Setting value to be a string.");
+                                throw new Error(
+                                    "Expected Setting value to be a string.",
+                                );
                             }
                         }
-                        function unwrapRemovableString(value: ExtendedSettingsDescriptionValueJson): string | null {
+                        function unwrapRemovableString(
+                            value: ExtendedSettingsDescriptionValueJson,
+                        ): string | null {
                             if ("RemovableString" in value) {
                                 return value.RemovableString;
                             } else {
-                                throw new Error("Expected Setting value to be a string.");
+                                throw new Error(
+                                    "Expected Setting value to be a string.",
+                                );
                             }
                         }
-                        function unwrapBool(value: ExtendedSettingsDescriptionValueJson): boolean {
+                        function unwrapBool(
+                            value: ExtendedSettingsDescriptionValueJson,
+                        ): boolean {
                             if ("Bool" in value) {
                                 return value.Bool;
                             } else {
-                                throw new Error("Expected Setting value to be a boolean.");
+                                throw new Error(
+                                    "Expected Setting value to be a boolean.",
+                                );
                             }
                         }
                         if (index === regionOffset) {
@@ -789,17 +947,29 @@ export class RunEditor extends React.Component<Props, State> {
                             this.props.editor.setEmulatorUsage(emulatorUsage);
                         } else if (index < customVariablesOffset) {
                             const stringValue = unwrapString(value);
-                            const key = speedrunComVariables[index - speedrunComVariablesOffset].text as string;
+                            const key = speedrunComVariables[
+                                index - speedrunComVariablesOffset
+                            ].text as string;
                             if (stringValue !== "") {
-                                this.props.editor.setSpeedrunComVariable(key, stringValue);
+                                this.props.editor.setSpeedrunComVariable(
+                                    key,
+                                    stringValue,
+                                );
                             } else {
-                                this.props.editor.removeSpeedrunComVariable(key);
+                                this.props.editor.removeSpeedrunComVariable(
+                                    key,
+                                );
                             }
                         } else {
-                            const key = customVariables[index - customVariablesOffset].text as string;
+                            const key = customVariables[
+                                index - customVariablesOffset
+                            ].text as string;
                             const stringValue = unwrapRemovableString(value);
                             if (stringValue !== null) {
-                                this.props.editor.setCustomVariable(key, stringValue);
+                                this.props.editor.setCustomVariable(
+                                    key,
+                                    stringValue,
+                                );
                             } else {
                                 this.props.editor.removeCustomVariable(key);
                             }
@@ -834,17 +1004,22 @@ export class RunEditor extends React.Component<Props, State> {
         let uniqueCount = 0;
         let lastTime = "";
 
-        function isFiltered(value: string | undefined, filter: string | undefined): boolean {
-            return filter !== undefined
-                && filter !== ""
-                && value !== filter;
+        function isFiltered(
+            value: string | undefined,
+            filter: string | undefined,
+        ): boolean {
+            return filter !== undefined && filter !== "" && value !== filter;
         }
 
         const uniquenessSet = new Set();
 
         const allVariables = gameInfo?.variables;
-        const variables = allVariables?.data.filter((variable) => this.variableIsValidForCategory(variable, category));
-        const variableColumns = variables?.filter((variable) => !this.filters.variables.get(variable.name));
+        const variables = allVariables?.data.filter((variable) =>
+            this.variableIsValidForCategory(variable, category),
+        );
+        const variableColumns = variables?.filter(
+            (variable) => !this.filters.variables.get(variable.name),
+        );
 
         return (
             <table className="table run-editor-tab leaderboard-table">
@@ -853,7 +1028,9 @@ export class RunEditor extends React.Component<Props, State> {
                         <th>Rank</th>
                         <th>Player</th>
                         <th>Time</th>
-                        {variableColumns?.map((variable) => <th>{variable.name}</th>)}
+                        {variableColumns?.map((variable) => (
+                            <th>{variable.name}</th>
+                        ))}
                     </tr>
                 </thead>
                 <tbody className="table-body">
@@ -863,12 +1040,17 @@ export class RunEditor extends React.Component<Props, State> {
                             return null;
                         }
 
-                        const region = map(run.system.region, (r) => regionList.get(r));
+                        const region = map(run.system.region, (r) =>
+                            regionList.get(r),
+                        );
                         if (isFiltered(region, this.filters.region)) {
                             return null;
                         }
 
-                        if (this.filters.isEmulated !== undefined && run.system.emulated !== this.filters.isEmulated) {
+                        if (
+                            this.filters.isEmulated !== undefined &&
+                            run.system.emulated !== this.filters.isEmulated
+                        ) {
                             return null;
                         }
 
@@ -876,11 +1058,28 @@ export class RunEditor extends React.Component<Props, State> {
 
                         if (variables !== undefined) {
                             for (const variable of variables) {
-                                if (this.variableIsValidForCategory(variable, category)) {
-                                    const variableValueId = run.values[variable.id];
-                                    const variableValue = map(variableValueId, (i) => variable.values.values[i]);
-                                    const filterValue = this.filters.variables.get(variable.name);
-                                    if (isFiltered(variableValue?.label, filterValue)) {
+                                if (
+                                    this.variableIsValidForCategory(
+                                        variable,
+                                        category,
+                                    )
+                                ) {
+                                    const variableValueId =
+                                        run.values[variable.id];
+                                    const variableValue = map(
+                                        variableValueId,
+                                        (i) => variable.values.values[i],
+                                    );
+                                    const filterValue =
+                                        this.filters.variables.get(
+                                            variable.name,
+                                        );
+                                    if (
+                                        isFiltered(
+                                            variableValue?.label,
+                                            filterValue,
+                                        )
+                                    ) {
                                         return null;
                                     }
                                 }
@@ -892,19 +1091,24 @@ export class RunEditor extends React.Component<Props, State> {
                                 const valueId = run.values[variable.id];
                                 let valueName;
                                 if (valueId) {
-                                    const value = Object.entries(variable.values.values).find(
-                                        ([listValueId]) => listValueId === valueId,
+                                    const value = Object.entries(
+                                        variable.values.values,
+                                    ).find(
+                                        ([listValueId]) =>
+                                            listValueId === valueId,
                                     );
                                     valueName = map(value, (v) => v[1].label);
                                 }
                                 renderedVariables.push(
-                                    <td className="variable-column">{valueName || ""}</td>,
+                                    <td className="variable-column">
+                                        {valueName || ""}
+                                    </td>,
                                 );
                             }
                         }
 
-                        const uniquenessKeys = run.players.data.map(
-                            (p) => p.rel === "guest" ? `guest:${p.name}` : p.id,
+                        const uniquenessKeys = run.players.data.map((p) =>
+                            p.rel === "guest" ? `guest:${p.name}` : p.id,
                         );
 
                         const uniquenessKey = JSON.stringify(uniquenessKeys);
@@ -915,52 +1119,80 @@ export class RunEditor extends React.Component<Props, State> {
                         uniquenessSet.add(uniquenessKey);
 
                         const rowIndex = visibleRowCount;
-                        const evenOdd = rowIndex % 2 === 0 ? "table-row-odd" : "table-row-even";
+                        const evenOdd =
+                            rowIndex % 2 === 0
+                                ? "table-row-odd"
+                                : "table-row-even";
                         let expandedRow = null;
 
-                        if (this.expandedLeaderboardRows.get(rowIndex) === true) {
+                        if (
+                            this.expandedLeaderboardRows.get(rowIndex) === true
+                        ) {
                             let embed = null;
-                            if (run.videos != null && run.videos.links != null && run.videos.links.length > 0) {
-                                const videoUri = run.videos.links[run.videos.links.length - 1].uri;
+                            if (
+                                run.videos != null &&
+                                run.videos.links != null &&
+                                run.videos.links.length > 0
+                            ) {
+                                const videoUri =
+                                    run.videos.links[
+                                        run.videos.links.length - 1
+                                    ].uri;
                                 embed = resolveEmbed(videoUri);
                             }
                             const comment = run.comment ?? "";
 
-                            expandedRow =
-                                <tr key={`${run.id}_expanded`} className={`leaderboard-expanded-row ${evenOdd}`}>
-                                    <td colSpan={4 + (variableColumns?.length ?? 0)}>
+                            expandedRow = (
+                                <tr
+                                    key={`${run.id}_expanded`}
+                                    className={`leaderboard-expanded-row ${evenOdd}`}
+                                >
+                                    <td
+                                        colSpan={
+                                            4 + (variableColumns?.length ?? 0)
+                                        }
+                                    >
                                         {embed}
-                                        <div className="markdown" style={{
-                                            minHeight: 5,
-                                        }}>
+                                        <div
+                                            className="markdown"
+                                            style={{
+                                                minHeight: 5,
+                                            }}
+                                        >
                                             <Markdown markdown={comment} />
                                         </div>
                                         <table className="run-meta-table">
                                             <tbody>
                                                 <tr>
                                                     <td>Date:</td>
-                                                    <td>{run.date?.split("-").join("/") ?? ""}</td>
+                                                    <td>
+                                                        {run.date
+                                                            ?.split("-")
+                                                            .join("/") ?? ""}
+                                                    </td>
                                                 </tr>
-                                                {map(
-                                                    region,
-                                                    (r) =>
-                                                        <tr>
-                                                            <td>Region:</td>
-                                                            <td>{r}</td>
-                                                        </tr>,
-                                                )}
-                                                {map(
-                                                    platform,
-                                                    (p) =>
-                                                        <tr>
-                                                            <td>Platform:</td>
-                                                            <td>{p}{run.system.emulated && " Emulator"}</td>
-                                                        </tr>,
-                                                )}
+                                                {map(region, (r) => (
+                                                    <tr>
+                                                        <td>Region:</td>
+                                                        <td>{r}</td>
+                                                    </tr>
+                                                ))}
+                                                {map(platform, (p) => (
+                                                    <tr>
+                                                        <td>Platform:</td>
+                                                        <td>
+                                                            {p}
+                                                            {run.system
+                                                                .emulated &&
+                                                                " Emulator"}
+                                                        </td>
+                                                    </tr>
+                                                ))}
                                             </tbody>
                                         </table>
                                     </td>
-                                </tr>;
+                                </tr>
+                            );
                         }
 
                         visibleRowCount += 1;
@@ -977,53 +1209,66 @@ export class RunEditor extends React.Component<Props, State> {
                                 key={run.id}
                                 title={run.comment ?? ""}
                                 className={`leaderboard-row ${evenOdd}`}
-                                onClick={(_) => this.toggleExpandLeaderboardRow(rowIndex)}
+                                onClick={(_) =>
+                                    this.toggleExpandLeaderboardRow(rowIndex)
+                                }
                                 style={{
                                     cursor: "pointer",
                                 }}
                             >
-                                <td className="leaderboard-rank-column number">{isUnique ? rank : "—"}</td>
+                                <td className="leaderboard-rank-column number">
+                                    {isUnique ? rank : "—"}
+                                </td>
                                 <td>
-                                    {
-                                        run.players.data.map((p, i) => {
-                                            if (p.rel === "user") {
-                                                const style = p["name-style"];
-                                                let color;
-                                                if (style.style === "gradient") {
-                                                    color = style["color-from"].dark;
-                                                } else {
-                                                    color = style.color.dark;
-                                                }
-                                                const flag = map(
-                                                    p.location,
-                                                    (l) => replaceFlag(l.country.code),
-                                                );
-                                                return [
-                                                    i !== 0 ? ", " : null,
-                                                    <a
-                                                        target="_blank"
-                                                        href={p.weblink}
-                                                        style={{ color }}
-                                                        onClick={(e) => e.stopPropagation()}
-                                                    >
-                                                        {flag}{p.names.international}
-                                                    </a>,
-                                                ];
+                                    {run.players.data.map((p, i) => {
+                                        if (p.rel === "user") {
+                                            const style = p["name-style"];
+                                            let color;
+                                            if (style.style === "gradient") {
+                                                color =
+                                                    style["color-from"].dark;
                                             } else {
-                                                const possibleMatch = /^\[([a-z]+)\](.+)$/.exec(p.name);
-                                                let name = p.name;
-                                                let flag;
-                                                if (possibleMatch !== null) {
-                                                    flag = replaceFlag(possibleMatch[1]);
-                                                    name = possibleMatch[2];
-                                                }
-                                                return [
-                                                    i !== 0 ? ", " : null,
-                                                    <span className="unregistered-user">{flag}{name}</span>
-                                                ];
+                                                color = style.color.dark;
                                             }
-                                        })
-                                    }
+                                            const flag = map(p.location, (l) =>
+                                                replaceFlag(l.country.code),
+                                            );
+                                            return [
+                                                i !== 0 ? ", " : null,
+                                                <a
+                                                    target="_blank"
+                                                    href={p.weblink}
+                                                    style={{ color }}
+                                                    onClick={(e) =>
+                                                        e.stopPropagation()
+                                                    }
+                                                >
+                                                    {flag}
+                                                    {p.names.international}
+                                                </a>,
+                                            ];
+                                        } else {
+                                            const possibleMatch =
+                                                /^\[([a-z]+)\](.+)$/.exec(
+                                                    p.name,
+                                                );
+                                            let name = p.name;
+                                            let flag;
+                                            if (possibleMatch !== null) {
+                                                flag = replaceFlag(
+                                                    possibleMatch[1],
+                                                );
+                                                name = possibleMatch[2];
+                                            }
+                                            return [
+                                                i !== 0 ? ", " : null,
+                                                <span className="unregistered-user">
+                                                    {flag}
+                                                    {name}
+                                                </span>,
+                                            ];
+                                        }
+                                    })}
                                 </td>
                                 <td className="leaderboard-time-column number">
                                     <a
@@ -1032,7 +1277,10 @@ export class RunEditor extends React.Component<Props, State> {
                                         style={{ color: "white" }}
                                         onClick={(e) => e.stopPropagation()}
                                     >
-                                        {formatLeaderboardTime(run.times.primary_t, hideMilliseconds)}
+                                        {formatLeaderboardTime(
+                                            run.times.primary_t,
+                                            hideMilliseconds,
+                                        )}
                                     </a>
                                 </td>
                                 {renderedVariables}
@@ -1067,18 +1315,34 @@ export class RunEditor extends React.Component<Props, State> {
                 additionalRules.push("require video proof");
             }
             if (additionalRules.length !== 0) {
-                gameRules =
+                gameRules = (
                     <p style={{ fontStyle: "italic" }}>
                         Runs of this game {additionalRules.join(" and ")}.
-                    </p>;
+                    </p>
+                );
             }
-            const variables = expect(gameInfo.variables, "We need the variables to be embedded");
+            const variables = expect(
+                gameInfo.variables,
+                "We need the variables to be embedded",
+            );
             for (const variable of variables.data) {
-                if (this.variableIsValidForCategory(variable, category) && variable["is-subcategory"]) {
-                    const currentValue = this.state.editor.metadata.speedrun_com_variables[variable.name];
-                    const foundValue = Object.values(variable.values.values).find((v) => v.label === currentValue);
+                if (
+                    this.variableIsValidForCategory(variable, category) &&
+                    variable["is-subcategory"]
+                ) {
+                    const currentValue =
+                        this.state.editor.metadata.speedrun_com_variables[
+                            variable.name
+                        ];
+                    const foundValue = Object.values(
+                        variable.values.values,
+                    ).find((v) => v.label === currentValue);
                     if (foundValue?.rules != null) {
-                        subcategoryRules.push(<Markdown markdown={`## ${foundValue.label} Rules\n${foundValue.rules}`} />);
+                        subcategoryRules.push(
+                            <Markdown
+                                markdown={`## ${foundValue.label} Rules\n${foundValue.rules}`}
+                            />,
+                        );
                     }
                 }
             }
@@ -1086,7 +1350,11 @@ export class RunEditor extends React.Component<Props, State> {
 
         return (
             <div className="run-editor-tab run-editor-additional-info">
-                <div className="run-editor-rules markdown">{gameRules}{rules}{subcategoryRules}</div>
+                <div className="run-editor-rules markdown">
+                    {gameRules}
+                    {rules}
+                    {subcategoryRules}
+                </div>
             </div>
         );
     }
@@ -1101,13 +1369,16 @@ export class RunEditor extends React.Component<Props, State> {
                         <th>Split Time</th>
                         <th>Segment Time</th>
                         <th>Best Segment</th>
-                        {
-                            this.state.editor.comparison_names.map((comparison, comparisonIndex) => {
+                        {this.state.editor.comparison_names.map(
+                            (comparison, comparisonIndex) => {
                                 return (
                                     <CustomComparison
                                         comparison={comparison}
                                         onDragStart={(e) => {
-                                            e.dataTransfer.setData("text/plain", "");
+                                            e.dataTransfer.setData(
+                                                "text/plain",
+                                                "",
+                                            );
                                             this.dragIndex = comparisonIndex;
                                         }}
                                         onDragEnd={(_) => this.update()}
@@ -1115,122 +1386,191 @@ export class RunEditor extends React.Component<Props, State> {
                                             if (e.stopPropagation) {
                                                 e.stopPropagation();
                                             }
-                                            this.props.editor.moveComparison(this.dragIndex, comparisonIndex);
+                                            this.props.editor.moveComparison(
+                                                this.dragIndex,
+                                                comparisonIndex,
+                                            );
                                             return false;
                                         }}
-                                        renameComparison={() => this.renameComparison(comparison)}
-                                        copyComparison={() => this.copyComparison(comparison)}
-                                        removeComparison={() => this.removeComparison(comparison)}
+                                        renameComparison={() =>
+                                            this.renameComparison(comparison)
+                                        }
+                                        copyComparison={() =>
+                                            this.copyComparison(comparison)
+                                        }
+                                        removeComparison={() =>
+                                            this.removeComparison(comparison)
+                                        }
                                     />
                                 );
-                            })
-                        }
+                            },
+                        )}
                     </tr>
                 </thead>
                 <tbody className="table-body">
-                    {
-                        this.state.editor.segments.map((s, segmentIndex) => {
-                            const segmentIcon = this.getSegmentIconUrl(segmentIndex);
+                    {this.state.editor.segments.map((s, segmentIndex) => {
+                        const segmentIcon =
+                            this.getSegmentIconUrl(segmentIndex);
 
-                            return (
-                                <tr
-                                    key={segmentIndex.toString()}
-                                    className={
-                                        (s.selected === "Selected" || s.selected === "Active") ?
-                                            "selected" :
-                                            ""
+                        return (
+                            <tr
+                                key={segmentIndex.toString()}
+                                className={
+                                    s.selected === "Selected" ||
+                                    s.selected === "Active"
+                                        ? "selected"
+                                        : ""
+                                }
+                                onClick={(e) =>
+                                    this.changeSegmentSelection(e, segmentIndex)
+                                }
+                            >
+                                <SegmentIcon
+                                    segmentIcon={segmentIcon}
+                                    changeSegmentIcon={() =>
+                                        this.changeSegmentIcon(segmentIndex)
                                     }
-                                    onClick={(e) => this.changeSegmentSelection(e, segmentIndex)}
-                                >
-                                    <SegmentIcon
-                                        segmentIcon={segmentIcon}
-                                        changeSegmentIcon={() => this.changeSegmentIcon(segmentIndex)}
-                                        removeSegmentIcon={() => this.removeSegmentIcon(segmentIndex)}
+                                    removeSegmentIcon={() =>
+                                        this.removeSegmentIcon(segmentIndex)
+                                    }
+                                />
+                                <td>
+                                    <input
+                                        className="name text-box"
+                                        type="text"
+                                        value={s.name}
+                                        onFocus={(_) =>
+                                            this.focusSegment(segmentIndex)
+                                        }
+                                        onChange={(e) =>
+                                            this.handleSegmentNameChange(e)
+                                        }
                                     />
-                                    <td>
-                                        <input
-                                            className="name text-box"
-                                            type="text"
-                                            value={s.name}
-                                            onFocus={(_) => this.focusSegment(segmentIndex)}
-                                            onChange={(e) => this.handleSegmentNameChange(e)}
-                                        />
-                                    </td>
-                                    <td>
-                                        <input
-                                            className="number text-box"
-                                            type="text"
-                                            value={segmentIndex === this.state.rowState.index &&
-                                                this.state.rowState.splitTimeChanged
+                                </td>
+                                <td>
+                                    <input
+                                        className="number text-box"
+                                        type="text"
+                                        value={
+                                            segmentIndex ===
+                                                this.state.rowState.index &&
+                                            this.state.rowState.splitTimeChanged
                                                 ? this.state.rowState.splitTime
-                                                : s.split_time}
-                                            onFocus={(_) => this.focusSegment(segmentIndex)}
-                                            onChange={(e) => this.handleSplitTimeChange(e)}
-                                            onBlur={(_) => this.handleSplitTimeBlur()}
-                                        />
-                                    </td>
-                                    <td>
-                                        <input
-                                            className={
-                                                ((segmentIndex !== this.state.rowState.index ||
-                                                    !this.state.rowState.segmentTimeChanged) &&
-                                                    s.segment_time === s.best_segment_time)
-                                                    ? "number text-box best-segment-time"
-                                                    : "number text-box"
-                                            }
-                                            type="text"
-                                            value={segmentIndex === this.state.rowState.index &&
-                                                this.state.rowState.segmentTimeChanged
-                                                ? this.state.rowState.segmentTime
-                                                : s.segment_time}
-                                            onFocus={(_) => this.focusSegment(segmentIndex)}
-                                            onChange={(e) => this.handleSegmentTimeChange(e)}
-                                            onBlur={(_) => this.handleSegmentTimeBlur()}
-                                        />
-                                    </td>
-                                    <td>
-                                        <input
-                                            className="number text-box"
-                                            type="text"
-                                            value={segmentIndex === this.state.rowState.index &&
-                                                this.state.rowState.bestSegmentTimeChanged
-                                                ? this.state.rowState.bestSegmentTime
-                                                : s.best_segment_time}
-                                            onFocus={(_) => this.focusSegment(segmentIndex)}
-                                            onChange={(e) => this.handleBestSegmentTimeChange(e)}
-                                            onBlur={(_) => this.handleBestSegmentTimeBlur()}
-                                        />
-                                    </td>
-                                    {
-                                        this
-                                            .state
-                                            .editor
-                                            .segments[segmentIndex]
-                                            .comparison_times
-                                            .map((comparisonTime, comparisonIndex) => (
-                                                <td>
-                                                    <input
-                                                        className="number text-box"
-                                                        type="text"
-                                                        value={segmentIndex === this.state.rowState.index &&
-                                                            this.state.rowState.comparisonTimesChanged[comparisonIndex]
-                                                            ? this.state.rowState.comparisonTimes[comparisonIndex]
-                                                            : comparisonTime}
-                                                        onFocus={(_) => this.focusSegment(segmentIndex)}
-                                                        onChange={(e) =>
-                                                            this.handleComparisonTimeChange(e, comparisonIndex)
-                                                        }
-                                                        onBlur={(_) =>
-                                                            this.handleComparisonTimeBlur(comparisonIndex)
-                                                        }
-                                                    />
-                                                </td>
-                                            ))
-                                    }
-                                </tr>
-                            );
-                        })
-                    }
+                                                : s.split_time
+                                        }
+                                        onFocus={(_) =>
+                                            this.focusSegment(segmentIndex)
+                                        }
+                                        onChange={(e) =>
+                                            this.handleSplitTimeChange(e)
+                                        }
+                                        onBlur={(_) =>
+                                            this.handleSplitTimeBlur()
+                                        }
+                                    />
+                                </td>
+                                <td>
+                                    <input
+                                        className={
+                                            (segmentIndex !==
+                                                this.state.rowState.index ||
+                                                !this.state.rowState
+                                                    .segmentTimeChanged) &&
+                                            s.segment_time ===
+                                                s.best_segment_time
+                                                ? "number text-box best-segment-time"
+                                                : "number text-box"
+                                        }
+                                        type="text"
+                                        value={
+                                            segmentIndex ===
+                                                this.state.rowState.index &&
+                                            this.state.rowState
+                                                .segmentTimeChanged
+                                                ? this.state.rowState
+                                                      .segmentTime
+                                                : s.segment_time
+                                        }
+                                        onFocus={(_) =>
+                                            this.focusSegment(segmentIndex)
+                                        }
+                                        onChange={(e) =>
+                                            this.handleSegmentTimeChange(e)
+                                        }
+                                        onBlur={(_) =>
+                                            this.handleSegmentTimeBlur()
+                                        }
+                                    />
+                                </td>
+                                <td>
+                                    <input
+                                        className="number text-box"
+                                        type="text"
+                                        value={
+                                            segmentIndex ===
+                                                this.state.rowState.index &&
+                                            this.state.rowState
+                                                .bestSegmentTimeChanged
+                                                ? this.state.rowState
+                                                      .bestSegmentTime
+                                                : s.best_segment_time
+                                        }
+                                        onFocus={(_) =>
+                                            this.focusSegment(segmentIndex)
+                                        }
+                                        onChange={(e) =>
+                                            this.handleBestSegmentTimeChange(e)
+                                        }
+                                        onBlur={(_) =>
+                                            this.handleBestSegmentTimeBlur()
+                                        }
+                                    />
+                                </td>
+                                {this.state.editor.segments[
+                                    segmentIndex
+                                ].comparison_times.map(
+                                    (comparisonTime, comparisonIndex) => (
+                                        <td>
+                                            <input
+                                                className="number text-box"
+                                                type="text"
+                                                value={
+                                                    segmentIndex ===
+                                                        this.state.rowState
+                                                            .index &&
+                                                    this.state.rowState
+                                                        .comparisonTimesChanged[
+                                                        comparisonIndex
+                                                    ]
+                                                        ? this.state.rowState
+                                                              .comparisonTimes[
+                                                              comparisonIndex
+                                                          ]
+                                                        : comparisonTime
+                                                }
+                                                onFocus={(_) =>
+                                                    this.focusSegment(
+                                                        segmentIndex,
+                                                    )
+                                                }
+                                                onChange={(e) =>
+                                                    this.handleComparisonTimeChange(
+                                                        e,
+                                                        comparisonIndex,
+                                                    )
+                                                }
+                                                onBlur={(_) =>
+                                                    this.handleComparisonTimeBlur(
+                                                        comparisonIndex,
+                                                    )
+                                                }
+                                            />
+                                        </td>
+                                    ),
+                                )}
+                            </tr>
+                        );
+                    })}
                 </tbody>
             </table>
         );
@@ -1250,7 +1590,9 @@ export class RunEditor extends React.Component<Props, State> {
         const categoryList = getCategories(this.state.editor.game);
         if (categoryList !== undefined) {
             categoryNames = categoryList.map((c) => c.name);
-            const categoryIndex = categoryNames.indexOf(this.state.editor.category);
+            const categoryIndex = categoryNames.indexOf(
+                this.state.editor.category,
+            );
             if (categoryIndex >= 0) {
                 category = categoryList[categoryIndex];
             }
@@ -1273,7 +1615,9 @@ export class RunEditor extends React.Component<Props, State> {
             if (this.props.editor.parseAndGenerateGoalComparison(goalTime)) {
                 this.update();
             } else {
-                toast.error("Failed generating the goal comparison. Make sure to specify a valid time.");
+                toast.error(
+                    "Failed generating the goal comparison. Make sure to specify a valid time.",
+                );
             }
         }
     }
@@ -1283,7 +1627,8 @@ export class RunEditor extends React.Component<Props, State> {
         if (comparison === undefined) {
             const [result, comparisonName] = await showDialog({
                 title: "Copy Comparison",
-                description: "Specify the name of the comparison you want to copy:",
+                description:
+                    "Specify the name of the comparison you want to copy:",
                 textInput: true,
                 buttons: ["Copy", "Cancel"],
             });
@@ -1295,7 +1640,10 @@ export class RunEditor extends React.Component<Props, State> {
 
         let newName: string | undefined;
         if (comparison.endsWith(" Copy")) {
-            const before = comparison.substring(0, comparison.length - " Copy".length);
+            const before = comparison.substring(
+                0,
+                comparison.length - " Copy".length,
+            );
             newName = `${before} Copy 2`;
         } else {
             const regexMatch = /^(.* Copy )(\d+)$/.exec(comparison);
@@ -1310,7 +1658,9 @@ export class RunEditor extends React.Component<Props, State> {
         if (this.props.editor.copyComparison(comparison, newName)) {
             this.update();
         } else {
-            toast.error("Failed copying the comparison. The comparison may not exist.");
+            toast.error(
+                "Failed copying the comparison. The comparison may not exist.",
+            );
         }
     }
 
@@ -1373,7 +1723,8 @@ export class RunEditor extends React.Component<Props, State> {
         using run = result.unwrap();
         const [dialogResult, comparisonName] = await showDialog({
             title: "Import Comparison",
-            description: "Specify the name of the comparison you want to import:",
+            description:
+                "Specify the name of the comparison you want to import:",
             textInput: true,
             buttons: ["Import", "Cancel"],
             defaultText: file.name.replace(/\.[^/.]+$/, ""),
@@ -1383,7 +1734,9 @@ export class RunEditor extends React.Component<Props, State> {
         }
         const valid = this.props.editor.importComparison(run, comparisonName);
         if (!valid) {
-            toast.error("The comparison could not be added. It may be a duplicate or a reserved name.");
+            toast.error(
+                "The comparison could not be added. It may be a duplicate or a reserved name.",
+            );
         } else {
             this.update();
         }
@@ -1402,7 +1755,9 @@ export class RunEditor extends React.Component<Props, State> {
             if (valid) {
                 this.update();
             } else {
-                toast.error("The comparison could not be added. It may be a duplicate or a reserved name.");
+                toast.error(
+                    "The comparison could not be added. It may be a duplicate or a reserved name.",
+                );
             }
         }
     }
@@ -1417,11 +1772,16 @@ export class RunEditor extends React.Component<Props, State> {
         });
 
         if (result === 0) {
-            const valid = this.props.editor.renameComparison(comparison, newName);
+            const valid = this.props.editor.renameComparison(
+                comparison,
+                newName,
+            );
             if (valid) {
                 this.update();
             } else {
-                toast.error("The comparison could not be renamed. It may be a duplicate or a reserved name.");
+                toast.error(
+                    "The comparison could not be renamed. It may be a duplicate or a reserved name.",
+                );
             }
         }
     }
@@ -1452,7 +1812,9 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private getSegmentIconUrl(index: number): string | undefined {
-        return this.props.runEditorUrlCache.cache(this.state.editor.segments[index].icon);
+        return this.props.runEditorUrlCache.cache(
+            this.state.editor.segments[index].icon,
+        );
     }
 
     private async changeGameIcon() {
@@ -1485,21 +1847,22 @@ export class RunEditor extends React.Component<Props, State> {
      * the leaderboards. We don't want to update the editor if it has been
      * disposed in the meantime.
      */
-    private maybeUpdate(options: { switchTab?: Tab, search?: boolean } = {}) {
+    private maybeUpdate(options: { switchTab?: Tab; search?: boolean } = {}) {
         if (this.props.editor.ptr === 0) {
             return;
         }
         this.update(options);
     }
 
-    private update(options: { switchTab?: Tab, search?: boolean } = {}) {
+    private update(options: { switchTab?: Tab; search?: boolean } = {}) {
         const intendedTab = options.switchTab ?? this.state.tab;
         const shouldShowTab = this.shouldShowTab(intendedTab);
         const newActiveTab = shouldShowTab ? intendedTab : Tab.RealTime;
 
-        const state: LiveSplit.RunEditorStateJson = this.props.editor.stateAsJson(
-            this.props.runEditorUrlCache.imageCache,
-        );
+        const state: LiveSplit.RunEditorStateJson =
+            this.props.editor.stateAsJson(
+                this.props.runEditorUrlCache.imageCache,
+            );
         if (options.search) {
             this.setState({ foundGames: searchGames(state.game) });
         }
@@ -1516,7 +1879,10 @@ export class RunEditor extends React.Component<Props, State> {
         if (this.props.generalSettings.speedrunComIntegration) {
             this.refreshGameInfo(event.target.value);
             this.refreshCategoryList(event.target.value);
-            this.refreshLeaderboard(event.target.value, this.state.editor.category);
+            this.refreshLeaderboard(
+                event.target.value,
+                this.state.editor.category,
+            );
             this.resetTotalLeaderboardState();
         }
         this.update({ search: true });
@@ -1545,14 +1911,18 @@ export class RunEditor extends React.Component<Props, State> {
 
     private handleOffsetBlur() {
         this.setState({
-            editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
+            editor: this.props.editor.stateAsJson(
+                this.props.runEditorUrlCache.imageCache,
+            ),
             offsetIsValid: true,
         });
         this.props.runEditorUrlCache.collect();
     }
 
     private handleAttemptsChange(event: any) {
-        const valid = this.props.editor.parseAndSetAttemptCount(event.target.value);
+        const valid = this.props.editor.parseAndSetAttemptCount(
+            event.target.value,
+        );
         this.setState({
             attemptCountIsValid: valid,
             editor: {
@@ -1565,7 +1935,9 @@ export class RunEditor extends React.Component<Props, State> {
     private handleAttemptsBlur() {
         this.setState({
             attemptCountIsValid: true,
-            editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
+            editor: this.props.editor.stateAsJson(
+                this.props.runEditorUrlCache.imageCache,
+            ),
         });
         this.props.runEditorUrlCache.collect();
     }
@@ -1573,9 +1945,10 @@ export class RunEditor extends React.Component<Props, State> {
     private focusSegment(i: number) {
         this.props.editor.selectOnly(i);
 
-        const editor: LiveSplit.RunEditorStateJson = this.props.editor.stateAsJson(
-            this.props.runEditorUrlCache.imageCache,
-        );
+        const editor: LiveSplit.RunEditorStateJson =
+            this.props.editor.stateAsJson(
+                this.props.runEditorUrlCache.imageCache,
+            );
         this.props.runEditorUrlCache.collect();
 
         const comparisonTimes = editor.segments[i].comparison_times;
@@ -1634,7 +2007,9 @@ export class RunEditor extends React.Component<Props, State> {
         const comparisonTimes = { ...this.state.rowState.comparisonTimes };
         comparisonTimes[comparisonIndex] = event.target.value;
 
-        const comparisonTimesChanged = { ...this.state.rowState.comparisonTimesChanged };
+        const comparisonTimesChanged = {
+            ...this.state.rowState.comparisonTimesChanged,
+        };
         comparisonTimesChanged[comparisonIndex] = true;
 
         this.setState({
@@ -1648,11 +2023,15 @@ export class RunEditor extends React.Component<Props, State> {
 
     private handleSplitTimeBlur() {
         if (this.state.rowState.splitTimeChanged) {
-            this.props.editor.activeParseAndSetSplitTime(this.state.rowState.splitTime);
+            this.props.editor.activeParseAndSetSplitTime(
+                this.state.rowState.splitTime,
+            );
         }
 
         this.setState({
-            editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
+            editor: this.props.editor.stateAsJson(
+                this.props.runEditorUrlCache.imageCache,
+            ),
             rowState: {
                 ...this.state.rowState,
                 splitTimeChanged: false,
@@ -1664,11 +2043,15 @@ export class RunEditor extends React.Component<Props, State> {
 
     private handleSegmentTimeBlur() {
         if (this.state.rowState.segmentTimeChanged) {
-            this.props.editor.activeParseAndSetSegmentTime(this.state.rowState.segmentTime);
+            this.props.editor.activeParseAndSetSegmentTime(
+                this.state.rowState.segmentTime,
+            );
         }
 
         this.setState({
-            editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
+            editor: this.props.editor.stateAsJson(
+                this.props.runEditorUrlCache.imageCache,
+            ),
             rowState: {
                 ...this.state.rowState,
                 segmentTimeChanged: false,
@@ -1680,11 +2063,15 @@ export class RunEditor extends React.Component<Props, State> {
 
     private handleBestSegmentTimeBlur() {
         if (this.state.rowState.bestSegmentTimeChanged) {
-            this.props.editor.activeParseAndSetBestSegmentTime(this.state.rowState.bestSegmentTime);
+            this.props.editor.activeParseAndSetBestSegmentTime(
+                this.state.rowState.bestSegmentTime,
+            );
         }
 
         this.setState({
-            editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
+            editor: this.props.editor.stateAsJson(
+                this.props.runEditorUrlCache.imageCache,
+            ),
             rowState: {
                 ...this.state.rowState,
                 bestSegmentTimeChanged: false,
@@ -1695,16 +2082,25 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private handleComparisonTimeBlur(comparisonIndex: number) {
-        const comparisonTimesChanged = { ...this.state.rowState.comparisonTimesChanged };
+        const comparisonTimesChanged = {
+            ...this.state.rowState.comparisonTimesChanged,
+        };
         if (comparisonTimesChanged[comparisonIndex]) {
-            const comparisonName = this.state.editor.comparison_names[comparisonIndex];
-            const comparisonTime = this.state.rowState.comparisonTimes[comparisonIndex];
-            this.props.editor.activeParseAndSetComparisonTime(comparisonName, comparisonTime);
+            const comparisonName =
+                this.state.editor.comparison_names[comparisonIndex];
+            const comparisonTime =
+                this.state.rowState.comparisonTimes[comparisonIndex];
+            this.props.editor.activeParseAndSetComparisonTime(
+                comparisonName,
+                comparisonTime,
+            );
         }
         comparisonTimesChanged[comparisonIndex] = false;
 
         this.setState({
-            editor: this.props.editor.stateAsJson(this.props.runEditorUrlCache.imageCache),
+            editor: this.props.editor.stateAsJson(
+                this.props.runEditorUrlCache.imageCache,
+            ),
             rowState: {
                 ...this.state.rowState,
                 comparisonTimesChanged,
@@ -1751,11 +2147,15 @@ export class RunEditor extends React.Component<Props, State> {
     private switchTab(tab: Tab) {
         switch (tab) {
             case Tab.RealTime: {
-                this.props.editor.selectTimingMethod(LiveSplit.TimingMethod.RealTime);
+                this.props.editor.selectTimingMethod(
+                    LiveSplit.TimingMethod.RealTime,
+                );
                 break;
             }
             case Tab.GameTime: {
-                this.props.editor.selectTimingMethod(LiveSplit.TimingMethod.GameTime);
+                this.props.editor.selectTimingMethod(
+                    LiveSplit.TimingMethod.GameTime,
+                );
                 break;
             }
         }
@@ -1764,7 +2164,11 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private shouldShowTab(tab: Tab) {
-        if (tab === Tab.RealTime || tab === Tab.GameTime || tab === Tab.Variables) {
+        if (
+            tab === Tab.RealTime ||
+            tab === Tab.GameTime ||
+            tab === Tab.Variables
+        ) {
             return true;
         }
 
@@ -1804,12 +2208,17 @@ export class RunEditor extends React.Component<Props, State> {
             const game = getGameInfo(gameName);
             if (game !== undefined) {
                 const uri = game.assets["cover-medium"].uri;
-                if (uri.startsWith("https://") && uri !== "https://www.speedrun.com/images/blankcover.png") {
+                if (
+                    uri.startsWith("https://") &&
+                    uri !== "https://www.speedrun.com/images/blankcover.png"
+                ) {
                     const buffer = await corsBustingFetch(uri, signal);
                     if (this.props.editor.ptr === 0) {
                         return;
                     }
-                    this.props.editor.setGameIconFromArray(new Uint8Array(buffer));
+                    this.props.editor.setGameIconFromArray(
+                        new Uint8Array(buffer),
+                    );
                     this.maybeUpdate();
                 } else {
                     toast.error("The game doesn't have a box art.");
@@ -1833,12 +2242,17 @@ export class RunEditor extends React.Component<Props, State> {
             const game = getGameInfo(gameName);
             if (game !== undefined) {
                 const uri = game.assets.icon.uri;
-                if (uri.startsWith("https://") && uri !== "https://www.speedrun.com/images/1st.png") {
+                if (
+                    uri.startsWith("https://") &&
+                    uri !== "https://www.speedrun.com/images/1st.png"
+                ) {
                     const buffer = await corsBustingFetch(uri, signal);
                     if (this.props.editor.ptr === 0) {
                         return;
                     }
-                    this.props.editor.setGameIconFromArray(new Uint8Array(buffer));
+                    this.props.editor.setGameIconFromArray(
+                        new Uint8Array(buffer),
+                    );
                     this.maybeUpdate();
                 } else {
                     toast.error("The game doesn't have an icon.");
@@ -1920,13 +2334,19 @@ export class RunEditor extends React.Component<Props, State> {
                 if (gameInfo === undefined) {
                     continue;
                 }
-                const variables = expect(gameInfo.variables, "We need the variables to be embedded");
+                const variables = expect(
+                    gameInfo.variables,
+                    "We need the variables to be embedded",
+                );
                 for (const variable of variables.data) {
                     if (
-                        variable.category === category?.id
-                        && (variable.scope.type === "full-game" || variable.scope.type === "global")
+                        variable.category === category?.id &&
+                        (variable.scope.type === "full-game" ||
+                            variable.scope.type === "global")
                     ) {
-                        this.props.editor.removeSpeedrunComVariable(variable.name);
+                        this.props.editor.removeSpeedrunComVariable(
+                            variable.name,
+                        );
                     }
                 }
                 break;
@@ -1937,7 +2357,10 @@ export class RunEditor extends React.Component<Props, State> {
     private async interactiveAssociateRunOrOpenPage() {
         const currentRunId = this.state.editor.metadata.run_id;
         if (currentRunId !== "") {
-            window.open(`https://www.speedrun.com/run/${currentRunId}`, "_blank");
+            window.open(
+                `https://www.speedrun.com/run/${currentRunId}`,
+                "_blank",
+            );
             return;
         }
 
@@ -1951,7 +2374,8 @@ export class RunEditor extends React.Component<Props, State> {
         if (result !== 0) {
             return;
         }
-        const pattern = /^(?:(?:https?:\/\/)?(?:www\.)?speedrun\.com\/(?:\w+\/)?run\/)?(\w+)$/;
+        const pattern =
+            /^(?:(?:https?:\/\/)?(?:www\.)?speedrun\.com\/(?:\w+\/)?run\/)?(\w+)$/;
         const matches = pattern.exec(idOrUrl);
         if (matches === null) {
             toast.error("Invalid speedrun.com ID or URL.");
@@ -1969,12 +2393,7 @@ export class RunEditor extends React.Component<Props, State> {
         const gameName = gameInfo.names.international;
         const categoryName = category.name;
 
-        associateRun(
-            this.props.editor,
-            gameName,
-            categoryName,
-            run,
-        );
+        associateRun(this.props.editor, gameName, categoryName, run);
 
         this.refreshLeaderboard(gameName, categoryName);
         this.resetTotalLeaderboardState();
@@ -2050,47 +2469,62 @@ function GameIcon({
                 className="game-icon-container"
                 onClick={(e) => setPosition({ x: e.clientX, y: e.clientY })}
             >
-                {
-                    gameIcon !== undefined &&
-                    <img
-                        src={gameIcon}
-                        className="game-icon-image"
-                    />
-                }
+                {gameIcon !== undefined && (
+                    <img src={gameIcon} className="game-icon-image" />
+                )}
             </div>
             {position && (
-                <ContextMenu position={position} onClose={() => setPosition(null)}>
-                    <MenuItem className="contextmenu-item tooltip" onClick={changeGameIcon}>
+                <ContextMenu
+                    position={position}
+                    onClose={() => setPosition(null)}
+                >
+                    <MenuItem
+                        className="contextmenu-item tooltip"
+                        onClick={changeGameIcon}
+                    >
                         Set Icon
                         <span className="tooltip-text">
-                            Allows you to choose an image file to set as the game's icon. Certain file formats may not work everywhere.
+                            Allows you to choose an image file to set as the
+                            game's icon. Certain file formats may not work
+                            everywhere.
                         </span>
                     </MenuItem>
-                    {
-                        speedrunComIntegration && <>
-                            <MenuItem className="contextmenu-item tooltip" onClick={downloadBoxArt}>
+                    {speedrunComIntegration && (
+                        <>
+                            <MenuItem
+                                className="contextmenu-item tooltip"
+                                onClick={downloadBoxArt}
+                            >
                                 Download Box Art
                                 <span className="tooltip-text">
-                                    Attempts to download the box art of the game from speedrun.com, to set as the game's icon.
+                                    Attempts to download the box art of the game
+                                    from speedrun.com, to set as the game's
+                                    icon.
                                 </span>
                             </MenuItem>
-                            <MenuItem className="contextmenu-item tooltip" onClick={downloadIcon}>
+                            <MenuItem
+                                className="contextmenu-item tooltip"
+                                onClick={downloadIcon}
+                            >
                                 Download Icon
                                 <span className="tooltip-text">
-                                    Attempts to download the icon of the game from speedrun.com.
+                                    Attempts to download the icon of the game
+                                    from speedrun.com.
                                 </span>
                             </MenuItem>
                         </>
-                    }
-                    {
-                        gameIcon !== undefined &&
-                        <MenuItem className="contextmenu-item tooltip" onClick={removeGameIcon}>
+                    )}
+                    {gameIcon !== undefined && (
+                        <MenuItem
+                            className="contextmenu-item tooltip"
+                            onClick={removeGameIcon}
+                        >
                             Remove Icon
                             <span className="tooltip-text">
                                 Removes the icon of the game.
                             </span>
                         </MenuItem>
-                    }
+                    )}
                 </ContextMenu>
             )}
         </>
@@ -2110,27 +2544,55 @@ function CleaningButton({
 
     return (
         <>
-            <button onClick={(e) => setPosition({ x: e.clientX, y: e.clientY })}>
+            <button
+                onClick={(e) => setPosition({ x: e.clientX, y: e.clientY })}
+            >
                 Cleaning…
             </button>
             {position && (
-                <ContextMenu position={position} onClose={() => setPosition(null)}>
-                    <MenuItem className="contextmenu-item tooltip" onClick={clearHistory}>
+                <ContextMenu
+                    position={position}
+                    onClose={() => setPosition(null)}
+                >
+                    <MenuItem
+                        className="contextmenu-item tooltip"
+                        onClick={clearHistory}
+                    >
                         Clear Only History
                         <span className="tooltip-text">
-                            Splits store the entire history of all runs, including every segment time. This information is used by various components. You can clear the history with this. The personal best, the best segment times, and the comparisons will not be affected.
+                            Splits store the entire history of all runs,
+                            including every segment time. This information is
+                            used by various components. You can clear the
+                            history with this. The personal best, the best
+                            segment times, and the comparisons will not be
+                            affected.
                         </span>
                     </MenuItem>
-                    <MenuItem className="contextmenu-item tooltip" onClick={clearTimes}>
+                    <MenuItem
+                        className="contextmenu-item tooltip"
+                        onClick={clearTimes}
+                    >
                         Clear All Times
                         <span className="tooltip-text">
-                            This removes all the times from the splits, including all the history, such that the splits are completely empty, as if they were just created.
+                            This removes all the times from the splits,
+                            including all the history, such that the splits are
+                            completely empty, as if they were just created.
                         </span>
                     </MenuItem>
-                    <MenuItem className="contextmenu-item tooltip" onClick={cleanSumOfBest}>
+                    <MenuItem
+                        className="contextmenu-item tooltip"
+                        onClick={cleanSumOfBest}
+                    >
                         Clean Sum of Best
                         <span className="tooltip-text">
-                            Allows you to interactively remove potential issues in the segment history that lead to an inaccurate Sum of Best. If you skip a split, whenever you will do the next split, the combined segment time might be faster than the sum of the individual best segments. This will point out all such occurrences and allow you to delete them individually if any of them seem wrong.
+                            Allows you to interactively remove potential issues
+                            in the segment history that lead to an inaccurate
+                            Sum of Best. If you skip a split, whenever you will
+                            do the next split, the combined segment time might
+                            be faster than the sum of the individual best
+                            segments. This will point out all such occurrences
+                            and allow you to delete them individually if any of
+                            them seem wrong.
                         </span>
                     </MenuItem>
                 </ContextMenu>
@@ -2154,33 +2616,69 @@ function ComparisonsButton({
 
     return (
         <>
-            <button onClick={(e) => setPosition({ x: e.clientX, y: e.clientY })}>
+            <button
+                onClick={(e) => setPosition({ x: e.clientX, y: e.clientY })}
+            >
                 Comparisons…
             </button>
             {position && (
-                <ContextMenu position={position} onClose={() => setPosition(null)}>
-                    <MenuItem className="contextmenu-item tooltip" onClick={addComparison}>
+                <ContextMenu
+                    position={position}
+                    onClose={() => setPosition(null)}
+                >
+                    <MenuItem
+                        className="contextmenu-item tooltip"
+                        onClick={addComparison}
+                    >
                         Add Comparison
                         <span className="tooltip-text">
-                            Adds a new custom comparison where you can store any times that you would like.
+                            Adds a new custom comparison where you can store any
+                            times that you would like.
                         </span>
                     </MenuItem>
-                    <MenuItem className="contextmenu-item tooltip" onClick={importComparison}>
+                    <MenuItem
+                        className="contextmenu-item tooltip"
+                        onClick={importComparison}
+                    >
                         Import Comparison
                         <span className="tooltip-text">
-                            Imports the Personal Best of a splits file you provide as a comparison.
+                            Imports the Personal Best of a splits file you
+                            provide as a comparison.
                         </span>
                     </MenuItem>
-                    <MenuItem className="contextmenu-item tooltip" onClick={generateGoalComparison}>
+                    <MenuItem
+                        className="contextmenu-item tooltip"
+                        onClick={generateGoalComparison}
+                    >
                         Generate Goal Comparison
                         <span className="tooltip-text">
-                            Generates a custom goal comparison based on a goal time that you can specify. The comparison's times are automatically balanced based on the segment history such that it roughly represents what the split times for the goal time would look like. Since it is populated by the segment history, the goal times are capped to a range between the sum of the best segments and the sum of the worst segments. The comparison is only populated for the selected timing method. The other timing method's comparison times are not modified by this, so you can generate it again with the other timing method to generate the comparison times for both timing methods.
+                            Generates a custom goal comparison based on a goal
+                            time that you can specify. The comparison's times
+                            are automatically balanced based on the segment
+                            history such that it roughly represents what the
+                            split times for the goal time would look like. Since
+                            it is populated by the segment history, the goal
+                            times are capped to a range between the sum of the
+                            best segments and the sum of the worst segments. The
+                            comparison is only populated for the selected timing
+                            method. The other timing method's comparison times
+                            are not modified by this, so you can generate it
+                            again with the other timing method to generate the
+                            comparison times for both timing methods.
                         </span>
                     </MenuItem>
-                    <MenuItem className="contextmenu-item tooltip" onClick={copyComparison}>
+                    <MenuItem
+                        className="contextmenu-item tooltip"
+                        onClick={copyComparison}
+                    >
                         Copy Comparison
                         <span className="tooltip-text">
-                            Copies any existing comparison, including the Personal Best or even any other automatically provided comparison as a new custom comparison. You could for example use this to keep the Latest Run around as a comparison that exists for as long as you want it to.
+                            Copies any existing comparison, including the
+                            Personal Best or even any other automatically
+                            provided comparison as a new custom comparison. You
+                            could for example use this to keep the Latest Run
+                            around as a comparison that exists for as long as
+                            you want it to.
                         </span>
                     </MenuItem>
                 </ContextMenu>
@@ -2214,19 +2712,27 @@ function SegmentIcon({
                 }
             }}
         >
-            {
-                segmentIcon !== undefined &&
-                <img src={segmentIcon} />
-            }
+            {segmentIcon !== undefined && <img src={segmentIcon} />}
             {position && (
-                <ContextMenu position={position} onClose={() => setPosition(null)}>
-                    <MenuItem className="contextmenu-item tooltip" onClick={changeSegmentIcon}>
+                <ContextMenu
+                    position={position}
+                    onClose={() => setPosition(null)}
+                >
+                    <MenuItem
+                        className="contextmenu-item tooltip"
+                        onClick={changeSegmentIcon}
+                    >
                         Set Icon
                         <span className="tooltip-text">
-                            Allows you to choose an image file to set as the segment's icon. Certain file formats may not work everywhere.
+                            Allows you to choose an image file to set as the
+                            segment's icon. Certain file formats may not work
+                            everywhere.
                         </span>
                     </MenuItem>
-                    <MenuItem className="contextmenu-item tooltip" onClick={removeSegmentIcon}>
+                    <MenuItem
+                        className="contextmenu-item tooltip"
+                        onClick={removeSegmentIcon}
+                    >
                         Remove Icon
                         <span className="tooltip-text">
                             Removes the segment's icon.
@@ -2280,20 +2786,34 @@ function CustomComparison({
         >
             {comparison}
             {position && (
-                <ContextMenu position={position} onClose={() => setPosition(null)}>
-                    <MenuItem className="contextmenu-item tooltip" onClick={renameComparison}>
+                <ContextMenu
+                    position={position}
+                    onClose={() => setPosition(null)}
+                >
+                    <MenuItem
+                        className="contextmenu-item tooltip"
+                        onClick={renameComparison}
+                    >
                         Rename
                         <span className="tooltip-text">
-                            Choose a new name for the custom comparison. There are reserved names that can't be used. You also can't have duplicate names.
+                            Choose a new name for the custom comparison. There
+                            are reserved names that can't be used. You also
+                            can't have duplicate names.
                         </span>
                     </MenuItem>
-                    <MenuItem className="contextmenu-item tooltip" onClick={copyComparison}>
+                    <MenuItem
+                        className="contextmenu-item tooltip"
+                        onClick={copyComparison}
+                    >
                         Copy
                         <span className="tooltip-text">
                             Creates a copy of the custom comparison.
                         </span>
                     </MenuItem>
-                    <MenuItem className="contextmenu-item tooltip" onClick={removeComparison}>
+                    <MenuItem
+                        className="contextmenu-item tooltip"
+                        onClick={removeComparison}
+                    >
                         Remove
                         <span className="tooltip-text">
                             Removes the custom comparison.

@@ -1,15 +1,33 @@
-import { CommandError, CommandResult, CommandSink, CommandSinkRef, Event, ImageCacheRefMut, LayoutEditorRefMut, LayoutRefMut, LayoutStateRefMut, Run, RunRef, TimeRef, TimeSpan, TimeSpanRef, Timer, TimerPhase, TimingMethod, isEvent } from "../livesplit-core";
+import {
+    CommandError,
+    CommandResult,
+    CommandSink,
+    CommandSinkRef,
+    Event,
+    ImageCacheRefMut,
+    LayoutEditorRefMut,
+    LayoutRefMut,
+    LayoutStateRefMut,
+    Run,
+    RunRef,
+    TimeRef,
+    TimeSpan,
+    TimeSpanRef,
+    Timer,
+    TimerPhase,
+    TimingMethod,
+    isEvent,
+} from "../livesplit-core";
 import { WebCommandSink } from "../livesplit-core/livesplit_core";
 import { assert } from "../util/OptionUtil";
 import { showDialog } from "./Dialog";
 
 interface Callbacks {
-    handleEvent(event: Event): void,
-    runChanged(): void,
-    runNotModifiedAnymore(): void,
-    encounteredCustomVariable(name: string): void,
+    handleEvent(event: Event): void;
+    runChanged(): void;
+    runNotModifiedAnymore(): void;
+    encounteredCustomVariable(name: string): void;
 }
-
 
 export class LSOCommandSink {
     private commandSink: CommandSink;
@@ -24,7 +42,9 @@ export class LSOCommandSink {
         private timer: Timer,
         private callbacks: Callbacks,
     ) {
-        this.commandSink = new CommandSink(new WebCommandSink(this).intoGeneric());
+        this.commandSink = new CommandSink(
+            new WebCommandSink(this).intoGeneric(),
+        );
     }
 
     public [Symbol.dispose](): void {
@@ -100,7 +120,8 @@ export class LSOCommandSink {
         if (this.timer.currentAttemptHasNewBestTimes()) {
             const [result] = await showDialog({
                 title: "Save Best Times?",
-                description: "You have beaten some of your best times. Do you want to update them?",
+                description:
+                    "You have beaten some of your best times. Do you want to update them?",
                 buttons: ["Yes", "No", "Don't Reset"],
             });
             if (result === 2) {
@@ -233,7 +254,9 @@ export class LSOCommandSink {
             return CommandError.Busy;
         }
 
-        const result = this.timer.setCurrentComparison(comparison) as CommandResult;
+        const result = this.timer.setCurrentComparison(
+            comparison,
+        ) as CommandResult;
 
         if (isEvent(result)) {
             this.callbacks.handleEvent(result);

@@ -4,12 +4,12 @@ declare const CONTRIBUTORS_LIST: Contributor[];
 declare const CHANGELOG: ChangelogEntry[];
 
 declare interface Contributor {
-    id: string,
-    name: string,
+    id: string;
+    name: string;
 }
 
 declare interface ChangelogEntry {
-    id: string,
-    message: string,
-    date: string,
+    id: string;
+    message: string;
+    date: string;
 }

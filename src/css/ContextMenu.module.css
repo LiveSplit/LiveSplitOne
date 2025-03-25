@@ -5,13 +5,13 @@
 
 .panel {
     z-index: 3;
-    background-color: rgba(28, 28, 28, .8);
+    background-color: rgba(28, 28, 28, 0.8);
     backdrop-filter: blur(5px);
     min-width: 100px;
     padding: 4px 0;
-    border: 1px solid rgba(255, 255, 255, .25);
+    border: 1px solid rgba(255, 255, 255, 0.25);
     border-radius: 9px;
-    box-shadow: 0 5px 10px 0px rgba(28, 28, 28, .8);
+    box-shadow: 0 5px 10px 0px rgba(28, 28, 28, 0.8);
     display: flex;
     flex-direction: column;
     user-select: none;
@@ -28,18 +28,18 @@
     padding: 4px;
     cursor: pointer;
     font-size: 16px;
-    transition: background-color .25s;
+    transition: background-color 0.25s;
     border-radius: 5px;
     margin: 0 4px;
 
     &:hover {
-        background-color: rgba(255, 255, 255, .25);
+        background-color: rgba(255, 255, 255, 0.25);
     }
 }
 
 .hr {
     height: 1px;
     border-width: 0px;
-    background: rgba(255, 255, 255, .25);
+    background: rgba(255, 255, 255, 0.25);
     margin: 4px 0;
 }

@@ -8,12 +8,15 @@ import { ArrowLeft } from "lucide-react";
 import "../css/About.scss";
 
 export interface Props {
-    callbacks: Callbacks,
+    callbacks: Callbacks;
 }
 
 interface Callbacks {
-    renderViewWithSidebar(renderedView: React.JSX.Element, sidebarContent: React.JSX.Element): React.JSX.Element,
-    openTimerView(): void,
+    renderViewWithSidebar(
+        renderedView: React.JSX.Element,
+        sidebarContent: React.JSX.Element,
+    ): React.JSX.Element;
+    openTimerView(): void;
 }
 
 const contributorAvatarSize = parseFloat(variables.contributorAvatarSize);
@@ -22,11 +25,16 @@ export class About extends React.Component<Props> {
     public render() {
         const renderedView = this.renderView();
         const sidebarContent = this.renderSidebarContent();
-        return this.props.callbacks.renderViewWithSidebar(renderedView, sidebarContent);
+        return this.props.callbacks.renderViewWithSidebar(
+            renderedView,
+            sidebarContent,
+        );
     }
 
     private renderView() {
-        const idealAvatarResolution = Math.round(devicePixelRatio * contributorAvatarSize);
+        const idealAvatarResolution = Math.round(
+            devicePixelRatio * contributorAvatarSize,
+        );
 
         return (
             <div className="about">
@@ -38,43 +46,56 @@ export class About extends React.Component<Props> {
                         <div className="title-text">LiveSplit One</div>
                     </div>
                     <p className="build-version">
-                        <a href={`https://github.com/LiveSplit/LiveSplitOne/commit/${COMMIT_HASH}`} target="_blank">
+                        <a
+                            href={`https://github.com/LiveSplit/LiveSplitOne/commit/${COMMIT_HASH}`}
+                            target="_blank"
+                        >
                             Version: {BUILD_DATE}
                         </a>
                     </p>
-                    <p>LiveSplit One is a multiplatform version of LiveSplit, the sleek,
-                        highly-customizable timer for speedrunners.</p>
                     <p>
-                        <a href="https://github.com/LiveSplit/LiveSplitOne" target="_blank">
+                        LiveSplit One is a multiplatform version of LiveSplit,
+                        the sleek, highly-customizable timer for speedrunners.
+                    </p>
+                    <p>
+                        <a
+                            href="https://github.com/LiveSplit/LiveSplitOne"
+                            target="_blank"
+                        >
                             View Source Code on GitHub
                         </a>
                     </p>
                     <h2>Recent Changes</h2>
                     <div className="changelog">
-                        {
-                            CHANGELOG.map((change) => (
-                                <>
-                                    <a href={`https://github.com/LiveSplit/LiveSplitOne/commit/${change.id}`} target="_blank">
-                                        {change.date}
-                                    </a>
-                                    <Markdown markdown={change.message} unsafe={true} />
-                                </>
-                            ))
-                        }
+                        {CHANGELOG.map((change) => (
+                            <>
+                                <a
+                                    href={`https://github.com/LiveSplit/LiveSplitOne/commit/${change.id}`}
+                                    target="_blank"
+                                >
+                                    {change.date}
+                                </a>
+                                <Markdown
+                                    markdown={change.message}
+                                    unsafe={true}
+                                />
+                            </>
+                        ))}
                     </div>
                     <h2>Contributors</h2>
                     <div className="contributors">
-                        {
-                            CONTRIBUTORS_LIST.map((contributor) => (
-                                <a href={`https://github.com/${contributor.name}`} target="_blank">
-                                    <img
-                                        src={`https://avatars.githubusercontent.com/u/${contributor.id}?s=${idealAvatarResolution}&v=4`}
-                                        onError={(e) => (e.target as any).remove()}
-                                    />
-                                    {contributor.name}
-                                </a>
-                            ))
-                        }
+                        {CONTRIBUTORS_LIST.map((contributor) => (
+                            <a
+                                href={`https://github.com/${contributor.name}`}
+                                target="_blank"
+                            >
+                                <img
+                                    src={`https://avatars.githubusercontent.com/u/${contributor.id}?s=${idealAvatarResolution}&v=4`}
+                                    onError={(e) => (e.target as any).remove()}
+                                />
+                                {contributor.name}
+                            </a>
+                        ))}
                     </div>
                 </div>
             </div>

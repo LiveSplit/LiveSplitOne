@@ -1,105 +1,105 @@
-@use 'sass:math';
+@use "sass:math";
 
-@use 'Toggle';
-@use 'variables.icss';
+@use "Toggle";
+@use "variables.icss";
 
 $h1-font-size: 24px;
 $h2-font-size: 22px;
 
 .sidebar-overlay {
-  z-index: 3 !important;
+    z-index: 3 !important;
 }
 
 .sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: variables.$ui-margin;
-  background: variables.$sidebar-background-color;
-  padding: variables.$ui-margin;
-  width: 250px;
-  z-index: 4 !important;
-
-  @include Toggle.toggle;
-
-  >div>div.small {
     display: flex;
+    flex-direction: column;
+    gap: variables.$ui-margin;
+    background: variables.$sidebar-background-color;
+    padding: variables.$ui-margin;
+    width: 250px;
+    z-index: 4 !important;
 
-    >button {
-      width: 50%;
-      font-size: 18px;
-    }
-  }
+    @include Toggle.toggle;
 
-  .sidebar-buttons {
-    display: contents;
-    hr {
-      border-color: variables.$border-color;
-      margin: variables.$ui-margin 0;
+    > div > div.small {
+        display: flex;
 
-      &.livesplit-title-separator {
-        margin-top: 0;
-      }
-    }
-
-    h1,
-    h2 {
-      text-align: center;
-      margin: 0;
-    }
-
-    h1 {
-      font-size: $h1-font-size;
-      margin-top: variables.$ui-large-margin;
-    }
-
-    h2 {
-      font-size: $h2-font-size;
-    }
-
-    button {
-      width: 100%;
-    }
-
-    .livesplit-title {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: variables.$ui-margin;
-      margin-top: variables.$ui-margin;
-
-      h1 {
-        margin: 0;
-      }
-
-      .livesplit-icon {
-        height: 40px;
-
-        img {
-          height: 100%;
+        > button {
+            width: 50%;
+            font-size: 18px;
         }
-      }
     }
 
-    .modified-icon {
-      position: absolute;
-      padding-bottom: 10px;
-      padding-left: 5px;
-    }
-  }
+    .sidebar-buttons {
+        display: contents;
+        hr {
+            border-color: variables.$border-color;
+            margin: variables.$ui-margin 0;
 
-  .choose-comparison {
-    padding: 0 6px 0 6px;
-    width: 100%;
-    height: 40px;
-    appearance: none;
-    background: variables.$button-middle-color;
-    border: 1px solid variables.$border-color;
-    border-radius: 5px;
-    color: white;
-    cursor: pointer;
-    font-family: "fira", sans-serif;
-    font-size: 20px;
-    text-align: center;
-    text-overflow: ellipsis;
-  }
+            &.livesplit-title-separator {
+                margin-top: 0;
+            }
+        }
+
+        h1,
+        h2 {
+            text-align: center;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: $h1-font-size;
+            margin-top: variables.$ui-large-margin;
+        }
+
+        h2 {
+            font-size: $h2-font-size;
+        }
+
+        button {
+            width: 100%;
+        }
+
+        .livesplit-title {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: variables.$ui-margin;
+            margin-top: variables.$ui-margin;
+
+            h1 {
+                margin: 0;
+            }
+
+            .livesplit-icon {
+                height: 40px;
+
+                img {
+                    height: 100%;
+                }
+            }
+        }
+
+        .modified-icon {
+            position: absolute;
+            padding-bottom: 10px;
+            padding-left: 5px;
+        }
+    }
+
+    .choose-comparison {
+        padding: 0 6px 0 6px;
+        width: 100%;
+        height: 40px;
+        appearance: none;
+        background: variables.$button-middle-color;
+        border: 1px solid variables.$border-color;
+        border-radius: 5px;
+        color: white;
+        cursor: pointer;
+        font-family: "fira", sans-serif;
+        font-size: 20px;
+        text-align: center;
+        text-overflow: ellipsis;
+    }
 }

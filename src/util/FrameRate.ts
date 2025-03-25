@@ -22,23 +22,25 @@ export let batteryAwareFrameRate: FrameRate = batteryFrameRate;
 
 let computePressure: FrameRate = FRAME_RATE_MATCH_SCREEN;
 
-if ('PressureObserver' in window) {
+if ("PressureObserver" in window) {
     (async () => {
         try {
-            const observer = new (window as any).PressureObserver((records: any) => {
-                const state = records[0].state;
-                switch (state) {
-                    case "serious":
-                        computePressure = FRAME_RATE_SERIOUS;
-                        break;
-                    case "critical":
-                        computePressure = FRAME_RATE_CRITICAL;
-                        break;
-                    default:
-                        computePressure = FRAME_RATE_MATCH_SCREEN;
-                }
-                updateBatteryAwareFrameRate();
-            });
+            const observer = new (window as any).PressureObserver(
+                (records: any) => {
+                    const state = records[0].state;
+                    switch (state) {
+                        case "serious":
+                            computePressure = FRAME_RATE_SERIOUS;
+                            break;
+                        case "critical":
+                            computePressure = FRAME_RATE_CRITICAL;
+                            break;
+                        default:
+                            computePressure = FRAME_RATE_MATCH_SCREEN;
+                    }
+                    updateBatteryAwareFrameRate();
+                },
+            );
             await observer.observe("cpu", { sampleInterval: 2_000 });
         } catch {
             // The Compute Pressure API is not supported by every browser.
@@ -50,9 +52,10 @@ if ('PressureObserver' in window) {
     try {
         const batteryApi = await (navigator as any).getBattery();
         batteryApi.onchargingchange = () => {
-            batteryFrameRate = batteryApi.charging === true
-                ? FRAME_RATE_MATCH_SCREEN
-                : FRAME_RATE_LOW_POWER;
+            batteryFrameRate =
+                batteryApi.charging === true
+                    ? FRAME_RATE_MATCH_SCREEN
+                    : FRAME_RATE_LOW_POWER;
             updateBatteryAwareFrameRate();
         };
     } catch {

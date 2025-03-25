@@ -6,18 +6,21 @@ import { Circle, Trash } from "lucide-react";
 import "../css/HotkeyButton.scss";
 
 function resolveKey(keyCode: string): Promise<string> | string {
-    return expect(hotkeySystem, "The Hotkey System should always be initialized.").resolve(keyCode);
+    return expect(
+        hotkeySystem,
+        "The Hotkey System should always be initialized.",
+    ).resolve(keyCode);
 }
 
 export interface Props {
-    value: Option<string>,
-    setValue: (value: Option<string>) => void,
+    value: Option<string>;
+    setValue: (value: Option<string>) => void;
 }
 
 export interface State {
-    listener: Option<EventListenerObject>,
-    intervalHandle: Option<number>,
-    resolvedKey: Option<string>,
+    listener: Option<EventListenerObject>;
+    intervalHandle: Option<number>;
+    resolvedKey: Option<string>;
 }
 
 export default class HotkeyButton extends React.Component<Props, State> {
@@ -56,27 +59,35 @@ export default class HotkeyButton extends React.Component<Props, State> {
         if (this.props.value != null) {
             buttonText = this.state.resolvedKey;
         } else if (this.state.listener != null) {
-            buttonText = <Circle strokeWidth={0} size={16} fill="currentColor" />;
+            buttonText = (
+                <Circle strokeWidth={0} size={16} fill="currentColor" />
+            );
         }
 
         return (
             <div className="hotkey-box">
                 <button
-                    className={`hotkey-button tooltip ${this.state.listener != null ? "focused" : ""}`}
+                    className={`hotkey-button tooltip ${
+                        this.state.listener != null ? "focused" : ""
+                    }`}
                     onClick={() => this.focusButton()}
                 >
                     {buttonText}
                     <span className="tooltip-text">
-                        Click to record a hotkey. You may also use buttons on a gamepad.
-                        Global hotkeys are currently not possible. Gamepad buttons work globally.
+                        Click to record a hotkey. You may also use buttons on a
+                        gamepad. Global hotkeys are currently not possible.
+                        Gamepad buttons work globally.
                     </span>
                 </button>
-                {
-                    map(this.props.value, () => (
-                        <Trash className="trash" strokeWidth={2.5} size={20} onClick={() => this.props.setValue(null)} />
-                    ))
-                }
-                {this.state.listener != null &&
+                {map(this.props.value, () => (
+                    <Trash
+                        className="trash"
+                        strokeWidth={2.5}
+                        size={20}
+                        onClick={() => this.props.setValue(null)}
+                    />
+                ))}
+                {this.state.listener != null && (
                     <div
                         style={{
                             bottom: "0px",
@@ -88,7 +99,7 @@ export default class HotkeyButton extends React.Component<Props, State> {
                         }}
                         onClick={() => this.blurButton()}
                     />
-                }
+                )}
             </div>
         );
     }
@@ -104,22 +115,38 @@ export default class HotkeyButton extends React.Component<Props, State> {
                         return;
                     }
                     let text = "";
-                    if (ev.ctrlKey && ev.code !== "ControlLeft" && ev.code !== "ControlRight") {
+                    if (
+                        ev.ctrlKey &&
+                        ev.code !== "ControlLeft" &&
+                        ev.code !== "ControlRight"
+                    ) {
                         text += "Ctrl + ";
                     }
-                    if (ev.altKey && ev.code !== "AltLeft" && ev.code !== "AltRight") {
+                    if (
+                        ev.altKey &&
+                        ev.code !== "AltLeft" &&
+                        ev.code !== "AltRight"
+                    ) {
                         text += "Alt + ";
                     }
-                    if (ev.metaKey && ev.code !== "MetaLeft" && ev.code !== "MetaRight") {
+                    if (
+                        ev.metaKey &&
+                        ev.code !== "MetaLeft" &&
+                        ev.code !== "MetaRight"
+                    ) {
                         text += "Meta + ";
                     }
-                    if (ev.shiftKey && ev.code !== "ShiftLeft" && ev.code !== "ShiftRight") {
+                    if (
+                        ev.shiftKey &&
+                        ev.code !== "ShiftLeft" &&
+                        ev.code !== "ShiftRight"
+                    ) {
                         text += "Shift + ";
                     }
                     text += ev.code;
                     this.props.setValue(text);
                     ev.preventDefault();
-                }
+                },
             };
 
             window.addEventListener("keydown", listener);
@@ -139,12 +166,15 @@ export default class HotkeyButton extends React.Component<Props, State> {
                     if (gamepad !== null) {
                         let buttonIdx = 0;
                         for (const button of gamepad.buttons) {
-                            const oldState = oldButtonState[gamepadIdx]?.[buttonIdx] ?? false;
+                            const oldState =
+                                oldButtonState[gamepadIdx]?.[buttonIdx] ??
+                                false;
                             if (button.pressed && !oldState) {
                                 this.props.setValue(`Gamepad${buttonIdx}`);
                             }
 
-                            oldButtonState[gamepadIdx][buttonIdx] = button.pressed;
+                            oldButtonState[gamepadIdx][buttonIdx] =
+                                button.pressed;
 
                             buttonIdx++;
                         }

@@ -7,7 +7,7 @@ if (typeof Symbol.dispose !== "symbol") {
         configurable: false,
         enumerable: false,
         writable: false,
-        value: Symbol.for("dispose")
+        value: Symbol.for("dispose"),
     });
 }
 
@@ -16,11 +16,15 @@ if (typeof Symbol.asyncDispose !== "symbol") {
         configurable: false,
         enumerable: false,
         writable: false,
-        value: Symbol.for("asyncDispose")
+        value: Symbol.for("asyncDispose"),
     });
 }
 
-if (process.env.NODE_ENV === "production" && window.__TAURI__ == null && "serviceWorker" in navigator) {
+if (
+    process.env.NODE_ENV === "production" &&
+    window.__TAURI__ == null &&
+    "serviceWorker" in navigator
+) {
     navigator.serviceWorker.register("/service-worker.js");
 }
 
@@ -54,8 +58,8 @@ try {
 
         requestWakeLock();
 
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === "visible") {
                 requestWakeLock();
             }
         });
@@ -65,8 +69,8 @@ try {
         try {
             const promises = [];
             // TypeScript doesn't seem to know that the fonts are iterable.
-            for (const fontFace of (document.fonts as any as Iterable<FontFace>)) {
-                if (fontFace.family === 'timer' || fontFace.family === 'fira') {
+            for (const fontFace of document.fonts as any as Iterable<FontFace>) {
+                if (fontFace.family === "timer" || fontFace.family === "fira") {
                     promises.push(fontFace.load());
                 }
             }

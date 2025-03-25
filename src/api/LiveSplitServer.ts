@@ -33,7 +33,9 @@ export class LiveSplitServer {
         this.connection.onerror = () => {
             if (wasConnected) {
                 // The onerror event does not contain any useful information.
-                toast.error("An error while communicating with the server occurred.");
+                toast.error(
+                    "An error while communicating with the server occurred.",
+                );
             }
         };
 
@@ -45,7 +47,10 @@ export class LiveSplitServer {
                 // the response only after all previous responses have been
                 // sent.
 
-                const promise = ServerProtocol.handleCommand(e.data, commandSink.getCommandSink().ptr);
+                const promise = ServerProtocol.handleCommand(
+                    e.data,
+                    commandSink.getCommandSink().ptr,
+                );
                 sendQueue = sendQueue.then(async () => {
                     const message = await promise;
                     if (this.connection.readyState === WebSocket.OPEN) {

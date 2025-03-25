@@ -1,28 +1,28 @@
-@use 'variables.icss';
+@use "variables.icss";
 
 @mixin toggle {
-  .toggle-left {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-  }
+    .toggle-left {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+    }
 
-  .toggle-right {
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-  }
+    .toggle-right {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+    }
 
-  .toggle-middle {
-    border-radius: 0;
-  }
+    .toggle-middle {
+        border-radius: 0;
+    }
 
-  .button-pressed,
-  .button-pressed:hover {
-    background: variables.$button-active-color;
-  }
+    .button-pressed,
+    .button-pressed:hover {
+        background: variables.$button-active-color;
+    }
 
-  .button-pressed.disabled {
-    background: variables.$button-disabled-color;
-    color: variables.$button-disabled-text-color;
-    cursor: default;
-  }
+    .button-pressed.disabled {
+        background: variables.$button-disabled-color;
+        color: variables.$button-disabled-text-color;
+        cursor: default;
+    }
 }

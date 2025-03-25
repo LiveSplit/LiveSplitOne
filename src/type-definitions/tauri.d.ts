@@ -12,7 +12,10 @@ declare interface CoreModule {
 }
 
 declare interface TauriEventModule {
-    listen(eventName: string, callback: (event: TauriEvent) => void): Promise<ListenHandle>;
+    listen(
+        eventName: string,
+        callback: (event: TauriEvent) => void,
+    ): Promise<ListenHandle>;
 }
 
 declare interface TauriNotificationModule {
@@ -35,4 +38,4 @@ declare interface TauriEvent {
     payload: unknown;
 }
 
-declare interface ListenHandle { }
+declare interface ListenHandle {}

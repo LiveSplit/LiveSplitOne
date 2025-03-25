@@ -1,5 +1,5 @@
 @mixin mobile {
-  .is-mobile & {
-    @content;
-  }
+    .is-mobile & {
+        @content;
+    }
 }
