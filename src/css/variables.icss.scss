@@ -1,4 +1,4 @@
-@use 'sass:math';
+@use "sass:math";
 
 $ui-margin: 8px;
 $ui-large-margin: 16px;
@@ -24,19 +24,25 @@ $button-height: 40px;
 $manual-game-time-height: 25px;
 
 $main-background-color: #171717;
-$sidebar-background-color: #1A1A1A;
+$sidebar-background-color: #1a1a1a;
 
-$dark-row-color: #0B0B0B;
+$dark-row-color: #0b0b0b;
 $header-row-color: #090909;
 $hover-row-color: #404040;
 $light-row-color: #121212;
 
-$selected-row-color: linear-gradient(rgb(51, 115, 244) 0%, rgb(21, 53, 116) 100%);
-$selected-row-hover-color: linear-gradient(hsl(220, 90%, 70%) 0%, hsl(220, 69%, 40%) 100%);
+$selected-row-color: linear-gradient(
+    rgb(51, 115, 244) 0%,
+    rgb(21, 53, 116) 100%
+);
+$selected-row-hover-color: linear-gradient(
+    hsl(220, 90%, 70%) 0%,
+    hsl(220, 69%, 40%) 100%
+);
 
 :export {
-  buttonHeight: $button-height;
-  largeMargin: $ui-large-margin;
-  manualGameTimeHeight: $manual-game-time-height;
-  contributorAvatarSize: $contributor-avatar-size;
+    buttonHeight: $button-height;
+    largeMargin: $ui-large-margin;
+    manualGameTimeHeight: $manual-game-time-height;
+    contributorAvatarSize: $contributor-avatar-size;
 }

@@ -1,43 +1,67 @@
 import * as React from "react";
 import {
-    getSplitsInfos, SplitsInfo, deleteSplits, copySplits, loadSplits,
-    storeRunWithoutDisposing, storeSplitsKey,
+    getSplitsInfos,
+    SplitsInfo,
+    deleteSplits,
+    copySplits,
+    loadSplits,
+    storeRunWithoutDisposing,
+    storeSplitsKey,
 } from "../storage";
 import { Run, Segment, TimerPhase } from "../livesplit-core";
 import { toast } from "react-toastify";
-import { openFileAsArrayBuffer, exportFile, convertFileToArrayBuffer, FILE_EXT_SPLITS } from "../util/FileUtil";
+import {
+    openFileAsArrayBuffer,
+    exportFile,
+    convertFileToArrayBuffer,
+    FILE_EXT_SPLITS,
+} from "../util/FileUtil";
 import { Option, bug, maybeDisposeAndThen } from "../util/OptionUtil";
 import DragUpload from "./DragUpload";
 import { GeneralSettings } from "./MainSettings";
 import { LSOCommandSink } from "./LSOCommandSink";
 import { showDialog } from "./Dialog";
-import { ArrowLeft, Circle, Copy, Download, FolderOpen, Plus, Save, SquarePen, Trash, Upload } from "lucide-react";
+import {
+    ArrowLeft,
+    Circle,
+    Copy,
+    Download,
+    FolderOpen,
+    Plus,
+    Save,
+    SquarePen,
+    Trash,
+    Upload,
+} from "lucide-react";
 
 import "../css/SplitsSelection.scss";
 
 export interface EditingInfo {
-    splitsKey?: number,
-    run: Run,
+    splitsKey?: number;
+    run: Run;
 }
 
 export interface Props {
-    commandSink: LSOCommandSink,
-    openedSplitsKey?: number,
-    callbacks: Callbacks,
-    generalSettings: GeneralSettings,
-    splitsModified: boolean,
+    commandSink: LSOCommandSink;
+    openedSplitsKey?: number;
+    callbacks: Callbacks;
+    generalSettings: GeneralSettings;
+    splitsModified: boolean;
 }
 
 interface State {
-    splitsInfos?: Array<[number, SplitsInfo]>,
+    splitsInfos?: Array<[number, SplitsInfo]>;
 }
 
 interface Callbacks {
-    openRunEditor(editingInfo: EditingInfo): void,
-    setSplitsKey(newKey?: number): void,
-    openTimerView(): void,
-    renderViewWithSidebar(renderedView: React.JSX.Element, sidebarContent: React.JSX.Element): React.JSX.Element,
-    saveSplits(): Promise<void>,
+    openRunEditor(editingInfo: EditingInfo): void;
+    setSplitsKey(newKey?: number): void;
+    openTimerView(): void;
+    renderViewWithSidebar(
+        renderedView: React.JSX.Element,
+        sidebarContent: React.JSX.Element,
+    ): React.JSX.Element;
+    saveSplits(): Promise<void>;
 }
 
 export class SplitsSelection extends React.Component<Props, State> {
@@ -51,7 +75,10 @@ export class SplitsSelection extends React.Component<Props, State> {
     public render() {
         const renderedView = this.renderView();
         const sidebarContent = this.renderSidebarContent();
-        return this.props.callbacks.renderViewWithSidebar(renderedView, sidebarContent);
+        return this.props.callbacks.renderViewWithSidebar(
+            renderedView,
+            sidebarContent,
+        );
     }
 
     private renderView() {
@@ -74,25 +101,23 @@ export class SplitsSelection extends React.Component<Props, State> {
                             <Download strokeWidth={2.5} /> Import
                         </button>
                     </div>
-                    {
-                        this.state.splitsInfos?.length > 0 &&
+                    {this.state.splitsInfos?.length > 0 && (
                         <div className="splits-table">
                             <div className="splits-rows">
-                                {
-                                    this.state.splitsInfos
-                                        .map(([key, info]) => this.renderSavedSplitsRow(key, info))
-                                }
+                                {this.state.splitsInfos.map(([key, info]) =>
+                                    this.renderSavedSplitsRow(key, info),
+                                )}
                             </div>
                         </div>
-                    }
+                    )}
                 </div>
             );
         }
-        return <DragUpload
-            importSplits={this.importSplitsFromFile.bind(this)}
-        >
-            <div className="splits-selection">{content}</div>
-        </DragUpload>;
+        return (
+            <DragUpload importSplits={this.importSplitsFromFile.bind(this)}>
+                <div className="splits-selection">{content}</div>
+            </DragUpload>
+        );
     }
 
     private async refreshDb() {
@@ -106,28 +131,44 @@ export class SplitsSelection extends React.Component<Props, State> {
         const isOpened = key === this.props.openedSplitsKey;
 
         return (
-            <div className={isOpened ? "splits-row selected" : "splits-row"} key={key}>
+            <div
+                className={isOpened ? "splits-row selected" : "splits-row"}
+                key={key}
+            >
                 {this.splitsTitle(info)}
                 <div className="splits-row-buttons">
-                    {
-                        isOpened
-                            ? null
-                            : <>
-                                <button aria-label="Open Splits" onClick={() => this.openSplits(key)}>
-                                    <FolderOpen strokeWidth={2.5} />
-                                </button>
-                                <button aria-label="Edit Splits" onClick={() => this.editSplits(key)}>
-                                    <SquarePen strokeWidth={2.5} />
-                                </button>
-                                <button aria-label="Export Splits" onClick={() => this.exportSplits(key, info)}>
-                                    <Upload strokeWidth={2.5} />
-                                </button>
-                            </>
-                    }
-                    <button aria-label="Copy Splits" onClick={() => this.copySplits(key)}>
+                    {isOpened ? null : (
+                        <>
+                            <button
+                                aria-label="Open Splits"
+                                onClick={() => this.openSplits(key)}
+                            >
+                                <FolderOpen strokeWidth={2.5} />
+                            </button>
+                            <button
+                                aria-label="Edit Splits"
+                                onClick={() => this.editSplits(key)}
+                            >
+                                <SquarePen strokeWidth={2.5} />
+                            </button>
+                            <button
+                                aria-label="Export Splits"
+                                onClick={() => this.exportSplits(key, info)}
+                            >
+                                <Upload strokeWidth={2.5} />
+                            </button>
+                        </>
+                    )}
+                    <button
+                        aria-label="Copy Splits"
+                        onClick={() => this.copySplits(key)}
+                    >
                         <Copy strokeWidth={2.5} />
                     </button>
-                    <button aria-label="Remove Splits" onClick={() => this.deleteSplits(key)}>
+                    <button
+                        aria-label="Remove Splits"
+                        onClick={() => this.deleteSplits(key)}
+                    >
                         <Trash strokeWidth={2.5} />
                     </button>
                 </div>
@@ -138,8 +179,12 @@ export class SplitsSelection extends React.Component<Props, State> {
     private splitsTitle(info: SplitsInfo) {
         return (
             <div className="splits-title-text">
-                <div className="splits-text splits-game">{info.game || "Untitled"}</div>
-                <div className="splits-text splits-category">{info.category || "—"}</div>
+                <div className="splits-text splits-game">
+                    {info.game || "Untitled"}
+                </div>
+                <div className="splits-text splits-category">
+                    {info.category || "—"}
+                </div>
             </div>
         );
     }
@@ -149,24 +194,35 @@ export class SplitsSelection extends React.Component<Props, State> {
             <div className="sidebar-buttons">
                 <h1>Splits</h1>
                 <hr />
-                <button onClick={(_) => {
-                    if (this.props.commandSink.currentPhase() !== TimerPhase.NotRunning) {
-                        toast.error("You can't edit your splits while the timer is running.");
-                        return;
-                    }
-                    const run = this.props.commandSink.getRun().clone();
-                    this.props.callbacks.openRunEditor({ run });
-                }}>
+                <button
+                    onClick={(_) => {
+                        if (
+                            this.props.commandSink.currentPhase() !==
+                            TimerPhase.NotRunning
+                        ) {
+                            toast.error(
+                                "You can't edit your splits while the timer is running.",
+                            );
+                            return;
+                        }
+                        const run = this.props.commandSink.getRun().clone();
+                        this.props.callbacks.openRunEditor({ run });
+                    }}
+                >
                     <SquarePen strokeWidth={2.5} /> Edit
                 </button>
                 <button onClick={(_) => this.saveSplits()}>
                     <Save strokeWidth={2.5} />
                     <span>
                         Save
-                        {
-                            this.props.splitsModified &&
-                                <Circle strokeWidth={0} size={12} fill="currentColor" className="modified-icon" />
-                        }
+                        {this.props.splitsModified && (
+                            <Circle
+                                strokeWidth={0}
+                                size={12}
+                                fill="currentColor"
+                                className="modified-icon"
+                            />
+                        )}
                     </span>
                 </button>
                 <button onClick={(_) => this.exportTimerSplits()}>
@@ -202,7 +258,8 @@ export class SplitsSelection extends React.Component<Props, State> {
         if (isModified) {
             const [result] = await showDialog({
                 title: "Discard Changes?",
-                description: "Your current splits are modified and have unsaved changes. Do you want to continue and discard those changes?",
+                description:
+                    "Your current splits are modified and have unsaved changes. Do you want to continue and discard those changes?",
                 buttons: ["Yes", "No"],
             });
             if (result === 1) {
@@ -214,9 +271,8 @@ export class SplitsSelection extends React.Component<Props, State> {
         if (run === undefined) {
             return;
         }
-        maybeDisposeAndThen(
-            this.props.commandSink.setRun(run),
-            () => toast.error("The loaded splits are invalid."),
+        maybeDisposeAndThen(this.props.commandSink.setRun(run), () =>
+            toast.error("The loaded splits are invalid."),
         );
         this.props.callbacks.setSplitsKey(key);
     }
@@ -260,7 +316,8 @@ export class SplitsSelection extends React.Component<Props, State> {
     private async deleteSplits(key: number) {
         const [result] = await showDialog({
             title: "Delete Splits?",
-            description: "Are you sure you want to delete the splits? This operation can not be undone.",
+            description:
+                "Are you sure you want to delete the splits? This operation can not be undone.",
             buttons: ["Yes", "No"],
         });
         if (result !== 0) {
@@ -304,7 +361,9 @@ export class SplitsSelection extends React.Component<Props, State> {
         }
     }
 
-    private async importSplitsFromArrayBuffer(buffer: [ArrayBuffer, File]): Promise<Option<Error>> {
+    private async importSplitsFromArrayBuffer(
+        buffer: [ArrayBuffer, File],
+    ): Promise<Option<Error>> {
         const [file] = buffer;
         using result = Run.parseArray(new Uint8Array(file), "");
         if (result.parsedSuccessfully()) {

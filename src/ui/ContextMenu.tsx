@@ -8,7 +8,9 @@ export interface Position {
     y: number;
 }
 
-const InfoContext = createContext<{ onClose: () => void } | undefined>(undefined);
+const InfoContext = createContext<{ onClose: () => void } | undefined>(
+    undefined,
+);
 
 export function ContextMenu({
     position,
@@ -30,9 +32,7 @@ export function ContextMenu({
                 }}
             >
                 <div className={classes.overlay} onClick={onClose} />
-                <div className={classes.panel}>
-                    {children}
-                </div>
+                <div className={classes.panel}>{children}</div>
             </nav>
         </InfoContext.Provider>
     );
@@ -47,7 +47,10 @@ export function MenuItem({
     onClick: () => void;
     className?: string;
 }) {
-    const { onClose } = expect(useContext(InfoContext), "MenuItem must be used within a ContextMenu");
+    const { onClose } = expect(
+        useContext(InfoContext),
+        "MenuItem must be used within a ContextMenu",
+    );
 
     return (
         <div

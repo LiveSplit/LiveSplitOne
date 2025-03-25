@@ -4,15 +4,17 @@ import { toast } from "react-toastify";
 import "../css/DragUpload.scss";
 
 export interface Props {
-    children: React.ReactNode,
-    importLayout?: (file: File) => Promise<void>,
-    importSplits(file: File): Promise<void>,
+    children: React.ReactNode;
+    importLayout?: (file: File) => Promise<void>;
+    importSplits(file: File): Promise<void>;
 }
 
 export default class DragUpload extends React.Component<Props> {
     public componentDidMount() {
         const dropZone = document.getElementById("upload-drop-zone");
-        const dropZoneOverlay = document.getElementById("upload-drop-zone-overlay");
+        const dropZoneOverlay = document.getElementById(
+            "upload-drop-zone-overlay",
+        );
         const importLayout = this.props.importLayout;
         const importSplits = this.props.importSplits;
 
@@ -30,7 +32,8 @@ export default class DragUpload extends React.Component<Props> {
         });
 
         dropZone.addEventListener("dragleave", (event) => {
-            if (dropZoneOverlay &&
+            if (
+                dropZoneOverlay &&
                 (event.pageX < 10 ||
                     event.pageY < 10 ||
                     window.innerWidth - event.pageX < 10 ||
@@ -77,9 +80,7 @@ export default class DragUpload extends React.Component<Props> {
         return (
             <div id="upload-drop-zone">
                 <div id="upload-drop-zone-overlay">
-                    <div className="overlay-text">
-                        Waiting for drop...
-          </div>
+                    <div className="overlay-text">Waiting for drop...</div>
                 </div>
                 {this.props.children}
             </div>

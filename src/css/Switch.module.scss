@@ -19,7 +19,7 @@
         left: 0;
         right: 0;
         bottom: 0;
-        transition: background-color .25s;
+        transition: background-color 0.25s;
     }
 
     span::before {
@@ -27,26 +27,26 @@
         border-radius: 50%;
         content: "";
         position: absolute;
-        transition: all .25s;
+        transition: all 0.25s;
         left: 3px;
         bottom: 3px;
         height: 14px;
         width: 14px;
     }
 
-    &:hover input+span {
+    &:hover input + span {
         background-color: #ffffff40;
     }
 
-    &:hover input:checked+span {
+    &:hover input:checked + span {
         background-color: #ffffff80;
     }
 
-    input:checked+span {
+    input:checked + span {
         background-color: #ffffff60;
     }
 
-    input:checked+span::before {
+    input:checked + span::before {
         transform: translateX(15px);
     }
 

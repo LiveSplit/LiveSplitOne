@@ -1,45 +1,46 @@
-@use 'sass:math';
+@use "sass:math";
 
-@use 'mobile';
-@use 'variables.icss';
+@use "mobile";
+@use "variables.icss";
 
 .buttons {
-  margin-top: variables.$ui-large-margin - math.div(variables.$ui-margin, 2);
-  max-width: 2 * variables.$button-max-width + math.div(variables.$ui-margin, 2);
+    margin-top: variables.$ui-large-margin - math.div(variables.$ui-margin, 2);
+    max-width: 2 * variables.$button-max-width +
+        math.div(variables.$ui-margin, 2);
 
-  .control-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: variables.$ui-margin;
+    .control-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: variables.$ui-margin;
 
-    button {
-      width: 100%;
+        button {
+            width: 100%;
+        }
     }
-  }
 
-  .manual-game-time {
-    width: calc(100% - math.div(variables.$ui-margin, 2));
-    color: variables.$button-text-color;
-    background-color: transparent;
-    border: none;
-    border-bottom: 2px solid #aaa;
-    text-align: right;
-    font-family: "fira", sans-serif;
-    font-weight: bold;
-    font-size: 25px;
-    height: variables.$manual-game-time-height;
-  }
+    .manual-game-time {
+        width: calc(100% - math.div(variables.$ui-margin, 2));
+        color: variables.$button-text-color;
+        background-color: transparent;
+        border: none;
+        border-bottom: 2px solid #aaa;
+        text-align: right;
+        font-family: "fira", sans-serif;
+        font-weight: bold;
+        font-size: 25px;
+        height: variables.$manual-game-time-height;
+    }
 
-  .manual-game-time:focus {
-    outline: none;
-  }
+    .manual-game-time:focus {
+        outline: none;
+    }
 
-  .manual-game-time::placeholder {
-    font-size: 15px;
-  }
+    .manual-game-time::placeholder {
+        font-size: 15px;
+    }
 
-  @include mobile.mobile {
-    padding: 0 variables.$ui-margin;
-    width: calc(100% - #{2 * variables.$ui-margin}) !important;
-  }
+    @include mobile.mobile {
+        padding: 0 variables.$ui-margin;
+        width: calc(100% - #{2 * variables.$ui-margin}) !important;
+    }
 }

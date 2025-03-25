@@ -17,7 +17,13 @@ function colorToCss(color: Color): string {
     return `rgba(${r},${g},${b},${a})`;
 }
 
-export default function ColorPicker({ color, setColor }: { color: Color, setColor: (color: Color) => void }) {
+export default function ColorPicker({
+    color,
+    setColor,
+}: {
+    color: Color;
+    setColor: (color: Color) => void;
+}) {
     const [isShowing, setIsShowing] = useState(false);
     return (
         <div>
@@ -27,17 +33,31 @@ export default function ColorPicker({ color, setColor }: { color: Color, setColo
                 onClick={() => setIsShowing(true)}
             />
             <div className={classes.colorPickerDialogPositioning}>
-                {isShowing && <ColorPickerDialog color={color} setColor={setColor} close={() => setIsShowing(false)} />}
+                {isShowing && (
+                    <ColorPickerDialog
+                        color={color}
+                        setColor={setColor}
+                        close={() => setIsShowing(false)}
+                    />
+                )}
             </div>
         </div>
     );
 }
 
-function ColorPickerDialog({ color, setColor, close }: { color: Color, setColor: (color: Color) => void, close: () => void }) {
+function ColorPickerDialog({
+    color,
+    setColor,
+    close,
+}: {
+    color: Color;
+    setColor: (color: Color) => void;
+    close: () => void;
+}) {
     return (
         <>
             <div className={classes.overlay} onClick={close} />
-            <div className={classes.glassPanel} >
+            <div className={classes.glassPanel}>
                 <GradientSelector color={color} setColor={setColor} />
                 <Hr />
                 <ControlPanel color={color} setColor={setColor} />
@@ -52,7 +72,13 @@ function Hr() {
     return <hr className={classes.hr} />;
 }
 
-function GradientSelector({ color, setColor }: { color: Color, setColor: (color: Color) => void }) {
+function GradientSelector({
+    color,
+    setColor,
+}: {
+    color: Color;
+    setColor: (color: Color) => void;
+}) {
     const [r, g, b, a] = color;
     const [h, s, v] = rgbToHsv(r, g, b);
     const [r1, g1, b1] = hsvToRgb(h, 1, 1);
@@ -98,9 +124,14 @@ function GradientSelector({ color, setColor }: { color: Color, setColor: (color:
             }}
         >
             <div className={classes.whiteGradient}>
-                <div className={classes.cursor} style={{
-                    transform: `translate(${s * 225 - 6}px, ${125 - v * 125 - 6}px)`,
-                }}>
+                <div
+                    className={classes.cursor}
+                    style={{
+                        transform: `translate(${s * 225 - 6}px, ${
+                            125 - v * 125 - 6
+                        }px)`,
+                    }}
+                >
                     <div />
                 </div>
                 <div className={classes.blackGradient} />
@@ -115,7 +146,13 @@ function nextMode(mode: Mode): Mode {
     return mode === "Rgb" ? "Hsv" : mode === "Hsv" ? "Hex" : "Rgb";
 }
 
-function ControlPanel({ color, setColor }: { color: Color, setColor: (color: Color) => void }) {
+function ControlPanel({
+    color,
+    setColor,
+}: {
+    color: Color;
+    setColor: (color: Color) => void;
+}) {
     const [r, g, b, a] = color;
     const [h, s, v] = rgbToHsv(r, g, b);
     const [mode, setMode] = useState<Mode>("Hex");
@@ -151,7 +188,9 @@ function ControlPanel({ color, setColor }: { color: Color, setColor: (color: Col
                             <div
                                 style={{
                                     height: "18px",
-                                    background: `linear-gradient(to right, transparent 0%, rgb(${255 * r}, ${255 * g}, ${255 * b}) 100%)`,
+                                    background: `linear-gradient(to right, transparent 0%, rgb(${
+                                        255 * r
+                                    }, ${255 * g}, ${255 * b}) 100%)`,
                                 }}
                             />
                         </div>
@@ -189,29 +228,32 @@ function parseHex(hex: string): [number, number, number] | undefined {
         return;
     }
     if (hex.length === 6) {
-        const r = ((num >> 16) & 0xFF) / 255;
-        const g = ((num >> 8) & 0xFF) / 255;
-        const b = (num & 0xFF) / 255;
+        const r = ((num >> 16) & 0xff) / 255;
+        const g = ((num >> 8) & 0xff) / 255;
+        const b = (num & 0xff) / 255;
         return [r, g, b];
     } else if (hex.length === 3) {
-        const r = ((num >> 8) & 0xF) * 0x11 / 255;
-        const g = ((num >> 4) & 0xF) * 0x11 / 255;
-        const b = (num & 0xF) * 0x11 / 255;
+        const r = (((num >> 8) & 0xf) * 0x11) / 255;
+        const g = (((num >> 4) & 0xf) * 0x11) / 255;
+        const b = ((num & 0xf) * 0x11) / 255;
         return [r, g, b];
     } else {
         return;
     }
 }
 
-function ColorPreview({ color, setColor }: { color: Color, setColor: (color: Color) => void }) {
+function ColorPreview({
+    color,
+    setColor,
+}: {
+    color: Color;
+    setColor: (color: Color) => void;
+}) {
     const [r, g, b, a] = color;
     return (
         <>
             {hasEyeDropper && (
-                <div
-                    style={{ cursor: "pointer" }}
-                    title="Eye Dropper"
-                >
+                <div style={{ cursor: "pointer" }} title="Eye Dropper">
                     <Pipette
                         size={20}
                         aria-hidden="true"
@@ -225,20 +267,19 @@ function ColorPreview({ color, setColor }: { color: Color, setColor: (color: Col
                                         setColor([...parsed, 1]);
                                     }
                                 }
-                            } catch { }
+                            } catch {}
                         }}
                     />
                 </div>
             )}
-            <div
-                className={classes.colorPreview}
-                title="Color Preview"
-            >
+            <div className={classes.colorPreview} title="Color Preview">
                 <div className={classes.checker}>
                     <div
                         className={classes.colorPreviewInner}
                         style={{
-                            backgroundColor: `rgba(${255 * r}, ${255 * g}, ${255 * b}, ${a})`,
+                            backgroundColor: `rgba(${255 * r}, ${255 * g}, ${
+                                255 * b
+                            }, ${a})`,
                         }}
                     />
                 </div>
@@ -247,7 +288,13 @@ function ColorPreview({ color, setColor }: { color: Color, setColor: (color: Col
     );
 }
 
-function Hsva({ color, setColor }: { color: Color, setColor: (color: Color) => void }) {
+function Hsva({
+    color,
+    setColor,
+}: {
+    color: Color;
+    setColor: (color: Color) => void;
+}) {
     const [r, g, b, a] = color;
     const [h, s, v] = rgbToHsv(r, g, b);
 
@@ -296,7 +343,13 @@ function Hsva({ color, setColor }: { color: Color, setColor: (color: Color) => v
     );
 }
 
-function Rgba({ color, setColor }: { color: Color, setColor: (color: Color) => void }) {
+function Rgba({
+    color,
+    setColor,
+}: {
+    color: Color;
+    setColor: (color: Color) => void;
+}) {
     const [r, g, b, a] = color;
 
     return (
@@ -341,7 +394,13 @@ function Rgba({ color, setColor }: { color: Color, setColor: (color: Color) => v
     );
 }
 
-function Hex({ color, setColor }: { color: Color, setColor: (color: Color) => void }) {
+function Hex({
+    color,
+    setColor,
+}: {
+    color: Color;
+    setColor: (color: Color) => void;
+}) {
     const [r, g, b, a] = color;
 
     return (
@@ -349,7 +408,15 @@ function Hex({ color, setColor }: { color: Color, setColor: (color: Color) => vo
             <div className={classes.colorInput} title="Hexadecimal">
                 <FormattedInput
                     value={color}
-                    format={([r, g, b, _]) => `#${Math.round(255 * r).toString(16).padStart(2, '0')}${Math.round(255 * g).toString(16).padStart(2, '0')}${Math.round(255 * b).toString(16).padStart(2, '0')}`.toUpperCase()}
+                    format={([r, g, b, _]) =>
+                        `#${Math.round(255 * r)
+                            .toString(16)
+                            .padStart(2, "0")}${Math.round(255 * g)
+                            .toString(16)
+                            .padStart(2, "0")}${Math.round(255 * b)
+                            .toString(16)
+                            .padStart(2, "0")}`.toUpperCase()
+                    }
                     parse={(value) => {
                         const parsed = parseHex(value);
                         if (parsed) {
@@ -374,11 +441,16 @@ function Hex({ color, setColor }: { color: Color, setColor: (color: Color) => vo
     );
 }
 
-function FormattedInput<T>({ value, format, parse, setValue }: {
-    value: T,
-    format: (value: T) => string,
-    parse: (value: string) => T | undefined,
-    setValue: (value: T) => void,
+function FormattedInput<T>({
+    value,
+    format,
+    parse,
+    setValue,
+}: {
+    value: T;
+    format: (value: T) => string;
+    parse: (value: string) => T | undefined;
+    setValue: (value: T) => void;
 }) {
     const [formatted, setFormatted] = useState(() => format(value));
     const [isValid, setIsValid] = useState(true);
@@ -411,26 +483,55 @@ function FormattedInput<T>({ value, format, parse, setValue }: {
             value={formatted}
             onChange={handleInputChange}
             onBlur={() => {
-                setFormatted(format(value))
+                setFormatted(format(value));
                 setIsValid(true);
             }}
         />
-    )
+    );
 }
 
 type Format = "Degree" | "Percent" | "Byte";
 
-function ColorComponent({ title, short, kind, value, setValue }: { title: string, short: string, kind: Format, value: number, setValue: (value: number) => void }) {
+function ColorComponent({
+    title,
+    short,
+    kind,
+    value,
+    setValue,
+}: {
+    title: string;
+    short: string;
+    kind: Format;
+    value: number;
+    setValue: (value: number) => void;
+}) {
     return (
         <div className={classes.colorInput} title={title}>
             <FormattedInput
                 value={value}
-                format={(value) => kind === "Degree" ? `${value.toFixed(0)}°` : kind === "Percent" ? `${(100 * value).toFixed(0)}%` : `${(255 * value).toFixed(0)}`}
+                format={(value) =>
+                    kind === "Degree"
+                        ? `${value.toFixed(0)}°`
+                        : kind === "Percent"
+                          ? `${(100 * value).toFixed(0)}%`
+                          : `${(255 * value).toFixed(0)}`
+                }
                 parse={(value) => {
-                    const newValue = parseFloat(value.replace(/[^0-9.]/g, ''));
-                    const max = kind === "Degree" ? 360 : kind === "Percent" ? 100 : 255;
-                    const scale = kind === "Degree" ? 1 : kind === "Percent" ? 0.01 : 1 / 255;
-                    if (newValue < 0 || newValue > max || isNaN(newValue)) return undefined;
+                    const newValue = parseFloat(value.replace(/[^0-9.]/g, ""));
+                    const max =
+                        kind === "Degree"
+                            ? 360
+                            : kind === "Percent"
+                              ? 100
+                              : 255;
+                    const scale =
+                        kind === "Degree"
+                            ? 1
+                            : kind === "Percent"
+                              ? 0.01
+                              : 1 / 255;
+                    if (newValue < 0 || newValue > max || isNaN(newValue))
+                        return undefined;
                     return newValue * scale;
                 }}
                 setValue={setValue}
@@ -476,7 +577,11 @@ function PredefinedColors({ setColor }: { setColor: (color: Color) => void }) {
             {predefinedColors.map((hsv, index) => (
                 <div key={index} className={classes.predefinedColorsRow}>
                     {hsv.map((color, i) => (
-                        <PredefinedColor key={i} color={color} setColor={setColor} />
+                        <PredefinedColor
+                            key={i}
+                            color={color}
+                            setColor={setColor}
+                        />
                     ))}
                 </div>
             ))}
@@ -484,7 +589,13 @@ function PredefinedColors({ setColor }: { setColor: (color: Color) => void }) {
     );
 }
 
-function PredefinedColor({ color: [title, r, g, b], setColor }: { color: [string, number, number, number], setColor: (color: Color) => void }) {
+function PredefinedColor({
+    color: [title, r, g, b],
+    setColor,
+}: {
+    color: [string, number, number, number];
+    setColor: (color: Color) => void;
+}) {
     return (
         <button
             className={classes.predefinedColor}
@@ -496,14 +607,20 @@ function PredefinedColor({ color: [title, r, g, b], setColor }: { color: [string
 }
 
 function hsvToRgb(h: number, s: number, v: number) {
-    const xDivC = 1 - Math.abs((h / 60) % 2 - 1);
+    const xDivC = 1 - Math.abs(((h / 60) % 2) - 1);
 
-    const [rc, rx, gc, gx, bc, bx] = h < 60 ? [1, 0, 0, 1, 0, 0] :
-        h < 120 ? [0, 1, 1, 0, 0, 0] :
-        h < 180 ? [0, 0, 1, 0, 0, 1] :
-        h < 240 ? [0, 0, 0, 1, 1, 0] :
-        h < 300 ? [0, 1, 0, 0, 1, 0] :
-        [1, 0, 0, 0, 0, 1];
+    const [rc, rx, gc, gx, bc, bx] =
+        h < 60
+            ? [1, 0, 0, 1, 0, 0]
+            : h < 120
+              ? [0, 1, 1, 0, 0, 0]
+              : h < 180
+                ? [0, 0, 1, 0, 0, 1]
+                : h < 240
+                  ? [0, 0, 0, 1, 1, 0]
+                  : h < 300
+                    ? [0, 1, 0, 0, 1, 0]
+                    : [1, 0, 0, 0, 0, 1];
 
     const c = v * s;
     const x = xDivC * c;
@@ -521,10 +638,14 @@ function rgbToHsv(r: number, g: number, b: number) {
     const min = Math.min(r, g, b);
     const delta = max - min;
 
-    const h = delta == 0 ? 0 :
-        max == r ? 60 * ((g - b) / delta % 6) + (g < b ? 360 : 0) :
-        max == g ? 60 * ((b - r) / delta + 2) :
-        60 * ((r - g) / delta + 4);
+    const h =
+        delta == 0
+            ? 0
+            : max == r
+              ? 60 * (((g - b) / delta) % 6) + (g < b ? 360 : 0)
+              : max == g
+                ? 60 * ((b - r) / delta + 2)
+                : 60 * ((r - g) / delta + 4);
 
     const s = max == 0 ? 0 : delta / max;
     const v = max;

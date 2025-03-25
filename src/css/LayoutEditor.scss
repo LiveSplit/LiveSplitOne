@@ -1,77 +1,77 @@
-@use 'mobile';
-@use 'Table';
-@use 'Toggle';
+@use "mobile";
+@use "Table";
+@use "Toggle";
 @use "variables.icss";
 
 .layout-editor-outer {
-  display: inline-flex;
-
-  @include Table.table;
-  @include Toggle.toggle;
-
-  .layout-editor-inner {
-    width: variables.$settings-table-width;
     display: inline-flex;
-    margin-bottom: variables.$ui-large-margin;
 
-    table {
-      width: 100%;
+    @include Table.table;
+    @include Toggle.toggle;
+
+    .layout-editor-inner {
+        width: variables.$settings-table-width;
+        display: inline-flex;
+        margin-bottom: variables.$ui-large-margin;
+
+        table {
+            width: 100%;
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: variables.$ui-margin;
+
+            button {
+                width: 40px;
+                font-size: 15px;
+            }
+
+            @include mobile.mobile {
+                flex-direction: row;
+                margin: variables.$ui-large-margin;
+            }
+        }
+
+        @include mobile.mobile {
+            flex-wrap: wrap;
+            width: 100%;
+            margin-bottom: 0;
+        }
     }
 
-    .btn-group {
-      display: flex;
-      flex-direction: column;
-      gap: variables.$ui-margin;
+    .layout-editor-component-list {
+        margin-left: variables.$ui-large-margin;
 
-      button {
-        width: 40px;
-        font-size: 15px;
-      }
+        @include mobile.mobile {
+            margin-left: 0;
+            margin-bottom: variables.$ui-large-margin;
+        }
+    }
 
-      @include mobile.mobile {
-        flex-direction: row;
-        margin: variables.$ui-large-margin;
-      }
+    .layout-editor-component {
+        cursor: pointer;
+    }
+
+    .layout-container {
+        margin-left: variables.$ui-large-margin;
+
+        @include mobile.mobile {
+            margin-left: 0;
+            margin-top: variables.$ui-large-margin;
+        }
     }
 
     @include mobile.mobile {
-      flex-wrap: wrap;
-      width: 100%;
-      margin-bottom: 0;
+        flex-wrap: wrap;
+
+        .layout-editor-inner-container {
+            width: 100%;
+        }
+
+        .layout-editor-tabs button {
+            margin-top: 0;
+        }
     }
-  }
-
-  .layout-editor-component-list {
-    margin-left: variables.$ui-large-margin;
-
-    @include mobile.mobile {
-      margin-left: 0;
-      margin-bottom: variables.$ui-large-margin;
-    }
-  }
-
-  .layout-editor-component {
-    cursor: pointer;
-  }
-
-  .layout-container {
-    margin-left: variables.$ui-large-margin;
-
-    @include mobile.mobile {
-      margin-left: 0;
-      margin-top: variables.$ui-large-margin;
-    }
-  }
-
-  @include mobile.mobile {
-    flex-wrap: wrap;
-
-    .layout-editor-inner-container {
-      width: 100%;
-    }
-
-    .layout-editor-tabs button {
-      margin-top: 0;
-    }
-  }
 }

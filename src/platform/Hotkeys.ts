@@ -2,24 +2,29 @@ import { CommandSinkRef, HotkeyConfig, HotkeySystem } from "../livesplit-core";
 import { expect } from "../util/OptionUtil";
 
 export interface HotkeyImplementation {
-    config(): Promise<HotkeyConfig> | HotkeyConfig,
-    setConfig(config: HotkeyConfig): void,
-    activate(): void,
-    deactivate(): void,
-    resolve(keyCode: string): Promise<string> | string,
+    config(): Promise<HotkeyConfig> | HotkeyConfig;
+    setConfig(config: HotkeyConfig): void;
+    activate(): void;
+    deactivate(): void;
+    resolve(keyCode: string): Promise<string> | string;
 }
 
 class GlobalHotkeys implements HotkeyImplementation {
-    constructor(private hotkeySystem?: HotkeySystem) { }
+    constructor(private hotkeySystem?: HotkeySystem) {}
 
     public async config(): Promise<HotkeyConfig> {
-        return expect(HotkeyConfig.parseJson(
-            await window.__TAURI__!.core.invoke("get_hotkey_config"),
-        ), "Couldn't parse the hotkey config.");
+        return expect(
+            HotkeyConfig.parseJson(
+                await window.__TAURI__!.core.invoke("get_hotkey_config"),
+            ),
+            "Couldn't parse the hotkey config.",
+        );
     }
 
     public setConfig(config: HotkeyConfig): void {
-        window.__TAURI__!.core.invoke("set_hotkey_config", { config: config.asJson() });
+        window.__TAURI__!.core.invoke("set_hotkey_config", {
+            config: config.asJson(),
+        });
         if (this.hotkeySystem != null) {
             this.hotkeySystem.setConfig(config);
         } else {
@@ -28,7 +33,9 @@ class GlobalHotkeys implements HotkeyImplementation {
     }
 
     setConfigJson(configJson: unknown): void {
-        window.__TAURI__!.core.invoke("set_hotkey_config", { config: configJson });
+        window.__TAURI__!.core.invoke("set_hotkey_config", {
+            config: configJson,
+        });
         if (this.hotkeySystem != null) {
             const config = HotkeyConfig.parseJson(configJson);
             if (config != null) {
@@ -38,12 +45,16 @@ class GlobalHotkeys implements HotkeyImplementation {
     }
 
     public activate(): void {
-        window.__TAURI__!.core.invoke("set_hotkey_activation", { active: true });
+        window.__TAURI__!.core.invoke("set_hotkey_activation", {
+            active: true,
+        });
         this.hotkeySystem?.activate();
     }
 
     public deactivate(): void {
-        window.__TAURI__!.core.invoke("set_hotkey_activation", { active: false });
+        window.__TAURI__!.core.invoke("set_hotkey_activation", {
+            active: false,
+        });
         this.hotkeySystem?.deactivate();
     }
 
@@ -52,7 +63,10 @@ class GlobalHotkeys implements HotkeyImplementation {
     }
 }
 
-export function createHotkeys(commandSink: CommandSinkRef, configJson: unknown): HotkeyImplementation {
+export function createHotkeys(
+    commandSink: CommandSinkRef,
+    configJson: unknown,
+): HotkeyImplementation {
     let hotkeySystem: HotkeySystem | null = null;
 
     const tauri = window.__TAURI__ != null;
@@ -63,7 +77,9 @@ export function createHotkeys(commandSink: CommandSinkRef, configJson: unknown):
             if (config !== null) {
                 hotkeySystem = HotkeySystem.withConfig(commandSink, config);
             }
-        } catch (_) { /* Looks like the storage has no valid data */ }
+        } catch (_) {
+            /* Looks like the storage has no valid data */
+        }
 
         if (hotkeySystem == null) {
             hotkeySystem = expect(

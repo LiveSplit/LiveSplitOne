@@ -10,7 +10,13 @@ export function resolveEmbed(uri: string): Option<React.JSX.Element> {
     if (twitch != null) {
         return twitch;
     }
-    return <p><a href={uri} target="_blank">{uri}</a></p>;
+    return (
+        <p>
+            <a href={uri} target="_blank">
+                {uri}
+            </a>
+        </p>
+    );
 }
 
 function tryYoutubeFromUri(uri: string): Option<React.JSX.Element> {
@@ -56,10 +62,14 @@ function videoIframe(videoSource: string): React.JSX.Element {
 }
 
 function resolveYoutube(videoId: string): React.JSX.Element {
-    return videoIframe(`https://www.youtube.com/embed/${videoId}?wmode=transparent`);
+    return videoIframe(
+        `https://www.youtube.com/embed/${videoId}?wmode=transparent`,
+    );
 }
 
 function resolveTwitch(videoId: string): React.JSX.Element {
     const domain = window.location.hostname;
-    return videoIframe(`https://player.twitch.tv/?video=${videoId}&parent=${domain}&autoplay=false`);
+    return videoIframe(
+        `https://player.twitch.tv/?video=${videoId}&parent=${domain}&autoplay=false`,
+    );
 }

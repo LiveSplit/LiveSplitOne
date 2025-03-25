@@ -3,214 +3,214 @@ import { Option, map } from "../util/OptionUtil";
 const BASE_URI = "https://www.speedrun.com/api/v1/";
 
 export interface Game {
-    id: string,
-    names: Names,
-    abbreviation: string,
-    weblink: string,
-    released: number,
-    "release-date": string,
-    assets: Assets,
-    ruleset: Rules,
-    platforms: string[],
-    regions: string[],
-    variables?: Variables,
+    "id": string;
+    "names": Names;
+    "abbreviation": string;
+    "weblink": string;
+    "released": number;
+    "release-date": string;
+    "assets": Assets;
+    "ruleset": Rules;
+    "platforms": string[];
+    "regions": string[];
+    "variables"?: Variables;
 }
 
 export interface Rules {
-    "show-milliseconds": boolean,
-    "require-verification": boolean,
-    "require-video": boolean,
-    "run-times": TimingMethod[],
-    "default-time": TimingMethod,
-    "emulators-allowed": boolean,
+    "show-milliseconds": boolean;
+    "require-verification": boolean;
+    "require-video": boolean;
+    "run-times": TimingMethod[];
+    "default-time": TimingMethod;
+    "emulators-allowed": boolean;
 }
 
 export type TimingMethod = "realtime" | "realtime_noloads" | "ingame";
 
 export interface Variables {
-    data: Variable[],
+    data: Variable[];
 }
 
 export interface Variable {
-    id: string,
-    name: string,
-    category: Option<string>,
-    scope: VariableScope,
-    values: VariableValues,
-    mandatory: boolean,
-    "is-subcategory": boolean,
+    "id": string;
+    "name": string;
+    "category": Option<string>;
+    "scope": VariableScope;
+    "values": VariableValues;
+    "mandatory": boolean;
+    "is-subcategory": boolean;
 }
 
 export interface VariableScope {
-    type: "global" | "full-game" | "all-levels" | "single-level",
+    type: "global" | "full-game" | "all-levels" | "single-level";
 }
 
 export interface VariableValues {
-    values: { [id: string]: VariableValue },
-    default: Option<string>,
+    values: { [id: string]: VariableValue };
+    default: Option<string>;
 }
 
 export interface VariableValue {
-    label: string,
-    rules?: Option<string>,
+    label: string;
+    rules?: Option<string>;
 }
 
 export interface GameHeader {
-    id: string,
-    names: Names,
-    abbreviation: string,
-    weblink: string,
+    id: string;
+    names: Names;
+    abbreviation: string;
+    weblink: string;
 }
 
 export interface Names {
-    international: string,
-    japanese: Option<string>,
-    twitch?: Option<string>,
+    international: string;
+    japanese: Option<string>;
+    twitch?: Option<string>;
 }
 
 export interface Assets {
-    logo: Asset,
-    "cover-tiny": Asset,
-    "cover-small": Asset,
-    "cover-medium": Asset,
-    "cover-large": Asset,
-    icon: Asset,
-    "trophy-1st": Asset,
-    "trophy-2nd": Asset,
-    "trophy-3rd": Asset,
-    "trophy-4th": Option<Asset>,
-    background: Asset,
-    foreground: Option<Asset>,
+    "logo": Asset;
+    "cover-tiny": Asset;
+    "cover-small": Asset;
+    "cover-medium": Asset;
+    "cover-large": Asset;
+    "icon": Asset;
+    "trophy-1st": Asset;
+    "trophy-2nd": Asset;
+    "trophy-3rd": Asset;
+    "trophy-4th": Option<Asset>;
+    "background": Asset;
+    "foreground": Option<Asset>;
 }
 
 export interface Asset {
-    uri: string,
-    width: number,
-    height: number,
+    uri: string;
+    width: number;
+    height: number;
 }
 
 export interface Category {
-    id: string,
-    weblink: string,
-    name: string,
-    type: "per-game" | "per-level",
-    rules: Option<string>,
+    id: string;
+    weblink: string;
+    name: string;
+    type: "per-game" | "per-level";
+    rules: Option<string>;
 }
 
 export interface Leaderboard {
-    weblink: string,
-    runs: Record[],
-    players?: PlayerData,
+    weblink: string;
+    runs: Record[];
+    players?: PlayerData;
 }
 
 export interface PlayerData {
-    data: User[],
+    data: User[];
 }
 
 export interface User {
-    id: string,
-    names: Names,
-    weblink: string,
-    "name-style": NameStyleSolid | NameStyleGradient,
-    location: Option<UserLocation>,
+    "id": string;
+    "names": Names;
+    "weblink": string;
+    "name-style": NameStyleSolid | NameStyleGradient;
+    "location": Option<UserLocation>;
 }
 
 export interface PlayerUser extends User {
-    rel: "user",
+    rel: "user";
 }
 
 export interface UserLocation {
-    country: UserCountry,
+    country: UserCountry;
 }
 
 export interface UserCountry {
-    code: string,
+    code: string;
 }
 
 export interface NameStyleSolid {
-    style: "solid",
-    color: Color,
+    style: "solid";
+    color: Color;
 }
 
 export interface NameStyleGradient {
-    style: "gradient",
-    "color-from": Color,
-    "color-to": Color,
+    "style": "gradient";
+    "color-from": Color;
+    "color-to": Color;
 }
 
 export interface Color {
-    light: string,
-    dark: string,
+    light: string;
+    dark: string;
 }
 
 export interface Record {
-    place: number,
-    run: Run,
+    place: number;
+    run: Run;
 }
 
 export type PlayersNotEmbedded = Array<PlayerUserRef | PlayerGuest>;
 
 export interface PlayersEmbedded {
-    data: Array<PlayerUser | PlayerGuest>,
+    data: Array<PlayerUser | PlayerGuest>;
 }
 
 export interface Run<PlayerEmbedding = PlayersNotEmbedded> {
-    id: string,
-    weblink: string,
-    game: string,
-    category: string,
-    videos: Option<Videos>,
-    comment: Option<string>,
-    players: PlayerEmbedding,
-    date: Option<string>,
-    submitted: Option<string>,
-    times: Times,
-    system: RunSystem,
-    splits: Option<Splits>,
-    values: { [key: string]: string | undefined },
+    id: string;
+    weblink: string;
+    game: string;
+    category: string;
+    videos: Option<Videos>;
+    comment: Option<string>;
+    players: PlayerEmbedding;
+    date: Option<string>;
+    submitted: Option<string>;
+    times: Times;
+    system: RunSystem;
+    splits: Option<Splits>;
+    values: { [key: string]: string | undefined };
 }
 
 export interface RunSystem {
-    emulated: boolean,
-    platform: string,
-    region: Option<string>,
+    emulated: boolean;
+    platform: string;
+    region: Option<string>;
 }
 
 export interface Videos {
-    links: Option<Video[]>,
+    links: Option<Video[]>;
 }
 
 export interface Video {
-    uri: string,
+    uri: string;
 }
 
 export interface PlayerUserRef {
-    rel: "user",
-    id: string,
+    rel: "user";
+    id: string;
 }
 
 export interface PlayerGuest {
-    rel: "guest",
-    name: string,
+    rel: "guest";
+    name: string;
 }
 
 export interface Times {
-    primary: string,
-    primary_t: number,
+    primary: string;
+    primary_t: number;
 }
 
 export interface Splits {
-    uri: string,
+    uri: string;
 }
 
 export interface Platform {
-    id: string,
-    name: string,
+    id: string;
+    name: string;
 }
 
 export interface Region {
-    id: string,
-    name: string,
+    id: string;
+    name: string;
 }
 
 export type RunStatus = "new" | "verified" | "rejected";
@@ -259,7 +259,7 @@ export class Page<T> {
     public constructor(
         public elements: T[],
         public next: Option<() => Promise<Page<T>>>,
-    ) { }
+    ) {}
 
     public async evaluateAll(): Promise<T[]> {
         const elements = this.elements;
@@ -276,7 +276,9 @@ export class Page<T> {
         return elements;
     }
 
-    public async iterElementsWith(closure: (element: T) => boolean | undefined | void) {
+    public async iterElementsWith(
+        closure: (element: T) => boolean | undefined | void,
+    ) {
         let elements = this.elements;
         let next = this.next;
         while (true) {
@@ -318,7 +320,10 @@ async function executePaginatedRequest<T>(uri: string): Promise<Page<T>> {
     return new Page(data as T[], next);
 }
 
-export async function getGame(gameId: string, embeds?: Array<"variables">): Promise<Game> {
+export async function getGame(
+    gameId: string,
+    embeds?: Array<"variables">,
+): Promise<Game> {
     const parameters = [];
     if (embeds !== undefined) {
         parameters.push(`embed=${embeds.join(",")}`);
@@ -337,7 +342,9 @@ export async function getGames(name?: string): Promise<Page<Game>> {
     return executePaginatedRequest<Game>(uri);
 }
 
-export async function getGameHeaders(elementsPerPage: number = 1000): Promise<Page<GameHeader>> {
+export async function getGameHeaders(
+    elementsPerPage: number = 1000,
+): Promise<Page<GameHeader>> {
     const parameters = ["_bulk=yes", `max=${elementsPerPage}`];
     // TODO Remaining parameters
     const uri = getGamesUri(evaluateParameters(parameters));
@@ -359,11 +366,15 @@ export async function getLeaderboard(
     if (embeds !== undefined) {
         parameters.push(`embed=${embeds.join(",")}`);
     }
-    const uri = getLeaderboardsUri(`/${gameId}/category/${categoryId}${evaluateParameters(parameters)}`);
+    const uri = getLeaderboardsUri(
+        `/${gameId}/category/${categoryId}${evaluateParameters(parameters)}`,
+    );
     return executeRequest<Leaderboard>(uri);
 }
 
-export async function getPlatforms(elementsPerPage?: number): Promise<Page<Platform>> {
+export async function getPlatforms(
+    elementsPerPage?: number,
+): Promise<Page<Platform>> {
     const parameters = [];
     if (elementsPerPage !== undefined) {
         parameters.push(`max=${elementsPerPage}`);
@@ -372,7 +383,9 @@ export async function getPlatforms(elementsPerPage?: number): Promise<Page<Platf
     return executePaginatedRequest<Platform>(uri);
 }
 
-export async function getRegions(elementsPerPage?: number): Promise<Page<Region>> {
+export async function getRegions(
+    elementsPerPage?: number,
+): Promise<Page<Region>> {
     const parameters = [];
     if (elementsPerPage !== undefined) {
         parameters.push(`max=${elementsPerPage}`);
@@ -416,7 +429,9 @@ export async function getRuns(
     }
     parameters.push("orderby=submitted", "direction=desc");
     const uri = getRunsUri(evaluateParameters(parameters));
-    return executePaginatedRequest<Run<PlayersEmbedded | PlayersNotEmbedded>>(uri);
+    return executePaginatedRequest<Run<PlayersEmbedded | PlayersNotEmbedded>>(
+        uri,
+    );
 }
 
 export async function getRun(runId: string, embeds?: never[]): Promise<Run> {

@@ -1,14 +1,14 @@
 import * as React from "react";
 
 export interface Props {
-    className?: string,
-    value?: any,
-    onChange?: React.EventHandler<React.ChangeEvent<HTMLInputElement>>,
-    onBlur?: React.EventHandler<React.FocusEvent<HTMLInputElement>>,
-    label: string,
-    invalid?: boolean,
-    small?: boolean,
-    list?: [string, string[]],
+    className?: string;
+    value?: any;
+    onChange?: React.EventHandler<React.ChangeEvent<HTMLInputElement>>;
+    onBlur?: React.EventHandler<React.FocusEvent<HTMLInputElement>>;
+    label: string;
+    invalid?: boolean;
+    small?: boolean;
+    list?: [string, string[]];
 }
 
 export class TextBox extends React.Component<Props> {
@@ -24,9 +24,13 @@ export class TextBox extends React.Component<Props> {
         let list;
         if (this.props.list !== undefined) {
             name = this.props.list[0];
-            list = <datalist id={name}>
-                {this.props.list[1].map((n, i) => <option key={i} value={n} />)}
-            </datalist>;
+            list = (
+                <datalist id={name}>
+                    {this.props.list[1].map((n, i) => (
+                        <option key={i} value={n} />
+                    ))}
+                </datalist>
+            );
         }
 
         return (

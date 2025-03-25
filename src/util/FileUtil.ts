@@ -27,7 +27,9 @@ function openFile(accept: string): Promise<File | undefined> {
     });
 }
 
-export async function convertFileToArrayBuffer(file: File): Promise<[ArrayBuffer, File] | Error> {
+export async function convertFileToArrayBuffer(
+    file: File,
+): Promise<[ArrayBuffer, File] | Error> {
     return new Promise((resolve: (_: [ArrayBuffer, File] | Error) => void) => {
         try {
             const reader = new FileReader();
@@ -53,7 +55,9 @@ export async function convertFileToArrayBuffer(file: File): Promise<[ArrayBuffer
     });
 }
 
-export async function openFileAsArrayBuffer(accept: string): Promise<[ArrayBuffer, File] | Error | undefined> {
+export async function openFileAsArrayBuffer(
+    accept: string,
+): Promise<[ArrayBuffer, File] | Error | undefined> {
     const file = await openFile(accept);
     if (file === undefined) {
         return undefined;
@@ -61,7 +65,9 @@ export async function openFileAsArrayBuffer(accept: string): Promise<[ArrayBuffe
     return convertFileToArrayBuffer(file);
 }
 
-export async function convertFileToString(file: File): Promise<[string, File] | Error> {
+export async function convertFileToString(
+    file: File,
+): Promise<[string, File] | Error> {
     return new Promise((resolve: (_: [string, File] | Error) => void) => {
         try {
             const reader = new FileReader();
@@ -87,7 +93,9 @@ export async function convertFileToString(file: File): Promise<[string, File] | 
     });
 }
 
-export async function openFileAsString(accept: string): Promise<[string, File] | Error | undefined> {
+export async function openFileAsString(
+    accept: string,
+): Promise<[string, File] | Error | undefined> {
     const file = await openFile(accept);
     if (file === undefined) {
         return undefined;
@@ -96,7 +104,9 @@ export async function openFileAsString(accept: string): Promise<[string, File] |
 }
 
 export function exportFile(filename: string, data: BlobPart) {
-    const url = URL.createObjectURL(new Blob([data], { type: "application/octet-stream" }));
+    const url = URL.createObjectURL(
+        new Blob([data], { type: "application/octet-stream" }),
+    );
     try {
         const element = document.createElement("a");
         element.setAttribute("href", url);

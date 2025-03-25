@@ -1,159 +1,159 @@
-@use 'sass:math';
+@use "sass:math";
 
-@use 'browser_source';
-@use 'variables.icss';
+@use "browser_source";
+@use "variables.icss";
 
 @font-face {
-  font-family: timer;
-  font-display: swap;
-  src: url(timer.woff);
+    font-family: timer;
+    font-display: swap;
+    src: url(timer.woff);
 }
 
 @font-face {
-  font-family: fira;
-  font-display: swap;
-  src: url(FiraSans-Regular.woff);
+    font-family: fira;
+    font-display: swap;
+    src: url(FiraSans-Regular.woff);
 }
 
 body {
-  font-family: "fira", sans-serif;
-  color: #eee;
-  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
-  background: variables.$main-background-color;
+    font-family: "fira", sans-serif;
+    color: #eee;
+    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+    background: variables.$main-background-color;
 }
 
 .Toastify {
-  .toast-class {
-    font-family: "fira", sans-serif;
-    background: rgba(28, 28, 28, .8) !important;
-    backdrop-filter: blur(5px);
-    border: 2px solid rgba(255, 255, 255, .25) !important;
-    border-radius: 10px !important;
-    min-height: 48px !important;
+    .toast-class {
+        font-family: "fira", sans-serif;
+        background: rgba(28, 28, 28, 0.8) !important;
+        backdrop-filter: blur(5px);
+        border: 2px solid rgba(255, 255, 255, 0.25) !important;
+        border-radius: 10px !important;
+        min-height: 48px !important;
 
-    &.toast-bug {
-      border-color: red !important;
+        &.toast-bug {
+            border-color: red !important;
 
-      a {
-        color: red;
-      }
+            a {
+                color: red;
+            }
+        }
     }
-  }
 }
 
 .toast-body {
-  margin: 5px 5px 5px 5px !important;
+    margin: 5px 5px 5px 5px !important;
 }
 
-.toast-class>button {
-  margin-bottom: initial;
-  margin-top: initial;
+.toast-class > button {
+    margin-bottom: initial;
+    margin-top: initial;
 }
 
 #wrapper {
-  transition: all 0.5s ease;
+    transition: all 0.5s ease;
 }
 
 td#dif {
-  border-right: 10px solid transparent;
-  text-align: right;
+    border-right: 10px solid transparent;
+    text-align: right;
 }
 
 table {
-  border-spacing: 0 2px;
+    border-spacing: 0 2px;
 }
 
 button:active,
 button:active:hover {
-  background: variables.$button-active-color;
+    background: variables.$button-active-color;
 }
 
 button:focus,
 div:focus {
-  outline: 0;
+    outline: 0;
 }
 
 button:hover {
-  background: variables.$button-hover-color;
+    background: variables.$button-hover-color;
 }
 
 button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin: 0;
-  gap: 0.25em;
-  background: variables.$button-color;
-  color: variables.$button-text-color;
-  cursor: pointer;
-  font-size: 20px;
-  line-height: 1.1;
-  border-width: 1px;
-  border-style: solid;
-  border-color: variables.$border-color;
-  border-image: initial;
-  border-radius: 5px;
-  font-weight: bold;
-  font-family: "fira", sans-serif;
-  min-height: variables.$button-height;
-  padding: 5px variables.$ui-margin;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+    gap: 0.25em;
+    background: variables.$button-color;
+    color: variables.$button-text-color;
+    cursor: pointer;
+    font-size: 20px;
+    line-height: 1.1;
+    border-width: 1px;
+    border-style: solid;
+    border-color: variables.$border-color;
+    border-image: initial;
+    border-radius: 5px;
+    font-weight: bold;
+    font-family: "fira", sans-serif;
+    min-height: variables.$button-height;
+    padding: 5px variables.$ui-margin;
 }
 
 a {
-  color: hsla(50, 100%, 50%, 1);
-  text-decoration: none;
+    color: hsla(50, 100%, 50%, 1);
+    text-decoration: none;
 }
 
 a:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 button:disabled,
 button:disabled:active {
-  background: variables.$button-disabled-color;
-  color: variables.$button-disabled-text-color;
-  cursor: default;
+    background: variables.$button-disabled-color;
+    color: variables.$button-disabled-text-color;
+    cursor: default;
 }
 
 .chrome-picker {
-  font-family: inherit !important;
-  margin-top: 5px;
-  margin-left: -50%;
+    font-family: inherit !important;
+    margin-top: 5px;
+    margin-left: -50%;
 }
 
 /* WebKit Scrollbars */
 ::-webkit-scrollbar {
-  width: 10px;
-  height: 10px;
+    width: 10px;
+    height: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background-clip: padding-box;
-  background-color: #303030;
-  border: 0 solid #0000;
-  border-radius: 10px;
+    background-clip: padding-box;
+    background-color: #303030;
+    border: 0 solid #0000;
+    border-radius: 10px;
 }
 
 ::-webkit-scrollbar-track-piece {
-  background-color: #0000;
+    background-color: #0000;
 }
 
 ::-webkit-scrollbar-corner {
-  background-color: hsla(0, 0%, 9%, 1);
+    background-color: hsla(0, 0%, 9%, 1);
 }
 
 .initial-load {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 50px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 50px;
 
-  .initial-load-text {
-    margin-left: 10px;
-  }
+    .initial-load-text {
+        margin-left: 10px;
+    }
 }

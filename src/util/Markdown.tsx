@@ -5,20 +5,24 @@ import { emoteList } from "../api/EmoteList";
 const UNSAFE = markdownit({ html: true, breaks: false, linkify: true });
 const SAFE = markdownit({ html: false, breaks: true, linkify: true });
 
-const unsafeDefault = UNSAFE.renderer.rules.link_open || function (tokens, idx, options, _env, self) {
-  return self.renderToken(tokens, idx, options);
-};
+const unsafeDefault =
+    UNSAFE.renderer.rules.link_open ||
+    function (tokens, idx, options, _env, self) {
+        return self.renderToken(tokens, idx, options);
+    };
 UNSAFE.renderer.rules.link_open = function (tokens, idx, options, env, self) {
-  tokens[idx].attrSet('target', '_blank');
-  return unsafeDefault(tokens, idx, options, env, self);
+    tokens[idx].attrSet("target", "_blank");
+    return unsafeDefault(tokens, idx, options, env, self);
 };
 
-const safeDefault = SAFE.renderer.rules.link_open || function (tokens, idx, options, _env, self) {
-  return self.renderToken(tokens, idx, options);
-};
+const safeDefault =
+    SAFE.renderer.rules.link_open ||
+    function (tokens, idx, options, _env, self) {
+        return self.renderToken(tokens, idx, options);
+    };
 SAFE.renderer.rules.link_open = function (tokens, idx, options, env, self) {
-  tokens[idx].attrSet('target', '_blank');
-  return safeDefault(tokens, idx, options, env, self);
+    tokens[idx].attrSet("target", "_blank");
+    return safeDefault(tokens, idx, options, env, self);
 };
 
 function replaceTwitchEmotes(text: string): string {
@@ -41,8 +45,12 @@ export function replaceFlag(countryCode: string): React.JSX.Element {
 
 export const Markdown = React.memo(renderMarkdown);
 
-export function renderMarkdown({ markdown, unsafe }: { markdown: string,
-    unsafe?: boolean,
+export function renderMarkdown({
+    markdown,
+    unsafe,
+}: {
+    markdown: string;
+    unsafe?: boolean;
 }): React.JSX.Element {
     const markdownWithEmotes = replaceTwitchEmotes(markdown);
     const html = (unsafe ? UNSAFE : SAFE).render(markdownWithEmotes);

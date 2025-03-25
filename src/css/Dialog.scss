@@ -1,6 +1,6 @@
-@use 'variables.icss';
+@use "variables.icss";
 
-.is-mobile+dialog>.dialog {
+.is-mobile + dialog > .dialog {
     min-width: auto;
 }
 
@@ -15,9 +15,9 @@ dialog {
 
     .dialog {
         color: #eee;
-        background-color: rgba(28, 28, 28, .8);
+        background-color: rgba(28, 28, 28, 0.8);
         backdrop-filter: blur(5px);
-        border: 2px solid rgba(255, 255, 255, .25);
+        border: 2px solid rgba(255, 255, 255, 0.25);
         border-radius: 10px;
         min-width: 225px;
 
@@ -51,7 +51,7 @@ dialog {
         input {
             width: 100%;
             border: none;
-            border-bottom: 1px solid rgba(255, 255, 255, .25);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.25);
             background: transparent;
             color: white;
             text-overflow: ellipsis;

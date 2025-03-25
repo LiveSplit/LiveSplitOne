@@ -1,4 +1,7 @@
-export function formatLeaderboardTime(totalSeconds: number, hideMilliseconds: boolean): string {
+export function formatLeaderboardTime(
+    totalSeconds: number,
+    hideMilliseconds: boolean,
+): string {
     const seconds = totalSeconds % 60;
     const totalMinutes = Math.floor(totalSeconds / 60);
     const minutes = totalMinutes % 60;
@@ -10,20 +13,10 @@ export function formatLeaderboardTime(totalSeconds: number, hideMilliseconds: bo
     };
 
     if (hours > 0) {
-        return `${
-            hours
-            }:${
-            minutes.toLocaleString("en-GB", {
-                minimumIntegerDigits: 2,
-            })
-            }:${
-            seconds.toLocaleString("en-GB", secondsOptions)
-            }`;
+        return `${hours}:${minutes.toLocaleString("en-GB", {
+            minimumIntegerDigits: 2,
+        })}:${seconds.toLocaleString("en-GB", secondsOptions)}`;
     } else {
-        return `${
-            minutes
-            }:${
-            seconds.toLocaleString("en-GB", secondsOptions)
-            }`;
+        return `${minutes}:${seconds.toLocaleString("en-GB", secondsOptions)}`;
     }
 }

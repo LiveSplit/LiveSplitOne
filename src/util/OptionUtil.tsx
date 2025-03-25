@@ -11,7 +11,7 @@ export function expect<T>(obj: Option<T>, message: string): T {
 }
 
 interface Disposable {
-    [Symbol.dispose](): void,
+    [Symbol.dispose](): void;
 }
 
 export function panic(message: string): never {
@@ -23,11 +23,14 @@ export function bug(message: string): void {
     toast.error(
         <>
             <b>You encountered a bug:</b>
-            <p><i>{message}</i></p>
-            Please report this issue <a
-                href="https://github.com/LiveSplit/LiveSplitOne"
-                target="_blank"
-            >here</a>.
+            <p>
+                <i>{message}</i>
+            </p>
+            Please report this issue{" "}
+            <a href="https://github.com/LiveSplit/LiveSplitOne" target="_blank">
+                here
+            </a>
+            .
         </>,
         {
             autoClose: false,
@@ -36,7 +39,9 @@ export function bug(message: string): void {
     );
 }
 
-export function assertNever(x: never): never { return x; }
+export function assertNever(x: never): never {
+    return x;
+}
 
 export function assert(condition: boolean, message: string): asserts condition {
     if (!condition) {
@@ -44,7 +49,10 @@ export function assert(condition: boolean, message: string): asserts condition {
     }
 }
 
-export function assertNull<T>(obj: Option<T | Disposable>, message: string): asserts obj is null | undefined {
+export function assertNull<T>(
+    obj: Option<T | Disposable>,
+    message: string,
+): asserts obj is null | undefined {
     if (obj != null) {
         (obj as any)[Symbol.dispose]?.();
         panic(message);

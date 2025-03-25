@@ -16,34 +16,34 @@ import "../css/Tooltip.scss";
 import "../css/LiveSplitServerButton.scss";
 
 export interface Props<T> {
-    context: string,
-    setValue: (index: number, value: T) => void,
-    state: ExtendedSettingsDescriptionJson,
-    factory: SettingValueFactory<T>,
-    editorUrlCache: UrlCache,
-    allComparisons: string[],
-    allVariables: Set<string>,
+    context: string;
+    setValue: (index: number, value: T) => void;
+    state: ExtendedSettingsDescriptionJson;
+    factory: SettingValueFactory<T>;
+    editorUrlCache: UrlCache;
+    allComparisons: string[];
+    allVariables: Set<string>;
 }
 
 export interface ExtendedSettingsDescriptionJson {
-    fields: ExtendedSettingsDescriptionFieldJson[],
+    fields: ExtendedSettingsDescriptionFieldJson[];
 }
 
 export interface ExtendedSettingsDescriptionFieldJson {
-    text: string | React.JSX.Element,
-    tooltip: string | React.JSX.Element,
-    value: ExtendedSettingsDescriptionValueJson,
+    text: string | React.JSX.Element;
+    tooltip: string | React.JSX.Element;
+    value: ExtendedSettingsDescriptionValueJson;
 }
 
 export type ExtendedSettingsDescriptionValueJson =
-    SettingsDescriptionValueJson |
-    { RemovableString: string | null } |
-    {
-        ServerConnection: {
-            url: string | undefined,
-            connection: Option<LiveSplitServer>,
-        }
-    };
+    | SettingsDescriptionValueJson
+    | { RemovableString: string | null }
+    | {
+          ServerConnection: {
+              url: string | undefined;
+              connection: Option<LiveSplitServer>;
+          };
+      };
 
 export interface SettingValueFactory<T> {
     fromBool(v: boolean): T;
@@ -63,16 +63,34 @@ export interface SettingValueFactory<T> {
     fromOptionalEmptyColor(): T;
     fromTransparentGradient(): T;
     fromVerticalGradient(
-        r1: number, g1: number, b1: number, a1: number,
-        r2: number, g2: number, b2: number, a2: number,
+        r1: number,
+        g1: number,
+        b1: number,
+        a1: number,
+        r2: number,
+        g2: number,
+        b2: number,
+        a2: number,
     ): T;
     fromHorizontalGradient(
-        r1: number, g1: number, b1: number, a1: number,
-        r2: number, g2: number, b2: number, a2: number,
+        r1: number,
+        g1: number,
+        b1: number,
+        a1: number,
+        r2: number,
+        g2: number,
+        b2: number,
+        a2: number,
     ): T;
     fromAlternatingGradient(
-        r1: number, g1: number, b1: number, a1: number,
-        r2: number, g2: number, b2: number, a2: number,
+        r1: number,
+        g1: number,
+        b1: number,
+        a1: number,
+        r2: number,
+        g2: number,
+        b2: number,
+        a2: number,
     ): T;
     fromAlignment(value: string): T | null;
     fromColumnKind(value: string): T | null;
@@ -80,7 +98,12 @@ export interface SettingValueFactory<T> {
     fromColumnUpdateWith(value: string): T | null;
     fromColumnUpdateTrigger(value: string): T | null;
     fromLayoutDirection(value: string): T | null;
-    fromFont(name: string, style: string, weight: string, stretch: string): T | null;
+    fromFont(
+        name: string,
+        style: string,
+        weight: string,
+        stretch: string,
+    ): T | null;
     fromEmptyFont(): T;
     fromDeltaGradient(value: string): T | null;
     fromBackgroundImage(
@@ -91,7 +114,9 @@ export interface SettingValueFactory<T> {
     ): T | null;
 }
 
-export class JsonSettingValueFactory implements SettingValueFactory<ExtendedSettingsDescriptionValueJson> {
+export class JsonSettingValueFactory
+    implements SettingValueFactory<ExtendedSettingsDescriptionValueJson>
+{
     public fromBool(v: boolean): ExtendedSettingsDescriptionValueJson {
         return { Bool: v };
     }
@@ -110,19 +135,27 @@ export class JsonSettingValueFactory implements SettingValueFactory<ExtendedSett
     public fromOptionalEmptyString(): ExtendedSettingsDescriptionValueJson {
         throw new Error("Not implemented");
     }
-    public fromRemovableString(v: string): ExtendedSettingsDescriptionValueJson {
+    public fromRemovableString(
+        v: string,
+    ): ExtendedSettingsDescriptionValueJson {
         return { RemovableString: v };
     }
     public fromRemovableEmptyString(): ExtendedSettingsDescriptionValueJson {
         return { RemovableString: null };
     }
-    public fromAccuracy(_: string): ExtendedSettingsDescriptionValueJson | null {
+    public fromAccuracy(
+        _: string,
+    ): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
-    public fromDigitsFormat(_: string): ExtendedSettingsDescriptionValueJson | null {
+    public fromDigitsFormat(
+        _: string,
+    ): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
-    public fromOptionalTimingMethod(_: string): ExtendedSettingsDescriptionValueJson | null {
+    public fromOptionalTimingMethod(
+        _: string,
+    ): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
     public fromOptionalEmptyTimingMethod(): ExtendedSettingsDescriptionValueJson {
@@ -149,22 +182,34 @@ export class JsonSettingValueFactory implements SettingValueFactory<ExtendedSett
     public fromAlternatingGradient(): ExtendedSettingsDescriptionValueJson {
         throw new Error("Not implemented");
     }
-    public fromAlignment(_: string): ExtendedSettingsDescriptionValueJson | null {
+    public fromAlignment(
+        _: string,
+    ): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
-    public fromColumnKind(_: string): ExtendedSettingsDescriptionValueJson | null {
+    public fromColumnKind(
+        _: string,
+    ): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
-    public fromColumnStartWith(_: string): ExtendedSettingsDescriptionValueJson | null {
+    public fromColumnStartWith(
+        _: string,
+    ): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
-    public fromColumnUpdateWith(_: string): ExtendedSettingsDescriptionValueJson | null {
+    public fromColumnUpdateWith(
+        _: string,
+    ): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
-    public fromColumnUpdateTrigger(_: string): ExtendedSettingsDescriptionValueJson | null {
+    public fromColumnUpdateTrigger(
+        _: string,
+    ): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
-    public fromLayoutDirection(_: string): ExtendedSettingsDescriptionValueJson | null {
+    public fromLayoutDirection(
+        _: string,
+    ): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
     public fromFont(
@@ -178,7 +223,9 @@ export class JsonSettingValueFactory implements SettingValueFactory<ExtendedSett
     public fromEmptyFont(): ExtendedSettingsDescriptionValueJson {
         throw new Error("Not implemented");
     }
-    public fromDeltaGradient(_: string): ExtendedSettingsDescriptionValueJson | null {
+    public fromDeltaGradient(
+        _: string,
+    ): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
     }
     public fromBackgroundImage(
@@ -190,7 +237,6 @@ export class JsonSettingValueFactory implements SettingValueFactory<ExtendedSett
         throw new Error("Not implemented");
     }
 }
-
 
 export class SettingsComponent<T> extends React.Component<Props<T>> {
     public render() {
@@ -208,7 +254,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             setIsChecked={(value) => {
                                 this.props.setValue(
                                     valueIndex,
-                                    factory.fromBool(value)
+                                    factory.fromBool(value),
                                 );
                             }}
                         />
@@ -250,35 +296,49 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
             } else if ("String" in value) {
                 // FIXME: This is a hack that we need for now until the way
                 // settings are represented is refactored.
-                if (typeof (field.text) === "string" && /^Variable/.test(field.text)) {
+                if (
+                    typeof field.text === "string" &&
+                    /^Variable/.test(field.text)
+                ) {
                     if (this.props.allVariables.size === 0) {
-                        component = <div className="settings-value-box">
-                            <span className="tooltip" style={{ textAlign: "center" }} >
-                                No variables available
-                                <span className="tooltip-text">
-                                    Custom variables can be defined in the Variables tab when
-                                    editing splits. Additional custom variables can be provided
-                                    automatically by auto splitters.
+                        component = (
+                            <div className="settings-value-box">
+                                <span
+                                    className="tooltip"
+                                    style={{ textAlign: "center" }}
+                                >
+                                    No variables available
+                                    <span className="tooltip-text">
+                                        Custom variables can be defined in the
+                                        Variables tab when editing splits.
+                                        Additional custom variables can be
+                                        provided automatically by auto
+                                        splitters.
+                                    </span>
                                 </span>
-                            </span>
-                        </div>;
+                            </div>
+                        );
                     } else {
-                        component = <div className="settings-value-box">
-                            <select
-                                value={value.String ?? ""}
-                                onChange={(e) => {
-                                    this.props.setValue(
-                                        valueIndex,
-                                        factory.fromString(e.target.value),
-                                    );
-                                }}
-                            >
-                                <option value="" />
-                                {Array.from(this.props.allVariables).map((variable) =>
-                                    <option>{variable}</option>
-                                )}
-                            </select>
-                        </div>;
+                        component = (
+                            <div className="settings-value-box">
+                                <select
+                                    value={value.String ?? ""}
+                                    onChange={(e) => {
+                                        this.props.setValue(
+                                            valueIndex,
+                                            factory.fromString(e.target.value),
+                                        );
+                                    }}
+                                >
+                                    <option value="" />
+                                    {Array.from(this.props.allVariables).map(
+                                        (variable) => (
+                                            <option>{variable}</option>
+                                        ),
+                                    )}
+                                </select>
+                            </div>
+                        );
                     }
                 } else {
                     component = (
@@ -299,30 +359,37 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
             } else if ("OptionalString" in value) {
                 // FIXME: This is a hack that we need for now until the way
                 // settings are represented is refactored.
-                if (typeof (field.text) === "string" && /^Comparison( \d)?$/.test(field.text)) {
-                    component = <div className="settings-value-box">
-                        <select
-                            value={value.OptionalString ?? ""}
-                            onChange={(e) => {
-                                if (e.target.value !== "") {
-                                    this.props.setValue(
-                                        valueIndex,
-                                        factory.fromOptionalString(e.target.value),
-                                    );
-                                } else {
-                                    this.props.setValue(
-                                        valueIndex,
-                                        factory.fromOptionalEmptyString(),
-                                    );
-                                }
-                            }}
-                        >
-                            <option value="">Current Comparison</option>
-                            {this.props.allComparisons.map((comparison) =>
-                                <option>{comparison}</option>
-                            )}
-                        </select>
-                    </div>;
+                if (
+                    typeof field.text === "string" &&
+                    /^Comparison( \d)?$/.test(field.text)
+                ) {
+                    component = (
+                        <div className="settings-value-box">
+                            <select
+                                value={value.OptionalString ?? ""}
+                                onChange={(e) => {
+                                    if (e.target.value !== "") {
+                                        this.props.setValue(
+                                            valueIndex,
+                                            factory.fromOptionalString(
+                                                e.target.value,
+                                            ),
+                                        );
+                                    } else {
+                                        this.props.setValue(
+                                            valueIndex,
+                                            factory.fromOptionalEmptyString(),
+                                        );
+                                    }
+                                }}
+                            >
+                                <option value="">Current Comparison</option>
+                                {this.props.allComparisons.map((comparison) => (
+                                    <option>{comparison}</option>
+                                ))}
+                            </select>
+                        </div>
+                    );
                 } else {
                     const children = [
                         <Switch
@@ -351,7 +418,9 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 onChange={(e) => {
                                     this.props.setValue(
                                         valueIndex,
-                                        factory.fromOptionalString(e.target.value),
+                                        factory.fromOptionalString(
+                                            e.target.value,
+                                        ),
                                     );
                                 }}
                             />,
@@ -374,23 +443,30 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 if (factory.fromRemovableString) {
                                     this.props.setValue(
                                         valueIndex,
-                                        factory.fromRemovableString(e.target.value),
+                                        factory.fromRemovableString(
+                                            e.target.value,
+                                        ),
                                     );
                                 } else {
                                     throw Error("Method is not implemented");
                                 }
                             }}
                         />
-                        <Trash className="trash" strokeWidth={2.5} size={20} onClick={() => {
-                            if (factory.fromRemovableEmptyString) {
-                                this.props.setValue(
-                                    valueIndex,
-                                    factory.fromRemovableEmptyString(),
-                                );
-                            } else {
-                                throw Error("Method is not implemented");
-                            }
-                        }} />
+                        <Trash
+                            className="trash"
+                            strokeWidth={2.5}
+                            size={20}
+                            onClick={() => {
+                                if (factory.fromRemovableEmptyString) {
+                                    this.props.setValue(
+                                        valueIndex,
+                                        factory.fromRemovableEmptyString(),
+                                    );
+                                } else {
+                                    throw Error("Method is not implemented");
+                                }
+                            }}
+                        />
                     </div>
                 );
             } else if ("Accuracy" in value) {
@@ -424,7 +500,9 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 this.props.setValue(
                                     valueIndex,
                                     expect(
-                                        factory.fromDigitsFormat(e.target.value),
+                                        factory.fromDigitsFormat(
+                                            e.target.value,
+                                        ),
                                         "Unexpected Digits Format",
                                     ),
                                 );
@@ -488,7 +566,12 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 if (value) {
                                     this.props.setValue(
                                         valueIndex,
-                                        factory.fromOptionalColor(1.0, 1.0, 1.0, 1.0),
+                                        factory.fromOptionalColor(
+                                            1.0,
+                                            1.0,
+                                            1.0,
+                                            1.0,
+                                        ),
                                     );
                                 } else {
                                     this.props.setValue(
@@ -534,17 +617,32 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             return factory.fromTransparentGradient();
                         case "Plain":
                             return factory.fromColor(
-                                color1[0], color1[1], color1[2], color1[3],
+                                color1[0],
+                                color1[1],
+                                color1[2],
+                                color1[3],
                             );
                         case "Vertical":
                             return factory.fromVerticalGradient(
-                                color1[0], color1[1], color1[2], color1[3],
-                                color2[0], color2[1], color2[2], color2[3],
+                                color1[0],
+                                color1[1],
+                                color1[2],
+                                color1[3],
+                                color2[0],
+                                color2[1],
+                                color2[2],
+                                color2[3],
                             );
                         case "Horizontal":
                             return factory.fromHorizontalGradient(
-                                color1[0], color1[1], color1[2], color1[3],
-                                color2[0], color2[1], color2[2], color2[3],
+                                color1[0],
+                                color1[1],
+                                color1[2],
+                                color1[3],
+                                color2[0],
+                                color2[1],
+                                color2[2],
+                                color2[3],
                             );
                         default:
                             throw new Error("Unexpected Gradient Type");
@@ -610,9 +708,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     );
                 } else {
                     component = (
-                        <div className="settings-value-box">
-                            {children}
-                        </div>
+                        <div className="settings-value-box">{children}</div>
                     );
                 }
             } else if ("ListGradient" in value) {
@@ -654,22 +750,43 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             return factory.fromTransparentGradient();
                         case "Plain":
                             return factory.fromColor(
-                                color1[0], color1[1], color1[2], color1[3],
+                                color1[0],
+                                color1[1],
+                                color1[2],
+                                color1[3],
                             );
                         case "Vertical":
                             return factory.fromVerticalGradient(
-                                color1[0], color1[1], color1[2], color1[3],
-                                color2[0], color2[1], color2[2], color2[3],
+                                color1[0],
+                                color1[1],
+                                color1[2],
+                                color1[3],
+                                color2[0],
+                                color2[1],
+                                color2[2],
+                                color2[3],
                             );
                         case "Horizontal":
                             return factory.fromHorizontalGradient(
-                                color1[0], color1[1], color1[2], color1[3],
-                                color2[0], color2[1], color2[2], color2[3],
+                                color1[0],
+                                color1[1],
+                                color1[2],
+                                color1[3],
+                                color2[0],
+                                color2[1],
+                                color2[2],
+                                color2[3],
                             );
                         case "Alternating":
                             return factory.fromAlternatingGradient(
-                                color1[0], color1[1], color1[2], color1[3],
-                                color2[0], color2[1], color2[2], color2[3],
+                                color1[0],
+                                color1[1],
+                                color1[2],
+                                color1[3],
+                                color2[0],
+                                color2[1],
+                                color2[2],
+                                color2[3],
                             );
                         default:
                             throw new Error("Unexpected Gradient Type");
@@ -736,9 +853,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     );
                 } else {
                     component = (
-                        <div className="settings-value-box">
-                            {children}
-                        </div>
+                        <div className="settings-value-box">{children}</div>
                     );
                 }
             } else if ("OptionalTimingMethod" in value) {
@@ -750,7 +865,9 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 this.props.setValue(
                                     valueIndex,
                                     expect(
-                                        factory.fromOptionalTimingMethod("RealTime"),
+                                        factory.fromOptionalTimingMethod(
+                                            "RealTime",
+                                        ),
                                         "Unexpected Optional Timing Method",
                                     ),
                                 );
@@ -772,7 +889,9 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 this.props.setValue(
                                     valueIndex,
                                     expect(
-                                        factory.fromOptionalTimingMethod(e.target.value),
+                                        factory.fromOptionalTimingMethod(
+                                            e.target.value,
+                                        ),
                                         "Unexpected Optional Timing Method",
                                     ),
                                 );
@@ -839,16 +958,24 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 this.props.setValue(
                                     valueIndex,
                                     expect(
-                                        factory.fromColumnStartWith(e.target.value),
+                                        factory.fromColumnStartWith(
+                                            e.target.value,
+                                        ),
                                         "Unexpected Column Start With value",
                                     ),
                                 );
                             }}
                         >
                             <option value="Empty">Empty</option>
-                            <option value="ComparisonTime">Comparison Time</option>
-                            <option value="ComparisonSegmentTime">Comparison Segment Time</option>
-                            <option value="PossibleTimeSave">Possible Time Save</option>
+                            <option value="ComparisonTime">
+                                Comparison Time
+                            </option>
+                            <option value="ComparisonSegmentTime">
+                                Comparison Segment Time
+                            </option>
+                            <option value="PossibleTimeSave">
+                                Possible Time Save
+                            </option>
                         </select>
                     </div>
                 );
@@ -861,7 +988,9 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 this.props.setValue(
                                     valueIndex,
                                     expect(
-                                        factory.fromColumnUpdateWith(e.target.value),
+                                        factory.fromColumnUpdateWith(
+                                            e.target.value,
+                                        ),
                                         "Unexpected Column Update With value",
                                     ),
                                 );
@@ -870,10 +999,16 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             <option value="DontUpdate">Don't Update</option>
                             <option value="SplitTime">Split Time</option>
                             <option value="Delta">Time Ahead / Behind</option>
-                            <option value="DeltaWithFallback">Time Ahead / Behind or Split Time If Empty</option>
+                            <option value="DeltaWithFallback">
+                                Time Ahead / Behind or Split Time If Empty
+                            </option>
                             <option value="SegmentTime">Segment Time</option>
-                            <option value="SegmentDelta">Time Saved / Lost</option>
-                            <option value="SegmentDeltaWithFallback">Time Saved / Lost or Segment Time If Empty</option>
+                            <option value="SegmentDelta">
+                                Time Saved / Lost
+                            </option>
+                            <option value="SegmentDeltaWithFallback">
+                                Time Saved / Lost or Segment Time If Empty
+                            </option>
                         </select>
                     </div>
                 );
@@ -886,21 +1021,28 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 this.props.setValue(
                                     valueIndex,
                                     expect(
-                                        factory.fromColumnUpdateTrigger(e.target.value),
+                                        factory.fromColumnUpdateTrigger(
+                                            e.target.value,
+                                        ),
                                         "Unexpected Column Update Trigger value",
                                     ),
                                 );
                             }}
                         >
-                            <option value="OnStartingSegment">On Starting Segment</option>
+                            <option value="OnStartingSegment">
+                                On Starting Segment
+                            </option>
                             <option value="Contextual">Contextual</option>
-                            <option value="OnEndingSegment">On Ending Segment</option>
+                            <option value="OnEndingSegment">
+                                On Ending Segment
+                            </option>
                         </select>
                     </div>
                 );
             } else if ("CustomCombobox" in value) {
-                const isError = value.CustomCombobox.mandatory
-                    && !value.CustomCombobox.value;
+                const isError =
+                    value.CustomCombobox.mandatory &&
+                    !value.CustomCombobox.value;
                 component = (
                     <div className="settings-value-box">
                         <select
@@ -917,7 +1059,9 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                     : undefined,
                             }}
                         >
-                            {value.CustomCombobox.list.map((v) => <option value={v}>{v}</option>)}
+                            {value.CustomCombobox.list.map((v) => (
+                                <option value={v}>{v}</option>
+                            ))}
                         </select>
                     </div>
                 );
@@ -951,7 +1095,9 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 this.props.setValue(
                                     valueIndex,
                                     expect(
-                                        factory.fromLayoutDirection(e.target.value),
+                                        factory.fromLayoutDirection(
+                                            e.target.value,
+                                        ),
                                         "Unexpected Layout Direction",
                                     ),
                                 );
@@ -971,7 +1117,12 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 this.props.setValue(
                                     valueIndex,
                                     expect(
-                                        factory.fromFont("", "normal", "normal", "normal"),
+                                        factory.fromFont(
+                                            "",
+                                            "normal",
+                                            "normal",
+                                            "normal",
+                                        ),
                                         "Unexpected Font",
                                     ),
                                 );
@@ -1003,19 +1154,24 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                     this.props.setValue(
                                         valueIndex,
                                         expect(
-                                            factory.fromFont(e.target.value, style, weight, stretch),
+                                            factory.fromFont(
+                                                e.target.value,
+                                                style,
+                                                weight,
+                                                stretch,
+                                            ),
                                             "Unexpected Font",
                                         ),
                                     );
                                 }}
                             >
                                 <option value=""></option>
-                                {
-                                    FontList.knownFamilies.map((n) =>
-                                        <option value={n} style={{ fontFamily: n }}>{n}</option>
-                                    )
-                                }
-                            </select>
+                                {FontList.knownFamilies.map((n) => (
+                                    <option value={n} style={{ fontFamily: n }}>
+                                        {n}
+                                    </option>
+                                ))}
+                            </select>,
                         );
                     } else {
                         children.push(
@@ -1026,12 +1182,17 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                     this.props.setValue(
                                         valueIndex,
                                         expect(
-                                            factory.fromFont(e.target.value, style, weight, stretch),
+                                            factory.fromFont(
+                                                e.target.value,
+                                                style,
+                                                weight,
+                                                stretch,
+                                            ),
                                             "Unexpected Font",
                                         ),
                                     );
                                 }}
-                            />
+                            />,
                         );
                     }
 
@@ -1043,7 +1204,12 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 this.props.setValue(
                                     valueIndex,
                                     expect(
-                                        factory.fromFont(family, e.target.value, weight, stretch),
+                                        factory.fromFont(
+                                            family,
+                                            e.target.value,
+                                            weight,
+                                            stretch,
+                                        ),
                                         "Unexpected Font",
                                     ),
                                 );
@@ -1059,19 +1225,29 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 this.props.setValue(
                                     valueIndex,
                                     expect(
-                                        factory.fromFont(family, style, e.target.value, stretch),
+                                        factory.fromFont(
+                                            family,
+                                            style,
+                                            e.target.value,
+                                            stretch,
+                                        ),
                                         "Unexpected Font",
                                     ),
                                 );
                             }}
                         >
-                            {
-                                FontList.FONT_WEIGHTS.map(([_, value, name]) => (
-                                    <option style={{
-                                        color: styles?.has(value) ? "white" : "grey"
-                                    }} value={value}>{name}</option>
-                                ))
-                            }
+                            {FontList.FONT_WEIGHTS.map(([_, value, name]) => (
+                                <option
+                                    style={{
+                                        color: styles?.has(value)
+                                            ? "white"
+                                            : "grey",
+                                    }}
+                                    value={value}
+                                >
+                                    {name}
+                                </option>
+                            ))}
                         </select>,
                         <>Stretch</>,
                         <select
@@ -1080,19 +1256,29 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 this.props.setValue(
                                     valueIndex,
                                     expect(
-                                        factory.fromFont(family, style, weight, e.target.value),
+                                        factory.fromFont(
+                                            family,
+                                            style,
+                                            weight,
+                                            e.target.value,
+                                        ),
                                         "Unexpected Font",
                                     ),
                                 );
                             }}
                         >
-                            {
-                                FontList.FONT_STRETCHES.map(([_, value, name]) => (
-                                    <option style={{
-                                        color: styles?.has(value) ? "white" : "grey"
-                                    }} value={value}>{name}</option>
-                                ))
-                            }
+                            {FontList.FONT_STRETCHES.map(([_, value, name]) => (
+                                <option
+                                    style={{
+                                        color: styles?.has(value)
+                                            ? "white"
+                                            : "grey",
+                                    }}
+                                    value={value}
+                                >
+                                    {name}
+                                </option>
+                            ))}
                         </select>,
                     );
                 }
@@ -1135,17 +1321,32 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             return factory.fromTransparentGradient();
                         case "Plain":
                             return factory.fromColor(
-                                color1[0], color1[1], color1[2], color1[3],
+                                color1[0],
+                                color1[1],
+                                color1[2],
+                                color1[3],
                             );
                         case "Vertical":
                             return factory.fromVerticalGradient(
-                                color1[0], color1[1], color1[2], color1[3],
-                                color2[0], color2[1], color2[2], color2[3],
+                                color1[0],
+                                color1[1],
+                                color1[2],
+                                color1[3],
+                                color2[0],
+                                color2[1],
+                                color2[2],
+                                color2[3],
                             );
                         case "Horizontal":
                             return factory.fromHorizontalGradient(
-                                color1[0], color1[1], color1[2], color1[3],
-                                color2[0], color2[1], color2[2], color2[3],
+                                color1[0],
+                                color1[1],
+                                color1[2],
+                                color1[3],
+                                color2[0],
+                                color2[1],
+                                color2[2],
+                                color2[3],
                             );
                         default:
                             return expect(
@@ -1171,7 +1372,9 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                         <option value="Horizontal">Horizontal</option>
                         <option value="DeltaPlain">Plain Delta</option>
                         <option value="DeltaVertical">Vertical Delta</option>
-                        <option value="DeltaHorizontal">Horizontal Delta</option>
+                        <option value="DeltaHorizontal">
+                            Horizontal Delta
+                        </option>
                     </select>,
                 ];
 
@@ -1217,16 +1420,15 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     );
                 } else {
                     component = (
-                        <div className="settings-value-box">
-                            {children}
-                        </div>
+                        <div className="settings-value-box">{children}</div>
                     );
                 }
             } else if ("LayoutBackground" in value) {
                 let type: string;
                 let color1: Option<Color> = null;
                 let color2: Option<Color> = null;
-                let imageId = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
+                let imageId =
+                    "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
                 let brightness = 100;
                 let opacity = 100;
                 let blur = 0;
@@ -1246,21 +1448,41 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             return factory.fromTransparentGradient();
                         case "Plain":
                             return factory.fromColor(
-                                color1[0], color1[1], color1[2], color1[3],
+                                color1[0],
+                                color1[1],
+                                color1[2],
+                                color1[3],
                             );
                         case "Vertical":
                             return factory.fromVerticalGradient(
-                                color1[0], color1[1], color1[2], color1[3],
-                                color2[0], color2[1], color2[2], color2[3],
+                                color1[0],
+                                color1[1],
+                                color1[2],
+                                color1[3],
+                                color2[0],
+                                color2[1],
+                                color2[2],
+                                color2[3],
                             );
                         case "Horizontal":
                             return factory.fromHorizontalGradient(
-                                color1[0], color1[1], color1[2], color1[3],
-                                color2[0], color2[1], color2[2], color2[3],
+                                color1[0],
+                                color1[1],
+                                color1[2],
+                                color1[3],
+                                color2[0],
+                                color2[1],
+                                color2[2],
+                                color2[3],
                             );
                         default:
                             return expect(
-                                factory.fromBackgroundImage(imageId, brightness / 100, opacity / 100, blur / 100),
+                                factory.fromBackgroundImage(
+                                    imageId,
+                                    brightness / 100,
+                                    opacity / 100,
+                                    blur / 100,
+                                ),
                                 "Unexpected layout background",
                             );
                     }
@@ -1280,47 +1502,64 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                         opacity = 100 * gradient.opacity;
                         blur = 100 * gradient.blur;
                         type = "Image";
-                        const imageUrl = this.props.editorUrlCache.cache(imageId);
+                        const imageUrl =
+                            this.props.editorUrlCache.cache(imageId);
                         children.push(
                             <div
                                 className="color-picker-button"
                                 style={{
-                                    background: imageUrl ? `url("${imageUrl}") center / cover` : undefined,
+                                    background: imageUrl
+                                        ? `url("${imageUrl}") center / cover`
+                                        : undefined,
                                 }}
                                 onClick={async (_) => {
-                                    const maybeFile = await openFileAsArrayBuffer(FILE_EXT_IMAGES);
+                                    const maybeFile =
+                                        await openFileAsArrayBuffer(
+                                            FILE_EXT_IMAGES,
+                                        );
                                     if (maybeFile === undefined) {
                                         return;
                                     }
                                     if (maybeFile instanceof Error) {
-                                        toast.error(`Failed to read the file: ${maybeFile.message}`);
+                                        toast.error(
+                                            `Failed to read the file: ${maybeFile.message}`,
+                                        );
                                         return;
                                     }
                                     const [file] = maybeFile;
-                                    const imageId = this.props.editorUrlCache.imageCache.cacheFromArray(
-                                        new Uint8Array(file),
-                                        true,
-                                    );
+                                    const imageId =
+                                        this.props.editorUrlCache.imageCache.cacheFromArray(
+                                            new Uint8Array(file),
+                                            true,
+                                        );
                                     this.props.editorUrlCache.cache(imageId);
                                     const value = expect(
-                                        factory.fromBackgroundImage(imageId, brightness / 100, opacity / 100, blur / 100),
+                                        factory.fromBackgroundImage(
+                                            imageId,
+                                            brightness / 100,
+                                            opacity / 100,
+                                            blur / 100,
+                                        ),
                                         "Unexpected layout background",
                                     );
                                     this.props.setValue(valueIndex, value);
                                 }}
                             />,
-                            <div style={{
-                                gridTemplateColumns: "max-content 1fr",
-                                columnGap: "8px",
-                                rowGap: "8px",
-                                alignItems: "center",
-                                display: "grid",
-                                gridColumn: "1 / 3",
-                            }}>
+                            <div
+                                style={{
+                                    gridTemplateColumns: "max-content 1fr",
+                                    columnGap: "8px",
+                                    rowGap: "8px",
+                                    alignItems: "center",
+                                    display: "grid",
+                                    gridColumn: "1 / 3",
+                                }}
+                            >
                                 Brightness
                                 <input
                                     type="range"
-                                    min="0" max="100"
+                                    min="0"
+                                    max="100"
                                     value={brightness}
                                     onChange={(e) => {
                                         brightness = Number(e.target.value);
@@ -1333,7 +1572,8 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 Opacity
                                 <input
                                     type="range"
-                                    min="0" max="100"
+                                    min="0"
+                                    max="100"
                                     value={opacity}
                                     onChange={(e) => {
                                         opacity = Number(e.target.value);
@@ -1346,7 +1586,8 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 Blur
                                 <input
                                     type="range"
-                                    min="0" max="100"
+                                    min="0"
+                                    max="100"
                                     value={blur}
                                     onChange={(e) => {
                                         blur = Number(e.target.value);
@@ -1356,7 +1597,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                         );
                                     }}
                                 />
-                            </div>
+                            </div>,
                         );
                     } else {
                         assertNever(gradient);
@@ -1365,7 +1606,9 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     type = gradient;
                 }
 
-                children.splice(0, 0,
+                children.splice(
+                    0,
+                    0,
                     <select
                         value={type}
                         onChange={(e) => {
@@ -1425,17 +1668,26 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     );
                 } else {
                     component = (
-                        <div className="settings-value-box">
-                            {children}
-                        </div>
+                        <div className="settings-value-box">{children}</div>
                     );
                 }
             } else if ("ServerConnection" in value) {
-                component = <div className="settings-value-box">
-                    <button className="livesplit-server-button" onClick={(_) => this.connectToServerOrDisconnect(valueIndex, value.ServerConnection.url, value.ServerConnection.connection)}>
-                        {
-                            (() => {
-                                const connectionState = value.ServerConnection.connection?.getConnectionState() ?? WebSocket.CLOSED;
+                component = (
+                    <div className="settings-value-box">
+                        <button
+                            className="livesplit-server-button"
+                            onClick={(_) =>
+                                this.connectToServerOrDisconnect(
+                                    valueIndex,
+                                    value.ServerConnection.url,
+                                    value.ServerConnection.connection,
+                                )
+                            }
+                        >
+                            {(() => {
+                                const connectionState =
+                                    value.ServerConnection.connection?.getConnectionState() ??
+                                    WebSocket.CLOSED;
                                 switch (connectionState) {
                                     case WebSocket.OPEN:
                                         return <div>Disconnect</div>;
@@ -1445,12 +1697,15 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                         return <div>Connecting...</div>;
                                     case WebSocket.CLOSING:
                                         return <div>Disconnecting...</div>;
-                                    default: throw new Error("Unknown WebSocket State");
+                                    default:
+                                        throw new Error(
+                                            "Unknown WebSocket State",
+                                        );
                                 }
-                            })()
-                        }
-                    </button>
-                </div>;
+                            })()}
+                        </button>
+                    </div>
+                );
             } else {
                 assertNever(value);
             }
@@ -1467,15 +1722,17 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
         });
 
         return (
-            <table className="table settings-table" >
-                <tbody className="table-body">
-                    {settingsRows}
-                </tbody>
+            <table className="table settings-table">
+                <tbody className="table-body">{settingsRows}</tbody>
             </table>
         );
     }
 
-    private async connectToServerOrDisconnect(valueIndex: number, serverUrl: string | undefined, connection: Option<LiveSplitServer>) {
+    private async connectToServerOrDisconnect(
+        valueIndex: number,
+        serverUrl: string | undefined,
+        connection: Option<LiveSplitServer>,
+    ) {
         if (connection) {
             connection.close();
             return;

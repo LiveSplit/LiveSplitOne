@@ -1,172 +1,176 @@
-@use 'sass:math';
+@use "sass:math";
 
-@use 'mobile';
-@use 'variables.icss';
+@use "mobile";
+@use "variables.icss";
 
 @mixin table {
-  .table {
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-    display: table;
-    border: 1px solid variables.$border-color;
-    border-collapse: collapse;
+    .table {
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        display: table;
+        border: 1px solid variables.$border-color;
+        border-collapse: collapse;
 
-    .table-row-even {
-      display: table-row;
-      background: variables.$dark-row-color !important;
-    }
-
-    .table-row-odd {
-      display: table-row;
-      background: variables.$light-row-color !important;
-    }
-  }
-
-  .table-body {
-    display: table-row-group;
-
-    >tr {
-      display: table-row;
-      background: variables.$dark-row-color;
-
-      >td {
-        padding: math.div(variables.$ui-margin, 2) math.div(variables.$ui-margin, 2);
-        display: table-cell;
-
-        &:first-child {
-          padding-left: variables.$ui-margin;
+        .table-row-even {
+            display: table-row;
+            background: variables.$dark-row-color !important;
         }
 
-        &:last-child {
-          padding-right: variables.$ui-margin;
+        .table-row-odd {
+            display: table-row;
+            background: variables.$light-row-color !important;
         }
-      }
-
-      &:nth-of-type(odd) {
-        background: variables.$light-row-color;
-      }
     }
-  }
 
-  .number {
-    text-align: right;
-    font-weight: bold;
-    font-variant-numeric: tabular-nums;
-  }
+    .table-body {
+        display: table-row-group;
 
-  .selected {
-    background: variables.$selected-row-color !important;
-  }
+        > tr {
+            display: table-row;
+            background: variables.$dark-row-color;
 
-  .tab-bar {
-    display: flex;
+            > td {
+                padding: math.div(variables.$ui-margin, 2)
+                    math.div(variables.$ui-margin, 2);
+                display: table-cell;
 
-    >button {
-      font-size: 15px;
-      min-height: 30px;
-      border-bottom-right-radius: 0;
-      border-bottom-left-radius: 0;
-      border-bottom: 0;
+                &:first-child {
+                    padding-left: variables.$ui-margin;
+                }
+
+                &:last-child {
+                    padding-right: variables.$ui-margin;
+                }
+            }
+
+            &:nth-of-type(odd) {
+                background: variables.$light-row-color;
+            }
+        }
     }
-  }
 
-  tr>td>input {
-    margin-right: -40px;
-
-    &:focus {
-      outline: 0;
+    .number {
+        text-align: right;
+        font-weight: bold;
+        font-variant-numeric: tabular-nums;
     }
-  }
 
-  input.text-box {
-    font-family: inherit;
-    background: transparent;
-    color: white;
-    text-overflow: ellipsis;
-    font-size: 15px;
-    border: none;
-    border-bottom: 1px solid hsla(0, 0%, 100%, 0.25);
-  }
+    .selected {
+        background: variables.$selected-row-color !important;
+    }
 
-  input[Type="text"] {
-    font-family: inherit;
-  }
+    .tab-bar {
+        display: flex;
 
-  select {
-    background: variables.$dark-row-color url("data:image/svg+xml;charset=UTF-8,%3Csvg width='12' height='12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='0,4 2,4 5,7 8,4 10,4 5,9' fill='%23fff'/%3E%3C/svg%3E") no-repeat right 4px center;
-    font-size: 15px;
-    border: 1px solid variables.$border-color;
-    color: white;
-    text-overflow: ellipsis;
-    font-family: inherit;
-    padding-left: 4px;
-    padding-right: 20px;
-    border-radius: 0;
-    appearance: none;
-  }
+        > button {
+            font-size: 15px;
+            min-height: 30px;
+            border-bottom-right-radius: 0;
+            border-bottom-left-radius: 0;
+            border-bottom: 0;
+        }
+    }
 
-  .settings-table {
-    width: variables.$settings-table-width;
+    tr > td > input {
+        margin-right: -40px;
 
-    tr {
-      height: 30px;
-
-      td:first-child {
-        width: 100%;
-      }
-
-      .settings-value-box {
-        width: math.div(variables.$settings-table-width, 2) - 2*variables.$ui-margin;
-        display: grid;
-        column-gap: variables.$ui-margin;
-        row-gap: variables.$ui-margin;
-        grid-template-columns: 100%;
-
-        input {
-          height: variables.$settings-row-height;
-          box-sizing: border-box;
-
-          &:focus {
+        &:focus {
             outline: 0;
-          }
         }
-
-        select {
-          height: variables.$settings-row-height;
-          min-width: 80px;
-        }
-
-        &.optional-value {
-          grid-template-columns: max-content 1fr;
-        }
-
-        &.two-colors {
-          grid-template-columns: 1fr 45px 45px;
-        }
-
-        &.one-color {
-          grid-template-columns: 1fr 45px;
-        }
-
-        &.removable-string {
-          grid-template-columns: 1fr 20px;
-
-          .trash {
-            cursor: pointer;
-          }
-
-          button {
-            margin: 0;
-            font-size: 12px;
-            min-height: variables.$settings-row-height;
-            padding-top: 0;
-            padding-bottom: 0;
-          }
-        }
-      }
     }
 
-    @include mobile.mobile {
-      width: 100%;
+    input.text-box {
+        font-family: inherit;
+        background: transparent;
+        color: white;
+        text-overflow: ellipsis;
+        font-size: 15px;
+        border: none;
+        border-bottom: 1px solid hsla(0, 0%, 100%, 0.25);
     }
-  }
+
+    input[Type="text"] {
+        font-family: inherit;
+    }
+
+    select {
+        background: variables.$dark-row-color
+            url("data:image/svg+xml;charset=UTF-8,%3Csvg width='12' height='12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='0,4 2,4 5,7 8,4 10,4 5,9' fill='%23fff'/%3E%3C/svg%3E")
+            no-repeat right 4px center;
+        font-size: 15px;
+        border: 1px solid variables.$border-color;
+        color: white;
+        text-overflow: ellipsis;
+        font-family: inherit;
+        padding-left: 4px;
+        padding-right: 20px;
+        border-radius: 0;
+        appearance: none;
+    }
+
+    .settings-table {
+        width: variables.$settings-table-width;
+
+        tr {
+            height: 30px;
+
+            td:first-child {
+                width: 100%;
+            }
+
+            .settings-value-box {
+                width: math.div(variables.$settings-table-width, 2) - 2 *
+                    variables.$ui-margin;
+                display: grid;
+                column-gap: variables.$ui-margin;
+                row-gap: variables.$ui-margin;
+                grid-template-columns: 100%;
+
+                input {
+                    height: variables.$settings-row-height;
+                    box-sizing: border-box;
+
+                    &:focus {
+                        outline: 0;
+                    }
+                }
+
+                select {
+                    height: variables.$settings-row-height;
+                    min-width: 80px;
+                }
+
+                &.optional-value {
+                    grid-template-columns: max-content 1fr;
+                }
+
+                &.two-colors {
+                    grid-template-columns: 1fr 45px 45px;
+                }
+
+                &.one-color {
+                    grid-template-columns: 1fr 45px;
+                }
+
+                &.removable-string {
+                    grid-template-columns: 1fr 20px;
+
+                    .trash {
+                        cursor: pointer;
+                    }
+
+                    button {
+                        margin: 0;
+                        font-size: 12px;
+                        min-height: variables.$settings-row-height;
+                        padding-top: 0;
+                        padding-bottom: 0;
+                    }
+                }
+            }
+        }
+
+        @include mobile.mobile {
+            width: 100%;
+        }
+    }
 }

@@ -1,16 +1,16 @@
-@use 'mobile';
-@use 'Table';
+@use "mobile";
+@use "Table";
 
 .settings-editor {
-  @include Table.table;
+    @include Table.table;
 
-  @include mobile.mobile {
-    .settings-table {
-      width: 100%;
-  
-      & > tbody > tr > td:nth-child(1) {
-        width: 50%;
-      }
+    @include mobile.mobile {
+        .settings-table {
+            width: 100%;
+
+            & > tbody > tr > td:nth-child(1) {
+                width: 50%;
+            }
+        }
     }
-  }
 }

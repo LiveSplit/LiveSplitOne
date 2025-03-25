@@ -42,11 +42,16 @@ export function load(loadedCallback: () => void) {
                 try {
                     for (const font of availableFonts) {
                         if (!knownStyles.has(font.family)) {
-                            knownStyles.set(font.family, new Set(["normal", "bold"]));
+                            knownStyles.set(
+                                font.family,
+                                new Set(["normal", "bold"]),
+                            );
                         }
 
                         const set = knownStyles.get(font.family)!;
-                        const styles = (font.style as string).toLowerCase().split(" ");
+                        const styles = (font.style as string)
+                            .toLowerCase()
+                            .split(" ");
 
                         for (const [keyword, value] of FONT_STRETCHES) {
                             if (styles.includes(keyword)) {

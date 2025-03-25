@@ -1,5 +1,5 @@
-@use 'mobile';
-@use 'variables.icss';
+@use "mobile";
+@use "variables.icss";
 
 $icon-size: 40px;
 $title-font-size: 40px;
@@ -7,82 +7,83 @@ $build-version-font-size: 12px;
 $link-color: #56b0ff;
 
 .about {
-  .about-inner-container {
-    background-color: variables.$light-row-color;
-    padding: variables.$ui-large-margin;
-    border: 1px solid variables.$border-color;
-    width: fit-content;
+    .about-inner-container {
+        background-color: variables.$light-row-color;
+        padding: variables.$ui-large-margin;
+        border: 1px solid variables.$border-color;
+        width: fit-content;
 
-    .livesplit-title {
-      display: flex;
-      align-items: center;
+        .livesplit-title {
+            display: flex;
+            align-items: center;
 
-      .livesplit-icon {
-        height: $icon-size;
-        margin-right: variables.$ui-margin;
+            .livesplit-icon {
+                height: $icon-size;
+                margin-right: variables.$ui-margin;
 
-        img {
-          height: 100%;
+                img {
+                    height: 100%;
+                }
+            }
+
+            .title-text {
+                font-weight: bold;
+                font-size: $title-font-size;
+            }
         }
-      }
 
-      .title-text {
-        font-weight: bold;
-        font-size: $title-font-size;
-      }
-    }
-
-    .build-version {
-      font-size: $build-version-font-size;
-    }
-
-    h2 {
-      margin-bottom: variables.$ui-large-margin;
-    }
-
-    a {
-      color: $link-color;
-    }
-
-    .changelog {
-      margin-left: variables.$ui-large-margin;
-
-      >div {
-        margin: variables.$ui-large-margin 0 variables.$ui-large-margin variables.$ui-large-margin;
-      }
-    }
-
-    .contributors {
-      margin: 0 auto;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 14px;
-      justify-content: space-evenly;
-      align-items: end;
-      font-size: 14px;
-
-      a {
-        display: flex;
-        align-items: center;
-        flex-direction: column;
-        gap: 4px;
-
-        img {
-          width: variables.$contributor-avatar-size;
-          height: variables.$contributor-avatar-size;
-          border-radius: 50%;
+        .build-version {
+            font-size: $build-version-font-size;
         }
-      }
+
+        h2 {
+            margin-bottom: variables.$ui-large-margin;
+        }
+
+        a {
+            color: $link-color;
+        }
+
+        .changelog {
+            margin-left: variables.$ui-large-margin;
+
+            > div {
+                margin: variables.$ui-large-margin 0 variables.$ui-large-margin
+                    variables.$ui-large-margin;
+            }
+        }
+
+        .contributors {
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+            justify-content: space-evenly;
+            align-items: end;
+            font-size: 14px;
+
+            a {
+                display: flex;
+                align-items: center;
+                flex-direction: column;
+                gap: 4px;
+
+                img {
+                    width: variables.$contributor-avatar-size;
+                    height: variables.$contributor-avatar-size;
+                    border-radius: 50%;
+                }
+            }
+        }
+
+        @include mobile.mobile {
+            box-sizing: border-box;
+        }
     }
+
+    max-width: 700px;
 
     @include mobile.mobile {
-      box-sizing: border-box;
+        max-width: 100%;
     }
-  }
-
-  max-width: 700px;
-
-  @include mobile.mobile {
-    max-width: 100%;
-  }
 }

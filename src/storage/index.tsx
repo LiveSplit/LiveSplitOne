@@ -1,7 +1,10 @@
 import { openDB, IDBPDatabase } from "idb";
 import { Option, assert } from "../util/OptionUtil";
 import { RunRef, Run, TimingMethod } from "../livesplit-core";
-import { GeneralSettings, MANUAL_GAME_TIME_SETTINGS_DEFAULT } from "../ui/MainSettings";
+import {
+    GeneralSettings,
+    MANUAL_GAME_TIME_SETTINGS_DEFAULT,
+} from "../ui/MainSettings";
 import { FRAME_RATE_AUTOMATIC } from "../util/FrameRate";
 
 export type HotkeyConfigSettings = unknown;
@@ -13,10 +16,10 @@ const DEFAULT_LAYOUT_HEIGHT = 500;
 let db: Option<Promise<IDBPDatabase<unknown>>> = null;
 
 export interface SplitsInfo {
-    game: string,
-    category: string,
-    realTime?: number,
-    gameTime?: number,
+    game: string;
+    category: string;
+    realTime?: number;
+    gameTime?: number;
 }
 
 function getSplitsInfo(run: RunRef): SplitsInfo {
@@ -90,7 +93,10 @@ function getDb(): Promise<IDBPDatabase<unknown>> {
 
                     const hotkeys = localStorage.getItem("settings");
                     if (hotkeys) {
-                        settingsStore.put(JSON.parse(hotkeys).hotkeys, "hotkeys");
+                        settingsStore.put(
+                            JSON.parse(hotkeys).hotkeys,
+                            "hotkeys",
+                        );
                     }
 
                     const layoutWidth = localStorage.getItem("layoutWidth");
@@ -105,13 +111,13 @@ function getDb(): Promise<IDBPDatabase<unknown>> {
     return db;
 }
 
-export async function storeRunWithoutDisposing(run: RunRef, key: number | undefined) {
-    await storeSplits(
-        (callback) => {
-            callback(run, run.saveAsLssBytes());
-        },
-        key,
-    );
+export async function storeRunWithoutDisposing(
+    run: RunRef,
+    key: number | undefined,
+) {
+    await storeSplits((callback) => {
+        callback(run, run.saveAsLssBytes());
+    }, key);
 }
 
 export async function storeRunAndDispose(run: Run, key: number | undefined) {
@@ -219,8 +225,8 @@ export async function loadLayoutDims(): Promise<[number, number]> {
     const db = await getDb();
 
     return [
-        await db.get("settings", "layoutWidth") ?? DEFAULT_LAYOUT_WIDTH,
-        await db.get("settings", "layoutHeight") ?? DEFAULT_LAYOUT_HEIGHT,
+        (await db.get("settings", "layoutWidth")) ?? DEFAULT_LAYOUT_WIDTH,
+        (await db.get("settings", "layoutHeight")) ?? DEFAULT_LAYOUT_HEIGHT,
     ];
 }
 
@@ -245,7 +251,7 @@ export async function storeGeneralSettings(generalSettings: GeneralSettings) {
 export async function loadGeneralSettings(): Promise<GeneralSettings> {
     const db = await getDb();
 
-    const generalSettings = await db.get("settings", "generalSettings") ?? {};
+    const generalSettings = (await db.get("settings", "generalSettings")) ?? {};
 
     const isTauri = window.__TAURI__ != null;
 
@@ -260,7 +266,8 @@ export async function loadGeneralSettings(): Promise<GeneralSettings> {
         saveOnReset: generalSettings.saveOnReset ?? false,
         speedrunComIntegration: generalSettings.speedrunComIntegration ?? true,
         serverUrl: generalSettings.serverUrl,
-        alwaysOnTop: generalSettings.alwaysOnTop ?? (isTauri ? true : undefined),
+        alwaysOnTop:
+            generalSettings.alwaysOnTop ?? (isTauri ? true : undefined),
     };
 }
 
@@ -273,7 +280,7 @@ export async function storeTimingMethod(timingMethod: TimingMethod) {
 export async function loadTimingMethod(): Promise<TimingMethod> {
     const db = await getDb();
 
-    return await db.get("settings", "timingMethod") ?? TimingMethod.RealTime;
+    return (await db.get("settings", "timingMethod")) ?? TimingMethod.RealTime;
 }
 
 export async function storeComparison(comparison: string) {
