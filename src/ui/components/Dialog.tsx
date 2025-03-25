@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import "../css/Dialog.scss";
+import "../../css/Dialog.scss";
 
 export interface Props {
     onShow: () => void;

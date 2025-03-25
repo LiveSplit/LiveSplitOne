@@ -1,11 +1,12 @@
 import * as React from "react";
 import { ResizableBox } from "react-resizable";
-import { LayoutStateRef } from "../livesplit-core";
-import { WebRenderer } from "../livesplit-core/livesplit_core";
-import AutoRefresh from "../util/AutoRefresh";
-import { UrlCache } from "../util/UrlCache";
-import "../css/Layout.scss";
-import { GeneralSettings } from "../ui/MainSettings";
+import { LayoutStateRef } from "../../livesplit-core";
+import { WebRenderer } from "../../livesplit-core/livesplit_core";
+import AutoRefresh from "../../util/AutoRefresh";
+import { UrlCache } from "../../util/UrlCache";
+import { GeneralSettings } from "../views/MainSettings";
+
+import "../../css/Layout.scss";
 
 export interface Props {
     getState: () => LayoutStateRef;

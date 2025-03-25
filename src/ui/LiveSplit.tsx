@@ -28,23 +28,23 @@ import {
     maybeDisposeAndThen,
     panic,
 } from "../util/OptionUtil";
-import { LayoutEditor as LayoutEditorComponent } from "./LayoutEditor";
-import { RunEditor as RunEditorComponent } from "./RunEditor";
+import { LayoutEditor as LayoutEditorComponent } from "./views/LayoutEditor";
+import { RunEditor as RunEditorComponent } from "./views/RunEditor";
 import {
     GeneralSettings,
     MainSettings as SettingsEditorComponent,
-} from "./MainSettings";
-import { TimerView } from "./TimerView";
-import { About } from "./About";
-import { SplitsSelection, EditingInfo } from "./SplitsSelection";
-import { LayoutView } from "./LayoutView";
+} from "./views/MainSettings";
+import { TimerView } from "./views/TimerView";
+import { About } from "./views/About";
+import { SplitsSelection, EditingInfo } from "./views/SplitsSelection";
+import { LayoutView } from "./views/LayoutView";
 import { ToastContainer, toast } from "react-toastify";
 import * as Storage from "../storage";
 import { UrlCache } from "../util/UrlCache";
 import { ServerProtocol, WebRenderer } from "../livesplit-core/livesplit_core";
 import { LiveSplitServer } from "../api/LiveSplitServer";
 import { LSOCommandSink } from "./LSOCommandSink";
-import DialogContainer from "./Dialog";
+import DialogContainer from "./components/Dialog";
 import { createHotkeys, HotkeyImplementation } from "../platform/Hotkeys";
 import { Menu } from "lucide-react";
 

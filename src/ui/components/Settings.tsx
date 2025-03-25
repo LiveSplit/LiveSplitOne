@@ -1,19 +1,19 @@
 import * as React from "react";
-import { Color, SettingsDescriptionValueJson } from "../livesplit-core";
-import { assertNever, expect, Option } from "../util/OptionUtil";
+import { Color, SettingsDescriptionValueJson } from "../../livesplit-core";
+import { assertNever, expect, Option } from "../../util/OptionUtil";
 import ColorPicker from "./ColorPicker";
 import HotkeyButton from "./HotkeyButton";
-import { UrlCache } from "../util/UrlCache";
-import { FILE_EXT_IMAGES, openFileAsArrayBuffer } from "../util/FileUtil";
-import * as FontList from "../util/FontList";
-import { LiveSplitServer } from "../api/LiveSplitServer";
+import { UrlCache } from "../../util/UrlCache";
+import { FILE_EXT_IMAGES, openFileAsArrayBuffer } from "../../util/FileUtil";
+import * as FontList from "../../util/FontList";
+import { LiveSplitServer } from "../../api/LiveSplitServer";
 import { showDialog } from "./Dialog";
 import { toast } from "react-toastify";
 import Switch from "./Switch";
 import { Trash } from "lucide-react";
 
-import "../css/Tooltip.scss";
-import "../css/LiveSplitServerButton.scss";
+import "../../css/Tooltip.scss";
+import "../../css/LiveSplitServerButton.scss";
 
 export interface Props<T> {
     context: string;

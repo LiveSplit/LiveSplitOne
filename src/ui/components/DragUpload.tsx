@@ -1,7 +1,7 @@
 import * as React from "react";
 import { toast } from "react-toastify";
 
-import "../css/DragUpload.scss";
+import "../../css/DragUpload.scss";
 
 export interface Props {
     children: React.ReactNode;

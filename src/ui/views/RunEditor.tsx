@@ -1,11 +1,11 @@
 import * as React from "react";
-import * as LiveSplit from "../livesplit-core";
+import * as LiveSplit from "../../livesplit-core";
 import {
     FILE_EXT_IMAGES,
     FILE_EXT_SPLITS,
     openFileAsArrayBuffer,
-} from "../util/FileUtil";
-import { TextBox } from "./TextBox";
+} from "../../util/FileUtil";
+import { TextBox } from "../components/TextBox";
 import { toast } from "react-toastify";
 import {
     downloadGameList,
@@ -25,26 +25,26 @@ import {
     gameListLength,
     platformListLength,
     regionListLength,
-} from "../api/GameList";
-import { Category, Run, Variable, getRun } from "../api/SpeedrunCom";
-import { Option, expect, map } from "../util/OptionUtil";
-import { formatLeaderboardTime } from "../util/TimeUtil";
-import { resolveEmbed } from "./Embed";
+} from "../../api/GameList";
+import { Category, Run, Variable, getRun } from "../../api/SpeedrunCom";
+import { Option, expect, map } from "../../util/OptionUtil";
+import { formatLeaderboardTime } from "../../util/TimeUtil";
+import { resolveEmbed } from "../Embed";
 import {
     SettingsComponent,
     JsonSettingValueFactory,
     ExtendedSettingsDescriptionFieldJson,
     ExtendedSettingsDescriptionValueJson,
-} from "./Settings";
-import { Markdown, replaceFlag } from "../util/Markdown";
-import { UrlCache } from "../util/UrlCache";
+} from "../components/Settings";
+import { Markdown, replaceFlag } from "../../util/Markdown";
+import { UrlCache } from "../../util/UrlCache";
 import { GeneralSettings } from "./MainSettings";
-import { showDialog } from "./Dialog";
-import { corsBustingFetch } from "../platform/CORS";
-import { ContextMenu, MenuItem, Position } from "./ContextMenu";
+import { showDialog } from "../components/Dialog";
+import { corsBustingFetch } from "../../platform/CORS";
+import { ContextMenu, MenuItem, Position } from "../components/ContextMenu";
 import { Check, X } from "lucide-react";
 
-import "../css/RunEditor.scss";
+import "../../css/RunEditor.scss";
 
 export interface Props {
     editor: LiveSplit.RunEditor;

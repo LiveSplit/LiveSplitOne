@@ -4,19 +4,19 @@ import {
     TimeSpan,
     LayoutStateRefMut,
     TimerPhase,
-} from "../livesplit-core";
-import * as LiveSplit from "../livesplit-core";
-import { Option, expect } from "../util/OptionUtil";
-import DragUpload from "./DragUpload";
-import Layout from "../layout/Layout";
-import { UrlCache } from "../util/UrlCache";
-import { WebRenderer } from "../livesplit-core/livesplit_core";
+} from "../../livesplit-core";
+import * as LiveSplit from "../../livesplit-core";
+import { Option, expect } from "../../util/OptionUtil";
+import DragUpload from "../components/DragUpload";
+import Layout from "../components/Layout";
+import { UrlCache } from "../../util/UrlCache";
+import { WebRenderer } from "../../livesplit-core/livesplit_core";
 import {
     GeneralSettings,
     MANUAL_GAME_TIME_MODE_SEGMENT_TIMES,
 } from "./MainSettings";
-import { LiveSplitServer } from "../api/LiveSplitServer";
-import { LSOCommandSink } from "./LSOCommandSink";
+import { LiveSplitServer } from "../../api/LiveSplitServer";
+import { LSOCommandSink } from "../LSOCommandSink";
 import {
     ArrowDown,
     ArrowUp,
@@ -30,9 +30,9 @@ import {
     X,
 } from "lucide-react";
 
-import LiveSplitIcon from "../assets/icon.svg";
+import LiveSplitIcon from "../../assets/icon.svg";
 
-import "../css/TimerView.scss";
+import "../../css/TimerView.scss";
 
 export interface Props {
     isDesktop: boolean;

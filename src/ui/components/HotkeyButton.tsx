@@ -1,9 +1,9 @@
 import * as React from "react";
-import { Option, map, expect } from "../util/OptionUtil";
-import { hotkeySystem } from "./LiveSplit";
+import { Option, map, expect } from "../../util/OptionUtil";
+import { hotkeySystem } from "../LiveSplit";
 import { Circle, Trash } from "lucide-react";
 
-import "../css/HotkeyButton.scss";
+import "../../css/HotkeyButton.scss";
 
 function resolveKey(keyCode: string): Promise<string> | string {
     return expect(

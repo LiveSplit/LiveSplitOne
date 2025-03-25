@@ -1,9 +1,9 @@
 import React, { ChangeEvent, MouseEvent } from "react";
 import { useEffect, useState } from "react";
-import { Color } from "../livesplit-core";
+import { Color } from "../../livesplit-core";
 import { Pipette } from "lucide-react";
 
-import * as classes from "../css/ColorPicker.module.scss";
+import * as classes from "../../css/ColorPicker.module.scss";
 
 const EyeDropper = (window as any).EyeDropper;
 const hasEyeDropper = !!EyeDropper;

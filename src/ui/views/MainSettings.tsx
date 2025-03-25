@@ -1,24 +1,27 @@
 import * as React from "react";
 
-import { JsonSettingValueFactory, SettingsComponent } from "./Settings";
+import {
+    JsonSettingValueFactory,
+    SettingsComponent,
+} from "../components/Settings";
 import {
     SettingsDescriptionJson,
     SettingValue,
     HotkeyConfig,
-} from "../livesplit-core";
+} from "../../livesplit-core";
 import { toast } from "react-toastify";
-import { UrlCache } from "../util/UrlCache";
+import { UrlCache } from "../../util/UrlCache";
 import {
     FRAME_RATE_AUTOMATIC as FRAME_RATE_BATTERY_AWARE,
     FRAME_RATE_MATCH_SCREEN as FRAME_RATE_MATCH_SCREEN,
     FrameRateSetting,
-} from "../util/FrameRate";
-import { LiveSplitServer } from "../api/LiveSplitServer";
-import { Option } from "../util/OptionUtil";
-import { LSOCommandSink } from "./LSOCommandSink";
+} from "../../util/FrameRate";
+import { LiveSplitServer } from "../../api/LiveSplitServer";
+import { Option } from "../../util/OptionUtil";
+import { LSOCommandSink } from "../LSOCommandSink";
 import { Check, FlaskConical, X } from "lucide-react";
 
-import "../css/SettingsEditor.scss";
+import "../../css/SettingsEditor.scss";
 
 export interface GeneralSettings {
     frameRate: FrameRateSetting;
