@@ -7,7 +7,7 @@ import {
 } from "../../livesplit-core";
 import * as LiveSplit from "../../livesplit-core";
 import { Option, expect } from "../../util/OptionUtil";
-import DragUpload from "../components/DragUpload";
+import { DragUpload } from "../components/DragUpload";
 import Layout from "../components/Layout";
 import { UrlCache } from "../../util/UrlCache";
 import { WebRenderer } from "../../livesplit-core/livesplit_core";
@@ -119,7 +119,7 @@ export class TimerView extends React.Component<Props, State> {
                             }
                         }}
                         style={{
-                            display: "inline-block",
+                            width: "fit-content",
                             cursor: this.props.generalSettings
                                 .showControlButtons
                                 ? "pointer"

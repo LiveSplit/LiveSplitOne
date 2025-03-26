@@ -44,7 +44,7 @@ import { UrlCache } from "../util/UrlCache";
 import { ServerProtocol, WebRenderer } from "../livesplit-core/livesplit_core";
 import { LiveSplitServer } from "../api/LiveSplitServer";
 import { LSOCommandSink } from "./LSOCommandSink";
-import DialogContainer from "./components/Dialog";
+import { DialogContainer } from "./components/Dialog";
 import { createHotkeys, HotkeyImplementation } from "../platform/Hotkeys";
 import { Menu } from "lucide-react";
 
@@ -350,7 +350,7 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     public render() {
-        let view;
+        let view: React.JSX.Element | undefined;
         if (this.state.menu.kind === MenuKind.RunEditor) {
             view = (
                 <RunEditorComponent

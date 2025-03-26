@@ -1,9 +1,9 @@
-import * as React from "react";
-import { Option, map, expect } from "../../util/OptionUtil";
+import React, { useCallback, useEffect, useState } from "react";
+import { Option, expect } from "../../util/OptionUtil";
 import { hotkeySystem } from "../LiveSplit";
 import { Circle, Trash } from "lucide-react";
 
-import "../../css/HotkeyButton.scss";
+import * as classes from "../../css/HotkeyButton.module.scss";
 
 function resolveKey(keyCode: string): Promise<string> | string {
     return expect(
@@ -12,104 +12,45 @@ function resolveKey(keyCode: string): Promise<string> | string {
     ).resolve(keyCode);
 }
 
-export interface Props {
+export function HotkeyButton({
+    value,
+    setValue,
+}: {
     value: Option<string>;
     setValue: (value: Option<string>) => void;
-}
+}) {
+    const [listener, setListener] = useState<Option<EventListenerObject>>(null);
+    const [intervalHandle, setIntervalHandle] = useState<Option<number>>(null);
+    const [resolvedKey, setResolvedKey] = useState<Option<string>>(null);
 
-export interface State {
-    listener: Option<EventListenerObject>;
-    intervalHandle: Option<number>;
-    resolvedKey: Option<string>;
-}
-
-export default class HotkeyButton extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-
-        this.state = {
-            listener: null,
-            intervalHandle: null,
-            resolvedKey: null,
-        };
-
-        this.updateResolvedKey(props.value);
-    }
-    public componentDidUpdate(previousProps: Props) {
-        if (previousProps.value !== this.props.value) {
-            this.updateResolvedKey(this.props.value);
-        }
-    }
-
-    private async updateResolvedKey(value: Option<string>): Promise<void> {
-        let resolvedKey = "";
-        if (value != null) {
-            const matches = value.match(/(.+)\+\s*(.+)$/);
-            if (matches != null) {
-                resolvedKey = `${matches[1]}+ ${await resolveKey(matches[2])}`;
-            } else {
-                resolvedKey = await resolveKey(value);
+    const updateResolvedKey = useCallback(
+        async (value: Option<string>): Promise<void> => {
+            let resolvedKey = "";
+            if (value != null) {
+                const matches = value.match(/(.+)\+\s*(.+)$/);
+                if (matches != null) {
+                    resolvedKey = `${matches[1]}+ ${await resolveKey(
+                        matches[2],
+                    )}`;
+                } else {
+                    resolvedKey = await resolveKey(value);
+                }
             }
-        }
-        this.setState({ resolvedKey });
-    }
+            setResolvedKey(resolvedKey);
+        },
+        [],
+    );
 
-    public render() {
-        let buttonText: Option<string> | React.JSX.Element = null;
-        if (this.props.value != null) {
-            buttonText = this.state.resolvedKey;
-        } else if (this.state.listener != null) {
-            buttonText = (
-                <Circle strokeWidth={0} size={16} fill="currentColor" />
-            );
-        }
+    useEffect(() => {
+        updateResolvedKey(value);
+    }, [value, updateResolvedKey]);
 
-        return (
-            <div className="hotkey-box">
-                <button
-                    className={`hotkey-button tooltip ${
-                        this.state.listener != null ? "focused" : ""
-                    }`}
-                    onClick={() => this.focusButton()}
-                >
-                    {buttonText}
-                    <span className="tooltip-text">
-                        Click to record a hotkey. You may also use buttons on a
-                        gamepad. Global hotkeys are currently not possible.
-                        Gamepad buttons work globally.
-                    </span>
-                </button>
-                {map(this.props.value, () => (
-                    <Trash
-                        className="trash"
-                        strokeWidth={2.5}
-                        size={20}
-                        onClick={() => this.props.setValue(null)}
-                    />
-                ))}
-                {this.state.listener != null && (
-                    <div
-                        style={{
-                            bottom: "0px",
-                            left: "0px",
-                            position: "fixed",
-                            right: "0px",
-                            top: "0px",
-                            zIndex: 5,
-                        }}
-                        onClick={() => this.blurButton()}
-                    />
-                )}
-            </div>
-        );
-    }
+    const focusButton = () => {
+        let newListener = listener;
+        let newIntervalHandle = intervalHandle;
 
-    private focusButton() {
-        let listener = this.state.listener;
-        let intervalHandle = this.state.intervalHandle;
-
-        if (listener === null) {
-            listener = {
+        if (newListener == null) {
+            newListener = {
                 handleEvent: (ev: KeyboardEvent) => {
                     if (ev.repeat) {
                         return;
@@ -144,17 +85,17 @@ export default class HotkeyButton extends React.Component<Props, State> {
                         text += "Shift + ";
                     }
                     text += ev.code;
-                    this.props.setValue(text);
+                    setValue(text);
                     ev.preventDefault();
                 },
             };
 
-            window.addEventListener("keydown", listener);
+            window.addEventListener("keydown", newListener);
         }
 
-        if (intervalHandle === null) {
+        if (newIntervalHandle == null) {
             const oldButtonState: boolean[][] = [];
-            intervalHandle = window.setInterval(() => {
+            newIntervalHandle = window.setInterval(() => {
                 const gamepads = navigator.getGamepads();
 
                 let gamepadIdx = 0;
@@ -163,14 +104,14 @@ export default class HotkeyButton extends React.Component<Props, State> {
                         oldButtonState[gamepadIdx] = [];
                     }
 
-                    if (gamepad !== null) {
+                    if (gamepad != null) {
                         let buttonIdx = 0;
                         for (const button of gamepad.buttons) {
                             const oldState =
                                 oldButtonState[gamepadIdx]?.[buttonIdx] ??
                                 false;
                             if (button.pressed && !oldState) {
-                                this.props.setValue(`Gamepad${buttonIdx}`);
+                                setValue(`Gamepad${buttonIdx}`);
                             }
 
                             oldButtonState[gamepadIdx][buttonIdx] =
@@ -185,22 +126,52 @@ export default class HotkeyButton extends React.Component<Props, State> {
             }, 1000 / 60.0);
         }
 
-        this.setState({
-            listener,
-            intervalHandle,
-        });
+        setListener(newListener);
+        setIntervalHandle(newIntervalHandle);
+    };
+
+    const blurButton = () => {
+        if (listener != null) {
+            window.removeEventListener("keydown", listener);
+        }
+        if (intervalHandle != null) {
+            window.clearInterval(intervalHandle);
+        }
+        setListener(null);
+        setIntervalHandle(null);
+    };
+
+    let buttonText: Option<string> | React.JSX.Element = null;
+    if (value != null) {
+        buttonText = resolvedKey;
+    } else if (listener != null) {
+        buttonText = <Circle strokeWidth={0} size={16} fill="currentColor" />;
     }
 
-    private blurButton() {
-        if (this.state.listener != null) {
-            window.removeEventListener("keydown", this.state.listener);
-        }
-        if (this.state.intervalHandle != null) {
-            window.clearTimeout(this.state.intervalHandle);
-        }
-        this.setState({
-            listener: null,
-            intervalHandle: null,
-        });
-    }
+    return (
+        <div className={classes.hotkeyBox}>
+            <button
+                className={`tooltip ${listener != null ? classes.focused : ""}`}
+                onClick={focusButton}
+            >
+                {buttonText}
+                <span className="tooltip-text">
+                    Click to record a hotkey. You may also use buttons on a
+                    gamepad. Global hotkeys are currently not possible. Gamepad
+                    buttons work globally.
+                </span>
+            </button>
+            {value && (
+                <Trash
+                    className={classes.trash}
+                    strokeWidth={2.5}
+                    size={20}
+                    onClick={() => setValue(null)}
+                />
+            )}
+            {listener != null && (
+                <div className={classes.overlay} onClick={blurButton} />
+            )}
+        </div>
+    );
 }

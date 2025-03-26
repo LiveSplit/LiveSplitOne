@@ -1,14 +1,14 @@
-@use "mobile";
+@use "mobile.module.scss";
 @use "variables.icss";
 
-#upload-drop-zone {
+.uploadDropZone {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
 
-    #upload-drop-zone-overlay {
+    .overlay {
         position: absolute;
         width: calc(100% + 2 * #{variables.$main-content-margin});
         height: calc(100% + 2 * #{variables.$main-content-margin});
@@ -27,7 +27,7 @@
             margin: 0;
         }
 
-        .overlay-text {
+        .overlayText {
             font-size: 50px;
             text-align: center;
         }

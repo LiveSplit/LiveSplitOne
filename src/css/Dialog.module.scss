@@ -1,6 +1,6 @@
 @use "variables.icss";
 
-.is-mobile + dialog > .dialog {
+:global(.is-mobile) + dialog > .dialog {
     min-width: auto;
 }
 
@@ -20,13 +20,19 @@ dialog {
         border: 2px solid rgba(255, 255, 255, 0.25);
         border-radius: 10px;
         min-width: 225px;
+        display: flex;
+        flex-direction: column;
+        gap: variables.$ui-large-margin;
 
         max-width: 400px;
         padding: variables.$ui-large-margin;
 
         h1 {
-            font-size: 20px;
-            margin: 5px 0;
+            font-size: larger;
+        }
+
+        >* {
+            margin: 0;
         }
 
         .buttons {
@@ -49,7 +55,6 @@ dialog {
         }
 
         input {
-            width: 100%;
             border: none;
             border-bottom: 1px solid rgba(255, 255, 255, 0.25);
             background: transparent;

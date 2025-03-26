@@ -212,7 +212,6 @@ export class RunEditor extends React.Component<Props, State> {
                                     value={this.state.editor.offset}
                                     onChange={(e) => this.handleOffsetChange(e)}
                                     onBlur={(_) => this.handleOffsetBlur()}
-                                    small
                                     invalid={!this.state.offsetIsValid}
                                     label="Start Timer At"
                                 />
@@ -225,7 +224,6 @@ export class RunEditor extends React.Component<Props, State> {
                                         this.handleAttemptsChange(e)
                                     }
                                     onBlur={(_) => this.handleAttemptsBlur()}
-                                    small
                                     invalid={!this.state.attemptCountIsValid}
                                     label="Attempts"
                                 />

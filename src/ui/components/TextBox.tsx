@@ -1,53 +1,56 @@
 import * as React from "react";
 
-export interface Props {
+import * as classes from "../../css/TextBox.module.scss";
+
+export function TextBox({
+    className,
+    value,
+    onChange,
+    onBlur,
+    label,
+    invalid,
+    list,
+}: {
     className?: string;
-    value?: any;
-    onChange?: React.EventHandler<React.ChangeEvent<HTMLInputElement>>;
-    onBlur?: React.EventHandler<React.FocusEvent<HTMLInputElement>>;
+    value?: string | number | readonly string[];
+    onChange?: React.ChangeEventHandler<HTMLInputElement>;
+    onBlur?: React.FocusEventHandler<HTMLInputElement>;
     label: string;
     invalid?: boolean;
-    small?: boolean;
     list?: [string, string[]];
-}
+}) {
+    let outerClassName = classes.group;
+    if (invalid) {
+        outerClassName += ` ${classes.invalid}`;
+    }
 
-export class TextBox extends React.Component<Props> {
-    public render() {
-        let className = "group";
-        if (this.props.invalid) {
-            className += " invalid";
-        }
-        if (this.props.small) {
-            className += " small";
-        }
-        let name;
-        let list;
-        if (this.props.list !== undefined) {
-            name = this.props.list[0];
-            list = (
-                <datalist id={name}>
-                    {this.props.list[1].map((n, i) => (
-                        <option key={i} value={n} />
-                    ))}
-                </datalist>
-            );
-        }
-
-        return (
-            <div className={className}>
-                <input
-                    list={name}
-                    type="text text-box"
-                    required
-                    className={this.props.className}
-                    value={this.props.value}
-                    onChange={this.props.onChange}
-                    onBlur={this.props.onBlur}
-                />
-                {list}
-                <span className="bar"></span>
-                <label>{this.props.label}</label>
-            </div>
+    let name;
+    let listElement;
+    if (list !== undefined) {
+        name = list[0];
+        listElement = (
+            <datalist id={name}>
+                {list[1].map((n, i) => (
+                    <option key={i} value={n} />
+                ))}
+            </datalist>
         );
     }
+
+    return (
+        <div className={outerClassName}>
+            <input
+                list={name}
+                type="text text-box"
+                required
+                className={className}
+                value={value}
+                onChange={onChange}
+                onBlur={onBlur}
+            />
+            {listElement}
+            <span className={classes.bar}></span>
+            <label>{label}</label>
+        </div>
+    );
 }

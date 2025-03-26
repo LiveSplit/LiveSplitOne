@@ -2,7 +2,7 @@ import React from "react";
 
 import * as classes from "../../css/Switch.module.scss";
 
-export default function Switch({
+export function Switch({
     checked,
     setIsChecked,
 }: {

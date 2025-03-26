@@ -5,55 +5,63 @@ import {
     batteryAwareFrameRate,
 } from "./FrameRate";
 
-export interface Props {
+interface State {
+    reqId?: number;
+    previousTime: number;
     frameRate: FrameRateSetting;
-    update(): void;
-    children: React.ReactNode;
+    update: () => void;
 }
 
-export default class AutoRefresh extends React.Component<Props> {
-    private reqId?: number;
-    private previousTime: number = 0;
+export default function AutoRefresh({
+    frameRate,
+    update,
+    children,
+}: {
+    frameRate: FrameRateSetting;
+    update: () => void;
+    children: React.ReactNode;
+}) {
+    const { current: state } = React.useRef<State>({
+        previousTime: 0,
+        frameRate,
+        update,
+    });
+    state.frameRate = frameRate;
+    state.update = update;
 
-    public componentDidMount() {
-        this.startAnimation();
-    }
+    const animate = React.useCallback(() => {
+        state.reqId = requestAnimationFrame(animate);
 
-    public componentWillUnmount() {
-        if (this.reqId) {
-            cancelAnimationFrame(this.reqId);
-        }
-    }
-
-    public render() {
-        return this.props.children;
-    }
-
-    private startAnimation() {
-        this.previousTime = 0;
-        this.animate();
-    }
-
-    private animate() {
-        this.reqId = requestAnimationFrame(() => this.animate());
-
-        let frameRate = this.props.frameRate;
+        let frameRate = state.frameRate;
         if (frameRate === FRAME_RATE_AUTOMATIC) {
             frameRate = batteryAwareFrameRate;
         }
 
         if (typeof frameRate === "number") {
             const currentTime = performance.now();
-            const elapsed = currentTime - this.previousTime;
+            const elapsed = currentTime - state.previousTime;
 
             const refreshInterval = 1000 / frameRate;
 
             if (elapsed < refreshInterval) {
                 return;
             }
-            this.previousTime = currentTime - (elapsed % refreshInterval);
+            state.previousTime = currentTime - (elapsed % refreshInterval);
         }
 
-        this.props.update();
-    }
+        state.update();
+    }, []);
+
+    React.useEffect(() => {
+        state.previousTime = 0;
+        animate();
+
+        return () => {
+            if (state.reqId) {
+                cancelAnimationFrame(state.reqId);
+            }
+        };
+    }, []);
+
+    return children;
 }

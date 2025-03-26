@@ -17,7 +17,7 @@ function colorToCss(color: Color): string {
     return `rgba(${r},${g},${b},${a})`;
 }
 
-export default function ColorPicker({
+export function ColorPicker({
     color,
     setColor,
 }: {

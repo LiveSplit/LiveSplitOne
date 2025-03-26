@@ -17,7 +17,7 @@ import {
     FILE_EXT_SPLITS,
 } from "../../util/FileUtil";
 import { Option, bug, maybeDisposeAndThen } from "../../util/OptionUtil";
-import DragUpload from "../components/DragUpload";
+import { DragUpload } from "../components/DragUpload";
 import { GeneralSettings } from "./MainSettings";
 import { LSOCommandSink } from "../LSOCommandSink";
 import { showDialog } from "../components/Dialog";
