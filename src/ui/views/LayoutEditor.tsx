@@ -1,15 +1,20 @@
 import React, { useState } from "react";
-import * as LiveSplit from "../livesplit-core";
-import { SettingsComponent } from "./Settings";
-import { UrlCache } from "../util/UrlCache";
-import Layout from "../layout/Layout";
-import { WebRenderer } from "../livesplit-core/livesplit_core";
+import * as LiveSplit from "../../livesplit-core";
+import { SettingsComponent } from "../components/Settings";
+import { UrlCache } from "../../util/UrlCache";
+import Layout from "../components/Layout";
+import { WebRenderer } from "../../livesplit-core/livesplit_core";
 import { GeneralSettings } from "./MainSettings";
-import { LSOCommandSink } from "./LSOCommandSink";
-import { ContextMenu, MenuItem, Separator, Position } from "./ContextMenu";
+import { LSOCommandSink } from "../LSOCommandSink";
+import {
+    ContextMenu,
+    MenuItem,
+    Separator,
+    Position,
+} from "../components/ContextMenu";
 import { ArrowDown, ArrowUp, Check, Copy, Plus, Trash, X } from "lucide-react";
 
-import "../css/LayoutEditor.scss";
+import "../../css/LayoutEditor.scss";
 
 export interface Props {
     editor: LiveSplit.LayoutEditor;

@@ -7,20 +7,20 @@ import {
     loadSplits,
     storeRunWithoutDisposing,
     storeSplitsKey,
-} from "../storage";
-import { Run, Segment, TimerPhase } from "../livesplit-core";
+} from "../../storage";
+import { Run, Segment, TimerPhase } from "../../livesplit-core";
 import { toast } from "react-toastify";
 import {
     openFileAsArrayBuffer,
     exportFile,
     convertFileToArrayBuffer,
     FILE_EXT_SPLITS,
-} from "../util/FileUtil";
-import { Option, bug, maybeDisposeAndThen } from "../util/OptionUtil";
-import DragUpload from "./DragUpload";
+} from "../../util/FileUtil";
+import { Option, bug, maybeDisposeAndThen } from "../../util/OptionUtil";
+import { DragUpload } from "../components/DragUpload";
 import { GeneralSettings } from "./MainSettings";
-import { LSOCommandSink } from "./LSOCommandSink";
-import { showDialog } from "./Dialog";
+import { LSOCommandSink } from "../LSOCommandSink";
+import { showDialog } from "../components/Dialog";
 import {
     ArrowLeft,
     Circle,
@@ -34,7 +34,7 @@ import {
     Upload,
 } from "lucide-react";
 
-import "../css/SplitsSelection.scss";
+import "../../css/SplitsSelection.scss";
 
 export interface EditingInfo {
     splitsKey?: number;

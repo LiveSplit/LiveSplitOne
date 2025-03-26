@@ -1,7 +1,7 @@
 import React, { createContext, useContext, ReactNode } from "react";
-import { expect } from "../util/OptionUtil";
+import { expect } from "../../util/OptionUtil";
 
-import * as classes from "../css/ContextMenu.module.css";
+import * as classes from "../../css/ContextMenu.module.css";
 
 export interface Position {
     x: number;

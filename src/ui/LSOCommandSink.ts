@@ -20,7 +20,7 @@ import {
 } from "../livesplit-core";
 import { WebCommandSink } from "../livesplit-core/livesplit_core";
 import { assert } from "../util/OptionUtil";
-import { showDialog } from "./Dialog";
+import { showDialog } from "./components/Dialog";
 
 interface Callbacks {
     handleEvent(event: Event): void;

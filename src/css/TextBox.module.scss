@@ -1,0 +1,79 @@
+@use "sass:math";
+
+@use "variables.icss";
+
+$label-size: 14px;
+
+.group {
+    position: relative;
+    border-bottom: 1px solid variables.$border-color;
+
+    >input {
+        font-size: 18px;
+        padding: $label-size + variables.$ui-margin 0 math.div(variables.$ui-margin, 2) math.div(variables.$ui-margin, 2);
+        display: block;
+        width: 100%;
+        border: none;
+        background: transparent;
+        color: white;
+        font-family: inherit;
+    }
+
+    >input:focus {
+        outline: none;
+    }
+
+    >label {
+        color: hsla(50, 0%, 75%, 1);
+        font-size: $label-size;
+        font-weight: normal;
+        position: absolute;
+        pointer-events: none;
+        left: math.div(variables.$ui-margin, 2);
+        top: 0;
+        transition: 0.2s ease all;
+    }
+
+    >input:focus~label {
+        color: hsla(50, 100%, 50%, 1);
+    }
+
+    &.invalid>input:focus~label {
+        color: hsla(0, 100%, 50%, 1);
+    }
+
+    >.bar {
+        position: relative;
+        display: block;
+        width: 100%;
+    }
+
+    >.bar:before,
+    >.bar:after {
+        content: "";
+        height: 2px;
+        width: 0;
+        bottom: 0;
+        position: absolute;
+        background: hsla(50, 100%, 50%, 1);
+        transition: 0.2s ease all;
+    }
+
+    >.bar:before {
+        left: 50%;
+    }
+
+    >.bar:after {
+        right: 50%;
+    }
+
+    &.invalid>.bar:before,
+    &.invalid>.bar:after {
+        background: hsla(0, 100%, 50%, 1);
+    }
+
+    >input:focus~.bar:before,
+    >input:focus~.bar:after {
+        width: 50%;
+    }
+}

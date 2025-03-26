@@ -4,14 +4,14 @@ import {
     LayoutStateRefMut,
     TimerPhase,
     TimingMethod,
-} from "../livesplit-core";
+} from "../../livesplit-core";
 import { TimerView } from "./TimerView";
-import { UrlCache } from "../util/UrlCache";
-import { WebRenderer } from "../livesplit-core/livesplit_core";
+import { UrlCache } from "../../util/UrlCache";
+import { WebRenderer } from "../../livesplit-core/livesplit_core";
 import { GeneralSettings } from "./MainSettings";
-import { LiveSplitServer } from "../api/LiveSplitServer";
-import { Option } from "../util/OptionUtil";
-import { LSOCommandSink } from "./LSOCommandSink";
+import { LiveSplitServer } from "../../api/LiveSplitServer";
+import { Option } from "../../util/OptionUtil";
+import { LSOCommandSink } from "../LSOCommandSink";
 import {
     ArrowLeft,
     Circle,

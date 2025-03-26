@@ -4,7 +4,7 @@ import { RunRef, Run, TimingMethod } from "../livesplit-core";
 import {
     GeneralSettings,
     MANUAL_GAME_TIME_SETTINGS_DEFAULT,
-} from "../ui/MainSettings";
+} from "../ui/views/MainSettings";
 import { FRAME_RATE_AUTOMATIC } from "../util/FrameRate";
 
 export type HotkeyConfigSettings = unknown;

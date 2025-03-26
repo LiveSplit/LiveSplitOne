@@ -1,23 +1,32 @@
 @use "variables.icss";
 
-.hotkey-box {
+.hotkeyBox {
     button {
-        margin: 0;
         font-size: 16px;
         min-height: 22px;
         padding-top: 0;
         padding-bottom: 0;
     }
 
-    .hotkey-button.focused {
-        color: red;
-    }
-
-    .trash {
-        cursor: pointer;
-    }
-
     display: grid;
     grid-template-columns: 1fr 20px;
     column-gap: variables.$ui-margin;
+    align-items: center;
+}
+
+.focused {
+    color: red;
+}
+
+.trash {
+    cursor: pointer;
+}
+
+.overlay {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    z-index: 5;
 }
