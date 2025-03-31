@@ -2,7 +2,8 @@ import * as React from "react";
 import { Option } from "../../../util/OptionUtil";
 import { LiveSplitServer } from "../../../api/LiveSplitServer";
 
-import "../../../css/LiveSplitServerButton.scss";
+import * as classes from "../../../css/LiveSplitServerButton.module.scss";
+import * as tableClasses from "../../../css/Table.module.scss";
 
 export function ServerConnectionButton({
     value,
@@ -15,9 +16,9 @@ export function ServerConnectionButton({
     connectOrDisconnect: () => void;
 }) {
     return (
-        <div className="settings-value-box">
+        <div className={tableClasses.settingsValueBox}>
             <button
-                className="livesplit-server-button"
+                className={classes.liveSplitServerButton}
                 onClick={connectOrDisconnect}
             >
                 {(() => {

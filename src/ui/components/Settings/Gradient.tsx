@@ -9,6 +9,8 @@ import { SettingValueFactory } from ".";
 import { assertNever, expect, Option } from "../../../util/OptionUtil";
 import { ColorPicker } from "../ColorPicker";
 
+import * as tableClasses from "../../../css/Table.module.scss";
+
 export function Gradient<T>({
     value,
     setValue,
@@ -118,11 +120,23 @@ export function Gradient<T>({
     }
 
     if (color2) {
-        return <div className="settings-value-box two-colors">{children}</div>;
+        return (
+            <div
+                className={`${tableClasses.settingsValueBox} ${tableClasses.twoColors}`}
+            >
+                {children}
+            </div>
+        );
     } else if (color1) {
-        return <div className="settings-value-box one-color">{children}</div>;
+        return (
+            <div
+                className={`${tableClasses.settingsValueBox} ${tableClasses.oneColor}`}
+            >
+                {children}
+            </div>
+        );
     } else {
-        return <div className="settings-value-box">{children}</div>;
+        return <div className={tableClasses.settingsValueBox}>{children}</div>;
     }
 }
 export function DeltaGradient<T>({
@@ -240,11 +254,23 @@ export function DeltaGradient<T>({
     }
 
     if (color2) {
-        return <div className="settings-value-box two-colors">{children}</div>;
+        return (
+            <div
+                className={`${tableClasses.settingsValueBox} ${tableClasses.twoColors}`}
+            >
+                {children}
+            </div>
+        );
     } else if (color1) {
-        return <div className="settings-value-box one-color">{children}</div>;
+        return (
+            <div
+                className={`${tableClasses.settingsValueBox} ${tableClasses.oneColor}`}
+            >
+                {children}
+            </div>
+        );
     } else {
-        return <div className="settings-value-box">{children}</div>;
+        return <div className={tableClasses.settingsValueBox}>{children}</div>;
     }
 }
 
@@ -375,10 +401,22 @@ export function ListGradient<T>({
     }
 
     if (color2) {
-        return <div className="settings-value-box two-colors">{children}</div>;
+        return (
+            <div
+                className={`${tableClasses.settingsValueBox} ${tableClasses.twoColors}`}
+            >
+                {children}
+            </div>
+        );
     } else if (color1) {
-        return <div className="settings-value-box one-color">{children}</div>;
+        return (
+            <div
+                className={`${tableClasses.settingsValueBox} ${tableClasses.oneColor}`}
+            >
+                {children}
+            </div>
+        );
     } else {
-        return <div className="settings-value-box">{children}</div>;
+        return <div className={tableClasses.settingsValueBox}>{children}</div>;
     }
 }

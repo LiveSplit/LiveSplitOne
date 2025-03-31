@@ -2,6 +2,8 @@ import * as React from "react";
 import markdownit from "markdown-it";
 import { emoteList } from "../api/EmoteList";
 
+import * as classes from "../css/Markdown.module.scss";
+
 const UNSAFE = markdownit({ html: true, breaks: false, linkify: true });
 const SAFE = markdownit({ html: false, breaks: true, linkify: true });
 
@@ -40,7 +42,7 @@ function replaceTwitchEmotes(text: string): string {
 export function replaceFlag(countryCode: string): React.JSX.Element {
     const url = `https://www.speedrun.com/images/flags/${countryCode}.png`;
 
-    return <img className="flag" src={url} alt={countryCode} />;
+    return <img className={classes.flag} src={url} alt={countryCode} />;
 }
 
 export const Markdown = React.memo(renderMarkdown);

@@ -1,22 +1,12 @@
 @use "variables.icss";
 
-@mixin markdown {
-    .flag {
-        padding-right: 4px;
-        height: 14px;
-        width: 18px;
-        object-fit: contain;
-        vertical-align: middle;
+.markdown {
+    span {
+        line-height: 125%;
     }
 
-    .markdown {
-        span {
-            line-height: 125%;
-        }
-
-        img {
-            vertical-align: middle;
-        }
+    img {
+        vertical-align: middle;
     }
 
     code {
@@ -39,4 +29,12 @@
     samp {
         font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
     }
+}
+
+.flag {
+    padding-right: 4px;
+    height: 14px;
+    width: 18px;
+    object-fit: contain;
+    vertical-align: middle;
 }

@@ -3,6 +3,9 @@ import { SettingValueFactory } from ".";
 import { Trash } from "lucide-react";
 import { Switch } from "../Switch";
 
+import * as tableClasses from "../../../css/Table.module.scss";
+import * as tooltipClasses from "../../../css/Tooltip.module.scss";
+
 export function String<T>({
     value,
     setValue,
@@ -13,9 +16,9 @@ export function String<T>({
     factory: SettingValueFactory<T>;
 }) {
     return (
-        <div className="settings-value-box">
+        <div className={tableClasses.settingsValueBox}>
             <input
-                className="text-box"
+                className={tableClasses.textBox}
                 value={value}
                 onChange={(e) => setValue(factory.fromString(e.target.value))}
             />
@@ -48,7 +51,7 @@ export function OptionalString<T>({
     if (value !== null) {
         children.push(
             <input
-                className="text-box"
+                className={tableClasses.textBox}
                 value={value}
                 onChange={(e) =>
                     setValue(factory.fromOptionalString(e.target.value))
@@ -57,7 +60,13 @@ export function OptionalString<T>({
         );
     }
 
-    return <div className="settings-value-box optional-value">{children}</div>;
+    return (
+        <div
+            className={`${tableClasses.settingsValueBox} ${tableClasses.optionalValue}`}
+        >
+            {children}
+        </div>
+    );
 }
 
 export function RemovableString<T>({
@@ -70,9 +79,11 @@ export function RemovableString<T>({
     factory: SettingValueFactory<T>;
 }) {
     return (
-        <div className="settings-value-box removable-string">
+        <div
+            className={`${tableClasses.settingsValueBox} ${tableClasses.removableString}`}
+        >
             <input
-                className="text-box"
+                className={tableClasses.textBox}
                 value={value ?? ""}
                 onChange={(e) => {
                     if (factory.fromRemovableString) {
@@ -83,7 +94,7 @@ export function RemovableString<T>({
                 }}
             />
             <Trash
-                className="trash"
+                className={tableClasses.trash}
                 strokeWidth={2.5}
                 size={20}
                 onClick={() => {
@@ -110,7 +121,7 @@ export function Comparison<T>({
     allComparisons: string[];
 }) {
     return (
-        <div className="settings-value-box">
+        <div className={tableClasses.settingsValueBox}>
             <select
                 value={value ?? ""}
                 onChange={(e) => {
@@ -143,10 +154,13 @@ export function CustomVariable<T>({
 }) {
     if (allVariables.size === 0) {
         return (
-            <div className="settings-value-box">
-                <span className="tooltip" style={{ textAlign: "center" }}>
+            <div className={tableClasses.settingsValueBox}>
+                <span
+                    className={tooltipClasses.tooltip}
+                    style={{ textAlign: "center" }}
+                >
                     No variables available
-                    <span className="tooltip-text">
+                    <span className={tooltipClasses.tooltipText}>
                         Custom variables can be defined in the Variables tab
                         when editing splits. Additional custom variables can be
                         provided automatically by auto splitters.
@@ -156,7 +170,7 @@ export function CustomVariable<T>({
         );
     } else {
         return (
-            <div className="settings-value-box">
+            <div className={tableClasses.settingsValueBox}>
                 <select
                     value={value ?? ""}
                     onChange={(e) =>

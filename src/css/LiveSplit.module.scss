@@ -1,0 +1,33 @@
+@use "mobile.module.scss";
+@use "variables.icss";
+
+$sidebar-button-size: 40px;
+
+.openSidebarButton {
+    position: fixed;
+    bottom: variables.$ui-margin;
+    left: variables.$ui-margin;
+    z-index: 10;
+    font-size: 24px;
+    padding: 0;
+    width: $sidebar-button-size;
+    height: $sidebar-button-size;
+}
+
+.viewContainer {
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    min-width: calc(100% - 2 * #{variables.$main-content-margin});
+    min-height: calc(100% - 2 * #{variables.$main-content-margin});
+    margin: variables.$main-content-margin;
+
+    @include mobile.mobile {
+        display: block;
+        margin: 0 0 ($sidebar-button-size + 2 * variables.$ui-margin) 0;
+        min-width: 100%;
+        min-height: calc(
+            100% - #{$sidebar-button-size + 2 * variables.$ui-margin}
+        );
+    }
+}

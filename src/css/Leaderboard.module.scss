@@ -1,0 +1,106 @@
+@use "sass:math";
+
+@use "mobile.module.scss";
+@use "variables.icss";
+
+$small-font-size: 13px;
+
+.leaderboardTable {
+    composes: table from "Table.module.scss";
+
+    @include mobile.mobile {
+        font-size: $small-font-size;
+    }
+}
+
+.leaderboardRow:hover {
+    background: variables.$hover-row-color !important;
+}
+
+.leaderboardRankColumn {
+    width: 36px;
+}
+
+.leaderboardTimeColumn,
+.variableColumn {
+    width: 100px;
+}
+
+.variableColumn {
+    text-align: center;
+}
+
+.leaderboardExpandedRow {
+    & > td {
+        max-width: 0;
+    }
+
+    .runMetaTable {
+        border-spacing: variables.$ui-margin 2px;
+        margin-left: -(variables.$ui-margin);
+    }
+}
+
+.unregisteredUser {
+    font-style: italic;
+    color: silver;
+}
+
+.filterTable {
+    composes: table from "Table.module.scss";
+    width: 100%;
+
+    td {
+        padding: math.div(variables.$ui-margin, 2) variables.$ui-margin;
+        background: variables.$light-row-color;
+    }
+
+    tr:first-child > td {
+        padding-top: variables.$ui-margin;
+    }
+
+    tr:last-child > td {
+        padding-bottom: variables.$ui-margin;
+    }
+
+    > tbody.tableBody > tr {
+        background-color: variables.$light-row-color;
+    }
+
+    > thead.tableHeader > tr {
+        background-color: variables.$header-row-color;
+    }
+
+    @include mobile.mobile {
+        margin: 0 0 variables.$ui-margin (-(variables.$ui-margin));
+        width: calc(100% + #{variables.$ui-margin});
+    }
+}
+
+.subcategoryTable {
+    composes: filterTable;
+    > tbody > tr {
+        border: 1px solid variables.$border-color;
+        text-align: center;
+        cursor: pointer;
+
+        > td:hover {
+            background: variables.$hover-row-color;
+        }
+    }
+
+    tr:first-child > td {
+        padding-top: math.div(variables.$ui-margin, 2);
+    }
+
+    tr:last-child > td {
+        padding-bottom: math.div(variables.$ui-margin, 2);
+    }
+}
+
+.selected {
+    composes: selected from "Table.module.scss";
+    &:hover {
+        background: variables.$selected-row-hover-color !important;
+    }
+}

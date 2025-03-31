@@ -3,6 +3,8 @@ import { expect } from "../../../util/OptionUtil";
 import { AccuracyJson } from "../../../livesplit-core";
 import { SettingValueFactory } from ".";
 
+import * as tableClasses from "../../../css/Table.module.scss";
+
 export function Accuracy<T>({
     value,
     setValue,
@@ -13,7 +15,7 @@ export function Accuracy<T>({
     factory: SettingValueFactory<T>;
 }) {
     return (
-        <div className="settings-value-box">
+        <div className={tableClasses.settingsValueBox}>
             <select
                 value={value}
                 onChange={(e) =>

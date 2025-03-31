@@ -43,7 +43,7 @@ import * as Storage from "../storage";
 import { UrlCache } from "../util/UrlCache";
 import { ServerProtocol, WebRenderer } from "../livesplit-core/livesplit_core";
 import { LiveSplitServer } from "../api/LiveSplitServer";
-import { LSOCommandSink } from "./LSOCommandSink";
+import { LSOCommandSink } from "../util/LSOCommandSink";
 import { DialogContainer } from "./components/Dialog";
 import { createHotkeys, HotkeyImplementation } from "../platform/Hotkeys";
 import { Menu } from "lucide-react";
@@ -51,7 +51,9 @@ import { Menu } from "lucide-react";
 import * as variables from "../css/variables.icss.scss";
 
 import "react-toastify/dist/ReactToastify.css";
-import "../css/LiveSplit.scss";
+import * as classes from "../css/LiveSplit.module.scss";
+import * as sidebarClasses from "../css/Sidebar.module.scss";
+import * as toastClasses from "../css/Toast.module.scss";
 
 const buttonHeight = parseFloat(variables.buttonHeight);
 const largeMargin = parseFloat(variables.largeMargin);
@@ -100,7 +102,6 @@ export interface Props {
 
 export interface State {
     hotkeySystem: HotkeyImplementation;
-    isBrowserSource: boolean;
     isDesktop: boolean;
     layout: Layout;
     layoutState: LayoutState;
@@ -207,7 +208,6 @@ export class LiveSplit extends React.Component<Props, State> {
         }
 
         const isDesktop = this.isDesktopQuery.matches;
-        const isBrowserSource = !!(window as any).obsstudio;
 
         const renderer = new WebRenderer();
         renderer
@@ -215,8 +215,7 @@ export class LiveSplit extends React.Component<Props, State> {
             .setAttribute("style", "width: inherit; height: inherit;");
 
         this.state = {
-            isDesktop: isDesktop && !isBrowserSource,
-            isBrowserSource,
+            isDesktop,
             layout,
             layoutState: LayoutState.new(),
             layoutUrlCache: new UrlCache(),
@@ -295,10 +294,6 @@ export class LiveSplit extends React.Component<Props, State> {
         // This is bound in the constructor
         // eslint-disable-next-line @typescript-eslint/unbound-method
         this.isDesktopQuery.addEventListener("change", this.mediaQueryChanged);
-
-        if (this.state.isBrowserSource) {
-            document.body.className = "browser-source";
-        }
 
         this.handleAutomaticResize();
 
@@ -466,8 +461,8 @@ export class LiveSplit extends React.Component<Props, State> {
                 />
                 <ToastContainer
                     position="bottom-right"
-                    toastClassName="toast-class"
-                    className="toast-body"
+                    toastClassName={toastClasses.toastClass}
+                    className={toastClasses.toastBody}
                     theme="dark"
                 />
             </>
@@ -486,20 +481,19 @@ export class LiveSplit extends React.Component<Props, State> {
                     open={this.state.sidebarOpen}
                     transitions={this.state.sidebarTransitionsEnabled}
                     onSetOpen={(e) => this.onSetSidebarOpen(e)}
-                    sidebarClassName="sidebar"
-                    contentClassName="livesplit-container"
-                    overlayClassName="sidebar-overlay"
+                    sidebarClassName={sidebarClasses.sidebar}
+                    overlayClassName={sidebarClasses.sidebarOverlay}
                 >
                     {!this.state.isDesktop && !this.state.sidebarOpen && (
                         <button
                             aria-label="Open Sidebar"
-                            className="open-sidebar-button"
+                            className={classes.openSidebarButton}
                             onClick={() => this.onSetSidebarOpen(true)}
                         >
                             <Menu size={30} strokeWidth={2.5} />
                         </button>
                     )}
-                    <div className="view-container">{renderedView}</div>
+                    <div className={classes.viewContainer}>{renderedView}</div>
                 </Sidebar>
             </div>
         );
@@ -787,8 +781,7 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     private mediaQueryChanged() {
-        const isDesktop =
-            this.isDesktopQuery.matches && !this.state.isBrowserSource;
+        const isDesktop = this.isDesktopQuery.matches;
         this.setState({
             isDesktop,
             layoutWidth: isDesktop

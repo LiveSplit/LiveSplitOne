@@ -16,7 +16,7 @@ import {
     MANUAL_GAME_TIME_MODE_SEGMENT_TIMES,
 } from "./MainSettings";
 import { LiveSplitServer } from "../../api/LiveSplitServer";
-import { LSOCommandSink } from "../LSOCommandSink";
+import { LSOCommandSink } from "../../util/LSOCommandSink";
 import {
     ArrowDown,
     ArrowUp,
@@ -32,7 +32,9 @@ import {
 
 import LiveSplitIcon from "../../assets/icon.svg";
 
-import "../../css/TimerView.scss";
+import * as classes from "../../css/TimerView.module.scss";
+import * as sidebarClasses from "../../css/Sidebar.module.scss";
+import * as buttonGroupClasses from "../../css/ButtonGroup.module.scss";
 
 export interface Props {
     isDesktop: boolean;
@@ -155,10 +157,10 @@ export class TimerView extends React.Component<Props, State> {
                 </div>
                 {this.props.generalSettings.showControlButtons && (
                     <div
-                        className="buttons"
+                        className={classes.buttons}
                         style={{ width: this.props.layoutWidth }}
                     >
-                        <div className="control-buttons">
+                        <div className={classes.controlButtons}>
                             <button
                                 aria-label={
                                     this.props.currentPhase ===
@@ -226,12 +228,12 @@ export class TimerView extends React.Component<Props, State> {
                 )}
                 {showManualGameTime && (
                     <div
-                        className="buttons"
+                        className={classes.buttons}
                         style={{ width: this.props.layoutWidth }}
                     >
                         <input
                             type="text"
-                            className="manual-game-time"
+                            className={classes.manualGameTime}
                             value={this.state.manualGameTime}
                             placeholder="Manual Game Time"
                             onChange={(e) => {
@@ -294,14 +296,16 @@ export class TimerView extends React.Component<Props, State> {
 
     private renderSidebarContent() {
         return (
-            <div className="sidebar-buttons">
-                <div className="livesplit-title">
-                    <span className="livesplit-icon">
-                        <img src={LiveSplitIcon} alt="LiveSplit Logo" />
-                    </span>
+            <>
+                <div className={classes.liveSplitTitle}>
+                    <img
+                        className={classes.liveSplitIcon}
+                        src={LiveSplitIcon}
+                        alt="LiveSplit Logo"
+                    />
                     <h1>LiveSplit One</h1>
                 </div>
-                <hr className="livesplit-title-separator" />
+                <hr />
                 <button onClick={(_) => this.props.callbacks.openSplitsView()}>
                     <List strokeWidth={2.5} />
                     <span>
@@ -311,7 +315,7 @@ export class TimerView extends React.Component<Props, State> {
                                 strokeWidth={0}
                                 size={12}
                                 fill="currentColor"
-                                className="modified-icon"
+                                className={sidebarClasses.modifiedIcon}
                             />
                         )}
                     </span>
@@ -325,7 +329,7 @@ export class TimerView extends React.Component<Props, State> {
                                 strokeWidth={0}
                                 size={12}
                                 fill="currentColor"
-                                className="modified-icon"
+                                className={sidebarClasses.modifiedIcon}
                             />
                         )}
                     </span>
@@ -339,13 +343,13 @@ export class TimerView extends React.Component<Props, State> {
                             e.target.value,
                         )
                     }
-                    className="choose-comparison"
+                    className={classes.chooseComparison}
                 >
                     {this.props.allComparisons.map((comparison) => (
                         <option>{comparison}</option>
                     ))}
                 </select>
-                <div className="small">
+                <div className={buttonGroupClasses.group}>
                     <button
                         onClick={(_) => {
                             this.props.commandSink.setCurrentTimingMethod(
@@ -353,10 +357,10 @@ export class TimerView extends React.Component<Props, State> {
                             );
                         }}
                         className={
-                            (this.props.currentTimingMethod ===
+                            this.props.currentTimingMethod ===
                             TimingMethod.RealTime
-                                ? "button-pressed"
-                                : "") + " toggle-left"
+                                ? buttonGroupClasses.pressed
+                                : ""
                         }
                     >
                         Real Time
@@ -368,10 +372,10 @@ export class TimerView extends React.Component<Props, State> {
                             );
                         }}
                         className={
-                            (this.props.currentTimingMethod ===
+                            this.props.currentTimingMethod ===
                             TimingMethod.GameTime
-                                ? "button-pressed"
-                                : "") + " toggle-right"
+                                ? buttonGroupClasses.pressed
+                                : ""
                         }
                     >
                         Game Time
@@ -384,7 +388,7 @@ export class TimerView extends React.Component<Props, State> {
                 <button onClick={(_) => this.props.callbacks.openAboutView()}>
                     <Info strokeWidth={2.5} /> About
                 </button>
-            </div>
+            </>
         );
     }
 }

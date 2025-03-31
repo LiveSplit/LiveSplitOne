@@ -31,9 +31,9 @@ function renderView() {
     return (
         <div className={classes.about}>
             <div className={classes.aboutInnerContainer}>
-                <div className={classes.livesplitTitle}>
+                <div className={classes.liveSplitTitle}>
                     <img
-                        className={classes.livesplitIcon}
+                        className={classes.liveSplitIcon}
                         src={LiveSplitIcon}
                         alt="LiveSplit Logo"
                     />
@@ -95,12 +95,12 @@ function renderView() {
 
 function renderSidebarContent(callbacks: Callbacks) {
     return (
-        <div className="sidebar-buttons">
+        <>
             <h1>About</h1>
             <hr />
             <button onClick={(_) => callbacks.openTimerView()}>
                 <ArrowLeft strokeWidth={2.5} /> Back
             </button>
-        </div>
+        </>
     );
 }

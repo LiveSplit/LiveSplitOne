@@ -1,6 +1,7 @@
 import { preloadWasm } from "./livesplit-core/preload";
 
 // FIXME: Remove the polyfill later.
+// https://caniuse.com/mdn-javascript_statements_using
 
 if (typeof Symbol.dispose !== "symbol") {
     Object.defineProperty(Symbol, "dispose", {

@@ -18,10 +18,10 @@ import {
 } from "../../util/FrameRate";
 import { LiveSplitServer } from "../../api/LiveSplitServer";
 import { Option } from "../../util/OptionUtil";
-import { LSOCommandSink } from "../LSOCommandSink";
+import { LSOCommandSink } from "../../util/LSOCommandSink";
 import { Check, FlaskConical, X } from "lucide-react";
 
-import "../../css/SettingsEditor.scss";
+import * as buttonGroupClasses from "../../css/ButtonGroup.module.scss";
 
 export interface GeneralSettings {
     frameRate: FrameRateSetting;
@@ -174,7 +174,7 @@ export class MainSettings extends React.Component<Props, State> {
         }
 
         return (
-            <div className="settings-editor">
+            <div>
                 <h2>Hotkeys</h2>
                 <SettingsComponent
                     context="settings-editor-hotkeys"
@@ -388,12 +388,11 @@ export class MainSettings extends React.Component<Props, State> {
 
     private renderSidebarContent() {
         return (
-            <div className="sidebar-buttons">
+            <>
                 <h1>Settings</h1>
                 <hr />
-                <div className="small">
+                <div className={buttonGroupClasses.group}>
                     <button
-                        className="toggle-left"
                         onClick={(_) =>
                             this.props.callbacks.closeMainSettings(
                                 true,
@@ -404,7 +403,6 @@ export class MainSettings extends React.Component<Props, State> {
                         <Check strokeWidth={2.5} /> OK
                     </button>
                     <button
-                        className="toggle-right"
                         onClick={(_) =>
                             this.props.callbacks.closeMainSettings(
                                 false,
@@ -415,7 +413,7 @@ export class MainSettings extends React.Component<Props, State> {
                         <X strokeWidth={2.5} /> Cancel
                     </button>
                 </div>
-            </div>
+            </>
         );
     }
 

@@ -3,6 +3,8 @@ import { expect } from "../../../util/OptionUtil";
 import { LayoutDirection } from "../../../livesplit-core";
 import { SettingValueFactory } from ".";
 
+import * as tableClasses from "../../../css/Table.module.scss";
+
 export function LayoutDirection<T>({
     value,
     setValue,
@@ -13,7 +15,7 @@ export function LayoutDirection<T>({
     factory: SettingValueFactory<T>;
 }) {
     return (
-        <div className="settings-value-box">
+        <div className={tableClasses.settingsValueBox}>
             <select
                 value={value}
                 onChange={(e) => {

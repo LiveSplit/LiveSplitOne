@@ -1,0 +1,115 @@
+@use "sass:math";
+
+@use "mobile.module.scss";
+@use "variables.icss";
+
+$loading-text-font-size: 40px;
+$splits-row-width: 500px;
+$splits-row-height: 40px;
+
+.loading {
+    display: flex;
+    width: fit-content;
+    font-size: $loading-text-font-size;
+}
+
+.loadingText {
+    margin-left: variables.$ui-margin;
+}
+
+.splitsSelectionContainer {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+}
+
+.mainActions {
+    display: flex;
+    justify-content: flex-start;
+
+    button {
+        margin-top: 0;
+        margin-bottom: math.div(variables.$ui-large-margin, 2);
+        margin-right: variables.$ui-margin;
+    }
+
+    @include mobile.mobile {
+        margin-top: variables.$ui-margin;
+        margin-left: variables.$ui-margin;
+    }
+}
+
+.splitsTable {
+    background-color: variables.$dark-row-color;
+    border: 1px solid variables.$border-color;
+    margin: math.div(variables.$ui-large-margin, 2) 0;
+    width: fit-content;
+
+    @include mobile.mobile {
+        width: 100%;
+        box-sizing: border-box;
+    }
+}
+
+.splitsRow {
+    display: flex;
+    gap: variables.$ui-large-margin;
+    flex-wrap: nowrap;
+    align-items: center;
+    padding: variables.$ui-margin;
+    height: $splits-row-height;
+    width: $splits-row-width;
+
+    &:nth-of-type(odd) {
+        background-color: variables.$light-row-color;
+    }
+
+    &.selected {
+        background: variables.$selected-row-color;
+    }
+
+    &.selected .splitsRowButtons button {
+        opacity: 70%;
+    }
+
+    @include mobile.mobile {
+        width: 100%;
+        box-sizing: border-box;
+        height: $splits-row-height + 2 * variables.$ui-margin;
+    }
+}
+
+.splitsRowButtons {
+    display: contents;
+    flex-shrink: 0;
+    margin-left: variables.$ui-large-margin;
+
+    button {
+        background: transparent;
+        border: 0;
+        opacity: 50%;
+        margin: 0;
+        transition: 0.3s;
+        color: white;
+        padding: 0;
+
+        &:hover {
+            opacity: 100%;
+        }
+    }
+}
+
+.splitsTitleText {
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.splitsText {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    &.splitsGame {
+        margin-bottom: variables.$ui-margin;
+    }
+}

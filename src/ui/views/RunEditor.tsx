@@ -44,7 +44,12 @@ import { corsBustingFetch } from "../../platform/CORS";
 import { ContextMenu, MenuItem, Position } from "../components/ContextMenu";
 import { Check, X } from "lucide-react";
 
-import "../../css/RunEditor.scss";
+import * as classes from "../../css/RunEditor.module.scss";
+import * as buttonGroupClasses from "../../css/ButtonGroup.module.scss";
+import * as tableClasses from "../../css/Table.module.scss";
+import * as markdownClasses from "../../css/Markdown.module.scss";
+import * as tooltipClasses from "../../css/Tooltip.module.scss";
+import * as leaderboardClasses from "../../css/Leaderboard.module.scss";
 
 export interface Props {
     editor: LiveSplit.RunEditor;
@@ -164,8 +169,8 @@ export class RunEditor extends React.Component<Props, State> {
         const { category, categoryNames } = this.getCurrentCategoriesInfo();
 
         return (
-            <div className="run-editor">
-                <div className="run-editor-info">
+            <>
+                <div className={classes.runEditorInfo}>
                     <GameIcon
                         gameIcon={gameIcon}
                         speedrunComIntegration={
@@ -176,11 +181,10 @@ export class RunEditor extends React.Component<Props, State> {
                         downloadIcon={() => this.downloadIcon()}
                         removeGameIcon={() => this.removeGameIcon()}
                     />
-                    <div className="run-editor-info-table">
-                        <div className="info-table-row">
-                            <div className="info-table-cell">
+                    <div className={classes.runEditorInfoTable}>
+                        <div className={classes.infoTableRow}>
+                            <div className={classes.infoTableCell}>
                                 <TextBox
-                                    className="run-editor-game"
                                     value={this.state.editor.game}
                                     onChange={(e) => this.handleGameChange(e)}
                                     label="Game"
@@ -190,9 +194,8 @@ export class RunEditor extends React.Component<Props, State> {
                                     ]}
                                 />
                             </div>
-                            <div className="info-table-cell">
+                            <div className={classes.infoTableCell}>
                                 <TextBox
-                                    className="run-editor-category"
                                     value={this.state.editor.category}
                                     onChange={(e) =>
                                         this.handleCategoryChange(e)
@@ -205,10 +208,9 @@ export class RunEditor extends React.Component<Props, State> {
                                 />
                             </div>
                         </div>
-                        <div className="info-table-row">
-                            <div className="info-table-cell">
+                        <div className={classes.infoTableRow}>
+                            <div className={classes.infoTableCell}>
                                 <TextBox
-                                    className="run-editor-offset"
                                     value={this.state.editor.offset}
                                     onChange={(e) => this.handleOffsetChange(e)}
                                     onBlur={(_) => this.handleOffsetBlur()}
@@ -216,9 +218,8 @@ export class RunEditor extends React.Component<Props, State> {
                                     label="Start Timer At"
                                 />
                             </div>
-                            <div className="info-table-cell">
+                            <div className={classes.infoTableCell}>
                                 <TextBox
-                                    className="run-editor-attempts"
                                     value={this.state.editor.attempts}
                                     onChange={(e) =>
                                         this.handleAttemptsChange(e)
@@ -231,18 +232,20 @@ export class RunEditor extends React.Component<Props, State> {
                         </div>
                     </div>
                 </div>
-                <div className="bottom-section">
-                    <div className="side-buttons">
-                        {this.renderSideButtons(tab, category)}
+                <div className={classes.bottomSection}>
+                    <div className={classes.sideButtonsOuter}>
+                        <div className={classes.sideButtonsInner}>
+                            {this.renderSideButtons(tab, category)}
+                        </div>
                     </div>
-                    <div className="editor-group">
-                        <div className="tab-bar">
+                    <div className={classes.editorGroup}>
+                        <div className={classes.tabBar}>
                             {this.renderTabButtons(tab)}
                         </div>
                         {this.renderTab(tab, category)}
                     </div>
                 </div>
-            </div>
+            </>
         );
     }
 
@@ -253,24 +256,18 @@ export class RunEditor extends React.Component<Props, State> {
 
     private renderSidebarContent() {
         return (
-            <div className="sidebar-buttons">
+            <>
                 <h1>Splits Editor</h1>
                 <hr />
-                <div className="small">
-                    <button
-                        className="toggle-left"
-                        onClick={(_) => this.close(true)}
-                    >
+                <div className={buttonGroupClasses.group}>
+                    <button onClick={(_) => this.close(true)}>
                         <Check strokeWidth={2.5} /> OK
                     </button>
-                    <button
-                        className="toggle-right"
-                        onClick={(_) => this.close(false)}
-                    >
+                    <button onClick={(_) => this.close(false)}>
                         <X strokeWidth={2.5} /> Cancel
                     </button>
                 </div>
-            </div>
+            </>
         );
     }
 
@@ -286,19 +283,13 @@ export class RunEditor extends React.Component<Props, State> {
         const visibleTabs = Object.values(Tab).filter((tab) =>
             this.shouldShowTab(tab as Tab),
         );
-        return visibleTabs.map((tab, index) => {
-            let toggleClassName = "toggle-middle";
-            if (index === 0) {
-                toggleClassName = "toggle-left";
-            } else if (index === visibleTabs.length - 1) {
-                toggleClassName = "toggle-right";
-            }
-
-            const buttonClassName = currentTab === tab ? " button-pressed" : "";
+        return visibleTabs.map((tab) => {
+            const buttonClassName =
+                currentTab === tab ? buttonGroupClasses.pressed : undefined;
 
             return (
                 <button
-                    className={toggleClassName + buttonClassName}
+                    className={buttonClassName}
                     onClick={(_) => this.switchTab(tab as Tab)}
                 >
                     {tabNames[tab as Tab]}
@@ -309,7 +300,7 @@ export class RunEditor extends React.Component<Props, State> {
 
     private renderSegmentListButtons(): React.JSX.Element {
         return (
-            <div className="btn-group">
+            <>
                 <button onClick={(_) => this.insertSegmentAbove()}>
                     Insert Above
                 </button>
@@ -345,7 +336,7 @@ export class RunEditor extends React.Component<Props, State> {
                     clearTimes={() => this.clearTimes()}
                     cleanSumOfBest={() => this.cleanSumOfBest()}
                 />
-            </div>
+            </>
         );
     }
 
@@ -366,19 +357,17 @@ export class RunEditor extends React.Component<Props, State> {
     }
 
     private renderRulesButtons(): React.JSX.Element {
-        return (
-            <div className="btn-group">{this.renderAssociateRunButton()}</div>
-        );
+        return this.renderAssociateRunButton();
     }
 
     private renderVariablesButtons(): React.JSX.Element {
         return (
-            <div className="btn-group">
+            <>
                 {this.renderAssociateRunButton()}
                 <button onClick={(_) => this.addCustomVariable()}>
                     Add Variable
                 </button>
-            </div>
+            </>
         );
     }
 
@@ -593,13 +582,13 @@ export class RunEditor extends React.Component<Props, State> {
                         }
                     }
                     subcategoryBoxes.push(
-                        <table className="table filter-table subcategory-table">
-                            <thead className="table-header">
+                        <table className={leaderboardClasses.subcategoryTable}>
+                            <thead className={classes.tableHeader}>
                                 <tr>
                                     <th>{variable.name}</th>
                                 </tr>
                             </thead>
-                            <tbody className="table-body">
+                            <tbody className={tableClasses.tableBody}>
                                 {Object.values(variable.values.values).map(
                                     ({ label }) => {
                                         const isSelected =
@@ -609,7 +598,7 @@ export class RunEditor extends React.Component<Props, State> {
                                                 <td
                                                     className={
                                                         isSelected
-                                                            ? "selected"
+                                                            ? leaderboardClasses.selected
                                                             : ""
                                                     }
                                                     onClick={(_) => {
@@ -701,7 +690,7 @@ export class RunEditor extends React.Component<Props, State> {
         );
 
         return (
-            <div className="btn-group">
+            <>
                 <button
                     onClick={(_) => {
                         if (category != null) {
@@ -723,15 +712,17 @@ export class RunEditor extends React.Component<Props, State> {
                         : "Associate Run"}
                 </button>
                 {subcategoryBoxes}
-                <table className="table filter-table">
-                    <thead className="table-header">
+                <table className={leaderboardClasses.filterTable}>
+                    <thead className={classes.tableHeader}>
                         <tr>
                             <th>Filters</th>
                         </tr>
                     </thead>
-                    <tbody className="table-body">{filterList}</tbody>
+                    <tbody className={tableClasses.tableBody}>
+                        {filterList}
+                    </tbody>
                 </table>
-            </div>
+            </>
         );
     }
 
@@ -875,10 +866,10 @@ export class RunEditor extends React.Component<Props, State> {
         fields.push(...customVariables);
 
         return (
-            <div className="run-editor-tab">
+            <div className={classes.runEditorTab}>
                 {fields.length === 0 && (
-                    <table className="table">
-                        <tbody className="table-body">
+                    <table className={tableClasses.table}>
+                        <tbody className={tableClasses.tableBody}>
                             <tr>
                                 <td>
                                     <p>
@@ -1020,8 +1011,10 @@ export class RunEditor extends React.Component<Props, State> {
         );
 
         return (
-            <table className="table run-editor-tab leaderboard-table">
-                <thead className="table-header">
+            <table
+                className={`${classes.runEditorTab} ${leaderboardClasses.leaderboardTable}`}
+            >
+                <thead className={classes.tableHeader}>
                     <tr>
                         <th>Rank</th>
                         <th>Player</th>
@@ -1031,7 +1024,7 @@ export class RunEditor extends React.Component<Props, State> {
                         ))}
                     </tr>
                 </thead>
-                <tbody className="table-body">
+                <tbody className={tableClasses.tableBody}>
                     {leaderboard.map((run) => {
                         const platform = platformList.get(run.system.platform);
                         if (isFiltered(platform, this.filters.platform)) {
@@ -1098,8 +1091,12 @@ export class RunEditor extends React.Component<Props, State> {
                                     valueName = map(value, (v) => v[1].label);
                                 }
                                 renderedVariables.push(
-                                    <td className="variable-column">
-                                        {valueName || ""}
+                                    <td
+                                        className={
+                                            leaderboardClasses.variableColumn
+                                        }
+                                    >
+                                        {valueName ?? ""}
                                     </td>,
                                 );
                             }
@@ -1119,8 +1116,8 @@ export class RunEditor extends React.Component<Props, State> {
                         const rowIndex = visibleRowCount;
                         const evenOdd =
                             rowIndex % 2 === 0
-                                ? "table-row-odd"
-                                : "table-row-even";
+                                ? tableClasses.explicitOdd
+                                : tableClasses.explicitEven;
                         let expandedRow = null;
 
                         if (
@@ -1143,7 +1140,7 @@ export class RunEditor extends React.Component<Props, State> {
                             expandedRow = (
                                 <tr
                                     key={`${run.id}_expanded`}
-                                    className={`leaderboard-expanded-row ${evenOdd}`}
+                                    className={`${leaderboardClasses.leaderboardExpandedRow} ${evenOdd}`}
                                 >
                                     <td
                                         colSpan={
@@ -1152,14 +1149,20 @@ export class RunEditor extends React.Component<Props, State> {
                                     >
                                         {embed}
                                         <div
-                                            className="markdown"
+                                            // FIXME: Move this into the
+                                            // Markdown component, probably
+                                            className={markdownClasses.markdown}
                                             style={{
                                                 minHeight: 5,
                                             }}
                                         >
                                             <Markdown markdown={comment} />
                                         </div>
-                                        <table className="run-meta-table">
+                                        <table
+                                            className={
+                                                leaderboardClasses.runMetaTable
+                                            }
+                                        >
                                             <tbody>
                                                 <tr>
                                                     <td>Date:</td>
@@ -1206,7 +1209,7 @@ export class RunEditor extends React.Component<Props, State> {
                             <tr
                                 key={run.id}
                                 title={run.comment ?? ""}
-                                className={`leaderboard-row ${evenOdd}`}
+                                className={`${leaderboardClasses.leaderboardRow} ${evenOdd}`}
                                 onClick={(_) =>
                                     this.toggleExpandLeaderboardRow(rowIndex)
                                 }
@@ -1214,7 +1217,9 @@ export class RunEditor extends React.Component<Props, State> {
                                     cursor: "pointer",
                                 }}
                             >
-                                <td className="leaderboard-rank-column number">
+                                <td
+                                    className={`${leaderboardClasses.leaderboardRankColumn} ${tableClasses.number}`}
+                                >
                                     {isUnique ? rank : "—"}
                                 </td>
                                 <td>
@@ -1260,7 +1265,11 @@ export class RunEditor extends React.Component<Props, State> {
                                             }
                                             return [
                                                 i !== 0 ? ", " : null,
-                                                <span className="unregistered-user">
+                                                <span
+                                                    className={
+                                                        leaderboardClasses.unregisteredUser
+                                                    }
+                                                >
                                                     {flag}
                                                     {name}
                                                 </span>,
@@ -1268,7 +1277,9 @@ export class RunEditor extends React.Component<Props, State> {
                                         }
                                     })}
                                 </td>
-                                <td className="leaderboard-time-column number">
+                                <td
+                                    className={`${leaderboardClasses.leaderboardTimeColumn} ${tableClasses.number}`}
+                                >
                                     <a
                                         href={run.weblink}
                                         target="_blank"
@@ -1347,8 +1358,11 @@ export class RunEditor extends React.Component<Props, State> {
         }
 
         return (
-            <div className="run-editor-tab run-editor-additional-info">
-                <div className="run-editor-rules markdown">
+            <div className={`${classes.runEditorTab} ${classes.rulesOuter}`}>
+                <div
+                    // FIXME: Two divs?
+                    className={`${classes.rulesInner} ${markdownClasses.markdown}`}
+                >
                     {gameRules}
                     {rules}
                     {subcategoryRules}
@@ -1359,8 +1373,10 @@ export class RunEditor extends React.Component<Props, State> {
 
     private renderSegmentsTable(): React.JSX.Element {
         return (
-            <table className="table run-editor-tab run-editor-table">
-                <thead className="table-header">
+            <table
+                className={`${classes.runEditorTab} ${classes.runEditorTable}`}
+            >
+                <thead className={classes.tableHeader}>
                     <tr>
                         <th>Icon</th>
                         <th>Segment Name</th>
@@ -1405,7 +1421,7 @@ export class RunEditor extends React.Component<Props, State> {
                         )}
                     </tr>
                 </thead>
-                <tbody className="table-body">
+                <tbody className={tableClasses.tableBody}>
                     {this.state.editor.segments.map((s, segmentIndex) => {
                         const segmentIcon =
                             this.getSegmentIconUrl(segmentIndex);
@@ -1416,7 +1432,7 @@ export class RunEditor extends React.Component<Props, State> {
                                 className={
                                     s.selected === "Selected" ||
                                     s.selected === "Active"
-                                        ? "selected"
+                                        ? tableClasses.selected
                                         : ""
                                 }
                                 onClick={(e) =>
@@ -1434,7 +1450,7 @@ export class RunEditor extends React.Component<Props, State> {
                                 />
                                 <td>
                                     <input
-                                        className="name text-box"
+                                        className={tableClasses.textBox}
                                         type="text"
                                         value={s.name}
                                         onFocus={(_) =>
@@ -1447,7 +1463,7 @@ export class RunEditor extends React.Component<Props, State> {
                                 </td>
                                 <td>
                                     <input
-                                        className="number text-box"
+                                        className={`${tableClasses.number} ${tableClasses.textBox}`}
                                         type="text"
                                         value={
                                             segmentIndex ===
@@ -1476,8 +1492,8 @@ export class RunEditor extends React.Component<Props, State> {
                                                     .segmentTimeChanged) &&
                                             s.segment_time ===
                                                 s.best_segment_time
-                                                ? "number text-box best-segment-time"
-                                                : "number text-box"
+                                                ? `${tableClasses.number} ${tableClasses.textBox} ${classes.bestSegmentTime}`
+                                                : `${tableClasses.number} ${tableClasses.textBox}`
                                         }
                                         type="text"
                                         value={
@@ -1502,7 +1518,7 @@ export class RunEditor extends React.Component<Props, State> {
                                 </td>
                                 <td>
                                     <input
-                                        className="number text-box"
+                                        className={`${tableClasses.number} ${tableClasses.textBox}`}
                                         type="text"
                                         value={
                                             segmentIndex ===
@@ -1530,7 +1546,7 @@ export class RunEditor extends React.Component<Props, State> {
                                     (comparisonTime, comparisonIndex) => (
                                         <td>
                                             <input
-                                                className="number text-box"
+                                                className={`${tableClasses.number} ${tableClasses.textBox}`}
                                                 type="text"
                                                 value={
                                                     segmentIndex ===
@@ -2464,11 +2480,11 @@ function GameIcon({
     return (
         <>
             <div
-                className="game-icon-container"
+                className={classes.gameIconContainer}
                 onClick={(e) => setPosition({ x: e.clientX, y: e.clientY })}
             >
                 {gameIcon !== undefined && (
-                    <img src={gameIcon} className="game-icon-image" />
+                    <img src={gameIcon} className={classes.gameIconImage} />
                 )}
             </div>
             {position && (
@@ -2477,11 +2493,11 @@ function GameIcon({
                     onClose={() => setPosition(null)}
                 >
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={changeGameIcon}
                     >
                         Set Icon
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Allows you to choose an image file to set as the
                             game's icon. Certain file formats may not work
                             everywhere.
@@ -2490,22 +2506,22 @@ function GameIcon({
                     {speedrunComIntegration && (
                         <>
                             <MenuItem
-                                className="contextmenu-item tooltip"
+                                className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                                 onClick={downloadBoxArt}
                             >
                                 Download Box Art
-                                <span className="tooltip-text">
+                                <span className={tooltipClasses.tooltipText}>
                                     Attempts to download the box art of the game
                                     from speedrun.com, to set as the game's
                                     icon.
                                 </span>
                             </MenuItem>
                             <MenuItem
-                                className="contextmenu-item tooltip"
+                                className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                                 onClick={downloadIcon}
                             >
                                 Download Icon
-                                <span className="tooltip-text">
+                                <span className={tooltipClasses.tooltipText}>
                                     Attempts to download the icon of the game
                                     from speedrun.com.
                                 </span>
@@ -2514,11 +2530,11 @@ function GameIcon({
                     )}
                     {gameIcon !== undefined && (
                         <MenuItem
-                            className="contextmenu-item tooltip"
+                            className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                             onClick={removeGameIcon}
                         >
                             Remove Icon
-                            <span className="tooltip-text">
+                            <span className={tooltipClasses.tooltipText}>
                                 Removes the icon of the game.
                             </span>
                         </MenuItem>
@@ -2553,11 +2569,11 @@ function CleaningButton({
                     onClose={() => setPosition(null)}
                 >
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={clearHistory}
                     >
                         Clear Only History
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Splits store the entire history of all runs,
                             including every segment time. This information is
                             used by various components. You can clear the
@@ -2567,22 +2583,22 @@ function CleaningButton({
                         </span>
                     </MenuItem>
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={clearTimes}
                     >
                         Clear All Times
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             This removes all the times from the splits,
                             including all the history, such that the splits are
                             completely empty, as if they were just created.
                         </span>
                     </MenuItem>
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={cleanSumOfBest}
                     >
                         Clean Sum of Best
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Allows you to interactively remove potential issues
                             in the segment history that lead to an inaccurate
                             Sum of Best. If you skip a split, whenever you will
@@ -2625,31 +2641,31 @@ function ComparisonsButton({
                     onClose={() => setPosition(null)}
                 >
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={addComparison}
                     >
                         Add Comparison
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Adds a new custom comparison where you can store any
                             times that you would like.
                         </span>
                     </MenuItem>
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={importComparison}
                     >
                         Import Comparison
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Imports the Personal Best of a splits file you
                             provide as a comparison.
                         </span>
                     </MenuItem>
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={generateGoalComparison}
                     >
                         Generate Goal Comparison
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Generates a custom goal comparison based on a goal
                             time that you can specify. The comparison's times
                             are automatically balanced based on the segment
@@ -2666,11 +2682,11 @@ function ComparisonsButton({
                         </span>
                     </MenuItem>
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={copyComparison}
                     >
                         Copy Comparison
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Copies any existing comparison, including the
                             Personal Best or even any other automatically
                             provided comparison as a new custom comparison. You
@@ -2698,7 +2714,7 @@ function SegmentIcon({
 
     return (
         <td
-            className="segment-icon-container"
+            className={classes.segmentIconContainer}
             onClick={(e) => {
                 if (position !== null) {
                     return;
@@ -2717,22 +2733,22 @@ function SegmentIcon({
                     onClose={() => setPosition(null)}
                 >
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={changeSegmentIcon}
                     >
                         Set Icon
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Allows you to choose an image file to set as the
                             segment's icon. Certain file formats may not work
                             everywhere.
                         </span>
                     </MenuItem>
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={removeSegmentIcon}
                     >
                         Remove Icon
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Removes the segment's icon.
                         </span>
                     </MenuItem>
@@ -2789,31 +2805,31 @@ function CustomComparison({
                     onClose={() => setPosition(null)}
                 >
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={renameComparison}
                     >
                         Rename
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Choose a new name for the custom comparison. There
                             are reserved names that can't be used. You also
                             can't have duplicate names.
                         </span>
                     </MenuItem>
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={copyComparison}
                     >
                         Copy
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Creates a copy of the custom comparison.
                         </span>
                     </MenuItem>
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={removeComparison}
                     >
                         Remove
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Removes the custom comparison.
                         </span>
                     </MenuItem>

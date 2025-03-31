@@ -19,7 +19,7 @@ import {
 import { Option, bug, maybeDisposeAndThen } from "../../util/OptionUtil";
 import { DragUpload } from "../components/DragUpload";
 import { GeneralSettings } from "./MainSettings";
-import { LSOCommandSink } from "../LSOCommandSink";
+import { LSOCommandSink } from "../../util/LSOCommandSink";
 import { showDialog } from "../components/Dialog";
 import {
     ArrowLeft,
@@ -34,7 +34,8 @@ import {
     Upload,
 } from "lucide-react";
 
-import "../../css/SplitsSelection.scss";
+import * as classes from "../../css/SplitsSelection.module.scss";
+import * as sidebarClasses from "../../css/Sidebar.module.scss";
 
 export interface EditingInfo {
     splitsKey?: number;
@@ -86,14 +87,14 @@ export class SplitsSelection extends React.Component<Props, State> {
 
         if (this.state.splitsInfos == null) {
             content = (
-                <div className="loading">
-                    <div className="loading-text">Loading...</div>
+                <div className={classes.loading}>
+                    <div className={classes.loadingText}>Loading...</div>
                 </div>
             );
         } else {
             content = (
-                <div className="splits-selection-container">
-                    <div className="main-actions">
+                <div className={classes.splitsSelectionContainer}>
+                    <div className={classes.mainActions}>
                         <button onClick={() => this.addNewSplits()}>
                             <Plus strokeWidth={2.5} /> Add
                         </button>
@@ -102,12 +103,10 @@ export class SplitsSelection extends React.Component<Props, State> {
                         </button>
                     </div>
                     {this.state.splitsInfos?.length > 0 && (
-                        <div className="splits-table">
-                            <div className="splits-rows">
-                                {this.state.splitsInfos.map(([key, info]) =>
-                                    this.renderSavedSplitsRow(key, info),
-                                )}
-                            </div>
+                        <div className={classes.splitsTable}>
+                            {this.state.splitsInfos.map(([key, info]) =>
+                                this.renderSavedSplitsRow(key, info),
+                            )}
                         </div>
                     )}
                 </div>
@@ -115,7 +114,7 @@ export class SplitsSelection extends React.Component<Props, State> {
         }
         return (
             <DragUpload importSplits={this.importSplitsFromFile.bind(this)}>
-                <div className="splits-selection">{content}</div>
+                {content}
             </DragUpload>
         );
     }
@@ -129,14 +128,15 @@ export class SplitsSelection extends React.Component<Props, State> {
 
     private renderSavedSplitsRow(key: number, info: SplitsInfo) {
         const isOpened = key === this.props.openedSplitsKey;
+        const classNames = [classes.splitsRow];
+        if (isOpened) {
+            classNames.push(classes.selected);
+        }
 
         return (
-            <div
-                className={isOpened ? "splits-row selected" : "splits-row"}
-                key={key}
-            >
+            <div className={classNames.join(" ")} key={key}>
                 {this.splitsTitle(info)}
-                <div className="splits-row-buttons">
+                <div className={classes.splitsRowButtons}>
                     {isOpened ? null : (
                         <>
                             <button
@@ -178,20 +178,18 @@ export class SplitsSelection extends React.Component<Props, State> {
 
     private splitsTitle(info: SplitsInfo) {
         return (
-            <div className="splits-title-text">
-                <div className="splits-text splits-game">
+            <div className={classes.splitsTitleText}>
+                <div className={`${classes.splitsText} ${classes.splitsGame}`}>
                     {info.game || "Untitled"}
                 </div>
-                <div className="splits-text splits-category">
-                    {info.category || "—"}
-                </div>
+                <div className={classes.splitsText}>{info.category || "—"}</div>
             </div>
         );
     }
 
     private renderSidebarContent() {
         return (
-            <div className="sidebar-buttons">
+            <>
                 <h1>Splits</h1>
                 <hr />
                 <button
@@ -220,7 +218,7 @@ export class SplitsSelection extends React.Component<Props, State> {
                                 strokeWidth={0}
                                 size={12}
                                 fill="currentColor"
-                                className="modified-icon"
+                                className={sidebarClasses.modifiedIcon}
                             />
                         )}
                     </span>
@@ -232,7 +230,7 @@ export class SplitsSelection extends React.Component<Props, State> {
                 <button onClick={(_) => this.props.callbacks.openTimerView()}>
                     <ArrowLeft strokeWidth={2.5} /> Back
                 </button>
-            </div>
+            </>
         );
     }
 

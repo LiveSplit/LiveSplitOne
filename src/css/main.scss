@@ -1,6 +1,5 @@
 @use "sass:math";
 
-@use "browser_source";
 @use "variables.icss";
 
 @font-face {
@@ -22,59 +21,13 @@ body {
     background: variables.$main-background-color;
 }
 
-.Toastify {
-    .toast-class {
-        font-family: "fira", sans-serif;
-        background: rgba(28, 28, 28, 0.8) !important;
-        backdrop-filter: blur(5px);
-        border: 2px solid rgba(255, 255, 255, 0.25) !important;
-        border-radius: 10px !important;
-        min-height: 48px !important;
-
-        &.toast-bug {
-            border-color: red !important;
-
-            a {
-                color: red;
-            }
-        }
-    }
-}
-
-.toast-body {
-    margin: 5px 5px 5px 5px !important;
-}
-
-.toast-class > button {
-    margin-bottom: initial;
-    margin-top: initial;
-}
-
-#wrapper {
-    transition: all 0.5s ease;
-}
-
-td#dif {
-    border-right: 10px solid transparent;
-    text-align: right;
-}
-
 table {
     border-spacing: 0 2px;
-}
-
-button:active,
-button:active:hover {
-    background: variables.$button-active-color;
 }
 
 button:focus,
 div:focus {
     outline: 0;
-}
-
-button:hover {
-    background: variables.$button-hover-color;
 }
 
 button {
@@ -97,28 +50,30 @@ button {
     font-family: "fira", sans-serif;
     min-height: variables.$button-height;
     padding: 5px variables.$ui-margin;
+
+    &:disabled,
+    &:disabled:active {
+        background: variables.$button-disabled-color;
+        color: variables.$button-disabled-text-color;
+        cursor: default;
+    }
+
+    &:hover {
+        background: variables.$button-hover-color;
+    }
+
+    &:active,
+    &:active:hover {
+        background: variables.$button-active-color;
+    }
 }
 
 a {
-    color: hsla(50, 100%, 50%, 1);
+    color: #56b0ff;
     text-decoration: none;
-}
-
-a:hover {
-    text-decoration: underline;
-}
-
-button:disabled,
-button:disabled:active {
-    background: variables.$button-disabled-color;
-    color: variables.$button-disabled-text-color;
-    cursor: default;
-}
-
-.chrome-picker {
-    font-family: inherit !important;
-    margin-top: 5px;
-    margin-left: -50%;
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 /* WebKit Scrollbars */
@@ -152,8 +107,4 @@ button:disabled:active {
     justify-content: center;
     align-items: center;
     font-size: 50px;
-
-    .initial-load-text {
-        margin-left: 10px;
-    }
 }

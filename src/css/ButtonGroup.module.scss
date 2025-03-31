@@ -1,0 +1,45 @@
+@use "variables.icss";
+
+// FIXME: This should be a component.
+.group {
+    display: flex;
+
+    > * {
+        font-size: 18px;
+        border-radius: 0;
+    }
+
+    > :first-child {
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px;
+    }
+
+    > :last-child {
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+    }
+
+    .pressed,
+    .pressed:hover {
+        background: variables.$button-active-color;
+    }
+
+    .pressed.disabled {
+        background: variables.$button-disabled-color;
+        color: variables.$button-disabled-text-color;
+        cursor: default;
+    }
+}
+
+.tabBar {
+    composes: group;
+    display: flex;
+
+    > button {
+        font-size: 15px;
+        min-height: 30px;
+        border-bottom-right-radius: 0 !important;
+        border-bottom-left-radius: 0 !important;
+        border-bottom: 0;
+    }
+}
