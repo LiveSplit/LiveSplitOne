@@ -4,6 +4,8 @@ import { SettingValueFactory } from ".";
 import { ColorPicker } from "../ColorPicker";
 import { Switch } from "../Switch";
 
+import * as tableClasses from "../../../css/Table.module.scss";
+
 export function Color<T>({
     value,
     setValue,
@@ -14,7 +16,7 @@ export function Color<T>({
     factory: SettingValueFactory<T>;
 }) {
     return (
-        <div className="settings-value-box">
+        <div className={tableClasses.settingsValueBox}>
             <ColorPicker
                 color={value}
                 setColor={(color) =>
@@ -62,7 +64,9 @@ export function OptionalColor<T>({
     }
 
     return (
-        <div className="settings-value-box optional-value">
+        <div
+            className={`${tableClasses.settingsValueBox} ${tableClasses.optionalValue}`}
+        >
             <Switch
                 checked={value !== null}
                 setIsChecked={(checked) => {

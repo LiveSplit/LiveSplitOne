@@ -5,6 +5,8 @@ import { SettingValueFactory } from ".";
 import { Switch } from "../Switch";
 import * as FontList from "../../../util/FontList";
 
+import * as tableClasses from "../../../css/Table.module.scss";
+
 export function Font<T>({
     value,
     setValue,
@@ -74,7 +76,7 @@ export function Font<T>({
         } else {
             children.push(
                 <input
-                    className="text-box"
+                    className={tableClasses.textBox}
                     value={family}
                     onChange={(e) =>
                         setValue(
@@ -173,5 +175,11 @@ export function Font<T>({
         );
     }
 
-    return <div className="settings-value-box optional-value">{children}</div>;
+    return (
+        <div
+            className={`${tableClasses.settingsValueBox} ${tableClasses.optionalValue}`}
+        >
+            {children}
+        </div>
+    );
 }

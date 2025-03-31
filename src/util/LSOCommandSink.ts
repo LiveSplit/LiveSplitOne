@@ -19,8 +19,8 @@ import {
     isEvent,
 } from "../livesplit-core";
 import { WebCommandSink } from "../livesplit-core/livesplit_core";
-import { assert } from "../util/OptionUtil";
-import { showDialog } from "./components/Dialog";
+import { assert } from "./OptionUtil";
+import { showDialog } from "../ui/components/Dialog";
 
 interface Callbacks {
     handleEvent(event: Event): void;

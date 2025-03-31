@@ -4,7 +4,6 @@
 $icon-size: 40px;
 $title-font-size: 40px;
 $build-version-font-size: 12px;
-$link-color: #56b0ff;
 
 .about {
     max-width: 700px;
@@ -24,22 +23,18 @@ $link-color: #56b0ff;
         margin-bottom: variables.$ui-large-margin;
     }
 
-    a {
-        color: $link-color;
-    }
-
     @include mobile.mobile {
         box-sizing: border-box;
     }
 }
 
-.livesplitTitle {
+.liveSplitTitle {
     display: flex;
     align-items: center;
     gap: variables.$ui-margin;
 }
 
-.livesplitIcon {
+.liveSplitIcon {
     height: $icon-size;
 }
 
@@ -55,8 +50,9 @@ $link-color: #56b0ff;
 .changelog {
     margin-left: variables.$ui-large-margin;
 
-    >div {
-        margin: variables.$ui-large-margin 0 variables.$ui-large-margin variables.$ui-large-margin;
+    > div {
+        margin: variables.$ui-large-margin 0 variables.$ui-large-margin
+            variables.$ui-large-margin;
     }
 }
 

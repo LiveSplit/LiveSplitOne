@@ -8,6 +8,8 @@ import {
 } from "../../../livesplit-core";
 import { SettingValueFactory } from ".";
 
+import * as tableClasses from "../../../css/Table.module.scss";
+
 export function ColumnKind<T>({
     value,
     setValue,
@@ -18,7 +20,7 @@ export function ColumnKind<T>({
     factory: SettingValueFactory<T>;
 }) {
     return (
-        <div className="settings-value-box">
+        <div className={tableClasses.settingsValueBox}>
             <select
                 value={value}
                 onChange={(e) =>
@@ -47,7 +49,7 @@ export function ColumnStartWith<T>({
     factory: SettingValueFactory<T>;
 }) {
     return (
-        <div className="settings-value-box">
+        <div className={tableClasses.settingsValueBox}>
             <select
                 value={value}
                 onChange={(e) =>
@@ -80,7 +82,7 @@ export function ColumnUpdateWith<T>({
     factory: SettingValueFactory<T>;
 }) {
     return (
-        <div className="settings-value-box">
+        <div className={tableClasses.settingsValueBox}>
             <select
                 value={value}
                 onChange={(e) =>
@@ -118,7 +120,7 @@ export function ColumnUpdateTrigger<T>({
     factory: SettingValueFactory<T>;
 }) {
     return (
-        <div className="settings-value-box">
+        <div className={tableClasses.settingsValueBox}>
             <select
                 value={value}
                 onChange={(e) =>

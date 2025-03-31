@@ -5,7 +5,7 @@ import { UrlCache } from "../../util/UrlCache";
 import Layout from "../components/Layout";
 import { WebRenderer } from "../../livesplit-core/livesplit_core";
 import { GeneralSettings } from "./MainSettings";
-import { LSOCommandSink } from "../LSOCommandSink";
+import { LSOCommandSink } from "../../util/LSOCommandSink";
 import {
     ContextMenu,
     MenuItem,
@@ -14,7 +14,10 @@ import {
 } from "../components/ContextMenu";
 import { ArrowDown, ArrowUp, Check, Copy, Plus, Trash, X } from "lucide-react";
 
-import "../../css/LayoutEditor.scss";
+import * as classes from "../../css/LayoutEditor.module.scss";
+import * as buttonGroupClasses from "../../css/ButtonGroup.module.scss";
+import * as tableClasses from "../../css/Table.module.scss";
+import * as tooltipClasses from "../../css/Tooltip.module.scss";
 
 export interface Props {
     editor: LiveSplit.LayoutEditor;
@@ -70,9 +73,9 @@ export class LayoutEditor extends React.Component<Props, State> {
 
     private renderView() {
         const components = this.state.editor.components.map((c, i) => {
-            let className = "layout-editor-component";
+            let className = classes.layoutEditorComponent;
             if (i === this.state.editor.selected_component) {
-                className += " selected";
+                className += " " + tableClasses.selected;
             }
             return (
                 <tr
@@ -137,10 +140,10 @@ export class LayoutEditor extends React.Component<Props, State> {
         );
 
         return (
-            <div className="layout-editor-outer">
-                <div className="layout-editor-inner-container">
-                    <div className="layout-editor-inner">
-                        <div className="btn-group">
+            <div className={classes.layoutEditorOuter}>
+                <div className={classes.layoutEditorInnerContainer}>
+                    <div className={classes.layoutEditorInner}>
+                        <div className={classes.btnGroup}>
                             <AddComponentButton
                                 allVariables={this.props.allVariables}
                                 addVariable={(v) => this.addVariable(v)}
@@ -178,45 +181,45 @@ export class LayoutEditor extends React.Component<Props, State> {
                                 <ArrowDown strokeWidth={2.5} />
                             </button>
                         </div>
-                        <table className="layout-editor-component-list table">
-                            <tbody className="table-body">{components}</tbody>
+                        <table className={classes.layoutEditorComponentList}>
+                            <tbody className={tableClasses.tableBody}>
+                                {components}
+                            </tbody>
                         </table>
                     </div>
-                    <div className="tab-bar layout-editor-tabs">
+                    <div className={buttonGroupClasses.tabBar}>
                         <button
                             className={
-                                "toggle-left" +
-                                (!this.state.showComponentSettings
-                                    ? " button-pressed"
-                                    : "")
+                                !this.state.showComponentSettings
+                                    ? buttonGroupClasses.pressed
+                                    : ""
                             }
-                            onClick={(_) => {
+                            onClick={(_) =>
                                 this.setState({
                                     showComponentSettings: false,
-                                });
-                            }}
+                                })
+                            }
                         >
                             Layout
                         </button>
                         <button
                             className={
-                                "toggle-right" +
-                                (this.state.showComponentSettings
-                                    ? " button-pressed"
-                                    : "")
+                                this.state.showComponentSettings
+                                    ? buttonGroupClasses.pressed
+                                    : ""
                             }
-                            onClick={(_) => {
+                            onClick={(_) =>
                                 this.setState({
                                     showComponentSettings: true,
-                                });
-                            }}
+                                })
+                            }
                         >
                             Component
                         </button>
                     </div>
                     <div>{settings}</div>
                 </div>
-                <div className="layout-container">
+                <div className={classes.layoutContainer}>
                     <Layout
                         getState={() => {
                             this.props.commandSink.updateLayoutEditorLayoutState(
@@ -244,12 +247,11 @@ export class LayoutEditor extends React.Component<Props, State> {
 
     private renderSidebarContent() {
         return (
-            <div className="sidebar-buttons">
+            <>
                 <h1>Layout Editor</h1>
                 <hr />
-                <div className="small">
+                <div className={buttonGroupClasses.group}>
                     <button
-                        className="toggle-left"
                         onClick={(_) =>
                             this.props.callbacks.closeLayoutEditor(true)
                         }
@@ -257,7 +259,6 @@ export class LayoutEditor extends React.Component<Props, State> {
                         <Check strokeWidth={2.5} /> OK
                     </button>
                     <button
-                        className="toggle-right"
                         onClick={(_) =>
                             this.props.callbacks.closeLayoutEditor(false)
                         }
@@ -265,7 +266,7 @@ export class LayoutEditor extends React.Component<Props, State> {
                         <X strokeWidth={2.5} /> Cancel
                     </button>
                 </div>
-            </div>
+            </>
         );
     }
 
@@ -343,11 +344,11 @@ function AddComponentButton({
                     onClose={() => setPosition(null)}
                 >
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() => addComponent(LiveSplit.TitleComponent)}
                     >
                         Title
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Shows the name of the game and the category that is
                             being run. Additionally, the game icon, the attempt
                             count, and the total number of successfully finished
@@ -355,11 +356,11 @@ function AddComponentButton({
                         </span>
                     </MenuItem>
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() => addComponent(LiveSplit.GraphComponent)}
                     >
                         Graph
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Visualizes how far the current run has been ahead or
                             behind the chosen comparison throughout the whole
                             run. All the individual deltas are shown as points
@@ -367,11 +368,11 @@ function AddComponentButton({
                         </span>
                     </MenuItem>
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() => addComponent(LiveSplit.SplitsComponent)}
                     >
                         Splits
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             The main component for visualizing all the split
                             times. Each segment is shown in a tabular fashion
                             showing the segment icon, segment name, the delta
@@ -382,13 +383,13 @@ function AddComponentButton({
                     </MenuItem>
                     <Separator />
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() =>
                             addComponent(LiveSplit.DetailedTimerComponent)
                         }
                     >
                         Detailed Timer
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Shows two timers, one for the total time of the
                             current run and one showing the time of just the
                             current segment. Other information, like segment
@@ -397,11 +398,11 @@ function AddComponentButton({
                         </span>
                     </MenuItem>
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() => addComponent(LiveSplit.TimerComponent)}
                     >
                         Timer
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Shows the total time of the current run as a digital
                             clock. The color of the time shown is based on a how
                             well the current run is doing compared to the chosen
@@ -410,25 +411,25 @@ function AddComponentButton({
                     </MenuItem>
                     <Separator />
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() =>
                             addComponent(LiveSplit.CurrentComparisonComponent)
                         }
                     >
                         Current Comparison
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Shows the name of the comparison that the timer is
                             currently comparing against.
                         </span>
                     </MenuItem>
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() =>
                             addComponent(LiveSplit.CurrentPaceComponent)
                         }
                     >
                         Current Pace
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Shows a prediction for the current run's final time.
                             The remainder of the run is predicted based on the
                             chosen comparison for the component. For example,
@@ -438,23 +439,23 @@ function AddComponentButton({
                         </span>
                     </MenuItem>
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() => addComponent(LiveSplit.DeltaComponent)}
                     >
                         Delta
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Shows how far ahead or behind the current run is
                             compared to the chosen comparison.
                         </span>
                     </MenuItem>
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() =>
                             addComponent(LiveSplit.PbChanceComponent)
                         }
                     >
                         PB Chance
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Shows how likely it is for the active run to beat
                             the personal best. If there is no active run, it
                             shows the general chance of beating the personal
@@ -463,13 +464,13 @@ function AddComponentButton({
                         </span>
                     </MenuItem>
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() =>
                             addComponent(LiveSplit.PossibleTimeSaveComponent)
                         }
                     >
                         Possible Time Save
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Shows how much time you can save on the current
                             segment compared to the chosen comparison, based on
                             the best segment time of the segment. This component
@@ -478,13 +479,13 @@ function AddComponentButton({
                         </span>
                     </MenuItem>
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() =>
                             addComponent(LiveSplit.PreviousSegmentComponent)
                         }
                     >
                         Previous Segment
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Shows how much time was saved or lost during the
                             previous segment based on the chosen comparison.
                             Additionally, the potential time save for the
@@ -495,26 +496,26 @@ function AddComponentButton({
                         </span>
                     </MenuItem>
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() =>
                             addComponent(LiveSplit.SegmentTimeComponent)
                         }
                     >
                         Segment Time
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Shows the time for the current segment for the
                             chosen comparison. If no comparison is specified it
                             uses the timer's current comparison.
                         </span>
                     </MenuItem>
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() =>
                             addComponent(LiveSplit.SumOfBestComponent)
                         }
                     >
                         Sum of Best Segments
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Shows the fastest possible time to complete a run of
                             the current category, based on information collected
                             from all the previous runs. This often matches up
@@ -528,11 +529,11 @@ function AddComponentButton({
                         </span>
                     </MenuItem>
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() => addComponent(LiveSplit.TextComponent)}
                     >
                         Text
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Shows the text that you specify. This can either be
                             a single centered text, or split up into a left and
                             right text, which is suitable for a situation where
@@ -542,13 +543,13 @@ function AddComponentButton({
                         </span>
                     </MenuItem>
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() =>
                             addComponent(LiveSplit.TotalPlaytimeComponent)
                         }
                     >
                         Total Playtime
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             Shows the total amount of time that the current
                             category has been played for.
                         </span>
@@ -558,12 +559,14 @@ function AddComponentButton({
                         Array.from(allVariables).map((name) => {
                             return (
                                 <MenuItem
-                                    className="contextmenu-item tooltip"
+                                    className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                                     key={name}
                                     onClick={() => addVariable(name)}
                                 >
                                     {name}
-                                    <span className="tooltip-text">
+                                    <span
+                                        className={tooltipClasses.tooltipText}
+                                    >
                                         Creates a text component that shows the
                                         value of the custom variable "{name}".
                                     </span>
@@ -572,26 +575,26 @@ function AddComponentButton({
                         })}
                     <Separator />
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() =>
                             addComponent(LiveSplit.BlankSpaceComponent)
                         }
                     >
                         Blank Space
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             An empty component that doesn't show anything other
                             than a background. It mostly serves as padding
                             between other components.
                         </span>
                     </MenuItem>
                     <MenuItem
-                        className="contextmenu-item tooltip"
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() =>
                             addComponent(LiveSplit.SeparatorComponent)
                         }
                     >
                         Separator
-                        <span className="tooltip-text">
+                        <span className={tooltipClasses.tooltipText}>
                             A simple component that just renders a separator
                             between components.
                         </span>

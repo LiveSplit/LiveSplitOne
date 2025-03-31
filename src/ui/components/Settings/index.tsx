@@ -1,7 +1,7 @@
 import * as React from "react";
 import { SettingsDescriptionValueJson } from "../../../livesplit-core";
 import { assertNever, Option } from "../../../util/OptionUtil";
-import { HotkeyButton } from "../HotkeyButton";
+import { HotkeyButton } from "./HotkeyButton";
 import { UrlCache } from "../../../util/UrlCache";
 import { LiveSplitServer } from "../../../api/LiveSplitServer";
 import { showDialog } from "../Dialog";
@@ -9,8 +9,6 @@ import { Switch } from "../Switch";
 import { ServerConnectionButton } from "./ServerConnectionButton";
 import { LayoutBackground } from "./LayoutBackground";
 import { Font } from "./Font";
-
-import "../../../css/Tooltip.scss";
 import { LayoutDirection } from "./LayoutDirection";
 import {
     ColumnKind,
@@ -31,6 +29,9 @@ import {
     RemovableString,
     String,
 } from "./String";
+
+import * as tableClasses from "../../../css/Table.module.scss";
+import * as tooltipClasses from "../../../css/Tooltip.module.scss";
 
 export interface Props<T> {
     context: string;
@@ -265,7 +266,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
             let component;
             if ("Bool" in value) {
                 component = (
-                    <div className="settings-value-box">
+                    <div className={tableClasses.settingsValueBox}>
                         <Switch
                             checked={value.Bool}
                             setIsChecked={(value) => {
@@ -279,10 +280,10 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                 );
             } else if ("UInt" in value) {
                 component = (
-                    <div className="settings-value-box">
+                    <div className={tableClasses.settingsValueBox}>
                         <input
                             type="number"
-                            className="number text-box"
+                            className={`${tableClasses.number} ${tableClasses.textBox}`}
                             value={value.UInt}
                             min="0"
                             onChange={(e) => {
@@ -296,10 +297,10 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                 );
             } else if ("Int" in value) {
                 component = (
-                    <div className="settings-value-box">
+                    <div className={tableClasses.settingsValueBox}>
                         <input
                             type="number"
-                            className="number text-box"
+                            className={`${tableClasses.number} ${tableClasses.textBox}`}
                             value={value.Int}
                             onChange={(e) => {
                                 this.props.setValue(
@@ -501,7 +502,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     value.CustomCombobox.mandatory &&
                     !value.CustomCombobox.value;
                 component = (
-                    <div className="settings-value-box">
+                    <div className={tableClasses.settingsValueBox}>
                         <select
                             value={value.CustomCombobox.value}
                             onChange={(e) => {
@@ -524,7 +525,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                 );
             } else if ("Hotkey" in value) {
                 component = (
-                    <div className="settings-value-box">
+                    <div className={tableClasses.settingsValueBox}>
                         <HotkeyButton
                             value={value.Hotkey}
                             setValue={(value) => {
@@ -604,9 +605,11 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
 
             settingsRows.push(
                 <tr key={`${this.props.context}$${valueIndex}`}>
-                    <td className="tooltip">
+                    <td className={tooltipClasses.tooltip}>
                         {field.text}
-                        <span className="tooltip-text">{field.tooltip}</span>
+                        <span className={tooltipClasses.tooltipText}>
+                            {field.tooltip}
+                        </span>
                     </td>
                     <td>{component}</td>
                 </tr>,
@@ -614,8 +617,10 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
         });
 
         return (
-            <table className="table settings-table">
-                <tbody className="table-body">{settingsRows}</tbody>
+            <table
+                className={`${tableClasses.table} ${tableClasses.settingsTable}`}
+            >
+                <tbody className={tableClasses.tableBody}>{settingsRows}</tbody>
             </table>
         );
     }

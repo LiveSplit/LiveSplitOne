@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Option, expect } from "../../util/OptionUtil";
-import { hotkeySystem } from "../LiveSplit";
+import { Option, expect } from "../../../util/OptionUtil";
+import { hotkeySystem } from "../../LiveSplit";
 import { Circle, Trash } from "lucide-react";
 
-import * as classes from "../../css/HotkeyButton.module.scss";
+import * as classes from "../../../css/HotkeyButton.module.scss";
+import * as tooltipClasses from "../../../css/Tooltip.module.scss";
 
 function resolveKey(keyCode: string): Promise<string> | string {
     return expect(
@@ -151,11 +152,11 @@ export function HotkeyButton({
     return (
         <div className={classes.hotkeyBox}>
             <button
-                className={`tooltip ${listener != null ? classes.focused : ""}`}
+                className={`${tooltipClasses.tooltip} ${listener != null ? classes.focused : ""}`}
                 onClick={focusButton}
             >
                 {buttonText}
-                <span className="tooltip-text">
+                <span className={tooltipClasses.tooltipText}>
                     Click to record a hotkey. You may also use buttons on a
                     gamepad. Global hotkeys are currently not possible. Gamepad
                     buttons work globally.

@@ -1,0 +1,69 @@
+@use "mobile.module.scss";
+@use "variables.icss";
+
+.layoutEditorOuter {
+    display: inline-flex;
+
+    @include mobile.mobile {
+        flex-wrap: wrap;
+
+        .layoutEditorInnerContainer {
+            width: 100%;
+        }
+    }
+}
+
+.layoutEditorInner {
+    width: variables.$settings-table-width;
+    display: inline-flex;
+    margin-bottom: variables.$ui-large-margin;
+
+    table {
+        width: 100%;
+    }
+
+    @include mobile.mobile {
+        flex-wrap: wrap;
+        width: 100%;
+        margin-bottom: 0;
+    }
+}
+
+.btnGroup {
+    display: flex;
+    flex-direction: column;
+    gap: variables.$ui-margin;
+
+    button {
+        width: 40px;
+        font-size: 15px;
+    }
+
+    @include mobile.mobile {
+        flex-direction: row;
+        margin: variables.$ui-large-margin;
+    }
+}
+
+.layoutEditorComponentList {
+    composes: table from "Table.module.scss";
+    margin-left: variables.$ui-large-margin;
+
+    @include mobile.mobile {
+        margin-left: 0;
+        margin-bottom: variables.$ui-large-margin;
+    }
+}
+
+.layoutEditorComponent {
+    cursor: pointer;
+}
+
+.layoutContainer {
+    margin-left: variables.$ui-large-margin;
+
+    @include mobile.mobile {
+        margin-left: 0;
+        margin-top: variables.$ui-large-margin;
+    }
+}

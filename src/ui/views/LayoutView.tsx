@@ -11,7 +11,7 @@ import { WebRenderer } from "../../livesplit-core/livesplit_core";
 import { GeneralSettings } from "./MainSettings";
 import { LiveSplitServer } from "../../api/LiveSplitServer";
 import { Option } from "../../util/OptionUtil";
-import { LSOCommandSink } from "../LSOCommandSink";
+import { LSOCommandSink } from "../../util/LSOCommandSink";
 import {
     ArrowLeft,
     Circle,
@@ -21,6 +21,8 @@ import {
     SquarePen,
     Upload,
 } from "lucide-react";
+
+import * as sidebarClasses from "../../css/Sidebar.module.scss";
 
 export interface Props {
     isDesktop: boolean;
@@ -102,7 +104,7 @@ export class LayoutView extends React.Component<Props> {
 
     private renderSidebarContent() {
         return (
-            <div className="sidebar-buttons">
+            <>
                 <h1>Layout</h1>
                 <hr />
                 <button
@@ -119,7 +121,7 @@ export class LayoutView extends React.Component<Props> {
                                 strokeWidth={0}
                                 size={12}
                                 fill="currentColor"
-                                className="modified-icon"
+                                className={sidebarClasses.modifiedIcon}
                             />
                         )}
                     </span>
@@ -139,7 +141,7 @@ export class LayoutView extends React.Component<Props> {
                 <button onClick={(_) => this.props.callbacks.openTimerView()}>
                     <ArrowLeft strokeWidth={2.5} /> Back
                 </button>
-            </div>
+            </>
         );
     }
 }

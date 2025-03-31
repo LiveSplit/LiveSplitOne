@@ -1,6 +1,8 @@
 import * as React from "react";
 import { toast } from "react-toastify";
 
+import * as toastClasses from "../css/Toast.module.scss";
+
 export type Option<T> = T | null | undefined;
 
 export function expect<T>(obj: Option<T>, message: string): T {
@@ -21,7 +23,7 @@ export function panic(message: string): never {
 
 export function bug(message: string): void {
     toast.error(
-        <>
+        <div>
             <b>You encountered a bug:</b>
             <p>
                 <i>{message}</i>
@@ -31,10 +33,10 @@ export function bug(message: string): void {
                 here
             </a>
             .
-        </>,
+        </div>,
         {
             autoClose: false,
-            className: "toast-class toast-bug",
+            className: `${toastClasses.toastClass} ${toastClasses.toastBug}`,
         },
     );
 }

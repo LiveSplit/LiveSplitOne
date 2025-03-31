@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import { LSOCommandSink } from "../ui/LSOCommandSink";
+import { LSOCommandSink } from "../util/LSOCommandSink";
 import { ServerProtocol } from "../livesplit-core/livesplit_core";
 import { Event } from "../livesplit-core";
 

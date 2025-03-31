@@ -4,6 +4,8 @@ import { TimingMethodJson } from "../../../livesplit-core";
 import { SettingValueFactory } from ".";
 import { Switch } from "../Switch";
 
+import * as tableClasses from "../../../css/Table.module.scss";
+
 export function OptionalTimingMethod<T>({
     value,
     setValue,
@@ -50,5 +52,11 @@ export function OptionalTimingMethod<T>({
         );
     }
 
-    return <div className="settings-value-box optional-value">{children}</div>;
+    return (
+        <div
+            className={`${tableClasses.settingsValueBox} ${tableClasses.optionalValue}`}
+        >
+            {children}
+        </div>
+    );
 }

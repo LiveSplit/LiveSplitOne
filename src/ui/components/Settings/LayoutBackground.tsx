@@ -7,6 +7,9 @@ import { UrlCache } from "../../../util/UrlCache";
 import { toast } from "react-toastify";
 import { FILE_EXT_IMAGES, openFileAsArrayBuffer } from "../../../util/FileUtil";
 
+import * as colorPickerClasses from "../../../css/ColorPicker.module.scss";
+import * as tableClasses from "../../../css/Table.module.scss";
+
 export function LayoutBackground<T>({
     value,
     setValue,
@@ -98,7 +101,7 @@ export function LayoutBackground<T>({
             const imageUrl = editorUrlCache.cache(imageId);
             children.push(
                 <div
-                    className="color-picker-button"
+                    className={colorPickerClasses.colorPickerButton}
                     style={{
                         background: imageUrl
                             ? `url("${imageUrl}") center / cover`
@@ -227,10 +230,22 @@ export function LayoutBackground<T>({
     }
 
     if (color2) {
-        return <div className="settings-value-box two-colors">{children}</div>;
+        return (
+            <div
+                className={`${tableClasses.settingsValueBox} ${tableClasses.twoColors}`}
+            >
+                {children}
+            </div>
+        );
     } else if (color1 || type === "Image") {
-        return <div className="settings-value-box one-color">{children}</div>;
+        return (
+            <div
+                className={`${tableClasses.settingsValueBox} ${tableClasses.oneColor}`}
+            >
+                {children}
+            </div>
+        );
     } else {
-        return <div className="settings-value-box">{children}</div>;
+        return <div className={tableClasses.settingsValueBox}>{children}</div>;
     }
 }

@@ -1,6 +1,8 @@
 import * as React from "react";
 import { Option } from "../util/OptionUtil";
 
+import * as runEditorClasses from "../css/RunEditor.module.scss";
+
 export function resolveEmbed(uri: string): Option<React.JSX.Element> {
     const youtube = tryYoutubeFromUri(uri);
     if (youtube != null) {
@@ -47,14 +49,13 @@ function tryTwitchFromUri(uri: string): Option<React.JSX.Element> {
 
 function videoIframe(videoSource: string): React.JSX.Element {
     return (
-        <div className="video-outer-container">
-            <div className="video-inner-container">
+        <div className={runEditorClasses.videoOuterContainer}>
+            <div className={runEditorClasses.videoInnerContainer}>
                 <iframe
-                    id="ytplayer"
                     itemType="text/html"
                     src={videoSource}
                     allowFullScreen
-                    frameBorder="0"
+                    frameBorder={0}
                 />
             </div>
         </div>
