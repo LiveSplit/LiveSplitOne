@@ -19,7 +19,7 @@
     "lucide-react": "^0.483.0",
     "markdown-it": "^14.1.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0",
+    "react-dom": "^19.1.0",
     "react-resizable": "^3.0.4",
     "react-sidebar": "^3.0.2",
     "react-toastify": "^11.0.3"
