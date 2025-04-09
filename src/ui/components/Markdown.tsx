@@ -1,11 +1,12 @@
 import * as React from "react";
 import markdownit from "markdown-it";
-import { emoteList } from "../api/EmoteList";
+import { emoteList } from "../../api/EmoteList";
 
-import * as classes from "../css/Markdown.module.scss";
+import * as classes from "../../css/Markdown.module.scss";
 
 const UNSAFE = markdownit({ html: true, breaks: false, linkify: true });
 const SAFE = markdownit({ html: false, breaks: true, linkify: true });
+let isSpeedrunCom = false;
 
 const unsafeDefault =
     UNSAFE.renderer.rules.link_open ||
@@ -17,14 +18,28 @@ UNSAFE.renderer.rules.link_open = function (tokens, idx, options, env, self) {
     return unsafeDefault(tokens, idx, options, env, self);
 };
 
-const safeDefault =
+const safeLinkDefault =
     SAFE.renderer.rules.link_open ||
     function (tokens, idx, options, _env, self) {
         return self.renderToken(tokens, idx, options);
     };
 SAFE.renderer.rules.link_open = function (tokens, idx, options, env, self) {
     tokens[idx].attrSet("target", "_blank");
-    return safeDefault(tokens, idx, options, env, self);
+    return safeLinkDefault(tokens, idx, options, env, self);
+};
+const safeImageDefault =
+    SAFE.renderer.rules.image ||
+    function (tokens, idx, options, _env, self) {
+        return self.renderToken(tokens, idx, options);
+    };
+SAFE.renderer.rules.image = function (tokens, idx, options, env, self) {
+    if (isSpeedrunCom) {
+        const src = tokens[idx].attrGet("src");
+        if (src?.startsWith("/")) {
+            tokens[idx].attrSet("src", `https://www.speedrun.com${src}`);
+        }
+    }
+    return safeImageDefault(tokens, idx, options, env, self);
 };
 
 function replaceTwitchEmotes(text: string): string {
@@ -50,10 +65,13 @@ export const Markdown = React.memo(renderMarkdown);
 export function renderMarkdown({
     markdown,
     unsafe,
+    speedrunCom,
 }: {
     markdown: string;
     unsafe?: boolean;
+    speedrunCom?: boolean;
 }): React.JSX.Element {
+    isSpeedrunCom = speedrunCom ?? false;
     const markdownWithEmotes = replaceTwitchEmotes(markdown);
     const html = (unsafe ? UNSAFE : SAFE).render(markdownWithEmotes);
 

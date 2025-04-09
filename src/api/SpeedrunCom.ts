@@ -251,6 +251,9 @@ function getRunsUri(subUri: string): string {
 
 async function executeRequest<T>(uri: string): Promise<T> {
     const response = await fetch(uri);
+    if (!response.ok) {
+        throw new Error("Error fetching data.");
+    }
     const responseData = await response.json();
     return responseData.data as T;
 }
@@ -259,7 +262,7 @@ export class Page<T> {
     public constructor(
         public elements: T[],
         public next: Option<() => Promise<Page<T>>>,
-    ) {}
+    ) { }
 
     public async evaluateAll(): Promise<T[]> {
         const elements = this.elements;

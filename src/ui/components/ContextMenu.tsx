@@ -31,7 +31,13 @@ export function ContextMenu({
                     left: `${position.x}px`,
                 }}
             >
-                <div className={classes.overlay} onClick={onClose} />
+                <div
+                    className={classes.overlay}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        onClose();
+                    }}
+                />
                 <div className={classes.panel}>{children}</div>
             </nav>
         </InfoContext.Provider>
@@ -56,7 +62,8 @@ export function MenuItem({
         <div
             className={`${classes.entry} ${className}`}
             role="menuitem"
-            onClick={() => {
+            onClick={(e) => {
+                e.stopPropagation();
                 onClick();
                 onClose();
             }}

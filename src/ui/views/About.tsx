@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import LiveSplitIcon from "../../assets/icon.svg";
-import { Markdown } from "../../util/Markdown";
+import { Markdown } from "../components/Markdown";
 import { ArrowLeft } from "lucide-react";
 
 import * as variables from "../../css/variables.icss.scss";
@@ -18,12 +18,13 @@ interface Callbacks {
 const contributorAvatarSize = parseFloat(variables.contributorAvatarSize);
 
 export function About({ callbacks }: { callbacks: Callbacks }) {
-    const renderedView = renderView();
-    const sidebarContent = renderSidebarContent(callbacks);
-    return callbacks.renderViewWithSidebar(renderedView, sidebarContent);
+    return callbacks.renderViewWithSidebar(
+        <View />,
+        <SideBar callbacks={callbacks} />,
+    );
 }
 
-function renderView() {
+function View() {
     const idealAvatarResolution = Math.round(
         devicePixelRatio * contributorAvatarSize,
     );
@@ -93,12 +94,12 @@ function renderView() {
     );
 }
 
-function renderSidebarContent(callbacks: Callbacks) {
+function SideBar({ callbacks }: { callbacks: Callbacks }) {
     return (
         <>
             <h1>About</h1>
             <hr />
-            <button onClick={(_) => callbacks.openTimerView()}>
+            <button onClick={() => callbacks.openTimerView()}>
                 <ArrowLeft strokeWidth={2.5} /> Back
             </button>
         </>
