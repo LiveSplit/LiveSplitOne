@@ -69,79 +69,57 @@ interface Callbacks {
     onServerConnectionClosed(): void;
 }
 
-export class LayoutView extends React.Component<Props> {
-    public render() {
-        const renderedView = (
-            <TimerView
-                layout={this.props.layout}
-                layoutState={this.props.layoutState}
-                layoutUrlCache={this.props.layoutUrlCache}
-                layoutWidth={this.props.layoutWidth}
-                layoutHeight={this.props.layoutHeight}
-                generalSettings={this.props.generalSettings}
-                isDesktop={this.props.isDesktop}
-                renderWithSidebar={false}
-                sidebarOpen={this.props.sidebarOpen}
-                commandSink={this.props.commandSink}
-                renderer={this.props.renderer}
-                serverConnection={this.props.serverConnection}
-                callbacks={this.props.callbacks}
-                currentComparison={this.props.currentComparison}
-                currentTimingMethod={this.props.currentTimingMethod}
-                currentPhase={this.props.currentPhase}
-                currentSplitIndex={this.props.currentSplitIndex}
-                allComparisons={this.props.allComparisons}
-                splitsModified={this.props.splitsModified}
-                layoutModified={this.props.layoutModified}
-            />
-        );
-        const sidebarContent = this.renderSidebarContent();
-        return this.props.callbacks.renderViewWithSidebar(
-            renderedView,
-            sidebarContent,
-        );
-    }
+export function LayoutView(props: Props) {
+    return props.callbacks.renderViewWithSidebar(
+        <TimerView {...props} renderWithSidebar={false} />,
+        <SideBar
+            callbacks={props.callbacks}
+            layoutModified={props.layoutModified}
+        />,
+    );
+}
 
-    private renderSidebarContent() {
-        return (
-            <>
-                <h1>Layout</h1>
-                <hr />
-                <button
-                    onClick={(_) => this.props.callbacks.openLayoutEditor()}
-                >
-                    <SquarePen strokeWidth={2.5} /> Edit
-                </button>
-                <button onClick={(_) => this.props.callbacks.saveLayout()}>
-                    <Save strokeWidth={2.5} />
-                    <span>
-                        Save
-                        {this.props.layoutModified && (
-                            <Circle
-                                strokeWidth={0}
-                                size={12}
-                                fill="currentColor"
-                                className={sidebarClasses.modifiedIcon}
-                            />
-                        )}
-                    </span>
-                </button>
-                <button onClick={(_) => this.props.callbacks.importLayout()}>
-                    <Download strokeWidth={2.5} /> Import
-                </button>
-                <button onClick={(_) => this.props.callbacks.exportLayout()}>
-                    <Upload strokeWidth={2.5} /> Export
-                </button>
-                <button
-                    onClick={(_) => this.props.callbacks.loadDefaultLayout()}
-                >
-                    <ListRestart strokeWidth={2.5} /> Default
-                </button>
-                <hr />
-                <button onClick={(_) => this.props.callbacks.openTimerView()}>
-                    <ArrowLeft strokeWidth={2.5} /> Back
-                </button>
-            </>
-        );
-    }
+function SideBar({
+    callbacks,
+    layoutModified,
+}: {
+    callbacks: Callbacks;
+    layoutModified: boolean;
+}) {
+    return (
+        <>
+            <h1>Layout</h1>
+            <hr />
+            <button onClick={(_) => callbacks.openLayoutEditor()}>
+                <SquarePen strokeWidth={2.5} /> Edit
+            </button>
+            <button onClick={(_) => callbacks.saveLayout()}>
+                <Save strokeWidth={2.5} />
+                <span>
+                    Save
+                    {layoutModified && (
+                        <Circle
+                            strokeWidth={0}
+                            size={12}
+                            fill="currentColor"
+                            className={sidebarClasses.modifiedIcon}
+                        />
+                    )}
+                </span>
+            </button>
+            <button onClick={(_) => callbacks.importLayout()}>
+                <Download strokeWidth={2.5} /> Import
+            </button>
+            <button onClick={(_) => callbacks.exportLayout()}>
+                <Upload strokeWidth={2.5} /> Export
+            </button>
+            <button onClick={(_) => callbacks.loadDefaultLayout()}>
+                <ListRestart strokeWidth={2.5} /> Default
+            </button>
+            <hr />
+            <button onClick={(_) => callbacks.openTimerView()}>
+                <ArrowLeft strokeWidth={2.5} /> Back
+            </button>
+        </>
+    );
 }

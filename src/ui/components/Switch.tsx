@@ -1,6 +1,6 @@
 import React from "react";
 
-import * as classes from "../../css/Switch.module.scss";
+import * as classes from "../../css/Switch.module.css";
 
 export function Switch({
     checked,

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useState } from "react";
 import {
     TimingMethod,
     TimeSpan,
@@ -58,9 +58,6 @@ export interface Props {
     splitsModified: boolean;
     layoutModified: boolean;
 }
-export interface State {
-    manualGameTime: string;
-}
 
 interface Callbacks {
     importLayoutFromFile(file: File): Promise<void>;
@@ -78,317 +75,280 @@ interface Callbacks {
     onServerConnectionOpened(serverConnection: LiveSplitServer): void;
 }
 
-export class TimerView extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-
-        this.state = {
-            manualGameTime: "",
-        };
+export function TimerView(props: Props) {
+    const view = <View {...props} />;
+    if (!props.renderWithSidebar) {
+        return view;
     }
+    return props.callbacks.renderViewWithSidebar(view, <SideBar {...props} />);
+}
 
-    public render() {
-        const renderedView = this.renderView();
-        if (this.props.renderWithSidebar) {
-            const sidebarContent = this.renderSidebarContent();
-            return this.props.callbacks.renderViewWithSidebar(
-                renderedView,
-                sidebarContent,
-            );
-        } else {
-            return renderedView;
-        }
-    }
+function View({
+    isDesktop,
+    layout,
+    layoutState,
+    layoutUrlCache,
+    layoutWidth,
+    layoutHeight,
+    generalSettings,
+    commandSink,
+    renderer,
+    callbacks,
+    currentPhase,
+    currentSplitIndex,
+}: Props) {
+    const [manualGameTime, setManualGameTime] = useState("");
+    const showManualGameTime = generalSettings.showManualGameTime;
 
-    private renderView() {
-        const showManualGameTime =
-            this.props.generalSettings.showManualGameTime;
-
-        return (
-            <DragUpload
-                importLayout={(file) =>
-                    this.props.callbacks.importLayoutFromFile(file)
-                }
-                importSplits={(file) =>
-                    this.props.callbacks.importSplitsFromFile(file)
-                }
-            >
-                <div>
-                    <div
-                        onClick={(_) => {
-                            if (this.props.generalSettings.showControlButtons) {
-                                this.props.commandSink.splitOrStart();
+    return (
+        <DragUpload
+            importLayout={(file) => callbacks.importLayoutFromFile(file)}
+            importSplits={(file) => callbacks.importSplitsFromFile(file)}
+        >
+            <div>
+                <div
+                    onClick={(_) => {
+                        if (generalSettings.showControlButtons) {
+                            commandSink.splitOrStart();
+                        }
+                    }}
+                    style={{
+                        width: "fit-content",
+                        cursor: generalSettings.showControlButtons
+                            ? "pointer"
+                            : undefined,
+                    }}
+                >
+                    <Layout
+                        getState={() => {
+                            // The drag upload above causes the layout to be
+                            // dropped. We need to wait for it to be replaced
+                            // with the new layout.
+                            if (layout.ptr !== 0) {
+                                commandSink.updateLayoutState(
+                                    layout,
+                                    layoutState,
+                                    layoutUrlCache.imageCache,
+                                );
+                                layoutUrlCache.collect();
                             }
+                            return layoutState;
                         }}
-                        style={{
-                            width: "fit-content",
-                            cursor: this.props.generalSettings
-                                .showControlButtons
-                                ? "pointer"
-                                : undefined,
-                        }}
-                    >
-                        <Layout
-                            getState={() => {
-                                // The drag upload above causes the layout to be
-                                // dropped. We need to wait for it to be replaced
-                                // with the new layout.
-                                if (this.props.layout.ptr !== 0) {
-                                    this.props.commandSink.updateLayoutState(
-                                        this.props.layout,
-                                        this.props.layoutState,
-                                        this.props.layoutUrlCache.imageCache,
-                                    );
-                                    this.props.layoutUrlCache.collect();
-                                }
-                                return this.props.layoutState;
-                            }}
-                            layoutUrlCache={this.props.layoutUrlCache}
-                            allowResize={this.props.isDesktop}
-                            width={this.props.layoutWidth}
-                            height={this.props.layoutHeight}
-                            generalSettings={this.props.generalSettings}
-                            renderer={this.props.renderer}
-                            onResize={(width, height) =>
-                                this.props.callbacks.onResize(width, height)
+                        layoutUrlCache={layoutUrlCache}
+                        allowResize={isDesktop}
+                        width={layoutWidth}
+                        height={layoutHeight}
+                        generalSettings={generalSettings}
+                        renderer={renderer}
+                        onResize={(width, height) =>
+                            callbacks.onResize(width, height)
+                        }
+                    />
+                </div>
+            </div>
+            {generalSettings.showControlButtons && (
+                <div className={classes.buttons} style={{ width: layoutWidth }}>
+                    <div className={classes.controlButtons}>
+                        <button
+                            aria-label={
+                                currentPhase === TimerPhase.NotRunning
+                                    ? "Start"
+                                    : currentPhase === TimerPhase.Paused
+                                      ? "Resume"
+                                      : "Pause"
                             }
-                        />
+                            disabled={currentPhase === TimerPhase.Ended}
+                            onClick={(_) => commandSink.togglePauseOrStart()}
+                        >
+                            {currentPhase === TimerPhase.NotRunning ||
+                            currentPhase === TimerPhase.Paused ? (
+                                <Play fill="currentColor" strokeWidth={0} />
+                            ) : (
+                                <Pause fill="currentColor" strokeWidth={0} />
+                            )}
+                        </button>
+                        <button
+                            aria-label="Undo Split"
+                            disabled={currentSplitIndex <= 0}
+                            onClick={(_) => commandSink.undoSplit()}
+                        >
+                            <ArrowUp strokeWidth={3.5} />
+                        </button>
+                        <button
+                            aria-label="Reset"
+                            disabled={currentPhase === TimerPhase.NotRunning}
+                            onClick={(_) => commandSink.reset()}
+                        >
+                            <X strokeWidth={3.5} />
+                        </button>
+                        <button
+                            aria-label="Skip Split"
+                            disabled={
+                                currentPhase === TimerPhase.NotRunning ||
+                                currentSplitIndex + 1 >=
+                                    commandSink.segmentsCount()
+                            }
+                            onClick={(_) => commandSink.skipSplit()}
+                        >
+                            <ArrowDown strokeWidth={3.5} />
+                        </button>
                     </div>
                 </div>
-                {this.props.generalSettings.showControlButtons && (
-                    <div
-                        className={classes.buttons}
-                        style={{ width: this.props.layoutWidth }}
-                    >
-                        <div className={classes.controlButtons}>
-                            <button
-                                aria-label={
-                                    this.props.currentPhase ===
-                                    TimerPhase.NotRunning
-                                        ? "Start"
-                                        : this.props.currentPhase ===
-                                            TimerPhase.Paused
-                                          ? "Resume"
-                                          : "Pause"
-                                }
-                                disabled={
-                                    this.props.currentPhase === TimerPhase.Ended
-                                }
-                                onClick={(_) =>
-                                    this.props.commandSink.togglePauseOrStart()
-                                }
-                            >
-                                {this.props.currentPhase ===
-                                    TimerPhase.NotRunning ||
-                                this.props.currentPhase ===
-                                    TimerPhase.Paused ? (
-                                    <Play fill="currentColor" strokeWidth={0} />
-                                ) : (
-                                    <Pause
-                                        fill="currentColor"
-                                        strokeWidth={0}
-                                    />
-                                )}
-                            </button>
-                            <button
-                                aria-label="Undo Split"
-                                disabled={this.props.currentSplitIndex <= 0}
-                                onClick={(_) =>
-                                    this.props.commandSink.undoSplit()
-                                }
-                            >
-                                <ArrowUp strokeWidth={3.5} />
-                            </button>
-                            <button
-                                aria-label="Reset"
-                                disabled={
-                                    this.props.currentPhase ===
-                                    TimerPhase.NotRunning
-                                }
-                                onClick={(_) => this.props.commandSink.reset()}
-                            >
-                                <X strokeWidth={3.5} />
-                            </button>
-                            <button
-                                aria-label="Skip Split"
-                                disabled={
-                                    this.props.currentPhase ===
-                                        TimerPhase.NotRunning ||
-                                    this.props.currentSplitIndex + 1 >=
-                                        this.props.commandSink.segmentsCount()
-                                }
-                                onClick={(_) =>
-                                    this.props.commandSink.skipSplit()
-                                }
-                            >
-                                <ArrowDown strokeWidth={3.5} />
-                            </button>
-                        </div>
-                    </div>
-                )}
-                {showManualGameTime && (
-                    <div
-                        className={classes.buttons}
-                        style={{ width: this.props.layoutWidth }}
-                    >
-                        <input
-                            type="text"
-                            className={classes.manualGameTime}
-                            value={this.state.manualGameTime}
-                            placeholder="Manual Game Time"
-                            onChange={(e) => {
-                                this.setState({
-                                    manualGameTime: e.target.value,
-                                });
-                            }}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    const timer = this.props.commandSink;
-                                    if (
-                                        timer.currentPhase() ===
-                                        LiveSplit.TimerPhase.NotRunning
-                                    ) {
-                                        timer.start();
-                                        timer.pauseGameTime();
-                                        using gameTime =
-                                            TimeSpan.parse(
-                                                this.state.manualGameTime,
-                                            ) ??
-                                            expect(
-                                                TimeSpan.parse("0"),
-                                                "Failed to parse TimeSpan",
-                                            );
-                                        timer.setGameTimeInner(gameTime);
-                                        this.setState({ manualGameTime: "" });
-                                    } else {
-                                        using gameTime = TimeSpan.parse(
-                                            this.state.manualGameTime,
+            )}
+            {showManualGameTime && (
+                <div className={classes.buttons} style={{ width: layoutWidth }}>
+                    <input
+                        type="text"
+                        className={classes.manualGameTime}
+                        value={manualGameTime}
+                        placeholder="Manual Game Time"
+                        onChange={(e) => setManualGameTime(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                const timer = commandSink;
+                                if (
+                                    timer.currentPhase() ===
+                                    LiveSplit.TimerPhase.NotRunning
+                                ) {
+                                    timer.start();
+                                    timer.pauseGameTime();
+                                    using gameTime =
+                                        TimeSpan.parse(manualGameTime) ??
+                                        expect(
+                                            TimeSpan.parse("0"),
+                                            "Failed to parse TimeSpan",
                                         );
-                                        if (gameTime !== null) {
-                                            if (
-                                                showManualGameTime.mode ===
-                                                MANUAL_GAME_TIME_MODE_SEGMENT_TIMES
-                                            ) {
-                                                const currentGameTime = timer
-                                                    .currentTime()
-                                                    .gameTime();
-                                                if (currentGameTime !== null) {
-                                                    gameTime.addAssign(
-                                                        currentGameTime,
-                                                    );
-                                                }
+                                    timer.setGameTimeInner(gameTime);
+                                    setManualGameTime("");
+                                } else {
+                                    using gameTime =
+                                        TimeSpan.parse(manualGameTime);
+                                    if (gameTime !== null) {
+                                        if (
+                                            showManualGameTime.mode ===
+                                            MANUAL_GAME_TIME_MODE_SEGMENT_TIMES
+                                        ) {
+                                            const currentGameTime = timer
+                                                .currentTime()
+                                                .gameTime();
+                                            if (currentGameTime !== null) {
+                                                gameTime.addAssign(
+                                                    currentGameTime,
+                                                );
                                             }
-                                            timer.setGameTimeInner(gameTime);
-                                            timer.split();
-                                            this.setState({
-                                                manualGameTime: "",
-                                            });
                                         }
+                                        timer.setGameTimeInner(gameTime);
+                                        timer.split();
+                                        setManualGameTime("");
                                     }
                                 }
-                            }}
-                        />
-                    </div>
-                )}
-            </DragUpload>
-        );
-    }
-
-    private renderSidebarContent() {
-        return (
-            <>
-                <div className={classes.liveSplitTitle}>
-                    <img
-                        className={classes.liveSplitIcon}
-                        src={LiveSplitIcon}
-                        alt="LiveSplit Logo"
+                            }
+                        }}
                     />
-                    <h1>LiveSplit One</h1>
                 </div>
-                <hr />
-                <button onClick={(_) => this.props.callbacks.openSplitsView()}>
-                    <List strokeWidth={2.5} />
-                    <span>
-                        Splits
-                        {this.props.splitsModified && (
-                            <Circle
-                                strokeWidth={0}
-                                size={12}
-                                fill="currentColor"
-                                className={sidebarClasses.modifiedIcon}
-                            />
-                        )}
-                    </span>
-                </button>
-                <button onClick={(_) => this.props.callbacks.openLayoutView()}>
-                    <Layers strokeWidth={2.5} />
-                    <span>
-                        Layout
-                        {this.props.layoutModified && (
-                            <Circle
-                                strokeWidth={0}
-                                size={12}
-                                fill="currentColor"
-                                className={sidebarClasses.modifiedIcon}
-                            />
-                        )}
-                    </span>
-                </button>
-                <hr />
-                <h2>Compare Against</h2>
-                <select
-                    value={this.props.currentComparison}
-                    onChange={(e) =>
-                        this.props.commandSink.setCurrentComparison(
-                            e.target.value,
-                        )
+            )}
+        </DragUpload>
+    );
+}
+
+export function SideBar({
+    commandSink,
+    callbacks,
+    currentComparison,
+    currentTimingMethod,
+    allComparisons,
+    splitsModified,
+    layoutModified,
+}: Props) {
+    return (
+        <>
+            <div className={classes.liveSplitTitle}>
+                <img
+                    className={classes.liveSplitIcon}
+                    src={LiveSplitIcon}
+                    alt="LiveSplit Logo"
+                />
+                <h1>LiveSplit One</h1>
+            </div>
+            <hr />
+            <button onClick={(_) => callbacks.openSplitsView()}>
+                <List strokeWidth={2.5} />
+                <span>
+                    Splits
+                    {splitsModified && (
+                        <Circle
+                            strokeWidth={0}
+                            size={12}
+                            fill="currentColor"
+                            className={sidebarClasses.modifiedIcon}
+                        />
+                    )}
+                </span>
+            </button>
+            <button onClick={(_) => callbacks.openLayoutView()}>
+                <Layers strokeWidth={2.5} />
+                <span>
+                    Layout
+                    {layoutModified && (
+                        <Circle
+                            strokeWidth={0}
+                            size={12}
+                            fill="currentColor"
+                            className={sidebarClasses.modifiedIcon}
+                        />
+                    )}
+                </span>
+            </button>
+            <hr />
+            <h2>Compare Against</h2>
+            <select
+                value={currentComparison}
+                onChange={(e) =>
+                    commandSink.setCurrentComparison(e.target.value)
+                }
+                className={classes.chooseComparison}
+            >
+                {allComparisons.map((comparison) => (
+                    <option>{comparison}</option>
+                ))}
+            </select>
+            <div className={buttonGroupClasses.group}>
+                <button
+                    onClick={(_) => {
+                        commandSink.setCurrentTimingMethod(
+                            TimingMethod.RealTime,
+                        );
+                    }}
+                    className={
+                        currentTimingMethod === TimingMethod.RealTime
+                            ? buttonGroupClasses.pressed
+                            : ""
                     }
-                    className={classes.chooseComparison}
                 >
-                    {this.props.allComparisons.map((comparison) => (
-                        <option>{comparison}</option>
-                    ))}
-                </select>
-                <div className={buttonGroupClasses.group}>
-                    <button
-                        onClick={(_) => {
-                            this.props.commandSink.setCurrentTimingMethod(
-                                TimingMethod.RealTime,
-                            );
-                        }}
-                        className={
-                            this.props.currentTimingMethod ===
-                            TimingMethod.RealTime
-                                ? buttonGroupClasses.pressed
-                                : ""
-                        }
-                    >
-                        Real Time
-                    </button>
-                    <button
-                        onClick={(_) => {
-                            this.props.commandSink.setCurrentTimingMethod(
-                                TimingMethod.GameTime,
-                            );
-                        }}
-                        className={
-                            this.props.currentTimingMethod ===
-                            TimingMethod.GameTime
-                                ? buttonGroupClasses.pressed
-                                : ""
-                        }
-                    >
-                        Game Time
-                    </button>
-                </div>
-                <hr />
-                <button onClick={() => this.props.callbacks.openMainSettings()}>
-                    <Settings strokeWidth={2.5} /> Settings
+                    Real Time
                 </button>
-                <button onClick={(_) => this.props.callbacks.openAboutView()}>
-                    <Info strokeWidth={2.5} /> About
+                <button
+                    onClick={(_) => {
+                        commandSink.setCurrentTimingMethod(
+                            TimingMethod.GameTime,
+                        );
+                    }}
+                    className={
+                        currentTimingMethod === TimingMethod.GameTime
+                            ? buttonGroupClasses.pressed
+                            : ""
+                    }
+                >
+                    Game Time
                 </button>
-            </>
-        );
-    }
+            </div>
+            <hr />
+            <button onClick={() => callbacks.openMainSettings()}>
+                <Settings strokeWidth={2.5} /> Settings
+            </button>
+            <button onClick={() => callbacks.openAboutView()}>
+                <Info strokeWidth={2.5} /> About
+            </button>
+        </>
+    );
 }

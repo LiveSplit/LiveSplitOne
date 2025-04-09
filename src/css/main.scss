@@ -52,7 +52,9 @@ button {
     padding: 5px variables.$ui-margin;
 
     &:disabled,
-    &:disabled:active {
+    &:disabled:active,
+    &:disabled:active:hover,
+    &:disabled:hover {
         background: variables.$button-disabled-color;
         color: variables.$button-disabled-text-color;
         cursor: default;

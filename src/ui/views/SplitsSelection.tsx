@@ -1,9 +1,9 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import {
     getSplitsInfos,
     SplitsInfo,
-    deleteSplits,
-    copySplits,
+    deleteSplits as storageDeleteSplits,
+    copySplits as storageCopySplits,
     loadSplits,
     storeRunWithoutDisposing,
     storeSplitsKey,
@@ -50,10 +50,6 @@ export interface Props {
     splitsModified: boolean;
 }
 
-interface State {
-    splitsInfos?: Array<[number, SplitsInfo]>;
-}
-
 interface Callbacks {
     openRunEditor(editingInfo: EditingInfo): void;
     setSplitsKey(newKey?: number): void;
@@ -65,176 +61,124 @@ interface Callbacks {
     saveSplits(): Promise<void>;
 }
 
-export class SplitsSelection extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
-
-        this.refreshDb();
-        this.state = {};
-    }
-
-    public render() {
-        const renderedView = this.renderView();
-        const sidebarContent = this.renderSidebarContent();
-        return this.props.callbacks.renderViewWithSidebar(
-            renderedView,
-            sidebarContent,
-        );
-    }
-
-    private renderView() {
-        let content;
-
-        if (this.state.splitsInfos == null) {
-            content = (
-                <div className={classes.loading}>
-                    <div className={classes.loadingText}>Loading...</div>
-                </div>
-            );
-        } else {
-            content = (
-                <div className={classes.splitsSelectionContainer}>
-                    <div className={classes.mainActions}>
-                        <button onClick={() => this.addNewSplits()}>
-                            <Plus strokeWidth={2.5} /> Add
-                        </button>
-                        <button onClick={() => this.importSplits()}>
-                            <Download strokeWidth={2.5} /> Import
-                        </button>
-                    </div>
-                    {this.state.splitsInfos?.length > 0 && (
-                        <div className={classes.splitsTable}>
-                            {this.state.splitsInfos.map(([key, info]) =>
-                                this.renderSavedSplitsRow(key, info),
-                            )}
-                        </div>
-                    )}
-                </div>
-            );
+export function SplitsSelection(props: Props) {
+    const [splitsInfos, setSplitsInfos] = useState<
+        Array<[number, SplitsInfo]> | undefined
+    >();
+    useEffect(() => {
+        async function fetchSplitsInfos() {
+            const splitsInfos = await getSplitsInfos();
+            setSplitsInfos(splitsInfos);
         }
-        return (
-            <DragUpload importSplits={this.importSplitsFromFile.bind(this)}>
-                {content}
-            </DragUpload>
-        );
-    }
+        fetchSplitsInfos();
+    }, []);
 
-    private async refreshDb() {
+    const refreshDb = async () => {
         const splitsInfos = await getSplitsInfos();
-        this.setState({
-            splitsInfos,
-        });
-    }
+        setSplitsInfos(splitsInfos);
+    };
 
-    private renderSavedSplitsRow(key: number, info: SplitsInfo) {
-        const isOpened = key === this.props.openedSplitsKey;
-        const classNames = [classes.splitsRow];
-        if (isOpened) {
-            classNames.push(classes.selected);
+    const saveSplits = async () => {
+        await props.callbacks.saveSplits();
+        refreshDb();
+    };
+
+    const exportTimerSplits = () => {
+        props.commandSink.markAsUnmodified();
+        const name = props.commandSink.extendedFileName(true);
+        const lss = props.commandSink.saveAsLssBytes();
+        try {
+            exportFile(name + ".lss", lss);
+        } catch (_) {
+            toast.error("Failed to export the splits.");
+        }
+    };
+
+    const openTimerView = () => {
+        props.callbacks.openTimerView();
+    };
+
+    return props.callbacks.renderViewWithSidebar(
+        <View
+            commandSink={props.commandSink}
+            openedSplitsKey={props.openedSplitsKey}
+            callbacks={props.callbacks}
+            splitsInfos={splitsInfos}
+            refreshDb={refreshDb}
+        />,
+        <SideBar
+            commandSink={props.commandSink}
+            callbacks={props.callbacks}
+            splitsModified={props.splitsModified}
+            saveSplits={saveSplits}
+            exportTimerSplits={exportTimerSplits}
+            openTimerView={openTimerView}
+        />,
+    );
+}
+
+function View({
+    commandSink,
+    openedSplitsKey,
+    callbacks,
+    splitsInfos,
+    refreshDb,
+}: {
+    commandSink: LSOCommandSink;
+    openedSplitsKey?: number;
+    callbacks: Callbacks;
+    splitsInfos?: Array<[number, SplitsInfo]>;
+    refreshDb: () => Promise<void>;
+}) {
+    const addNewSplits = async () => {
+        const run = Run.new();
+        run.pushSegment(Segment.new("Time"));
+        await storeRunWithoutDisposing(run, undefined);
+    };
+
+    const importSplitsFromArrayBuffer = async (
+        buffer: [ArrayBuffer, File],
+    ): Promise<Option<Error>> => {
+        const [file] = buffer;
+        using result = Run.parseArray(new Uint8Array(file), "");
+        if (result.parsedSuccessfully()) {
+            await storeRunWithoutDisposing(result.unwrap(), undefined);
+        } else {
+            return Error("Couldn't parse the splits.");
+        }
+        return;
+    };
+
+    const importSplits = async () => {
+        const splits = await openFileAsArrayBuffer(FILE_EXT_SPLITS);
+        if (splits === undefined) {
+            return;
+        }
+        if (splits instanceof Error) {
+            toast.error(`Failed to read the file: ${splits.message}`);
+            return;
         }
 
-        return (
-            <div className={classNames.join(" ")} key={key}>
-                {this.splitsTitle(info)}
-                <div className={classes.splitsRowButtons}>
-                    {isOpened ? null : (
-                        <>
-                            <button
-                                aria-label="Open Splits"
-                                onClick={() => this.openSplits(key)}
-                            >
-                                <FolderOpen strokeWidth={2.5} />
-                            </button>
-                            <button
-                                aria-label="Edit Splits"
-                                onClick={() => this.editSplits(key)}
-                            >
-                                <SquarePen strokeWidth={2.5} />
-                            </button>
-                            <button
-                                aria-label="Export Splits"
-                                onClick={() => this.exportSplits(key, info)}
-                            >
-                                <Upload strokeWidth={2.5} />
-                            </button>
-                        </>
-                    )}
-                    <button
-                        aria-label="Copy Splits"
-                        onClick={() => this.copySplits(key)}
-                    >
-                        <Copy strokeWidth={2.5} />
-                    </button>
-                    <button
-                        aria-label="Remove Splits"
-                        onClick={() => this.deleteSplits(key)}
-                    >
-                        <Trash strokeWidth={2.5} />
-                    </button>
-                </div>
-            </div>
-        );
-    }
+        const result = await importSplitsFromArrayBuffer(splits);
+        if (result != null) {
+            toast.error(`Failed to import the splits: ${result.message}`);
+        }
+    };
 
-    private splitsTitle(info: SplitsInfo) {
-        return (
-            <div className={classes.splitsTitleText}>
-                <div className={`${classes.splitsText} ${classes.splitsGame}`}>
-                    {info.game || "Untitled"}
-                </div>
-                <div className={classes.splitsText}>{info.category || "—"}</div>
-            </div>
-        );
-    }
+    const importSplitsFromFile = async (file: File) => {
+        const splits = await convertFileToArrayBuffer(file);
+        if (splits instanceof Error) {
+            toast.error(`Failed to read the file: ${splits.message}`);
+            return;
+        }
 
-    private renderSidebarContent() {
-        return (
-            <>
-                <h1>Splits</h1>
-                <hr />
-                <button
-                    onClick={(_) => {
-                        if (
-                            this.props.commandSink.currentPhase() !==
-                            TimerPhase.NotRunning
-                        ) {
-                            toast.error(
-                                "You can't edit your splits while the timer is running.",
-                            );
-                            return;
-                        }
-                        const run = this.props.commandSink.getRun().clone();
-                        this.props.callbacks.openRunEditor({ run });
-                    }}
-                >
-                    <SquarePen strokeWidth={2.5} /> Edit
-                </button>
-                <button onClick={(_) => this.saveSplits()}>
-                    <Save strokeWidth={2.5} />
-                    <span>
-                        Save
-                        {this.props.splitsModified && (
-                            <Circle
-                                strokeWidth={0}
-                                size={12}
-                                fill="currentColor"
-                                className={sidebarClasses.modifiedIcon}
-                            />
-                        )}
-                    </span>
-                </button>
-                <button onClick={(_) => this.exportTimerSplits()}>
-                    <Upload strokeWidth={2.5} /> Export
-                </button>
-                <hr />
-                <button onClick={(_) => this.props.callbacks.openTimerView()}>
-                    <ArrowLeft strokeWidth={2.5} /> Back
-                </button>
-            </>
-        );
-    }
+        const result = await importSplitsFromArrayBuffer(splits);
+        if (result != null) {
+            toast.error(`Failed to import the splits: ${result.message}`);
+        }
+    };
 
-    private async getRunFromKey(key: number): Promise<Run | undefined> {
+    const getRunFromKey = async (key: number): Promise<Run | undefined> => {
         const splitsData = await loadSplits(key);
         if (splitsData === undefined) {
             bug("The splits key is invalid.");
@@ -249,10 +193,10 @@ export class SplitsSelection extends React.Component<Props, State> {
             bug("Couldn't parse the splits.");
             return;
         }
-    }
+    };
 
-    private async openSplits(key: number) {
-        const isModified = this.props.commandSink.hasBeenModified();
+    const openSplits = async (key: number) => {
+        const isModified = commandSink.hasBeenModified();
         if (isModified) {
             const [result] = await showDialog({
                 title: "Discard Changes?",
@@ -265,17 +209,24 @@ export class SplitsSelection extends React.Component<Props, State> {
             }
         }
 
-        using run = await this.getRunFromKey(key);
+        using run = await getRunFromKey(key);
         if (run === undefined) {
             return;
         }
-        maybeDisposeAndThen(this.props.commandSink.setRun(run), () =>
+        maybeDisposeAndThen(commandSink.setRun(run), () =>
             toast.error("The loaded splits are invalid."),
         );
-        this.props.callbacks.setSplitsKey(key);
-    }
+        callbacks.setSplitsKey(key);
+    };
 
-    private async exportSplits(key: number, info: SplitsInfo) {
+    const editSplits = async (key: number) => {
+        const run = await getRunFromKey(key);
+        if (run !== undefined) {
+            callbacks.openRunEditor({ splitsKey: key, run });
+        }
+    };
+
+    const exportSplits = async (key: number, info: SplitsInfo) => {
         try {
             const splitsData = await loadSplits(key);
             if (splitsData === undefined) {
@@ -286,32 +237,14 @@ export class SplitsSelection extends React.Component<Props, State> {
         } catch (_) {
             toast.error("Failed to export the splits.");
         }
-    }
+    };
 
-    private exportTimerSplits() {
-        this.props.commandSink.markAsUnmodified();
-        const name = this.props.commandSink.extendedFileName(true);
-        const lss = this.props.commandSink.saveAsLssBytes();
-        try {
-            exportFile(name + ".lss", lss);
-        } catch (_) {
-            toast.error("Failed to export the splits.");
-        }
-    }
+    const copySplits = async (key: number) => {
+        await storageCopySplits(key);
+        await refreshDb();
+    };
 
-    private async editSplits(splitsKey: number) {
-        const run = await this.getRunFromKey(splitsKey);
-        if (run !== undefined) {
-            this.props.callbacks.openRunEditor({ splitsKey, run });
-        }
-    }
-
-    private async copySplits(key: number) {
-        await copySplits(key);
-        await this.refreshDb();
-    }
-
-    private async deleteSplits(key: number) {
+    const deleteSplits = async (key: number) => {
         const [result] = await showDialog({
             title: "Delete Splits?",
             description:
@@ -322,77 +255,190 @@ export class SplitsSelection extends React.Component<Props, State> {
             return;
         }
 
-        await deleteSplits(key);
-        if (key === this.props.openedSplitsKey) {
-            this.props.callbacks.setSplitsKey(undefined);
+        await storageDeleteSplits(key);
+        if (key === openedSplitsKey) {
+            callbacks.setSplitsKey(undefined);
             storeSplitsKey(undefined);
         }
-        await this.refreshDb();
+        await refreshDb();
+    };
+
+    let content;
+
+    if (splitsInfos == null) {
+        content = (
+            <div className={classes.loading}>
+                <div className={classes.loadingText}>Loading...</div>
+            </div>
+        );
+    } else {
+        content = (
+            <div className={classes.splitsSelectionContainer}>
+                <div className={classes.mainActions}>
+                    <button onClick={addNewSplits}>
+                        <Plus strokeWidth={2.5} /> Add
+                    </button>
+                    <button onClick={importSplits}>
+                        <Download strokeWidth={2.5} /> Import
+                    </button>
+                </div>
+                {splitsInfos?.length > 0 && (
+                    <div className={classes.splitsTable}>
+                        {splitsInfos.map(([key, info]) => (
+                            <SavedSplitsRow
+                                openedSplitsKey={openedSplitsKey}
+                                splitsKey={key}
+                                info={info}
+                                openSplits={openSplits}
+                                editSplits={editSplits}
+                                exportSplits={exportSplits}
+                                copySplits={copySplits}
+                                deleteSplits={deleteSplits}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
+        );
+    }
+    return (
+        <DragUpload importSplits={importSplitsFromFile}>{content}</DragUpload>
+    );
+}
+
+function SavedSplitsRow({
+    openedSplitsKey,
+    splitsKey,
+    info,
+    openSplits,
+    editSplits,
+    exportSplits,
+    copySplits,
+    deleteSplits,
+}: {
+    openedSplitsKey?: number;
+    splitsKey: number;
+    info: SplitsInfo;
+    openSplits: (key: number) => void;
+    editSplits: (key: number) => void;
+    exportSplits: (key: number, info: SplitsInfo) => void;
+    copySplits: (key: number) => void;
+    deleteSplits: (key: number) => void;
+}) {
+    const isOpened = splitsKey === openedSplitsKey;
+    const classNames = [classes.splitsRow];
+    if (isOpened) {
+        classNames.push(classes.selected);
     }
 
-    private async importSplits() {
-        const splits = await openFileAsArrayBuffer(FILE_EXT_SPLITS);
-        if (splits === undefined) {
-            return;
-        }
-        if (splits instanceof Error) {
-            toast.error(`Failed to read the file: ${splits.message}`);
-            return;
-        }
+    return (
+        <div className={classNames.join(" ")} key={splitsKey}>
+            <SplitsTitle game={info.game} category={info.category} />
+            <div className={classes.splitsRowButtons}>
+                {isOpened ? null : (
+                    <>
+                        <button
+                            aria-label="Open Splits"
+                            onClick={() => openSplits(splitsKey)}
+                        >
+                            <FolderOpen strokeWidth={2.5} />
+                        </button>
+                        <button
+                            aria-label="Edit Splits"
+                            onClick={() => editSplits(splitsKey)}
+                        >
+                            <SquarePen strokeWidth={2.5} />
+                        </button>
+                        <button
+                            aria-label="Export Splits"
+                            onClick={() => exportSplits(splitsKey, info)}
+                        >
+                            <Upload strokeWidth={2.5} />
+                        </button>
+                    </>
+                )}
+                <button
+                    aria-label="Copy Splits"
+                    onClick={() => copySplits(splitsKey)}
+                >
+                    <Copy strokeWidth={2.5} />
+                </button>
+                <button
+                    aria-label="Remove Splits"
+                    onClick={() => deleteSplits(splitsKey)}
+                >
+                    <Trash strokeWidth={2.5} />
+                </button>
+            </div>
+        </div>
+    );
+}
 
-        const result = await this.importSplitsFromArrayBuffer(splits);
-        if (result != null) {
-            toast.error(`Failed to import the splits: ${result.message}`);
-        }
-    }
+function SplitsTitle({ game, category }: { game: string; category: string }) {
+    return (
+        <div className={classes.splitsTitleText}>
+            <div className={`${classes.splitsText} ${classes.splitsGame}`}>
+                {game || "Untitled"}
+            </div>
+            <div className={classes.splitsText}>{category || "—"}</div>
+        </div>
+    );
+}
 
-    private async importSplitsFromFile(file: File) {
-        const splits = await convertFileToArrayBuffer(file);
-        if (splits instanceof Error) {
-            toast.error(`Failed to read the file: ${splits.message}`);
-            return;
-        }
-
-        const result = await this.importSplitsFromArrayBuffer(splits);
-        if (result != null) {
-            toast.error(`Failed to import the splits: ${result.message}`);
-        }
-    }
-
-    private async importSplitsFromArrayBuffer(
-        buffer: [ArrayBuffer, File],
-    ): Promise<Option<Error>> {
-        const [file] = buffer;
-        using result = Run.parseArray(new Uint8Array(file), "");
-        if (result.parsedSuccessfully()) {
-            await this.storeRun(result.unwrap());
-        } else {
-            return Error("Couldn't parse the splits.");
-        }
-        return;
-    }
-
-    private async saveSplits() {
-        await this.props.callbacks.saveSplits();
-        this.refreshDb();
-    }
-
-    private async addNewSplits() {
-        const run = Run.new();
-        run.pushSegment(Segment.new("Time"));
-        await this.storeRun(run);
-    }
-
-    private async storeRun(run: Run) {
-        try {
-            if (run.len() === 0) {
-                toast.error("Can't import empty splits.");
-                return;
-            }
-            await storeRunWithoutDisposing(run, undefined);
-            await this.refreshDb();
-        } finally {
-            run[Symbol.dispose]();
-        }
-    }
+function SideBar({
+    commandSink,
+    callbacks,
+    splitsModified,
+    saveSplits,
+    exportTimerSplits,
+    openTimerView,
+}: {
+    commandSink: LSOCommandSink;
+    callbacks: any;
+    splitsModified: boolean;
+    saveSplits: () => void;
+    exportTimerSplits: () => void;
+    openTimerView: () => void;
+}) {
+    return (
+        <>
+            <h1>Splits</h1>
+            <hr />
+            <button
+                onClick={(_) => {
+                    if (commandSink.currentPhase() !== TimerPhase.NotRunning) {
+                        toast.error(
+                            "You can't edit your splits while the timer is running.",
+                        );
+                        return;
+                    }
+                    const run = commandSink.getRun().clone();
+                    callbacks.openRunEditor({ run });
+                }}
+            >
+                <SquarePen strokeWidth={2.5} /> Edit
+            </button>
+            <button onClick={saveSplits}>
+                <Save strokeWidth={2.5} />
+                <span>
+                    Save
+                    {splitsModified && (
+                        <Circle
+                            strokeWidth={0}
+                            size={12}
+                            fill="currentColor"
+                            className={sidebarClasses.modifiedIcon}
+                        />
+                    )}
+                </span>
+            </button>
+            <button onClick={exportTimerSplits}>
+                <Upload strokeWidth={2.5} /> Export
+            </button>
+            <hr />
+            <button onClick={openTimerView}>
+                <ArrowLeft strokeWidth={2.5} /> Back
+            </button>
+        </>
+    );
 }

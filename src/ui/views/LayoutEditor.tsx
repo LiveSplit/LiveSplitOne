@@ -34,10 +34,6 @@ export interface Props {
     renderer: WebRenderer;
     callbacks: Callbacks;
 }
-export interface State {
-    editor: LiveSplit.LayoutEditorStateJson;
-    showComponentSettings: boolean;
-}
 
 interface Callbacks {
     onResize(width: number, height: number): void;
@@ -48,275 +44,254 @@ interface Callbacks {
     closeLayoutEditor(save: boolean): void;
 }
 
-export class LayoutEditor extends React.Component<Props, State> {
-    constructor(props: Props) {
-        super(props);
+interface ComponentClass {
+    new: () => {
+        intoGeneric(): LiveSplit.Component;
+    };
+}
 
-        this.state = {
-            editor: props.editor.stateAsJson(
-                props.layoutEditorUrlCache.imageCache,
-            ),
-            showComponentSettings: true,
-        };
+export function LayoutEditor(props: Props) {
+    return props.callbacks.renderViewWithSidebar(
+        <View {...props} />,
+        <SideBar callbacks={props.callbacks} />,
+    );
+}
 
-        props.layoutEditorUrlCache.collect();
-    }
+export function View({
+    editor,
+    layoutState,
+    layoutEditorUrlCache,
+    layoutUrlCache,
+    layoutWidth,
+    layoutHeight,
+    generalSettings,
+    allComparisons,
+    allVariables,
+    isDesktop,
+    commandSink,
+    renderer,
+    callbacks,
+}: Props) {
+    const [state, setState] = useState(() => {
+        const state = editor.stateAsJson(layoutEditorUrlCache.imageCache);
+        layoutEditorUrlCache.collect();
+        return state as LiveSplit.LayoutEditorStateJson;
+    });
+    const [showComponentSettings, setShowComponentSettings] = useState(true);
 
-    public render() {
-        const renderedView = this.renderView();
-        const sidebarContent = this.renderSidebarContent();
-        return this.props.callbacks.renderViewWithSidebar(
-            renderedView,
-            sidebarContent,
-        );
-    }
+    const updateState = () => {
+        setState(editor.stateAsJson(layoutEditorUrlCache.imageCache));
+        layoutEditorUrlCache.collect();
+    };
 
-    private renderView() {
-        const components = this.state.editor.components.map((c, i) => {
-            let className = classes.layoutEditorComponent;
-            if (i === this.state.editor.selected_component) {
-                className += " " + tableClasses.selected;
-            }
-            return (
-                <tr
-                    key={i}
-                    onClick={(_) => this.selectComponent(i)}
-                    draggable
-                    onDragStart={(e) => {
-                        e.dataTransfer.setData("text/plain", "");
-                        this.props.editor.select(i);
-                        this.update();
-                    }}
-                    onDragOver={(e) => {
-                        if (e.preventDefault) {
-                            e.preventDefault();
-                        }
-                        e.dataTransfer.dropEffect = "move";
-                    }}
-                    onDragEnd={(_) => this.update()}
-                    onDrop={(e) => {
-                        if (e.stopPropagation) {
-                            e.stopPropagation();
-                        }
-                        this.props.editor.moveComponent(i);
-                        return false;
-                    }}
-                >
-                    <td className={className}>{c}</td>
-                </tr>
-            );
-        });
-
-        const settings = this.state.showComponentSettings ? (
-            <SettingsComponent
-                context={`component-settings$${this.state.editor.selected_component}`}
-                factory={LiveSplit.SettingValue}
-                state={this.state.editor.component_settings}
-                editorUrlCache={this.props.layoutEditorUrlCache}
-                allComparisons={this.props.allComparisons}
-                allVariables={this.props.allVariables}
-                setValue={(index, value) => {
-                    this.props.editor.setComponentSettingsValue(index, value);
-                    this.update();
-                }}
-            />
-        ) : (
-            <SettingsComponent
-                context={`layout-settings`}
-                factory={LiveSplit.SettingValue}
-                state={this.state.editor.general_settings}
-                editorUrlCache={this.props.layoutEditorUrlCache}
-                allComparisons={this.props.allComparisons}
-                allVariables={this.props.allVariables}
-                setValue={(index, value) => {
-                    this.props.editor.setGeneralSettingsValue(
-                        index,
-                        value,
-                        this.props.layoutEditorUrlCache.imageCache,
-                    );
-                    this.update();
-                }}
-            />
-        );
-
-        return (
-            <div className={classes.layoutEditorOuter}>
-                <div className={classes.layoutEditorInnerContainer}>
-                    <div className={classes.layoutEditorInner}>
-                        <div className={classes.btnGroup}>
-                            <AddComponentButton
-                                allVariables={this.props.allVariables}
-                                addVariable={(v) => this.addVariable(v)}
-                                addComponent={(v) => this.addComponent(v)}
-                            />
-                            <button
-                                aria-label="Remove Component"
-                                onClick={(_) => this.removeComponent()}
-                                disabled={!this.state.editor.buttons.can_remove}
-                            >
-                                <Trash strokeWidth={2.5} />
-                            </button>
-                            <button
-                                aria-label="Duplicate Component"
-                                onClick={(_) => this.duplicateComponent()}
-                            >
-                                <Copy strokeWidth={2.5} />
-                            </button>
-                            <button
-                                aria-label="Move Component Up"
-                                onClick={(_) => this.moveComponentUp()}
-                                disabled={
-                                    !this.state.editor.buttons.can_move_up
-                                }
-                            >
-                                <ArrowUp strokeWidth={2.5} />
-                            </button>
-                            <button
-                                aria-label="Move Component Down"
-                                onClick={(_) => this.moveComponentDown()}
-                                disabled={
-                                    !this.state.editor.buttons.can_move_down
-                                }
-                            >
-                                <ArrowDown strokeWidth={2.5} />
-                            </button>
-                        </div>
-                        <table className={classes.layoutEditorComponentList}>
-                            <tbody className={tableClasses.tableBody}>
-                                {components}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div className={buttonGroupClasses.tabBar}>
-                        <button
-                            className={
-                                !this.state.showComponentSettings
-                                    ? buttonGroupClasses.pressed
-                                    : ""
-                            }
-                            onClick={(_) =>
-                                this.setState({
-                                    showComponentSettings: false,
-                                })
-                            }
-                        >
-                            Layout
-                        </button>
-                        <button
-                            className={
-                                this.state.showComponentSettings
-                                    ? buttonGroupClasses.pressed
-                                    : ""
-                            }
-                            onClick={(_) =>
-                                this.setState({
-                                    showComponentSettings: true,
-                                })
-                            }
-                        >
-                            Component
-                        </button>
-                    </div>
-                    <div>{settings}</div>
-                </div>
-                <div className={classes.layoutContainer}>
-                    <Layout
-                        getState={() => {
-                            this.props.commandSink.updateLayoutEditorLayoutState(
-                                this.props.editor,
-                                this.props.layoutState,
-                                this.props.layoutUrlCache.imageCache,
-                            );
-                            this.props.layoutUrlCache.collect();
-                            return this.props.layoutState;
-                        }}
-                        layoutUrlCache={this.props.layoutUrlCache}
-                        allowResize={this.props.isDesktop}
-                        width={this.props.layoutWidth}
-                        height={this.props.layoutHeight}
-                        generalSettings={this.props.generalSettings}
-                        renderer={this.props.renderer}
-                        onResize={(width, height) =>
-                            this.props.callbacks.onResize(width, height)
-                        }
-                    />
-                </div>
-            </div>
-        );
-    }
-
-    private renderSidebarContent() {
-        return (
-            <>
-                <h1>Layout Editor</h1>
-                <hr />
-                <div className={buttonGroupClasses.group}>
-                    <button
-                        onClick={(_) =>
-                            this.props.callbacks.closeLayoutEditor(true)
-                        }
-                    >
-                        <Check strokeWidth={2.5} /> OK
-                    </button>
-                    <button
-                        onClick={(_) =>
-                            this.props.callbacks.closeLayoutEditor(false)
-                        }
-                    >
-                        <X strokeWidth={2.5} /> Cancel
-                    </button>
-                </div>
-            </>
-        );
-    }
-
-    private update(showComponentSettings?: boolean) {
-        this.setState({
-            editor: this.props.editor.stateAsJson(
-                this.props.layoutEditorUrlCache.imageCache,
-            ),
-            showComponentSettings:
-                showComponentSettings ?? this.state.showComponentSettings,
-        });
-        this.props.layoutEditorUrlCache.collect();
-    }
-
-    private selectComponent(i: number) {
-        this.props.editor.select(i);
-        this.update(true);
-    }
-
-    private addComponent(componentClass: any) {
-        this.props.editor.addComponent(componentClass.new().intoGeneric());
-        this.update(true);
-    }
-
-    private addVariable(name: string) {
+    const selectComponent = (i: number) => {
+        editor.select(i);
+        updateState();
+        setShowComponentSettings(true);
+    };
+    const addComponent = (componentClass: ComponentClass) => {
+        editor.addComponent(componentClass.new().intoGeneric());
+        updateState();
+    };
+    const addVariable = (name: string) => {
         const textComponent = LiveSplit.TextComponent.new();
         textComponent.useVariable(name, true);
-        this.props.editor.addComponent(textComponent.intoGeneric());
-        this.update(true);
-    }
+        editor.addComponent(textComponent.intoGeneric());
+        updateState();
+    };
+    const removeComponent = () => {
+        editor.removeComponent();
+        updateState();
+    };
+    const moveComponentUp = () => {
+        editor.moveComponentUp();
+        updateState();
+    };
+    const moveComponentDown = () => {
+        editor.moveComponentDown();
+        updateState();
+    };
+    const duplicateComponent = () => {
+        editor.duplicateComponent();
+        updateState();
+    };
 
-    private removeComponent() {
-        this.props.editor.removeComponent();
-        this.update();
-    }
+    const components = state.components.map((c, i) => {
+        let className = classes.layoutEditorComponent;
+        if (i === state.selected_component) {
+            className += " " + tableClasses.selected;
+        }
+        return (
+            <tr
+                key={i}
+                onClick={(_) => selectComponent(i)}
+                draggable
+                onDragStart={(e) => {
+                    e.dataTransfer.setData("text/plain", "");
+                    editor.select(i);
+                    updateState();
+                }}
+                onDragOver={(e) => {
+                    if (e.preventDefault) {
+                        e.preventDefault();
+                    }
+                    e.dataTransfer.dropEffect = "move";
+                }}
+                onDragEnd={(_) => updateState()}
+                onDrop={(e) => {
+                    if (e.stopPropagation) {
+                        e.stopPropagation();
+                    }
+                    editor.moveComponent(i);
+                    return false;
+                }}
+            >
+                <td className={className}>{c}</td>
+            </tr>
+        );
+    });
 
-    private moveComponentUp() {
-        this.props.editor.moveComponentUp();
-        this.update();
-    }
+    const settings = showComponentSettings ? (
+        <SettingsComponent
+            context={`component-settings$${state.selected_component}`}
+            factory={LiveSplit.SettingValue}
+            state={state.component_settings}
+            editorUrlCache={layoutEditorUrlCache}
+            allComparisons={allComparisons}
+            allVariables={allVariables}
+            setValue={(index, value) => {
+                editor.setComponentSettingsValue(index, value);
+                updateState();
+            }}
+        />
+    ) : (
+        <SettingsComponent
+            context={`layout-settings`}
+            factory={LiveSplit.SettingValue}
+            state={state.general_settings}
+            editorUrlCache={layoutEditorUrlCache}
+            allComparisons={allComparisons}
+            allVariables={allVariables}
+            setValue={(index, value) => {
+                editor.setGeneralSettingsValue(
+                    index,
+                    value,
+                    layoutEditorUrlCache.imageCache,
+                );
+                updateState();
+            }}
+        />
+    );
 
-    private moveComponentDown() {
-        this.props.editor.moveComponentDown();
-        this.update();
-    }
+    return (
+        <div className={classes.layoutEditorOuter}>
+            <div className={classes.layoutEditorInnerContainer}>
+                <div className={classes.layoutEditorInner}>
+                    <div className={classes.btnGroup}>
+                        <AddComponentButton
+                            allVariables={allVariables}
+                            addVariable={(v) => addVariable(v)}
+                            addComponent={(v) => addComponent(v)}
+                        />
+                        <button
+                            aria-label="Remove Component"
+                            onClick={removeComponent}
+                            disabled={!state.buttons.can_remove}
+                        >
+                            <Trash strokeWidth={2.5} />
+                        </button>
+                        <button
+                            aria-label="Duplicate Component"
+                            onClick={duplicateComponent}
+                        >
+                            <Copy strokeWidth={2.5} />
+                        </button>
+                        <button
+                            aria-label="Move Component Up"
+                            onClick={moveComponentUp}
+                            disabled={!state.buttons.can_move_up}
+                        >
+                            <ArrowUp strokeWidth={2.5} />
+                        </button>
+                        <button
+                            aria-label="Move Component Down"
+                            onClick={moveComponentDown}
+                            disabled={!state.buttons.can_move_down}
+                        >
+                            <ArrowDown strokeWidth={2.5} />
+                        </button>
+                    </div>
+                    <table className={classes.layoutEditorComponentList}>
+                        <tbody className={tableClasses.tableBody}>
+                            {components}
+                        </tbody>
+                    </table>
+                </div>
+                <div className={buttonGroupClasses.tabBar}>
+                    <button
+                        className={
+                            !showComponentSettings
+                                ? buttonGroupClasses.pressed
+                                : ""
+                        }
+                        onClick={(_) => setShowComponentSettings(false)}
+                    >
+                        Layout
+                    </button>
+                    <button
+                        className={
+                            showComponentSettings
+                                ? buttonGroupClasses.pressed
+                                : ""
+                        }
+                        onClick={(_) => setShowComponentSettings(true)}
+                    >
+                        Component
+                    </button>
+                </div>
+                <div>{settings}</div>
+            </div>
+            <div className={classes.layoutContainer}>
+                <Layout
+                    getState={() => {
+                        commandSink.updateLayoutEditorLayoutState(
+                            editor,
+                            layoutState,
+                            layoutUrlCache.imageCache,
+                        );
+                        layoutUrlCache.collect();
+                        return layoutState;
+                    }}
+                    layoutUrlCache={layoutUrlCache}
+                    allowResize={isDesktop}
+                    width={layoutWidth}
+                    height={layoutHeight}
+                    generalSettings={generalSettings}
+                    renderer={renderer}
+                    onResize={(width, height) =>
+                        callbacks.onResize(width, height)
+                    }
+                />
+            </div>
+        </div>
+    );
+}
 
-    private duplicateComponent() {
-        this.props.editor.duplicateComponent();
-        this.update();
-    }
+export function SideBar({ callbacks }: { callbacks: Callbacks }) {
+    return (
+        <>
+            <h1>Layout Editor</h1>
+            <hr />
+            <div className={buttonGroupClasses.group}>
+                <button onClick={(_) => callbacks.closeLayoutEditor(true)}>
+                    <Check strokeWidth={2.5} /> OK
+                </button>
+                <button onClick={(_) => callbacks.closeLayoutEditor(false)}>
+                    <X strokeWidth={2.5} /> Cancel
+                </button>
+            </div>
+        </>
+    );
 }
 
 function AddComponentButton({
@@ -326,7 +301,7 @@ function AddComponentButton({
 }: {
     allVariables: Set<string>;
     addVariable: (name: string) => void;
-    addComponent: (componentClass: any) => void;
+    addComponent: (componentClass: ComponentClass) => void;
 }) {
     const [position, setPosition] = useState<Position | null>(null);
 
