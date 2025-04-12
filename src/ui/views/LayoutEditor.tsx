@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import * as LiveSplit from "../../livesplit-core";
 import { SettingsComponent } from "../components/Settings";
 import { UrlCache } from "../../util/UrlCache";
-import Layout from "../components/Layout";
+import { Layout } from "../components/Layout";
 import { WebRenderer } from "../../livesplit-core/livesplit_core";
 import { GeneralSettings } from "./MainSettings";
 import { LSOCommandSink } from "../../util/LSOCommandSink";
@@ -271,6 +271,7 @@ export function View({
                     onResize={(width, height) =>
                         callbacks.onResize(width, height)
                     }
+                    window={window}
                 />
             </div>
         </div>

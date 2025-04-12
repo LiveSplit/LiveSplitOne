@@ -2,6 +2,7 @@ import { CommandSinkRef, HotkeyConfig, HotkeySystem } from "../livesplit-core";
 import { expect } from "../util/OptionUtil";
 
 export interface HotkeyImplementation {
+    ptr: number;
     config(): Promise<HotkeyConfig> | HotkeyConfig;
     setConfig(config: HotkeyConfig): void;
     activate(): void;
@@ -10,7 +11,10 @@ export interface HotkeyImplementation {
 }
 
 class GlobalHotkeys implements HotkeyImplementation {
-    constructor(private hotkeySystem?: HotkeySystem) {}
+    public ptr: number;
+    constructor(private hotkeySystem?: HotkeySystem) {
+        this.ptr = hotkeySystem?.ptr ?? 0;
+    }
 
     public async config(): Promise<HotkeyConfig> {
         return expect(

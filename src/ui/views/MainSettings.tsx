@@ -71,11 +71,20 @@ interface Callbacks {
 }
 
 export function MainSettings(props: Props) {
+    // TODO: Use memo instead?
+    const [generalSettingsState, setGeneralSettings] = useState(() => ({
+        ...props.generalSettings,
+    }));
+
     return props.callbacks.renderViewWithSidebar(
-        <View {...props} />,
+        <View
+            {...props}
+            generalSettings={generalSettingsState}
+            setGeneralSettings={setGeneralSettings}
+        />,
         <SideBar
             callbacks={props.callbacks}
-            generalSettings={props.generalSettings}
+            generalSettings={generalSettingsState}
         />,
     );
 }
@@ -89,14 +98,13 @@ export function View({
     commandSink,
     allComparisons,
     allVariables,
-}: Props) {
+    setGeneralSettings,
+}: Props & {
+    setGeneralSettings: React.Dispatch<React.SetStateAction<GeneralSettings>>;
+}) {
     const [settings, setSettings] = useState(() =>
         hotkeyConfig.settingsDescriptionAsJson(),
     );
-    // TODO: Use memo instead?
-    const [generalSettingsState, setGeneralSettings] = useState(() => ({
-        ...generalSettings,
-    }));
     const [, forceUpdate] = useState({});
 
     const update = () => {
@@ -111,14 +119,12 @@ export function View({
             value: {
                 CustomCombobox: {
                     value:
-                        generalSettingsState.frameRate ===
-                        FRAME_RATE_MATCH_SCREEN
+                        generalSettings.frameRate === FRAME_RATE_MATCH_SCREEN
                             ? FRAME_RATE_MATCH_SCREEN
-                            : generalSettingsState.frameRate ===
+                            : generalSettings.frameRate ===
                                 FRAME_RATE_BATTERY_AWARE
                               ? FRAME_RATE_BATTERY_AWARE
-                              : generalSettingsState.frameRate.toString() +
-                                " FPS",
+                              : generalSettings.frameRate.toString() + " FPS",
                     list: [
                         FRAME_RATE_BATTERY_AWARE,
                         "30 FPS",
@@ -135,27 +141,27 @@ export function View({
             tooltip:
                 "Determines whether to automatically save the splits when resetting the timer.",
             value: {
-                Bool: generalSettingsState.saveOnReset,
+                Bool: generalSettings.saveOnReset,
             },
         },
         {
             text: "Show Control Buttons",
             tooltip:
                 "Determines whether to show buttons beneath the timer that allow controlling it. When disabled, you have to use the hotkeys instead.",
-            value: { Bool: generalSettingsState.showControlButtons },
+            value: { Bool: generalSettings.showControlButtons },
         },
         {
             text: "Show Manual Game Time Input",
             tooltip:
                 'Shows a text box beneath the timer that allows you to manually input the game time. You start the timer and do splits by pressing the Enter key in the text box. Make sure to compare against "Game Time".',
             value: {
-                Bool: generalSettingsState.showManualGameTime !== false,
+                Bool: generalSettings.showManualGameTime !== false,
             },
         },
     ];
 
     let manualGameTimeModeIndex = 0;
-    if (generalSettingsState.showManualGameTime) {
+    if (generalSettings.showManualGameTime) {
         manualGameTimeModeIndex = generalFields.length;
         generalFields.push({
             text: "Manual Game Time Mode",
@@ -163,7 +169,7 @@ export function View({
                 "Determines whether to input the manual game time as segment times or split times.",
             value: {
                 CustomCombobox: {
-                    value: generalSettingsState.showManualGameTime.mode,
+                    value: generalSettings.showManualGameTime.mode,
                     list: [
                         MANUAL_GAME_TIME_MODE_SEGMENT_TIMES,
                         MANUAL_GAME_TIME_MODE_SPLIT_TIMES,
@@ -180,7 +186,7 @@ export function View({
         generalFields.push({
             text: "Always On Top",
             tooltip: "Keeps the window always on top of other windows.",
-            value: { Bool: generalSettingsState.alwaysOnTop! },
+            value: { Bool: generalSettings.alwaysOnTop! },
         });
     }
 
@@ -217,7 +223,7 @@ export function View({
                         case 0:
                             if ("String" in value) {
                                 setGeneralSettings({
-                                    ...generalSettingsState,
+                                    ...generalSettings,
                                     frameRate:
                                         value.String === FRAME_RATE_MATCH_SCREEN
                                             ? FRAME_RATE_MATCH_SCREEN
@@ -234,7 +240,7 @@ export function View({
                         case 1:
                             if ("Bool" in value) {
                                 setGeneralSettings({
-                                    ...generalSettingsState,
+                                    ...generalSettings,
                                     saveOnReset: value.Bool,
                                 });
                             }
@@ -242,7 +248,7 @@ export function View({
                         case 2:
                             if ("Bool" in value) {
                                 setGeneralSettings({
-                                    ...generalSettingsState,
+                                    ...generalSettings,
                                     showControlButtons: value.Bool,
                                 });
                             }
@@ -250,7 +256,7 @@ export function View({
                         case 3:
                             if ("Bool" in value) {
                                 setGeneralSettings({
-                                    ...generalSettingsState,
+                                    ...generalSettings,
                                     showManualGameTime: value.Bool
                                         ? MANUAL_GAME_TIME_SETTINGS_DEFAULT
                                         : false,
@@ -260,7 +266,7 @@ export function View({
                         default:
                             if (index === alwaysOnTopIndex && "Bool" in value) {
                                 setGeneralSettings({
-                                    ...generalSettingsState,
+                                    ...generalSettings,
                                     alwaysOnTop: value.Bool,
                                 });
                             } else if (
@@ -268,7 +274,7 @@ export function View({
                                 "String" in value
                             ) {
                                 setGeneralSettings({
-                                    ...generalSettingsState,
+                                    ...generalSettings,
                                     showManualGameTime: {
                                         mode: value.String,
                                     },
@@ -289,7 +295,7 @@ export function View({
                             tooltip:
                                 "Queries the list of games, categories, and the leaderboards from speedrun.com.",
                             value: {
-                                Bool: generalSettingsState.speedrunComIntegration,
+                                Bool: generalSettings.speedrunComIntegration,
                             },
                         },
                         {
@@ -339,7 +345,7 @@ export function View({
                         case 0:
                             if ("Bool" in value) {
                                 setGeneralSettings({
-                                    ...generalSettingsState,
+                                    ...generalSettings,
                                     speedrunComIntegration: value.Bool,
                                 });
                             }
@@ -360,7 +366,7 @@ export function View({
                                     // It's fine if it fails.
                                 }
                                 setGeneralSettings({
-                                    ...generalSettingsState,
+                                    ...generalSettings,
                                     serverUrl: value.String,
                                 });
                             }

@@ -16,10 +16,12 @@ export default function AutoRefresh({
     frameRate,
     update,
     children,
+    window,
 }: {
     frameRate: FrameRateSetting;
     update: () => void;
     children: React.ReactNode;
+    window: Window;
 }) {
     const { current: state } = React.useRef<State>({
         previousTime: 0,
@@ -30,7 +32,7 @@ export default function AutoRefresh({
     state.update = update;
 
     const animate = React.useCallback(() => {
-        state.reqId = requestAnimationFrame(animate);
+        state.reqId = window.requestAnimationFrame(animate);
 
         let frameRate = state.frameRate;
         if (frameRate === FRAME_RATE_AUTOMATIC) {
@@ -58,7 +60,7 @@ export default function AutoRefresh({
 
         return () => {
             if (state.reqId) {
-                cancelAnimationFrame(state.reqId);
+                window.cancelAnimationFrame(state.reqId);
             }
         };
     }, []);

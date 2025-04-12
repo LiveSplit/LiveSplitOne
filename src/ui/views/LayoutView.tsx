@@ -67,6 +67,7 @@ interface Callbacks {
     saveLayout(): void;
     onServerConnectionOpened(serverConnection: LiveSplitServer): void;
     onServerConnectionClosed(): void;
+    popOut(): void;
 }
 
 export function LayoutView(props: Props) {

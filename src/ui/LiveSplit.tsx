@@ -13,7 +13,9 @@ import {
     TimingMethod,
     TimerPhase,
     Event,
+    LayoutRefMut,
 } from "../livesplit-core";
+import { Layout as ShowLayout } from "./components/Layout";
 import {
     FILE_EXT_LAYOUTS,
     convertFileToArrayBuffer,
@@ -41,14 +43,23 @@ import { LayoutView } from "./views/LayoutView";
 import { ToastContainer, toast } from "react-toastify";
 import * as Storage from "../storage";
 import { UrlCache } from "../util/UrlCache";
-import { ServerProtocol, WebRenderer } from "../livesplit-core/livesplit_core";
+import {
+    HotkeySystem_add_window,
+    ServerProtocol,
+    WebRenderer,
+} from "../livesplit-core/livesplit_core";
 import { LiveSplitServer } from "../api/LiveSplitServer";
 import { LSOCommandSink } from "../util/LSOCommandSink";
 import { DialogContainer } from "./components/Dialog";
 import { createHotkeys, HotkeyImplementation } from "../platform/Hotkeys";
 import { Menu } from "lucide-react";
+import { createRoot } from "react-dom/client";
 
 import * as variables from "../css/variables.icss.scss";
+
+import LiveSplitIcon from "../assets/icon.svg";
+import timerFont from "../css/timer.woff";
+import firaFont from "../css/FiraSans-Regular.woff";
 
 import "react-toastify/dist/ReactToastify.css";
 import * as classes from "../css/LiveSplit.module.scss";
@@ -1068,4 +1079,112 @@ export class LiveSplit extends React.Component<Props, State> {
             document.title = "LiveSplit One";
         }
     }
+
+    popOut(): void {
+        const { layoutWidth, layoutHeight, generalSettings } = this.state;
+        popOut(
+            this.state.commandSink,
+            () => this.state.layout,
+            generalSettings,
+            layoutWidth,
+            layoutHeight,
+        );
+    }
+}
+
+async function popOut(
+    commandSink: LSOCommandSink,
+    getLayout: () => LayoutRefMut,
+    generalSettings: GeneralSettings,
+    width: number,
+    height: number,
+) {
+    const childWindow = window.open(
+        "",
+        "_blank",
+        `popup,width=${width},height=${height}`,
+    );
+    if (!childWindow) {
+        return;
+    }
+
+    const childDoc = childWindow.document;
+
+    childDoc.title = "LiveSplit One";
+
+    const link = childDoc.createElement("link");
+    link.rel = "icon";
+    link.type = "image/svg+xml";
+    link.href = LiveSplitIcon;
+    childDoc.head.appendChild(link);
+
+    childDoc.body.style.margin = "0";
+    childDoc.body.style.background = variables.mainBackgroundColor;
+
+    const timerFontFace = new FontFace("timer", `url(${timerFont})`);
+    const firaFontFace = new FontFace("fira", `url(${firaFont})`);
+    childDoc.fonts.add(timerFontFace);
+    childDoc.fonts.add(firaFontFace);
+    await Promise.all([timerFontFace.load(), firaFontFace.load()]);
+
+    const layoutState = LayoutState.new();
+    const urlCache = new UrlCache();
+
+    const renderer = new WebRenderer();
+    childWindow.addEventListener("unload", async () => {
+        async function sleep(ms: number) {
+            return new Promise((resolve) => setTimeout(resolve, ms));
+        }
+        while (!childWindow.closed) {
+            await sleep(1);
+        }
+        renderer.free();
+        layoutState[Symbol.dispose]();
+        urlCache.imageCache[Symbol.dispose]();
+    });
+
+    const element = renderer.element();
+    element.style.width = "100%";
+    element.style.height = "100%";
+
+    if (hotkeySystem) HotkeySystem_add_window(hotkeySystem.ptr, childWindow);
+
+    createRoot(childDoc.body).render(
+        <ShowLayout
+            getState={() => {
+                const layout = getLayout();
+                if (layout.ptr !== 0) {
+                    commandSink.updateLayoutState(
+                        layout,
+                        layoutState,
+                        urlCache.imageCache,
+                    );
+                    urlCache.collect();
+                }
+                return layoutState;
+            }}
+            layoutUrlCache={urlCache}
+            allowResize={false}
+            width="100%"
+            height="100%"
+            generalSettings={generalSettings}
+            renderer={renderer}
+            onResize={(width, height) =>
+                childWindow.resizeTo(
+                    width + childWindow.outerWidth - childWindow.innerWidth,
+                    height + childWindow.outerHeight - childWindow.innerHeight,
+                )
+            }
+            onScroll={(e) => {
+                const delta = Math.sign(-e.deltaY);
+                const layout = getLayout();
+                if (delta === 1) {
+                    layout.scrollUp();
+                } else if (delta === -1) {
+                    layout.scrollDown();
+                }
+            }}
+            window={childWindow}
+        />,
+    );
 }
