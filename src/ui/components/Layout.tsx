@@ -8,7 +8,7 @@ import { GeneralSettings } from "../views/MainSettings";
 
 import * as classes from "../../css/Layout.module.scss";
 
-export default function Layout({
+export function Layout({
     getState,
     layoutUrlCache,
     allowResize,
@@ -17,16 +17,24 @@ export default function Layout({
     generalSettings,
     renderer,
     onResize,
+    onScroll,
+    window,
 }: {
     getState: () => LayoutStateRef;
     layoutUrlCache: UrlCache;
-    allowResize: boolean;
-    width: number;
-    height: number;
     generalSettings: GeneralSettings;
     renderer: WebRenderer;
     onResize: (width: number, height: number) => void;
-}) {
+    onScroll?: (e: WheelEvent) => void;
+    window: Window;
+} & (
+    | {
+          allowResize: false;
+          width: string | number;
+          height: string | number;
+      }
+    | { allowResize: true; width: number; height: number }
+)) {
     const update = () => {
         const layoutState = getState();
         const newDims = renderer.render(
@@ -39,12 +47,19 @@ export default function Layout({
     };
 
     return (
-        <AutoRefresh frameRate={generalSettings.frameRate} update={update}>
+        <AutoRefresh
+            frameRate={generalSettings.frameRate}
+            update={update}
+            window={window}
+        >
             <div style={{ width, height }}>
                 <div
                     style={{ width, height }}
                     ref={(element) => {
                         element?.appendChild(renderer.element());
+                        if (onScroll) {
+                            element?.addEventListener("wheel", onScroll);
+                        }
                     }}
                 />
                 {allowResize && (

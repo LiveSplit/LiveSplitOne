@@ -8,7 +8,7 @@ import {
 import * as LiveSplit from "../../livesplit-core";
 import { Option, expect } from "../../util/OptionUtil";
 import { DragUpload } from "../components/DragUpload";
-import Layout from "../components/Layout";
+import { Layout } from "../components/Layout";
 import { UrlCache } from "../../util/UrlCache";
 import { WebRenderer } from "../../livesplit-core/livesplit_core";
 import {
@@ -25,6 +25,7 @@ import {
     Layers,
     List,
     Pause,
+    PictureInPicture2,
     Play,
     Settings,
     X,
@@ -73,6 +74,7 @@ interface Callbacks {
     ): React.JSX.Element;
     onServerConnectionClosed(): void;
     onServerConnectionOpened(serverConnection: LiveSplitServer): void;
+    popOut(): void;
 }
 
 export function TimerView(props: Props) {
@@ -143,6 +145,7 @@ function View({
                         onResize={(width, height) =>
                             callbacks.onResize(width, height)
                         }
+                        window={window}
                     />
                 </div>
             </div>
@@ -343,6 +346,9 @@ export function SideBar({
                 </button>
             </div>
             <hr />
+            <button onClick={() => callbacks.popOut()}>
+                <PictureInPicture2 strokeWidth={2.5} /> Pop Out
+            </button>
             <button onClick={() => callbacks.openMainSettings()}>
                 <Settings strokeWidth={2.5} /> Settings
             </button>

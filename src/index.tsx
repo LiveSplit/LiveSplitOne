@@ -69,8 +69,7 @@ try {
         // as otherwise information may be cached incorrectly.
         try {
             const promises = [];
-            // TypeScript doesn't seem to know that the fonts are iterable.
-            for (const fontFace of document.fonts as any as Iterable<FontFace>) {
+            for (const fontFace of document.fonts) {
                 if (fontFace.family === "timer" || fontFace.family === "fira") {
                     promises.push(fontFace.load());
                 }
