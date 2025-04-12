@@ -1092,6 +1092,33 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 }
 
+async function openPopupWindow(
+    width: number,
+    height: number,
+): Promise<Window | null> {
+    try {
+        const pipPromise = (
+            window as any
+        ).documentPictureInPicture?.requestWindow({
+            width,
+            height,
+        });
+
+        if (pipPromise) {
+            return (await pipPromise) as Window;
+        }
+    } catch {
+        // It's fine if it fails, as not all browsers support this.
+    }
+
+    const childWindow = window.open(
+        "",
+        "_blank",
+        `popup,width=${width},height=${height}`,
+    );
+    return childWindow;
+}
+
 async function popOut(
     commandSink: LSOCommandSink,
     getLayout: () => LayoutRefMut,
@@ -1099,11 +1126,7 @@ async function popOut(
     width: number,
     height: number,
 ) {
-    const childWindow = window.open(
-        "",
-        "_blank",
-        `popup,width=${width},height=${height}`,
-    );
+    const childWindow = await openPopupWindow(width, height);
     if (!childWindow) {
         return;
     }
@@ -1165,8 +1188,8 @@ async function popOut(
             }}
             layoutUrlCache={urlCache}
             allowResize={false}
-            width="100%"
-            height="100%"
+            width="100vw"
+            height="100vh"
             generalSettings={generalSettings}
             renderer={renderer}
             onResize={(width, height) =>
