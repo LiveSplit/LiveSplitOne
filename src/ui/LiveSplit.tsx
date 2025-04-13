@@ -1170,7 +1170,9 @@ async function popOut(
     element.style.width = "100%";
     element.style.height = "100%";
 
-    if (hotkeySystem) HotkeySystem_add_window(hotkeySystem.ptr, childWindow);
+    if (hotkeySystem?.ptr) {
+        HotkeySystem_add_window(hotkeySystem.ptr, childWindow);
+    }
 
     createRoot(childDoc.body).render(
         <ShowLayout
