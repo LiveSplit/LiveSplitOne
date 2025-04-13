@@ -130,10 +130,23 @@ function View({
     splitsInfos?: Array<[number, SplitsInfo]>;
     refreshDb: () => Promise<void>;
 }) {
+    const storeRun = async (run: Run) => {
+        try {
+            if (run.len() === 0) {
+                toast.error("Can't import empty splits.");
+                return;
+            }
+            await storeRunWithoutDisposing(run, undefined);
+            await refreshDb();
+        } finally {
+            run[Symbol.dispose]();
+        }
+    };
+
     const addNewSplits = async () => {
         const run = Run.new();
         run.pushSegment(Segment.new("Time"));
-        await storeRunWithoutDisposing(run, undefined);
+        await storeRun(run);
     };
 
     const importSplitsFromArrayBuffer = async (
@@ -142,7 +155,7 @@ function View({
         const [file] = buffer;
         using result = Run.parseArray(new Uint8Array(file), "");
         if (result.parsedSuccessfully()) {
-            await storeRunWithoutDisposing(result.unwrap(), undefined);
+            await storeRun(result.unwrap());
         } else {
             return Error("Couldn't parse the splits.");
         }
