@@ -99,13 +99,7 @@ export function SplitsSelection(props: Props) {
     };
 
     return props.callbacks.renderViewWithSidebar(
-        <View
-            commandSink={props.commandSink}
-            openedSplitsKey={props.openedSplitsKey}
-            callbacks={props.callbacks}
-            splitsInfos={splitsInfos}
-            refreshDb={refreshDb}
-        />,
+        <View {...props} splitsInfos={splitsInfos} refreshDb={refreshDb} />,
         <SideBar
             commandSink={props.commandSink}
             callbacks={props.callbacks}
