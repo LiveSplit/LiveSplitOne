@@ -29,7 +29,7 @@
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.13",
     "@tauri-apps/cli": "^2.2.7",
     "@types/markdown-it": "^14.1.2",
-    "@types/node": "^22.13.1",
+    "@types/node": "^24.0.8",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@types/react-resizable": "^3.0.3",
