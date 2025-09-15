@@ -165,7 +165,7 @@ export async function getSplitsInfos(): Promise<Array<[number, SplitsInfo]>> {
     return arr;
 }
 
-export async function loadSplits(key: number): Promise<Uint8Array | undefined> {
+export async function loadSplits(key: number): Promise<Uint8Array<ArrayBuffer> | undefined> {
     const db = await getDb();
 
     return await db.get("splitsData", key);

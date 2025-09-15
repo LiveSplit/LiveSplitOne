@@ -415,7 +415,7 @@ export class LSOCommandSink {
         return this.timer.getRun().extendedFileName(useExtendedCategoryName);
     }
 
-    public saveAsLssBytes(): Uint8Array {
+    public saveAsLssBytes(): Uint8Array<ArrayBuffer> {
         return this.timer.saveAsLssBytes();
     }
 

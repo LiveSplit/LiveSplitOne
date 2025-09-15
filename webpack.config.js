@@ -237,7 +237,7 @@ export default async (env, argv) => {
                                       options: defineReactCompilerLoaderOption({
                                           babelTransFormOpt: {
                                               plugins: [
-                                                  "@babel/plugin-proposal-explicit-resource-management",
+                                                  "@babel/plugin-transform-explicit-resource-management",
                                               ],
                                           },
                                       }),
