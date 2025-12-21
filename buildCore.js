@@ -6,7 +6,7 @@ let profile = "debug";
 let cargoFlags = "";
 // Keep .github/workflows/ci.yml in sync with these flags, so wasm-opt works.
 let rustFlags =
-  "-C target-feature=+bulk-memory,+mutable-globals,+nontrapping-fptoint,+sign-ext,+simd128,+extended-const,+multivalue,+reference-types,+tail-call";
+    "-C target-feature=+bulk-memory,+mutable-globals,+nontrapping-fptoint,+sign-ext,+simd128,+extended-const,+multivalue,+reference-types,+tail-call";
 let wasmBindgenFlags = "--encode-into always --target web --reference-types";
 let target = "wasm32-unknown-unknown";
 let targetFolder = target;
@@ -36,9 +36,9 @@ if (process.argv.some((v) => v === "--unstable")) {
 // Use the nightly toolchain, which enables some more optimizations.
 if (process.argv.some((v) => v === "--nightly")) {
     toolchain = "+nightly";
-    cargoFlags +=
-        " -Z build-std=std,panic_abort -Z build-std-features=panic_immediate_abort";
-    rustFlags += " -Z wasm-c-abi=spec";
+    cargoFlags += " -Z build-std=std,panic_abort";
+    rustFlags +=
+        " -Z wasm-c-abi=spec -Z unstable-options -C panic=immediate-abort";
 
     // FIXME: Apparently the multivalue ABI is broken again.
     // Caused by: https://github.com/rust-lang/rust/pull/135534
@@ -71,20 +71,20 @@ execSync(
             ...process.env,
             RUSTFLAGS: rustFlags,
         },
-    }
+    },
 );
 
 execSync(
     `wasm-bindgen ${wasmBindgenFlags} livesplit-core/target/${targetFolder}/${profile}/livesplit_core.wasm --out-dir src/livesplit-core`,
     {
         stdio: "inherit",
-    }
+    },
 );
 
 fs.createReadStream(
-    "livesplit-core/capi/bindings/wasm_bindgen/web/index.ts"
+    "livesplit-core/capi/bindings/wasm_bindgen/web/index.ts",
 ).pipe(fs.createWriteStream("src/livesplit-core/index.ts"));
 
 fs.createReadStream(
-    "livesplit-core/capi/bindings/wasm_bindgen/web/preload.ts"
+    "livesplit-core/capi/bindings/wasm_bindgen/web/preload.ts",
 ).pipe(fs.createWriteStream("src/livesplit-core/preload.ts"));
