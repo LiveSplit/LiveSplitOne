@@ -316,8 +316,9 @@ async function executePaginatedRequest<T>(uri: string): Promise<Page<T>> {
     if (pagination.links != null) {
         const nextLink = pagination.links.find((l: any) => l.rel === "next");
         if (nextLink != null) {
-            const link = nextLink.uri as string;
-            next = () => executePaginatedRequest<T>(link);
+            const link = new URL(nextLink.uri as string);
+            link.protocol = "https:"; // Ensure HTTPS, their API seems to return HTTP links.
+            next = () => executePaginatedRequest<T>(link.toString());
         }
     }
     return new Page(data as T[], next);
