@@ -111,7 +111,7 @@ export class LSOCommandSink {
         return result;
     }
 
-    public async reset(updateSplits: boolean | undefined): Promise<CommandResult> {
+    public async reset(updateSplits?: boolean): Promise<CommandResult> {
         if (this.locked) {
             return CommandError.Busy;
         }
@@ -129,7 +129,7 @@ export class LSOCommandSink {
             updateSplits = result === 0;
         }
 
-        const result = this.timer.reset(updateSplits) as CommandResult;
+        const result = this.timer.reset(updateSplits ?? true) as CommandResult;
 
         if (isEvent(result)) {
             this.callbacks.handleEvent(result);
