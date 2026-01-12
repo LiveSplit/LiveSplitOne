@@ -180,7 +180,7 @@ function View({
                         <button
                             aria-label="Reset"
                             disabled={currentPhase === TimerPhase.NotRunning}
-                            onClick={(_) => commandSink.reset()}
+                            onClick={(_) => commandSink.reset(undefined)}
                         >
                             <X strokeWidth={3.5} />
                         </button>
