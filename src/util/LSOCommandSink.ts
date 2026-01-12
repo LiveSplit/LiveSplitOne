@@ -111,13 +111,12 @@ export class LSOCommandSink {
         return result;
     }
 
-    public async reset(): Promise<CommandResult> {
+    public async reset(updateSplits: boolean | undefined): Promise<CommandResult> {
         if (this.locked) {
             return CommandError.Busy;
         }
 
-        let updateSplits = true;
-        if (this.timer.currentAttemptHasNewBestTimes()) {
+        if (updateSplits === undefined && this.timer.currentAttemptHasNewBestTimes()) {
             const [result] = await showDialog({
                 title: "Save Best Times?",
                 description:
