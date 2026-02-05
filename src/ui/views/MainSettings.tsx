@@ -8,6 +8,8 @@ import {
     SettingsDescriptionJson,
     SettingValue,
     HotkeyConfig,
+    Lang,
+    Language,
 } from "../../livesplit-core";
 import { toast } from "react-toastify";
 import { UrlCache } from "../../util/UrlCache";
@@ -22,6 +24,7 @@ import { LSOCommandSink } from "../../util/LSOCommandSink";
 import { Check, FlaskConical, X } from "lucide-react";
 
 import * as buttonGroupClasses from "../../css/ButtonGroup.module.scss";
+import { Label, orAutoLang, resolve, setHtmlLang } from "../../localization";
 
 export interface GeneralSettings {
     frameRate: FrameRateSetting;
@@ -31,6 +34,7 @@ export interface GeneralSettings {
     speedrunComIntegration: boolean;
     serverUrl?: string;
     alwaysOnTop?: boolean;
+    lang: Language | undefined;
 }
 
 export interface ManualGameTimeSettings {
@@ -103,19 +107,68 @@ export function View({
     setGeneralSettings: React.Dispatch<React.SetStateAction<GeneralSettings>>;
 }) {
     const [settings, setSettings] = useState(() =>
-        hotkeyConfig.settingsDescriptionAsJson(),
+        hotkeyConfig.settingsDescriptionAsJson(
+            orAutoLang(generalSettings.lang),
+        ),
     );
     const [, forceUpdate] = useState({});
 
     const update = () => {
-        setSettings(hotkeyConfig.settingsDescriptionAsJson());
+        setSettings(
+            hotkeyConfig.settingsDescriptionAsJson(
+                orAutoLang(generalSettings.lang),
+            ),
+        );
     };
+
+    const lang = generalSettings.lang;
 
     const generalFields = [
         {
-            text: "Frame Rate",
-            tooltip:
-                'Determines the frame rate at which to display the timer. "Battery Aware" tries determining the type of device and charging status to select a good frame rate. "Match Screen" makes the timer match the screen\'s refresh rate.',
+            text: resolve(Label.Language, lang),
+            tooltip: resolve(Label.LanguageDescription, lang),
+            value: {
+                CustomCombobox: {
+                    value:
+                        generalSettings.lang != null
+                            ? `${generalSettings.lang}`
+                            : "Auto",
+                    list: [
+                        ["Auto", resolve(Label.LanguageAuto, lang)],
+                        [`${Language.English}`, Lang.name(Language.English)],
+                        [`${Language.Dutch}`, Lang.name(Language.Dutch)],
+                        [`${Language.French}`, Lang.name(Language.French)],
+                        [`${Language.German}`, Lang.name(Language.German)],
+                        [`${Language.Italian}`, Lang.name(Language.Italian)],
+                        [
+                            `${Language.Portuguese}`,
+                            Lang.name(Language.Portuguese),
+                        ],
+                        [`${Language.Polish}`, Lang.name(Language.Polish)],
+                        [`${Language.Russian}`, Lang.name(Language.Russian)],
+                        [`${Language.Spanish}`, Lang.name(Language.Spanish)],
+                        [
+                            `${Language.BrazilianPortuguese}`,
+                            Lang.name(Language.BrazilianPortuguese),
+                        ],
+                        [
+                            `${Language.ChineseSimplified}`,
+                            Lang.name(Language.ChineseSimplified),
+                        ],
+                        [
+                            `${Language.ChineseTraditional}`,
+                            Lang.name(Language.ChineseTraditional),
+                        ],
+                        [`${Language.Japanese}`, Lang.name(Language.Japanese)],
+                        [`${Language.Korean}`, Lang.name(Language.Korean)],
+                    ] as [string, string][],
+                    mandatory: true,
+                },
+            },
+        },
+        {
+            text: resolve(Label.FrameRate, lang),
+            tooltip: resolve(Label.FrameRateDescription, lang),
             value: {
                 CustomCombobox: {
                     value:
@@ -126,34 +179,37 @@ export function View({
                               ? FRAME_RATE_BATTERY_AWARE
                               : generalSettings.frameRate.toString() + " FPS",
                     list: [
-                        FRAME_RATE_BATTERY_AWARE,
-                        "30 FPS",
-                        "60 FPS",
-                        "120 FPS",
-                        FRAME_RATE_MATCH_SCREEN,
-                    ],
+                        [
+                            FRAME_RATE_BATTERY_AWARE,
+                            resolve(Label.FrameRateBatteryAware, lang),
+                        ],
+                        ["30 FPS", "30 FPS"],
+                        ["60 FPS", "60 FPS"],
+                        ["120 FPS", "120 FPS"],
+                        [
+                            FRAME_RATE_MATCH_SCREEN,
+                            resolve(Label.FrameRateMatchScreen, lang),
+                        ],
+                    ] as [string, string][],
                     mandatory: true,
                 },
             },
         },
         {
-            text: "Save On Reset",
-            tooltip:
-                "Determines whether to automatically save the splits when resetting the timer.",
+            text: resolve(Label.SaveOnReset, lang),
+            tooltip: resolve(Label.SaveOnResetDescription, lang),
             value: {
                 Bool: generalSettings.saveOnReset,
             },
         },
         {
-            text: "Show Control Buttons",
-            tooltip:
-                "Determines whether to show buttons beneath the timer that allow controlling it. When disabled, you have to use the hotkeys instead.",
+            text: resolve(Label.ShowControlButtons, lang),
+            tooltip: resolve(Label.ShowControlButtonsDescription, lang),
             value: { Bool: generalSettings.showControlButtons },
         },
         {
-            text: "Show Manual Game Time Input",
-            tooltip:
-                'Shows a text box beneath the timer that allows you to manually input the game time. You start the timer and do splits by pressing the Enter key in the text box. Make sure to compare against "Game Time".',
+            text: resolve(Label.ShowManualGameTimeInput, lang),
+            tooltip: resolve(Label.ShowManualGameTimeInputDescription, lang),
             value: {
                 Bool: generalSettings.showManualGameTime !== false,
             },
@@ -164,15 +220,20 @@ export function View({
     if (generalSettings.showManualGameTime) {
         manualGameTimeModeIndex = generalFields.length;
         generalFields.push({
-            text: "Manual Game Time Mode",
-            tooltip:
-                "Determines whether to input the manual game time as segment times or split times.",
+            text: resolve(Label.ManualGameTimeMode, lang),
+            tooltip: resolve(Label.ManualGameTimeModeDescription, lang),
             value: {
                 CustomCombobox: {
                     value: generalSettings.showManualGameTime.mode,
                     list: [
-                        MANUAL_GAME_TIME_MODE_SEGMENT_TIMES,
-                        MANUAL_GAME_TIME_MODE_SPLIT_TIMES,
+                        [
+                            MANUAL_GAME_TIME_MODE_SEGMENT_TIMES,
+                            resolve(Label.ManualGameTimeModeSegmentTimes, lang),
+                        ],
+                        [
+                            MANUAL_GAME_TIME_MODE_SPLIT_TIMES,
+                            resolve(Label.ManualGameTimeModeSplitTimes, lang),
+                        ],
                     ],
                     mandatory: false,
                 },
@@ -184,15 +245,15 @@ export function View({
     if (window.__TAURI__ != null) {
         alwaysOnTopIndex = generalFields.length;
         generalFields.push({
-            text: "Always On Top",
-            tooltip: "Keeps the window always on top of other windows.",
+            text: resolve(Label.AlwaysOnTop, lang),
+            tooltip: resolve(Label.AlwaysOnTopDescription, lang),
             value: { Bool: generalSettings.alwaysOnTop! },
         });
     }
 
     return (
         <div>
-            <h2>Hotkeys</h2>
+            <h2>{resolve(Label.HotkeysHeading, lang)}</h2>
             <SettingsComponent
                 context="settings-editor-hotkeys"
                 factory={SettingValue}
@@ -200,15 +261,16 @@ export function View({
                 editorUrlCache={urlCache}
                 allComparisons={allComparisons}
                 allVariables={allVariables}
+                lang={lang}
                 setValue={(index, value) => {
                     if (!hotkeyConfig.setValue(index, value)) {
-                        toast.error("The hotkey is already in use.");
+                        toast.error(resolve(Label.HotkeyAlreadyInUse, lang));
                         return;
                     }
                     update();
                 }}
             />
-            <h2>General</h2>
+            <h2>{resolve(Label.GeneralHeading, lang)}</h2>
             <SettingsComponent
                 context="settings-editor-general"
                 factory={new JsonSettingValueFactory()}
@@ -218,9 +280,31 @@ export function View({
                 editorUrlCache={urlCache}
                 allComparisons={allComparisons}
                 allVariables={allVariables}
+                lang={lang}
                 setValue={(index, value) => {
                     switch (index) {
                         case 0:
+                            if ("String" in value) {
+                                const lang =
+                                    value.String === "Auto"
+                                        ? undefined
+                                        : Number(value.String);
+
+                                setHtmlLang(lang);
+
+                                setSettings(
+                                    hotkeyConfig.settingsDescriptionAsJson(
+                                        orAutoLang(lang),
+                                    ),
+                                );
+
+                                setGeneralSettings({
+                                    ...generalSettings,
+                                    lang,
+                                });
+                            }
+                            break;
+                        case 1:
                             if ("String" in value) {
                                 setGeneralSettings({
                                     ...generalSettings,
@@ -237,7 +321,7 @@ export function View({
                                 });
                             }
                             break;
-                        case 1:
+                        case 2:
                             if ("Bool" in value) {
                                 setGeneralSettings({
                                     ...generalSettings,
@@ -245,7 +329,7 @@ export function View({
                                 });
                             }
                             break;
-                        case 2:
+                        case 3:
                             if ("Bool" in value) {
                                 setGeneralSettings({
                                     ...generalSettings,
@@ -253,7 +337,7 @@ export function View({
                                 });
                             }
                             break;
-                        case 3:
+                        case 4:
                             if ("Bool" in value) {
                                 setGeneralSettings({
                                     ...generalSettings,
@@ -284,16 +368,18 @@ export function View({
                     }
                 }}
             />
-            <h2>Network</h2>
+            <h2>{resolve(Label.NetworkHeading, lang)}</h2>
             <SettingsComponent
                 context="settings-editor-general"
                 factory={new JsonSettingValueFactory()}
                 state={{
                     fields: [
                         {
-                            text: "Speedrun.com Integration",
-                            tooltip:
-                                "Queries the list of games, categories, and the leaderboards from speedrun.com.",
+                            text: resolve(Label.SpeedrunComIntegration, lang),
+                            tooltip: resolve(
+                                Label.SpeedrunComIntegrationDescription,
+                                lang,
+                            ),
                             value: {
                                 Bool: generalSettings.speedrunComIntegration,
                             },
@@ -307,7 +393,7 @@ export function View({
                                         gap: "0.25em",
                                     }}
                                 >
-                                    Server Connection{" "}
+                                    {resolve(Label.ServerConnection, lang)}
                                     <FlaskConical
                                         size={16}
                                         color="#07bc0c"
@@ -317,15 +403,18 @@ export function View({
                             ),
                             tooltip: (
                                 <>
-                                    Allows you to connect to a WebSocket server
-                                    that can control the timer by sending
-                                    various commands. The commands are currently
-                                    a subset of the commands the original
-                                    LiveSplit supports.
+                                    {resolve(
+                                        Label.ServerConnectionDescription,
+                                        lang,
+                                    )}
                                     <br />
                                     <br />
-                                    This feature is <b>experimental</b> and the
-                                    protocol will likely change in the future.
+                                    <b>
+                                        {resolve(
+                                            Label.ServerConnectionExperimental,
+                                            lang,
+                                        )}
+                                    </b>
                                 </>
                             ),
                             value: {
@@ -340,6 +429,7 @@ export function View({
                 editorUrlCache={urlCache}
                 allComparisons={allComparisons}
                 allVariables={allVariables}
+                lang={lang}
                 setValue={(index, value) => {
                     switch (index) {
                         case 0:
@@ -387,7 +477,7 @@ export function SideBar({
 }) {
     return (
         <>
-            <h1>Settings</h1>
+            <h1>{resolve(Label.Settings, generalSettings.lang)}</h1>
             <hr />
             <div className={buttonGroupClasses.group}>
                 <button
@@ -395,14 +485,16 @@ export function SideBar({
                         callbacks.closeMainSettings(true, generalSettings)
                     }
                 >
-                    <Check strokeWidth={2.5} /> OK
+                    <Check strokeWidth={2.5} />
+                    {resolve(Label.Ok, generalSettings.lang)}
                 </button>
                 <button
                     onClick={(_) =>
                         callbacks.closeMainSettings(false, generalSettings)
                     }
                 >
-                    <X strokeWidth={2.5} /> Cancel
+                    <X strokeWidth={2.5} />
+                    {resolve(Label.Cancel, generalSettings.lang)}
                 </button>
             </div>
         </>

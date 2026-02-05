@@ -15,15 +15,11 @@ import {
 } from "react-compiler-webpack";
 
 function parseChangelog() {
-    return execSync('git log --grep "^Changelog: " -10')
+    return execSync('git log --grep "^Changelog" -10')
         .toString()
         .split(/^commit /m)
         .slice(1)
         .map((commit) => {
-            const changelogIndex = commit.indexOf("    Changelog: ");
-            if (changelogIndex === -1) {
-                throw `Changelog not found in commit:\n${commit}`;
-            }
             const dateString = commit.match(/^Date:   (.*)$/m)?.[1];
             if (!dateString) {
                 throw `Date not found in commit:\n${commit}`;
@@ -31,17 +27,52 @@ function parseChangelog() {
             const dateValue = new Date(dateString);
             const date = dateValue.toISOString().split("T")[0];
             const id = commit.substring(0, commit.indexOf("\n"));
-            const message = commit
-                .substring(changelogIndex + 15)
-                .replaceAll("\n    ", "\n")
-                .trim();
+            const changelogEntries = parseChangelogEntries(commit);
+            if (changelogEntries.length === 0) {
+                throw `Changelog not found in commit:\n${commit}`;
+            }
+            const messages = {};
+            for (const entry of changelogEntries) {
+                messages[entry.lang] = entry.message;
+            }
+            const message =
+                messages.en ??
+                messages["en-US"] ??
+                Object.values(messages)[0] ??
+                "";
             return {
                 id,
                 message,
+                messages,
                 date,
             };
         })
         .filter((changelog) => changelog.message);
+}
+
+function parseChangelogEntries(commit) {
+    const entries = [];
+    let current = null;
+    for (const line of commit.split("\n")) {
+        const match = line.match(/^    Changelog(?:\s*\(([^)]+)\))?:\s*(.*)$/);
+        if (match) {
+            if (current) {
+                current.message = current.message.trim();
+                entries.push(current);
+            }
+            const lang = match[1] || "en";
+            current = { lang, message: match[2] };
+            continue;
+        }
+        if (current && line.startsWith("    ")) {
+            current.message += `\n${line.replace(/^    /, "")}`;
+        }
+    }
+    if (current) {
+        current.message = current.message.trim();
+        entries.push(current);
+    }
+    return entries.filter((entry) => entry.message);
 }
 
 export default async (env, argv) => {

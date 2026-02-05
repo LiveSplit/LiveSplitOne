@@ -1,11 +1,12 @@
 import { openDB, IDBPDatabase } from "idb";
 import { Option, assert } from "../util/OptionUtil";
-import { RunRef, Run, TimingMethod } from "../livesplit-core";
+import { RunRef, Run, TimingMethod, Language } from "../livesplit-core";
 import {
     GeneralSettings,
     MANUAL_GAME_TIME_SETTINGS_DEFAULT,
 } from "../ui/views/MainSettings";
 import { FRAME_RATE_AUTOMATIC } from "../util/FrameRate";
+import { fromLocaleOpt, getLocaleOpt, setHtmlLang } from "../localization";
 
 export type HotkeyConfigSettings = unknown;
 export type LayoutSettings = unknown;
@@ -114,15 +115,16 @@ function getDb(): Promise<IDBPDatabase<unknown>> {
 export async function storeRunWithoutDisposing(
     run: RunRef,
     key: number | undefined,
+    lang: Language | undefined,
 ) {
     await storeSplits((callback) => {
         callback(run, run.saveAsLssBytes());
-    }, key);
+    }, key, lang);
 }
 
-export async function storeRunAndDispose(run: Run, key: number | undefined) {
+export async function storeRunAndDispose(run: Run, key: number | undefined, lang: Language | undefined) {
     try {
-        await storeRunWithoutDisposing(run, key);
+        await storeRunWithoutDisposing(run, key, lang);
     } finally {
         run[Symbol.dispose]();
     }
@@ -131,6 +133,7 @@ export async function storeRunAndDispose(run: Run, key: number | undefined) {
 export async function storeSplits(
     callback: (callback: (run: RunRef, lssBytes: Uint8Array) => void) => void,
     key: number | undefined,
+    lang: Language | undefined,
 ): Promise<number> {
     const db = await getDb();
 
@@ -146,7 +149,7 @@ export async function storeSplits(
 
     await tx.done;
 
-    assert(promise !== null, "Callback needs to actually run");
+    assert(promise !== null, "Callback needs to actually run", lang);
     return promise;
 }
 
@@ -245,7 +248,12 @@ export async function loadSplitsKey(): Promise<number | undefined> {
 export async function storeGeneralSettings(generalSettings: GeneralSettings) {
     const db = await getDb();
 
-    await db.put("settings", generalSettings, "generalSettings");
+    const storedSettings = {
+        ...generalSettings,
+        lang: getLocaleOpt(generalSettings.lang),
+    };
+
+    await db.put("settings", storedSettings, "generalSettings");
 }
 
 export async function loadGeneralSettings(): Promise<GeneralSettings> {
@@ -259,6 +267,10 @@ export async function loadGeneralSettings(): Promise<GeneralSettings> {
         generalSettings.showManualGameTime = MANUAL_GAME_TIME_SETTINGS_DEFAULT;
     }
 
+    const lang = fromLocaleOpt(generalSettings.lang);
+
+    setHtmlLang(lang);
+
     return {
         frameRate: generalSettings.frameRate ?? FRAME_RATE_AUTOMATIC,
         showControlButtons: generalSettings.showControlButtons ?? !isTauri,
@@ -268,6 +280,7 @@ export async function loadGeneralSettings(): Promise<GeneralSettings> {
         serverUrl: generalSettings.serverUrl,
         alwaysOnTop:
             generalSettings.alwaysOnTop ?? (isTauri ? true : undefined),
+        lang,
     };
 }
 

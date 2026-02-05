@@ -11,5 +11,6 @@ declare interface Contributor {
 declare interface ChangelogEntry {
     id: string;
     message: string;
+    messages?: Record<string, string>;
     date: string;
 }

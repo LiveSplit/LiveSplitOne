@@ -1,7 +1,8 @@
 import * as React from "react";
 import { expect } from "../../../util/OptionUtil";
-import { LayoutDirection } from "../../../livesplit-core";
+import { Language, LayoutDirection } from "../../../livesplit-core";
 import { SettingValueFactory } from ".";
+import { Label, resolve } from "../../../localization";
 
 import * as tableClasses from "../../../css/Table.module.scss";
 
@@ -9,10 +10,12 @@ export function LayoutDirection<T>({
     value,
     setValue,
     factory,
+    lang,
 }: {
     value: LayoutDirection;
     setValue: (value: T) => void;
     factory: SettingValueFactory<T>;
+    lang: Language | undefined;
 }) {
     return (
         <div className={tableClasses.settingsValueBox}>
@@ -23,12 +26,17 @@ export function LayoutDirection<T>({
                         expect(
                             factory.fromLayoutDirection(e.target.value),
                             "Unexpected Layout Direction",
+                            lang,
                         ),
                     );
                 }}
             >
-                <option value="Vertical">Vertical</option>
-                <option value="Horizontal">Horizontal</option>
+                <option value="Vertical">
+                    {resolve(Label.LayoutDirectionVertical, lang)}
+                </option>
+                <option value="Horizontal">
+                    {resolve(Label.LayoutDirectionHorizontal, lang)}
+                </option>
             </select>
         </div>
     );

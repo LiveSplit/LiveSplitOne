@@ -1,6 +1,6 @@
 import * as React from "react";
 import { expect } from "../../../util/OptionUtil";
-import { DigitsFormatJson } from "../../../livesplit-core";
+import { DigitsFormatJson, Language } from "../../../livesplit-core";
 import { SettingValueFactory } from ".";
 
 import * as tableClasses from "../../../css/Table.module.scss";
@@ -9,10 +9,12 @@ export function DigitsFormat<T>({
     value,
     setValue,
     factory,
+    lang,
 }: {
     value: DigitsFormatJson;
     setValue: (value: T) => void;
     factory: SettingValueFactory<T>;
+    lang: Language | undefined;
 }) {
     return (
         <div className={tableClasses.settingsValueBox}>
@@ -23,6 +25,7 @@ export function DigitsFormat<T>({
                         expect(
                             factory.fromDigitsFormat(e.target.value),
                             "Unexpected Digits Format",
+                            lang,
                         ),
                     )
                 }

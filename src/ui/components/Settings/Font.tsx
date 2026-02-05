@@ -1,9 +1,10 @@
 import * as React from "react";
 import { expect } from "../../../util/OptionUtil";
-import { Font } from "../../../livesplit-core";
+import { Font, Language } from "../../../livesplit-core";
 import { SettingValueFactory } from ".";
 import { Switch } from "../Switch";
 import * as FontList from "../../../util/FontList";
+import { Label, resolve } from "../../../localization";
 
 import * as tableClasses from "../../../css/Table.module.scss";
 
@@ -12,11 +13,13 @@ export function Font<T>({
     setValue,
     factory,
     loadedCallback,
+    lang,
 }: {
     value: Font | null;
     setValue: (value: T) => void;
     factory: SettingValueFactory<T>;
     loadedCallback: () => void;
+    lang: Language | undefined;
 }) {
     const children = [
         <Switch
@@ -27,6 +30,7 @@ export function Font<T>({
                         expect(
                             factory.fromFont("", "normal", "normal", "normal"),
                             "Unexpected Font",
+                            lang,
                         ),
                     );
                 } else {
@@ -61,6 +65,7 @@ export function Font<T>({
                                     stretch,
                                 ),
                                 "Unexpected Font",
+                                lang,
                             ),
                         )
                     }
@@ -88,6 +93,7 @@ export function Font<T>({
                                     stretch,
                                 ),
                                 "Unexpected Font",
+                                lang,
                             ),
                         )
                     }
@@ -96,7 +102,7 @@ export function Font<T>({
         }
 
         children.push(
-            <>Style</>,
+            <>{resolve(Label.FontStyle, lang)}</>,
             <select
                 value={style}
                 onChange={(e) =>
@@ -109,14 +115,19 @@ export function Font<T>({
                                 stretch,
                             ),
                             "Unexpected Font",
+                            lang,
                         ),
                     )
                 }
             >
-                <option value="normal">Normal</option>
-                <option value="italic">Italic</option>
+                <option value="normal">
+                    {resolve(Label.FontStyleNormal, lang)}
+                </option>
+                <option value="italic">
+                    {resolve(Label.FontStyleItalic, lang)}
+                </option>
             </select>,
-            <>Weight</>,
+            <>{resolve(Label.FontWeight, lang)}</>,
             <select
                 value={weight}
                 onChange={(e) =>
@@ -129,6 +140,7 @@ export function Font<T>({
                                 stretch,
                             ),
                             "Unexpected Font",
+                            lang,
                         ),
                     )
                 }
@@ -144,7 +156,7 @@ export function Font<T>({
                     </option>
                 ))}
             </select>,
-            <>Stretch</>,
+            <>{resolve(Label.FontStretch, lang)}</>,
             <select
                 value={stretch}
                 onChange={(e) =>
@@ -157,6 +169,7 @@ export function Font<T>({
                                 e.target.value,
                             ),
                             "Unexpected Font",
+                            lang,
                         ),
                     )
                 }

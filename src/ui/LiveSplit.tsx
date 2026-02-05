@@ -14,6 +14,7 @@ import {
     TimerPhase,
     Event,
     LayoutRefMut,
+    Language,
 } from "../livesplit-core";
 import { Layout as ShowLayout } from "./components/Layout";
 import {
@@ -65,6 +66,7 @@ import "react-toastify/dist/ReactToastify.css";
 import * as classes from "../css/LiveSplit.module.scss";
 import * as sidebarClasses from "../css/Sidebar.module.scss";
 import * as toastClasses from "../css/Toast.module.scss";
+import { Label, orAutoLang, resolve, setHtmlLang } from "../localization";
 
 const buttonHeight = parseFloat(variables.buttonHeight);
 const largeMargin = parseFloat(variables.largeMargin);
@@ -183,6 +185,7 @@ export class LiveSplit extends React.Component<Props, State> {
         const timer = expect(
             Timer.new(run),
             "The Default Run should be a valid Run",
+            props.generalSettings.lang,
         );
 
         const commandSink = new LSOCommandSink(timer, this);
@@ -190,6 +193,7 @@ export class LiveSplit extends React.Component<Props, State> {
         hotkeySystem = createHotkeys(
             commandSink.getCommandSink(),
             props.hotkeys,
+            props.generalSettings.lang,
         );
 
         if (props.splits !== undefined) {
@@ -215,7 +219,9 @@ export class LiveSplit extends React.Component<Props, State> {
             /* Looks like the storage has no valid data */
         }
         if (layout === null) {
-            layout = Layout.defaultLayout();
+            layout = Layout.defaultLayout(
+                orAutoLang(props.generalSettings.lang),
+            );
         }
 
         const isDesktop = this.isDesktopQuery.matches;
@@ -270,12 +276,16 @@ export class LiveSplit extends React.Component<Props, State> {
         this.mediaQueryChanged = this.mediaQueryChanged.bind(this);
     }
 
-    private notifyAboutUpdate(this: void) {
+    public getLang(): Language | undefined {
+        return this.state.generalSettings.lang;
+    }
+
+    private notifyAboutUpdate() {
         const { serviceWorker } = navigator;
         if (serviceWorker && serviceWorker.controller) {
             // Don't prompt for update when service worker gets removed
             toast.warn(
-                "A new version of LiveSplit One is available! Click here to reload.",
+                resolve(Label.UpdateAvailable, this.state.generalSettings.lang),
                 {
                     closeOnClick: true,
                     onClick: () => window.location.reload(),
@@ -296,7 +306,10 @@ export class LiveSplit extends React.Component<Props, State> {
 
         window.onbeforeunload = () => {
             if (this.state.splitsModified || this.state.layoutModified) {
-                return "There are unsaved changes. Do you really want to close LiveSplit One?";
+                return resolve(
+                    Label.UnsavedChangesBeforeUnload,
+                    this.state.generalSettings.lang,
+                );
             } else {
                 return;
             }
@@ -311,9 +324,8 @@ export class LiveSplit extends React.Component<Props, State> {
         const { serviceWorker } = navigator;
         if (serviceWorker && serviceWorker.controller) {
             // Don't prompt for update when there was no service worker previously installed
-            serviceWorker.addEventListener(
-                "controllerchange",
-                this.notifyAboutUpdate,
+            serviceWorker.addEventListener("controllerchange", () =>
+                this.notifyAboutUpdate(),
             );
         }
     }
@@ -325,15 +337,27 @@ export class LiveSplit extends React.Component<Props, State> {
     public componentWillUnmount() {
         window.removeEventListener(
             "wheel",
-            expect(this.scrollEvent, "A Scroll Event should exist"),
+            expect(
+                this.scrollEvent,
+                "A Scroll Event should exist",
+                this.state.generalSettings.lang,
+            ),
         );
         window.removeEventListener(
             "contextmenu",
-            expect(this.rightClickEvent, "A Right Click Event should exist"),
+            expect(
+                this.rightClickEvent,
+                "A Right Click Event should exist",
+                this.state.generalSettings.lang,
+            ),
         );
         window.removeEventListener(
             "resize",
-            expect(this.resizeEvent, "A Resize Event should exist"),
+            expect(
+                this.resizeEvent,
+                "A Resize Event should exist",
+                this.state.generalSettings.lang,
+            ),
         );
         this.state.commandSink[Symbol.dispose]();
         this.state.layout[Symbol.dispose]();
@@ -348,15 +372,15 @@ export class LiveSplit extends React.Component<Props, State> {
 
         const { serviceWorker } = navigator;
         if (serviceWorker) {
-            serviceWorker.removeEventListener(
-                "controllerchange",
-                this.notifyAboutUpdate,
+            serviceWorker.removeEventListener("controllerchange", () =>
+                this.notifyAboutUpdate(),
             );
         }
     }
 
     public render() {
         let view: React.JSX.Element | undefined;
+
         if (this.state.menu.kind === MenuKind.RunEditor) {
             view = (
                 <RunEditorComponent
@@ -400,7 +424,12 @@ export class LiveSplit extends React.Component<Props, State> {
                 />
             );
         } else if (this.state.menu.kind === MenuKind.About) {
-            view = <About callbacks={this} />;
+            view = (
+                <About
+                    callbacks={this}
+                    generalSettings={this.state.generalSettings}
+                />
+            );
         } else if (this.state.menu.kind === MenuKind.Splits) {
             view = (
                 <SplitsSelection
@@ -497,7 +526,10 @@ export class LiveSplit extends React.Component<Props, State> {
                 >
                     {!this.state.isDesktop && !this.state.sidebarOpen && (
                         <button
-                            aria-label="Open Sidebar"
+                            aria-label={resolve(
+                                Label.OpenSidebarAriaLabel,
+                                this.state.generalSettings.lang,
+                            )}
                             className={classes.openSidebarButton}
                             onClick={() => this.onSetSidebarOpen(true)}
                         >
@@ -569,7 +601,9 @@ export class LiveSplit extends React.Component<Props, State> {
     public async importSplitsFromFile(file: File) {
         const splits = await convertFileToArrayBuffer(file);
         if (splits instanceof Error) {
-            toast.error(`Failed to read the file: ${splits.message}`);
+            toast.error(
+                `${resolve(Label.FailedToReadFile, this.state.generalSettings.lang)} ${splits.message}`,
+            );
             return;
         }
         this.importSplitsFromArrayBuffer(splits);
@@ -585,7 +619,12 @@ export class LiveSplit extends React.Component<Props, State> {
             );
             this.setState({ layoutModified: false }, () => this.updateBadge());
         } catch (_) {
-            toast.error("Failed to save the layout.");
+            toast.error(
+                resolve(
+                    Label.FailedToSaveLayout,
+                    this.state.generalSettings.lang,
+                ),
+            );
         }
     }
 
@@ -595,7 +634,9 @@ export class LiveSplit extends React.Component<Props, State> {
             return;
         }
         if (maybeFile instanceof Error) {
-            toast.error(`Failed to read the file: ${maybeFile.message}`);
+            toast.error(
+                `${resolve(Label.FailedToReadFile, this.state.generalSettings.lang)} ${maybeFile.message}`,
+            );
             return;
         }
         const [file] = maybeFile;
@@ -609,7 +650,9 @@ export class LiveSplit extends React.Component<Props, State> {
     public async importLayoutFromFile(file: File) {
         const maybeFile = await convertFileToString(file);
         if (maybeFile instanceof Error) {
-            toast.error(`Failed to read the file: ${maybeFile.message}`);
+            toast.error(
+                `${resolve(Label.FailedToReadFile, this.state.generalSettings.lang)} ${maybeFile.message}`,
+            );
             return;
         }
         const [fileString] = maybeFile;
@@ -622,7 +665,9 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     public loadDefaultLayout() {
-        const layout = Layout.defaultLayout();
+        const layout = Layout.defaultLayout(
+            orAutoLang(this.state.generalSettings.lang),
+        );
         this.setLayout(layout);
     }
 
@@ -630,13 +675,14 @@ export class LiveSplit extends React.Component<Props, State> {
         const editor = expect(
             RunEditor.new(run),
             "The Run Editor should always be able to be opened.",
+            this.state.generalSettings.lang,
         );
         this.changeMenu({ kind: MenuKind.RunEditor, editor, splitsKey });
     }
 
     public closeRunEditor(save: boolean) {
         if (this.state.menu.kind !== MenuKind.RunEditor) {
-            panic("No Run Editor to close");
+            panic("No Run Editor to close", this.state.generalSettings.lang);
         }
         const { editor, splitsKey } = this.state.menu;
         const run = editor.close();
@@ -645,9 +691,14 @@ export class LiveSplit extends React.Component<Props, State> {
                 assertNull(
                     this.state.commandSink.setRun(run),
                     "The Run Editor should always return a valid Run.",
+                    this.state.generalSettings.lang,
                 );
             } else {
-                Storage.storeRunAndDispose(run, splitsKey);
+                Storage.storeRunAndDispose(
+                    run,
+                    splitsKey,
+                    this.state.generalSettings.lang,
+                );
             }
         } else {
             run[Symbol.dispose]();
@@ -669,13 +720,17 @@ export class LiveSplit extends React.Component<Props, State> {
         const editor = expect(
             LayoutEditor.new(layout),
             "The Layout Editor should always be able to be opened.",
+            this.state.generalSettings.lang,
         );
         this.changeMenu({ kind: MenuKind.LayoutEditor, editor });
     }
 
     public closeLayoutEditor(save: boolean) {
         if (this.state.menu.kind !== MenuKind.LayoutEditor) {
-            panic("No Layout Editor to close.");
+            panic(
+                "No Layout Editor to close.",
+                this.state.generalSettings.lang,
+            );
         }
         const layoutEditor = this.state.menu.editor;
         const layout = layoutEditor.close();
@@ -690,7 +745,9 @@ export class LiveSplit extends React.Component<Props, State> {
     public async openMainSettings() {
         this.changeMenu({
             kind: MenuKind.MainSettings,
-            config: await this.state.hotkeySystem.config(),
+            config: await this.state.hotkeySystem.config(
+                this.state.generalSettings.lang,
+            ),
         });
     }
 
@@ -701,7 +758,10 @@ export class LiveSplit extends React.Component<Props, State> {
         const menu = this.state.menu;
 
         if (menu.kind !== MenuKind.MainSettings) {
-            panic("No Settings Editor to close.");
+            panic(
+                "No Settings Editor to close.",
+                this.state.generalSettings.lang,
+            );
         }
 
         if (save) {
@@ -709,19 +769,30 @@ export class LiveSplit extends React.Component<Props, State> {
                 const config = menu.config.asJson();
                 await Storage.storeHotkeys(config);
             } catch {
-                toast.error("Failed to save the hotkey settings.");
+                toast.error(
+                    resolve(
+                        Label.FailedToSaveHotkeys,
+                        this.state.generalSettings.lang,
+                    ),
+                );
             }
 
             try {
                 await Storage.storeGeneralSettings(generalSettings);
             } catch {
-                toast.error("Failed to save the general settings.");
+                toast.error(
+                    resolve(
+                        Label.FailedToSaveGeneralSettings,
+                        this.state.generalSettings.lang,
+                    ),
+                );
             }
 
             this.state.hotkeySystem.setConfig(menu.config);
             this.setState({ generalSettings });
             this.updateTauriSettings(generalSettings);
         } else {
+            setHtmlLang(this.state.generalSettings.lang);
             menu.config[Symbol.dispose]();
         }
 
@@ -749,7 +820,11 @@ export class LiveSplit extends React.Component<Props, State> {
 
     private getDefaultRun() {
         const run = Run.new();
-        run.pushSegment(Segment.new("Time"));
+        run.pushSegment(
+            Segment.new(
+                resolve(Label.NewSegmentName, this.props.generalSettings.lang),
+            ),
+        );
         return run;
     }
 
@@ -820,7 +895,10 @@ export class LiveSplit extends React.Component<Props, State> {
             return;
         }
         throw Error(
-            "The layout could not be loaded. This may not be a valid LiveSplit or LiveSplit One Layout.",
+            resolve(
+                Label.LayoutCouldNotBeLoaded,
+                this.state.generalSettings.lang,
+            ),
         );
     }
 
@@ -846,10 +924,20 @@ export class LiveSplit extends React.Component<Props, State> {
         if (result.parsedSuccessfully()) {
             const run = result.unwrap();
             this.setRun(run, () => {
-                throw Error("Empty Splits are not supported.");
+                throw Error(
+                    resolve(
+                        Label.EmptySplitsNotSupported,
+                        this.state.generalSettings.lang,
+                    ),
+                );
             });
         } else {
-            throw Error("Couldn't parse the splits.");
+            throw Error(
+                resolve(
+                    Label.CouldNotParseSplits,
+                    this.state.generalSettings.lang,
+                ),
+            );
         }
     }
 
@@ -878,18 +966,27 @@ export class LiveSplit extends React.Component<Props, State> {
 
     async saveSplits() {
         try {
-            const openedSplitsKey = await Storage.storeSplits((callback) => {
-                callback(
-                    this.state.commandSink.getRun(),
-                    this.state.commandSink.saveAsLssBytes(),
-                );
-                this.state.commandSink.markAsUnmodified();
-            }, this.state.openedSplitsKey);
+            const openedSplitsKey = await Storage.storeSplits(
+                (callback) => {
+                    callback(
+                        this.state.commandSink.getRun(),
+                        this.state.commandSink.saveAsLssBytes(),
+                    );
+                    this.state.commandSink.markAsUnmodified();
+                },
+                this.state.openedSplitsKey,
+                this.state.generalSettings.lang,
+            );
             if (this.state.openedSplitsKey !== openedSplitsKey) {
                 this.setSplitsKey(openedSplitsKey);
             }
         } catch (_) {
-            toast.error("Failed to save the splits.");
+            toast.error(
+                resolve(
+                    Label.FailedToSaveSplits,
+                    this.state.generalSettings.lang,
+                ),
+            );
         }
     }
 
@@ -1183,6 +1280,7 @@ async function popOut(
                         layout,
                         layoutState,
                         urlCache.imageCache,
+                        generalSettings.lang,
                     );
                     urlCache.collect();
                 }

@@ -1,5 +1,6 @@
 import * as React from "react";
 import {
+    Language,
     Layout,
     LayoutStateRefMut,
     TimerPhase,
@@ -21,6 +22,7 @@ import {
     SquarePen,
     Upload,
 } from "lucide-react";
+import { Label, resolve } from "../../localization";
 
 import * as sidebarClasses from "../../css/Sidebar.module.scss";
 
@@ -76,6 +78,7 @@ export function LayoutView(props: Props) {
         <SideBar
             callbacks={props.callbacks}
             layoutModified={props.layoutModified}
+            lang={props.generalSettings.lang}
         />,
     );
 }
@@ -83,21 +86,24 @@ export function LayoutView(props: Props) {
 function SideBar({
     callbacks,
     layoutModified,
+    lang,
 }: {
     callbacks: Callbacks;
     layoutModified: boolean;
+    lang: Language | undefined;
 }) {
     return (
         <>
-            <h1>Layout</h1>
+            <h1>{resolve(Label.Layout, lang)}</h1>
             <hr />
             <button onClick={(_) => callbacks.openLayoutEditor()}>
-                <SquarePen strokeWidth={2.5} /> Edit
+                <SquarePen strokeWidth={2.5} />
+                {resolve(Label.Edit, lang)}
             </button>
             <button onClick={(_) => callbacks.saveLayout()}>
                 <Save strokeWidth={2.5} />
                 <span>
-                    Save
+                    {resolve(Label.Save, lang)}
                     {layoutModified && (
                         <Circle
                             strokeWidth={0}
@@ -109,17 +115,21 @@ function SideBar({
                 </span>
             </button>
             <button onClick={(_) => callbacks.importLayout()}>
-                <Download strokeWidth={2.5} /> Import
+                <Download strokeWidth={2.5} />
+                {resolve(Label.Import, lang)}
             </button>
             <button onClick={(_) => callbacks.exportLayout()}>
-                <Upload strokeWidth={2.5} /> Export
+                <Upload strokeWidth={2.5} />
+                {resolve(Label.Export, lang)}
             </button>
             <button onClick={(_) => callbacks.loadDefaultLayout()}>
-                <ListRestart strokeWidth={2.5} /> Default
+                <ListRestart strokeWidth={2.5} />
+                {resolve(Label.Default, lang)}
             </button>
             <hr />
             <button onClick={(_) => callbacks.openTimerView()}>
-                <ArrowLeft strokeWidth={2.5} /> Back
+                <ArrowLeft strokeWidth={2.5} />
+                {resolve(Label.Back, lang)}
             </button>
         </>
     );

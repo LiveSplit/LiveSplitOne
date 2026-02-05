@@ -11,11 +11,13 @@ import { getGameInfo, getPlatforms, getRegions } from "../../api/GameList";
 import { resolveEmbed } from "../Embed";
 import { Markdown, replaceFlag } from "./Markdown";
 import { formatLeaderboardTime } from "../../util/TimeUtil";
+import { formatDate, Label, resolve } from "../../localization";
 
 import * as classes from "../../css/Leaderboard.module.scss";
 import * as runEditorClasses from "../../css/RunEditor.module.scss";
 import * as tableClasses from "../../css/Table.module.scss";
 import * as markdownClasses from "../../css/Markdown.module.scss";
+import { Language } from "../../livesplit-core";
 
 export interface Filters {
     region?: string;
@@ -32,6 +34,7 @@ export function Leaderboard({
     filters,
     expandedLeaderboardRows,
     toggleExpandLeaderboardRow,
+    lang,
 }: {
     game: string;
     category: Option<Category>;
@@ -39,6 +42,7 @@ export function Leaderboard({
     filters: Filters;
     expandedLeaderboardRows: Map<number, boolean>;
     toggleExpandLeaderboardRow: (rowIndex: number) => void;
+    lang: Language | undefined;
 }) {
     const gameInfo = getGameInfo(game);
     const platformList = getPlatforms();
@@ -74,9 +78,9 @@ export function Leaderboard({
         >
             <thead className={runEditorClasses.tableHeader}>
                 <tr>
-                    <th>Rank</th>
-                    <th>Player</th>
-                    <th>Time</th>
+                    <th>{resolve(Label.Rank, lang)}</th>
+                    <th>{resolve(Label.Player, lang)}</th>
+                    <th>{resolve(Label.Time, lang)}</th>
                     {variableColumns?.map((variable) => (
                         <th>{variable.name}</th>
                     ))}
@@ -207,26 +211,46 @@ export function Leaderboard({
                                     <table className={classes.runMetaTable}>
                                         <tbody>
                                             <tr>
-                                                <td>Date:</td>
                                                 <td>
-                                                    {run.date
-                                                        ?.split("-")
-                                                        .join("/") ?? ""}
+                                                    {resolve(Label.Date, lang)}
+                                                </td>
+                                                <td>
+                                                    {run.date != null
+                                                        ? formatDate(
+                                                              run.date,
+                                                              lang,
+                                                          )
+                                                        : ""}
                                                 </td>
                                             </tr>
                                             {map(region, (r) => (
                                                 <tr>
-                                                    <td>Region:</td>
+                                                    <td>
+                                                        {resolve(
+                                                            Label.Region,
+                                                            lang,
+                                                        )}
+                                                        :
+                                                    </td>
                                                     <td>{r}</td>
                                                 </tr>
                                             ))}
                                             {map(platform, (p) => (
                                                 <tr>
-                                                    <td>Platform:</td>
+                                                    <td>
+                                                        {resolve(
+                                                            Label.Platform,
+                                                            lang,
+                                                        )}
+                                                        :
+                                                    </td>
                                                     <td>
                                                         {p}
                                                         {run.system.emulated &&
-                                                            " Emulator"}
+                                                            ` ${resolve(
+                                                                Label.EmulatorTag,
+                                                                lang,
+                                                            )}`}
                                                     </td>
                                                 </tr>
                                             ))}
@@ -327,6 +351,7 @@ export function Leaderboard({
                                     {formatLeaderboardTime(
                                         run.times.primary_t,
                                         hideMilliseconds,
+                                        lang,
                                     )}
                                 </a>
                             </td>
@@ -348,6 +373,7 @@ export function LeaderboardButtons({
     runId,
     updateFilters,
     interactiveAssociateRunOrOpenPage,
+    lang,
 }: {
     gameInfo: Game;
     category: Option<Category>;
@@ -358,6 +384,7 @@ export function LeaderboardButtons({
     runId: string;
     updateFilters: () => void;
     interactiveAssociateRunOrOpenPage: () => void;
+    lang: Language | undefined;
 }) {
     const regionList = [""];
     const platformList = [""];
@@ -388,7 +415,7 @@ export function LeaderboardButtons({
     if (regionList.length > 2) {
         filterList.push(
             <tr>
-                <td>Region:</td>
+                <td>{resolve(Label.Region, lang)}:</td>
             </tr>,
         );
         filterList.push(
@@ -416,7 +443,7 @@ export function LeaderboardButtons({
     if (platformList.length > 2) {
         filterList.push(
             <tr>
-                <td>Platform:</td>
+                <td>{resolve(Label.Platform, lang)}:</td>
             </tr>,
         );
         filterList.push(
@@ -444,7 +471,7 @@ export function LeaderboardButtons({
     if (gameInfo.ruleset["emulators-allowed"]) {
         filterList.push(
             <tr>
-                <td>Emulator:</td>
+                <td>{resolve(Label.Emulator, lang)}:</td>
             </tr>,
         );
         filterList.push(
@@ -453,9 +480,9 @@ export function LeaderboardButtons({
                     <select
                         value={
                             filters.isEmulated === true
-                                ? "Yes"
+                                ? "yes"
                                 : filters.isEmulated === false
-                                  ? "No"
+                                  ? "no"
                                   : ""
                         }
                         style={{
@@ -463,9 +490,9 @@ export function LeaderboardButtons({
                         }}
                         onChange={(e) => {
                             const value = e.target.value;
-                            if (value === "Yes") {
+                            if (value === "yes") {
                                 filters.isEmulated = true;
-                            } else if (value === "No") {
+                            } else if (value === "no") {
                                 filters.isEmulated = false;
                             } else {
                                 filters.isEmulated = undefined;
@@ -473,8 +500,12 @@ export function LeaderboardButtons({
                             updateFilters();
                         }}
                     >
-                        {["", "Yes", "No"].map((v) => (
-                            <option value={v}>{v}</option>
+                        {[
+                            { value: "", label: "" },
+                            { value: "yes", label: resolve(Label.Yes, lang) },
+                            { value: "no", label: resolve(Label.No, lang) },
+                        ].map((v) => (
+                            <option value={v.value}>{v.label}</option>
                         ))}
                     </select>
                 </td>
@@ -485,6 +516,7 @@ export function LeaderboardButtons({
     const variables = expect(
         gameInfo.variables,
         "We need the variables to be embedded",
+        lang,
     );
     for (const variable of variables.data) {
         if (isVariableValidForCategory(variable, category)) {
@@ -587,25 +619,34 @@ export function LeaderboardButtons({
 
     filterList.push(
         <tr>
-            <td>Obsolete Runs:</td>
+            <td>{resolve(Label.ObsoleteRuns, lang)}:</td>
         </tr>,
     );
     filterList.push(
         <tr>
             <td>
                 <select
-                    value={filters.showObsolete ? "Shown" : "Hidden"}
+                    value={filters.showObsolete ? "shown" : "hidden"}
                     style={{
                         width: "100%",
                     }}
                     onChange={(e) => {
                         const value = e.target.value;
-                        filters.showObsolete = value === "Shown";
+                        filters.showObsolete = value === "shown";
                         updateFilters();
                     }}
                 >
-                    {["Shown", "Hidden"].map((v) => (
-                        <option value={v}>{v}</option>
+                    {[
+                        {
+                            value: "shown",
+                            label: resolve(Label.Shown, lang),
+                        },
+                        {
+                            value: "hidden",
+                            label: resolve(Label.Hidden, lang),
+                        },
+                    ].map((v) => (
+                        <option value={v.value}>{v.label}</option>
                     ))}
                 </select>
             </td>
@@ -625,16 +666,18 @@ export function LeaderboardButtons({
                 }}
                 disabled={category == null}
             >
-                Open Leaderboard
+                {resolve(Label.OpenLeaderboard, lang)}
             </button>
             <button onClick={interactiveAssociateRunOrOpenPage}>
-                {runId !== "" ? "Open PB Page" : "Associate Run"}
+                {runId !== ""
+                    ? resolve(Label.OpenPbPage, lang)
+                    : resolve(Label.AssociateRun, lang)}
             </button>
             {subcategoryBoxes}
             <table className={classes.filterTable}>
                 <thead className={runEditorClasses.tableHeader}>
                     <tr>
-                        <th>Filters</th>
+                        <th>{resolve(Label.Filters, lang)}</th>
                     </tr>
                 </thead>
                 <tbody className={tableClasses.tableBody}>{filterList}</tbody>

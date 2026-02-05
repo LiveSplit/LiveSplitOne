@@ -1,11 +1,12 @@
 import * as React from "react";
 import { Option, assertNever, expect } from "../../../util/OptionUtil";
-import { Color, LayoutBackground } from "../../../livesplit-core";
+import { Color, Language, LayoutBackground } from "../../../livesplit-core";
 import { ColorPicker } from "../ColorPicker";
 import { SettingValueFactory } from ".";
 import { UrlCache } from "../../../util/UrlCache";
 import { toast } from "react-toastify";
 import { FILE_EXT_IMAGES, openFileAsArrayBuffer } from "../../../util/FileUtil";
+import { Label, resolve } from "../../../localization";
 
 import * as colorPickerClasses from "../../../css/ColorPicker.module.scss";
 import * as tableClasses from "../../../css/Table.module.scss";
@@ -15,11 +16,13 @@ export function LayoutBackground<T>({
     setValue,
     factory,
     editorUrlCache,
+    lang,
 }: {
     value: LayoutBackground;
     setValue: (value: T) => void;
     factory: SettingValueFactory<T>;
     editorUrlCache: UrlCache;
+    lang: Language | undefined;
 }) {
     let type: string;
     let color1: Option<Color> = null;
@@ -80,6 +83,7 @@ export function LayoutBackground<T>({
                         blur / 100,
                     ),
                     "Unexpected layout background",
+                    lang,
                 );
         }
     };
@@ -115,7 +119,7 @@ export function LayoutBackground<T>({
                         }
                         if (maybeFile instanceof Error) {
                             toast.error(
-                                `Failed to read the file: ${maybeFile.message}`,
+                                `${resolve(Label.FailedToReadFile, lang)} ${maybeFile.message}`,
                             );
                             return;
                         }
@@ -134,6 +138,7 @@ export function LayoutBackground<T>({
                                 blur / 100,
                             ),
                             "Unexpected layout background",
+                            lang,
                         );
                         setValue(value);
                     }}
@@ -148,7 +153,7 @@ export function LayoutBackground<T>({
                         gridColumn: "1 / 3",
                     }}
                 >
-                    Brightness
+                    {resolve(Label.LayoutBackgroundBrightness, lang)}
                     <input
                         type="range"
                         min="0"
@@ -159,7 +164,7 @@ export function LayoutBackground<T>({
                             setValue(colorsToValue(type, color1, color2));
                         }}
                     />
-                    Opacity
+                    {resolve(Label.LayoutBackgroundOpacity, lang)}
                     <input
                         type="range"
                         min="0"
@@ -170,7 +175,7 @@ export function LayoutBackground<T>({
                             setValue(colorsToValue(type, color1, color2));
                         }}
                     />
-                    Blur
+                    {resolve(Label.LayoutBackgroundBlur, lang)}
                     <input
                         type="range"
                         min="0"
@@ -199,11 +204,19 @@ export function LayoutBackground<T>({
                 setValue(colorsToValue(e.target.value, color1, color2));
             }}
         >
-            <option value="Transparent">Transparent</option>
-            <option value="Plain">Plain</option>
-            <option value="Vertical">Vertical</option>
-            <option value="Horizontal">Horizontal</option>
-            <option value="Image">Image</option>
+            <option value="Transparent">
+                {resolve(Label.GradientTransparent, lang)}
+            </option>
+            <option value="Plain">{resolve(Label.GradientPlain, lang)}</option>
+            <option value="Vertical">
+                {resolve(Label.GradientVertical, lang)}
+            </option>
+            <option value="Horizontal">
+                {resolve(Label.GradientHorizontal, lang)}
+            </option>
+            <option value="Image">
+                {resolve(Label.LayoutBackgroundImage, lang)}
+            </option>
         </select>,
     );
 
