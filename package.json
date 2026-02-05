@@ -27,7 +27,7 @@
   "devDependencies": {
     "@babel/plugin-transform-explicit-resource-management": "^7.28.0",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.6.1",
-    "@tauri-apps/cli": "^2.2.7",
+    "@tauri-apps/cli": "^2.9.2",
     "@types/markdown-it": "^14.1.2",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
