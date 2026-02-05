@@ -5,8 +5,10 @@ import {
     ColumnStartWith,
     ColumnUpdateWith,
     ColumnUpdateTrigger,
+    Language,
 } from "../../../livesplit-core";
 import { SettingValueFactory } from ".";
+import { Label, resolve } from "../../../localization";
 
 import * as tableClasses from "../../../css/Table.module.scss";
 
@@ -14,10 +16,12 @@ export function ColumnKind<T>({
     value,
     setValue,
     factory,
+    lang,
 }: {
     value: ColumnKind;
     setValue: (value: T) => void;
     factory: SettingValueFactory<T>;
+    lang: Language | undefined;
 }) {
     return (
         <div className={tableClasses.settingsValueBox}>
@@ -28,12 +32,17 @@ export function ColumnKind<T>({
                         expect(
                             factory.fromColumnKind(e.target.value),
                             "Unexpected Column Kind value",
+                            lang,
                         ),
                     )
                 }
             >
-                <option value="Time">Time</option>
-                <option value="Variable">Variable</option>
+                <option value="Time">
+                    {resolve(Label.ColumnKindTime, lang)}
+                </option>
+                <option value="Variable">
+                    {resolve(Label.ColumnKindVariable, lang)}
+                </option>
             </select>
         </div>
     );
@@ -43,10 +52,12 @@ export function ColumnStartWith<T>({
     value,
     setValue,
     factory,
+    lang,
 }: {
     value: ColumnStartWith;
     setValue: (value: T) => void;
     factory: SettingValueFactory<T>;
+    lang: Language | undefined;
 }) {
     return (
         <div className={tableClasses.settingsValueBox}>
@@ -57,16 +68,23 @@ export function ColumnStartWith<T>({
                         expect(
                             factory.fromColumnStartWith(e.target.value),
                             "Unexpected Column Start With value",
+                            lang,
                         ),
                     )
                 }
             >
-                <option value="Empty">Empty</option>
-                <option value="ComparisonTime">Comparison Time</option>
-                <option value="ComparisonSegmentTime">
-                    Comparison Segment Time
+                <option value="Empty">
+                    {resolve(Label.ColumnStartWithEmpty, lang)}
                 </option>
-                <option value="PossibleTimeSave">Possible Time Save</option>
+                <option value="ComparisonTime">
+                    {resolve(Label.ColumnStartWithComparisonTime, lang)}
+                </option>
+                <option value="ComparisonSegmentTime">
+                    {resolve(Label.ColumnStartWithComparisonSegmentTime, lang)}
+                </option>
+                <option value="PossibleTimeSave">
+                    {resolve(Label.ColumnStartWithPossibleTimeSave, lang)}
+                </option>
             </select>
         </div>
     );
@@ -76,10 +94,12 @@ export function ColumnUpdateWith<T>({
     value,
     setValue,
     factory,
+    lang,
 }: {
     value: ColumnUpdateWith;
     setValue: (value: T) => void;
     factory: SettingValueFactory<T>;
+    lang: Language | undefined;
 }) {
     return (
         <div className={tableClasses.settingsValueBox}>
@@ -90,20 +110,34 @@ export function ColumnUpdateWith<T>({
                         expect(
                             factory.fromColumnUpdateWith(e.target.value),
                             "Unexpected Column Update With value",
+                            lang,
                         ),
                     )
                 }
             >
-                <option value="DontUpdate">Don't Update</option>
-                <option value="SplitTime">Split Time</option>
-                <option value="Delta">Time Ahead / Behind</option>
-                <option value="DeltaWithFallback">
-                    Time Ahead / Behind or Split Time If Empty
+                <option value="DontUpdate">
+                    {resolve(Label.ColumnUpdateWithDontUpdate, lang)}
                 </option>
-                <option value="SegmentTime">Segment Time</option>
-                <option value="SegmentDelta">Time Saved / Lost</option>
+                <option value="SplitTime">
+                    {resolve(Label.ColumnUpdateWithSplitTime, lang)}
+                </option>
+                <option value="Delta">
+                    {resolve(Label.ColumnUpdateWithDelta, lang)}
+                </option>
+                <option value="DeltaWithFallback">
+                    {resolve(Label.ColumnUpdateWithDeltaWithFallback, lang)}
+                </option>
+                <option value="SegmentTime">
+                    {resolve(Label.ColumnUpdateWithSegmentTime, lang)}
+                </option>
+                <option value="SegmentDelta">
+                    {resolve(Label.ColumnUpdateWithSegmentDelta, lang)}
+                </option>
                 <option value="SegmentDeltaWithFallback">
-                    Time Saved / Lost or Segment Time If Empty
+                    {resolve(
+                        Label.ColumnUpdateWithSegmentDeltaWithFallback,
+                        lang,
+                    )}
                 </option>
             </select>
         </div>
@@ -114,10 +148,12 @@ export function ColumnUpdateTrigger<T>({
     value,
     setValue,
     factory,
+    lang,
 }: {
     value: ColumnUpdateTrigger;
     setValue: (value: T) => void;
     factory: SettingValueFactory<T>;
+    lang: Language | undefined;
 }) {
     return (
         <div className={tableClasses.settingsValueBox}>
@@ -128,13 +164,20 @@ export function ColumnUpdateTrigger<T>({
                         expect(
                             factory.fromColumnUpdateTrigger(e.target.value),
                             "Unexpected Column Update Trigger value",
+                            lang,
                         ),
                     )
                 }
             >
-                <option value="OnStartingSegment">On Starting Segment</option>
-                <option value="Contextual">Contextual</option>
-                <option value="OnEndingSegment">On Ending Segment</option>
+                <option value="OnStartingSegment">
+                    {resolve(Label.ColumnUpdateTriggerOnStartingSegment, lang)}
+                </option>
+                <option value="Contextual">
+                    {resolve(Label.ColumnUpdateTriggerContextual, lang)}
+                </option>
+                <option value="OnEndingSegment">
+                    {resolve(Label.ColumnUpdateTriggerOnEndingSegment, lang)}
+                </option>
             </select>
         </div>
     );

@@ -13,6 +13,7 @@ import {
     Position,
 } from "../components/ContextMenu";
 import { ArrowDown, ArrowUp, Check, Copy, Plus, Trash, X } from "lucide-react";
+import { Label, orAutoLang, resolve } from "../../localization";
 
 import * as classes from "../../css/LayoutEditor.module.scss";
 import * as buttonGroupClasses from "../../css/ButtonGroup.module.scss";
@@ -53,7 +54,10 @@ interface ComponentClass {
 export function LayoutEditor(props: Props) {
     return props.callbacks.renderViewWithSidebar(
         <View {...props} />,
-        <SideBar callbacks={props.callbacks} />,
+        <SideBar
+            callbacks={props.callbacks}
+            lang={props.generalSettings.lang}
+        />,
     );
 }
 
@@ -72,15 +76,24 @@ export function View({
     renderer,
     callbacks,
 }: Props) {
+    const lang = generalSettings.lang;
     const [state, setState] = useState(() => {
-        const state = editor.stateAsJson(layoutEditorUrlCache.imageCache);
+        const state = editor.stateAsJson(
+            layoutEditorUrlCache.imageCache,
+            orAutoLang(generalSettings.lang),
+        );
         layoutEditorUrlCache.collect();
         return state as LiveSplit.LayoutEditorStateJson;
     });
     const [showComponentSettings, setShowComponentSettings] = useState(true);
 
     const updateState = () => {
-        setState(editor.stateAsJson(layoutEditorUrlCache.imageCache));
+        setState(
+            editor.stateAsJson(
+                layoutEditorUrlCache.imageCache,
+                orAutoLang(generalSettings.lang),
+            ),
+        );
         layoutEditorUrlCache.collect();
     };
 
@@ -159,6 +172,7 @@ export function View({
             editorUrlCache={layoutEditorUrlCache}
             allComparisons={allComparisons}
             allVariables={allVariables}
+            lang={lang}
             setValue={(index, value) => {
                 editor.setComponentSettingsValue(index, value);
                 updateState();
@@ -172,6 +186,7 @@ export function View({
             editorUrlCache={layoutEditorUrlCache}
             allComparisons={allComparisons}
             allVariables={allVariables}
+            lang={lang}
             setValue={(index, value) => {
                 editor.setGeneralSettingsValue(
                     index,
@@ -192,29 +207,30 @@ export function View({
                             allVariables={allVariables}
                             addVariable={(v) => addVariable(v)}
                             addComponent={(v) => addComponent(v)}
+                            lang={lang}
                         />
                         <button
-                            aria-label="Remove Component"
+                            aria-label={resolve(Label.RemoveComponent, lang)}
                             onClick={removeComponent}
                             disabled={!state.buttons.can_remove}
                         >
                             <Trash strokeWidth={2.5} />
                         </button>
                         <button
-                            aria-label="Duplicate Component"
+                            aria-label={resolve(Label.DuplicateComponent, lang)}
                             onClick={duplicateComponent}
                         >
                             <Copy strokeWidth={2.5} />
                         </button>
                         <button
-                            aria-label="Move Component Up"
+                            aria-label={resolve(Label.MoveComponentUp, lang)}
                             onClick={moveComponentUp}
                             disabled={!state.buttons.can_move_up}
                         >
                             <ArrowUp strokeWidth={2.5} />
                         </button>
                         <button
-                            aria-label="Move Component Down"
+                            aria-label={resolve(Label.MoveComponentDown, lang)}
                             onClick={moveComponentDown}
                             disabled={!state.buttons.can_move_down}
                         >
@@ -236,7 +252,7 @@ export function View({
                         }
                         onClick={(_) => setShowComponentSettings(false)}
                     >
-                        Layout
+                        {resolve(Label.Layout, lang)}
                     </button>
                     <button
                         className={
@@ -246,7 +262,7 @@ export function View({
                         }
                         onClick={(_) => setShowComponentSettings(true)}
                     >
-                        Component
+                        {resolve(Label.Component, lang)}
                     </button>
                 </div>
                 <div>{settings}</div>
@@ -258,6 +274,7 @@ export function View({
                             editor,
                             layoutState,
                             layoutUrlCache.imageCache,
+                            generalSettings.lang,
                         );
                         layoutUrlCache.collect();
                         return layoutState;
@@ -278,17 +295,25 @@ export function View({
     );
 }
 
-export function SideBar({ callbacks }: { callbacks: Callbacks }) {
+export function SideBar({
+    callbacks,
+    lang,
+}: {
+    callbacks: Callbacks;
+    lang?: LiveSplit.Language;
+}) {
     return (
         <>
-            <h1>Layout Editor</h1>
+            <h1>{resolve(Label.LayoutEditor, lang)}</h1>
             <hr />
             <div className={buttonGroupClasses.group}>
                 <button onClick={(_) => callbacks.closeLayoutEditor(true)}>
-                    <Check strokeWidth={2.5} /> OK
+                    <Check strokeWidth={2.5} />
+                    {resolve(Label.Ok, lang)}
                 </button>
                 <button onClick={(_) => callbacks.closeLayoutEditor(false)}>
-                    <X strokeWidth={2.5} /> Cancel
+                    <X strokeWidth={2.5} />
+                    {resolve(Label.Cancel, lang)}
                 </button>
             </div>
         </>
@@ -299,17 +324,19 @@ function AddComponentButton({
     allVariables,
     addVariable,
     addComponent,
+    lang,
 }: {
     allVariables: Set<string>;
     addVariable: (name: string) => void;
     addComponent: (componentClass: ComponentClass) => void;
+    lang?: LiveSplit.Language;
 }) {
     const [position, setPosition] = useState<Position | null>(null);
 
     return (
         <>
             <button
-                aria-label="Add Component"
+                aria-label={resolve(Label.AddComponent, lang)}
                 onClick={(e) => setPosition({ x: e.clientX, y: e.clientY })}
             >
                 <Plus strokeWidth={2.5} />
@@ -322,39 +349,39 @@ function AddComponentButton({
                     <MenuItem
                         className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() => addComponent(LiveSplit.TitleComponent)}
+                        lang={lang}
                     >
-                        Title
+                        {resolve(Label.ComponentTitle, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Shows the name of the game and the category that is
-                            being run. Additionally, the game icon, the attempt
-                            count, and the total number of successfully finished
-                            runs can be shown.
+                            {resolve(Label.ComponentTitleDescription, lang)}
                         </span>
                     </MenuItem>
                     <MenuItem
                         className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() => addComponent(LiveSplit.GraphComponent)}
+                        lang={lang}
                     >
-                        Graph
+                        {resolve(Label.ComponentGraph, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Visualizes how far the current run has been ahead or
-                            behind the chosen comparison throughout the whole
-                            run. All the individual deltas are shown as points
-                            on the graph.
+                            {resolve(Label.ComponentGraphDescription, lang)}
                         </span>
                     </MenuItem>
                     <MenuItem
                         className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
-                        onClick={() => addComponent(LiveSplit.SplitsComponent)}
+                        onClick={() =>
+                            addComponent({
+                                new: () => {
+                                    return LiveSplit.SplitsComponent.new(
+                                        orAutoLang(lang),
+                                    );
+                                },
+                            })
+                        }
+                        lang={lang}
                     >
-                        Splits
+                        {resolve(Label.Splits, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            The main component for visualizing all the split
-                            times. Each segment is shown in a tabular fashion
-                            showing the segment icon, segment name, the delta
-                            compared to the chosen comparison, and the split
-                            time. The list provides scrolling functionality, so
-                            not every segment needs to be shown all the time.
+                            {resolve(Label.ComponentSplitsDescription, lang)}
                         </span>
                     </MenuItem>
                     <Separator />
@@ -363,26 +390,24 @@ function AddComponentButton({
                         onClick={() =>
                             addComponent(LiveSplit.DetailedTimerComponent)
                         }
+                        lang={lang}
                     >
-                        Detailed Timer
+                        {resolve(Label.ComponentDetailedTimer, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Shows two timers, one for the total time of the
-                            current run and one showing the time of just the
-                            current segment. Other information, like segment
-                            times of up to two comparisons, the segment icon,
-                            and the segment name, can also be shown.
+                            {resolve(
+                                Label.ComponentDetailedTimerDescription,
+                                lang,
+                            )}
                         </span>
                     </MenuItem>
                     <MenuItem
                         className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() => addComponent(LiveSplit.TimerComponent)}
+                        lang={lang}
                     >
-                        Timer
+                        {resolve(Label.ComponentTimer, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Shows the total time of the current run as a digital
-                            clock. The color of the time shown is based on a how
-                            well the current run is doing compared to the chosen
-                            comparison.
+                            {resolve(Label.ComponentTimerDescription, lang)}
                         </span>
                     </MenuItem>
                     <Separator />
@@ -391,11 +416,14 @@ function AddComponentButton({
                         onClick={() =>
                             addComponent(LiveSplit.CurrentComparisonComponent)
                         }
+                        lang={lang}
                     >
-                        Current Comparison
+                        {resolve(Label.ComponentCurrentComparison, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Shows the name of the comparison that the timer is
-                            currently comparing against.
+                            {resolve(
+                                Label.ComponentCurrentComparisonDescription,
+                                lang,
+                            )}
                         </span>
                     </MenuItem>
                     <MenuItem
@@ -403,25 +431,24 @@ function AddComponentButton({
                         onClick={() =>
                             addComponent(LiveSplit.CurrentPaceComponent)
                         }
+                        lang={lang}
                     >
-                        Current Pace
+                        {resolve(Label.ComponentCurrentPace, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Shows a prediction for the current run's final time.
-                            The remainder of the run is predicted based on the
-                            chosen comparison for the component. For example,
-                            the "Best Segments" comparison can be chosen to show
-                            the best possible final time for the current run
-                            based on the Sum of Best Segments.
+                            {resolve(
+                                Label.ComponentCurrentPaceDescription,
+                                lang,
+                            )}
                         </span>
                     </MenuItem>
                     <MenuItem
                         className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() => addComponent(LiveSplit.DeltaComponent)}
+                        lang={lang}
                     >
-                        Delta
+                        {resolve(Label.ComponentDelta, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Shows how far ahead or behind the current run is
-                            compared to the chosen comparison.
+                            {resolve(Label.ComponentDeltaDescription, lang)}
                         </span>
                     </MenuItem>
                     <MenuItem
@@ -429,14 +456,11 @@ function AddComponentButton({
                         onClick={() =>
                             addComponent(LiveSplit.PbChanceComponent)
                         }
+                        lang={lang}
                     >
-                        PB Chance
+                        {resolve(Label.ComponentPbChance, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Shows how likely it is for the active run to beat
-                            the personal best. If there is no active run, it
-                            shows the general chance of beating the personal
-                            best. During a run, it actively changes based on how
-                            well the run is going.
+                            {resolve(Label.ComponentPbChanceDescription, lang)}
                         </span>
                     </MenuItem>
                     <MenuItem
@@ -444,14 +468,14 @@ function AddComponentButton({
                         onClick={() =>
                             addComponent(LiveSplit.PossibleTimeSaveComponent)
                         }
+                        lang={lang}
                     >
-                        Possible Time Save
+                        {resolve(Label.ComponentPossibleTimeSave, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Shows how much time you can save on the current
-                            segment compared to the chosen comparison, based on
-                            the best segment time of the segment. This component
-                            also allows showing the "Total Possible Time Save"
-                            for the remainder of the current run.
+                            {resolve(
+                                Label.ComponentPossibleTimeSaveDescription,
+                                lang,
+                            )}
                         </span>
                     </MenuItem>
                     <MenuItem
@@ -459,16 +483,14 @@ function AddComponentButton({
                         onClick={() =>
                             addComponent(LiveSplit.PreviousSegmentComponent)
                         }
+                        lang={lang}
                     >
-                        Previous Segment
+                        {resolve(Label.ComponentPreviousSegment, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Shows how much time was saved or lost during the
-                            previous segment based on the chosen comparison.
-                            Additionally, the potential time save for the
-                            previous segment can be displayed. This component
-                            switches to a "Live Segment" view that shows the
-                            active time loss whenever you are losing time on the
-                            current segment.
+                            {resolve(
+                                Label.ComponentPreviousSegmentDescription,
+                                lang,
+                            )}
                         </span>
                     </MenuItem>
                     <MenuItem
@@ -476,12 +498,14 @@ function AddComponentButton({
                         onClick={() =>
                             addComponent(LiveSplit.SegmentTimeComponent)
                         }
+                        lang={lang}
                     >
-                        Segment Time
+                        {resolve(Label.ComponentSegmentTime, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Shows the time for the current segment for the
-                            chosen comparison. If no comparison is specified it
-                            uses the timer's current comparison.
+                            {resolve(
+                                Label.ComponentSegmentTimeDescription,
+                                lang,
+                            )}
                         </span>
                     </MenuItem>
                     <MenuItem
@@ -489,33 +513,21 @@ function AddComponentButton({
                         onClick={() =>
                             addComponent(LiveSplit.SumOfBestComponent)
                         }
+                        lang={lang}
                     >
-                        Sum of Best Segments
+                        {resolve(Label.ComponentSumOfBest, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Shows the fastest possible time to complete a run of
-                            the current category, based on information collected
-                            from all the previous runs. This often matches up
-                            with the sum of the best segment times of all the
-                            segments, but that may not always be the case, as
-                            skipped segments may introduce combined segments
-                            that may be faster than the actual sum of their best
-                            segment times. The name is therefore a bit
-                            misleading, but sticks around for historical
-                            reasons.
+                            {resolve(Label.ComponentSumOfBestDescription, lang)}
                         </span>
                     </MenuItem>
                     <MenuItem
                         className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() => addComponent(LiveSplit.TextComponent)}
+                        lang={lang}
                     >
-                        Text
+                        {resolve(Label.ComponentText, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Shows the text that you specify. This can either be
-                            a single centered text, or split up into a left and
-                            right text, which is suitable for a situation where
-                            you have a label and a value. There is also the
-                            option of showing a custom variable that you specify
-                            in the splits editor.
+                            {resolve(Label.ComponentTextDescription, lang)}
                         </span>
                     </MenuItem>
                     <MenuItem
@@ -523,11 +535,14 @@ function AddComponentButton({
                         onClick={() =>
                             addComponent(LiveSplit.TotalPlaytimeComponent)
                         }
+                        lang={lang}
                     >
-                        Total Playtime
+                        {resolve(Label.ComponentTotalPlaytime, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Shows the total amount of time that the current
-                            category has been played for.
+                            {resolve(
+                                Label.ComponentTotalPlaytimeDescription,
+                                lang,
+                            )}
                         </span>
                     </MenuItem>
                     {allVariables.size > 0 && <Separator />}
@@ -538,13 +553,16 @@ function AddComponentButton({
                                     className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                                     key={name}
                                     onClick={() => addVariable(name)}
+                                    lang={lang}
                                 >
                                     {name}
                                     <span
                                         className={tooltipClasses.tooltipText}
                                     >
-                                        Creates a text component that shows the
-                                        value of the custom variable "{name}".
+                                        {resolve(
+                                            Label.ComponentVariableDescription,
+                                            lang,
+                                        ).replace("{name}", name)}
                                     </span>
                                 </MenuItem>
                             );
@@ -555,12 +573,14 @@ function AddComponentButton({
                         onClick={() =>
                             addComponent(LiveSplit.BlankSpaceComponent)
                         }
+                        lang={lang}
                     >
-                        Blank Space
+                        {resolve(Label.ComponentBlankSpace, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            An empty component that doesn't show anything other
-                            than a background. It mostly serves as padding
-                            between other components.
+                            {resolve(
+                                Label.ComponentBlankSpaceDescription,
+                                lang,
+                            )}
                         </span>
                     </MenuItem>
                     <MenuItem
@@ -568,11 +588,11 @@ function AddComponentButton({
                         onClick={() =>
                             addComponent(LiveSplit.SeparatorComponent)
                         }
+                        lang={lang}
                     >
-                        Separator
+                        {resolve(Label.ComponentSeparator, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            A simple component that just renders a separator
-                            between components.
+                            {resolve(Label.ComponentSeparatorDescription, lang)}
                         </span>
                     </MenuItem>
                 </ContextMenu>

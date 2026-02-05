@@ -1,7 +1,12 @@
+import { Language } from "../livesplit-core";
+import { getLocale } from "../localization";
+
 export function formatLeaderboardTime(
     totalSeconds: number,
     hideMilliseconds: boolean,
+    lang: Language | undefined,
 ): string {
+    const locale = getLocale(lang);
     const seconds = totalSeconds % 60;
     const totalMinutes = Math.floor(totalSeconds / 60);
     const minutes = totalMinutes % 60;
@@ -13,10 +18,10 @@ export function formatLeaderboardTime(
     };
 
     if (hours > 0) {
-        return `${hours}:${minutes.toLocaleString("en-GB", {
+        return `${hours}:${minutes.toLocaleString(locale, {
             minimumIntegerDigits: 2,
-        })}:${seconds.toLocaleString("en-GB", secondsOptions)}`;
+        })}:${seconds.toLocaleString(locale, secondsOptions)}`;
     } else {
-        return `${minutes}:${seconds.toLocaleString("en-GB", secondsOptions)}`;
+        return `${minutes}:${seconds.toLocaleString(locale, secondsOptions)}`;
     }
 }

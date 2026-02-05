@@ -3,11 +3,13 @@ import {
     Color,
     DeltaGradient,
     Gradient,
+    Language,
     ListGradient,
 } from "../../../livesplit-core";
 import { SettingValueFactory } from ".";
 import { assertNever, expect, Option } from "../../../util/OptionUtil";
 import { ColorPicker } from "../ColorPicker";
+import { Label, resolve } from "../../../localization";
 
 import * as tableClasses from "../../../css/Table.module.scss";
 
@@ -15,10 +17,12 @@ export function Gradient<T>({
     value,
     setValue,
     factory,
+    lang,
 }: {
     value: Gradient;
     setValue: (value: T) => void;
     factory: SettingValueFactory<T>;
+    lang: Language | undefined;
 }) {
     let type: string | undefined;
     let color1: Color | undefined;
@@ -90,10 +94,16 @@ export function Gradient<T>({
                 setValue(colorsToValue(e.target.value, color1, color2))
             }
         >
-            <option value="Transparent">Transparent</option>
-            <option value="Plain">Plain</option>
-            <option value="Vertical">Vertical</option>
-            <option value="Horizontal">Horizontal</option>
+            <option value="Transparent">
+                {resolve(Label.GradientTransparent, lang)}
+            </option>
+            <option value="Plain">{resolve(Label.GradientPlain, lang)}</option>
+            <option value="Vertical">
+                {resolve(Label.GradientVertical, lang)}
+            </option>
+            <option value="Horizontal">
+                {resolve(Label.GradientHorizontal, lang)}
+            </option>
         </select>,
     ];
 
@@ -143,10 +153,12 @@ export function DeltaGradient<T>({
     value,
     setValue,
     factory,
+    lang,
 }: {
     value: DeltaGradient;
     setValue: (value: T) => void;
     factory: SettingValueFactory<T>;
+    lang: Language | undefined;
 }) {
     let type: string | undefined;
     let color1: Color | undefined;
@@ -210,6 +222,7 @@ export function DeltaGradient<T>({
                 return expect(
                     factory.fromDeltaGradient(type),
                     "Unexpected Gradient Type",
+                    lang,
                 );
         }
     };
@@ -221,13 +234,25 @@ export function DeltaGradient<T>({
                 setValue(colorsToValue(e.target.value, color1, color2))
             }
         >
-            <option value="Transparent">Transparent</option>
-            <option value="Plain">Plain</option>
-            <option value="Vertical">Vertical</option>
-            <option value="Horizontal">Horizontal</option>
-            <option value="DeltaPlain">Plain Delta</option>
-            <option value="DeltaVertical">Vertical Delta</option>
-            <option value="DeltaHorizontal">Horizontal Delta</option>
+            <option value="Transparent">
+                {resolve(Label.GradientTransparent, lang)}
+            </option>
+            <option value="Plain">{resolve(Label.GradientPlain, lang)}</option>
+            <option value="Vertical">
+                {resolve(Label.GradientVertical, lang)}
+            </option>
+            <option value="Horizontal">
+                {resolve(Label.GradientHorizontal, lang)}
+            </option>
+            <option value="DeltaPlain">
+                {resolve(Label.GradientPlainDelta, lang)}
+            </option>
+            <option value="DeltaVertical">
+                {resolve(Label.GradientVerticalDelta, lang)}
+            </option>
+            <option value="DeltaHorizontal">
+                {resolve(Label.GradientHorizontalDelta, lang)}
+            </option>
         </select>,
     ];
 
@@ -278,10 +303,12 @@ export function ListGradient<T>({
     value,
     setValue,
     factory,
+    lang,
 }: {
     value: ListGradient;
     setValue: (value: T) => void;
     factory: SettingValueFactory<T>;
+    lang: Language | undefined;
 }) {
     let type: string | undefined;
     let color1: Color | undefined;
@@ -370,11 +397,19 @@ export function ListGradient<T>({
                 setValue(colorsToValue(e.target.value, color1, color2))
             }
         >
-            <option value="Transparent">Transparent</option>
-            <option value="Plain">Plain</option>
-            <option value="Vertical">Vertical</option>
-            <option value="Horizontal">Horizontal</option>
-            <option value="Alternating">Alternating</option>
+            <option value="Transparent">
+                {resolve(Label.GradientTransparent, lang)}
+            </option>
+            <option value="Plain">{resolve(Label.GradientPlain, lang)}</option>
+            <option value="Vertical">
+                {resolve(Label.GradientVertical, lang)}
+            </option>
+            <option value="Horizontal">
+                {resolve(Label.GradientHorizontal, lang)}
+            </option>
+            <option value="Alternating">
+                {resolve(Label.GradientAlternating, lang)}
+            </option>
         </select>,
     ];
 

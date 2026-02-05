@@ -36,6 +36,7 @@ import LiveSplitIcon from "../../assets/icon.svg";
 import * as classes from "../../css/TimerView.module.scss";
 import * as sidebarClasses from "../../css/Sidebar.module.scss";
 import * as buttonGroupClasses from "../../css/ButtonGroup.module.scss";
+import { Label, orAutoLang, resolve } from "../../localization";
 
 export interface Props {
     isDesktop: boolean;
@@ -101,6 +102,7 @@ function View({
 }: Props) {
     const [manualGameTime, setManualGameTime] = useState("");
     const showManualGameTime = generalSettings.showManualGameTime;
+    const lang = generalSettings.lang;
 
     return (
         <DragUpload
@@ -131,6 +133,7 @@ function View({
                                     layout,
                                     layoutState,
                                     layoutUrlCache.imageCache,
+                                    generalSettings.lang,
                                 );
                                 layoutUrlCache.collect();
                             }
@@ -155,10 +158,10 @@ function View({
                         <button
                             aria-label={
                                 currentPhase === TimerPhase.NotRunning
-                                    ? "Start"
+                                    ? resolve(Label.Start, lang)
                                     : currentPhase === TimerPhase.Paused
-                                      ? "Resume"
-                                      : "Pause"
+                                      ? resolve(Label.Resume, lang)
+                                      : resolve(Label.Pause, lang)
                             }
                             disabled={currentPhase === TimerPhase.Ended}
                             onClick={(_) => commandSink.togglePauseOrStart()}
@@ -171,21 +174,21 @@ function View({
                             )}
                         </button>
                         <button
-                            aria-label="Undo Split"
+                            aria-label={resolve(Label.UndoSplit, lang)}
                             disabled={currentSplitIndex <= 0}
                             onClick={(_) => commandSink.undoSplit()}
                         >
                             <ArrowUp strokeWidth={3.5} />
                         </button>
                         <button
-                            aria-label="Reset"
+                            aria-label={resolve(Label.Reset, lang)}
                             disabled={currentPhase === TimerPhase.NotRunning}
                             onClick={(_) => commandSink.reset(undefined)}
                         >
                             <X strokeWidth={3.5} />
                         </button>
                         <button
-                            aria-label="Skip Split"
+                            aria-label={resolve(Label.SkipSplit, lang)}
                             disabled={
                                 currentPhase === TimerPhase.NotRunning ||
                                 currentSplitIndex + 1 >=
@@ -204,7 +207,10 @@ function View({
                         type="text"
                         className={classes.manualGameTime}
                         value={manualGameTime}
-                        placeholder="Manual Game Time"
+                        placeholder={resolve(
+                            Label.ManualGameTimePlaceholder,
+                            lang,
+                        )}
                         onChange={(e) => setManualGameTime(e.target.value)}
                         onKeyDown={(e) => {
                             if (e.key === "Enter") {
@@ -216,16 +222,28 @@ function View({
                                     timer.start();
                                     timer.pauseGameTime();
                                     using gameTime =
-                                        TimeSpan.parse(manualGameTime) ??
+                                        TimeSpan.parse(
+                                            manualGameTime,
+                                            orAutoLang(lang),
+                                        ) ??
                                         expect(
-                                            TimeSpan.parse("0"),
-                                            "Failed to parse TimeSpan",
+                                            TimeSpan.parse(
+                                                "0",
+                                                orAutoLang(lang),
+                                            ),
+                                            resolve(
+                                                Label.FailedToParseTimeSpan,
+                                                lang,
+                                            ),
+                                            lang,
                                         );
                                     timer.setGameTimeInner(gameTime);
                                     setManualGameTime("");
                                 } else {
-                                    using gameTime =
-                                        TimeSpan.parse(manualGameTime);
+                                    using gameTime = TimeSpan.parse(
+                                        manualGameTime,
+                                        orAutoLang(lang),
+                                    );
                                     if (gameTime !== null) {
                                         if (
                                             showManualGameTime.mode ===
@@ -257,27 +275,29 @@ function View({
 export function SideBar({
     commandSink,
     callbacks,
+    generalSettings,
     currentComparison,
     currentTimingMethod,
     allComparisons,
     splitsModified,
     layoutModified,
 }: Props) {
+    const lang = generalSettings.lang;
     return (
         <>
             <div className={classes.liveSplitTitle}>
                 <img
                     className={classes.liveSplitIcon}
                     src={LiveSplitIcon}
-                    alt="LiveSplit Logo"
+                    alt={resolve(Label.LiveSplitLogoAlt, lang)}
                 />
-                <h1>LiveSplit One</h1>
+                <h1>{resolve(Label.LiveSplitOne, lang)}</h1>
             </div>
             <hr />
             <button onClick={(_) => callbacks.openSplitsView()}>
                 <List strokeWidth={2.5} />
                 <span>
-                    Splits
+                    {resolve(Label.Splits, lang)}
                     {splitsModified && (
                         <Circle
                             strokeWidth={0}
@@ -291,7 +311,7 @@ export function SideBar({
             <button onClick={(_) => callbacks.openLayoutView()}>
                 <Layers strokeWidth={2.5} />
                 <span>
-                    Layout
+                    {resolve(Label.Layout, lang)}
                     {layoutModified && (
                         <Circle
                             strokeWidth={0}
@@ -303,7 +323,7 @@ export function SideBar({
                 </span>
             </button>
             <hr />
-            <h2>Compare Against</h2>
+            <h2>{resolve(Label.CompareAgainst, lang)}</h2>
             <select
                 value={currentComparison}
                 onChange={(e) =>
@@ -328,7 +348,7 @@ export function SideBar({
                             : ""
                     }
                 >
-                    Real Time
+                    {resolve(Label.RealTime, lang)}
                 </button>
                 <button
                     onClick={(_) => {
@@ -342,18 +362,21 @@ export function SideBar({
                             : ""
                     }
                 >
-                    Game Time
+                    {resolve(Label.GameTime, lang)}
                 </button>
             </div>
             <hr />
             <button onClick={() => callbacks.popOut()}>
-                <PictureInPicture2 strokeWidth={2.5} /> Pop Out
+                <PictureInPicture2 strokeWidth={2.5} />
+                {resolve(Label.PopOut, lang)}
             </button>
             <button onClick={() => callbacks.openMainSettings()}>
-                <Settings strokeWidth={2.5} /> Settings
+                <Settings strokeWidth={2.5} />
+                {resolve(Label.Settings, lang)}
             </button>
             <button onClick={() => callbacks.openAboutView()}>
-                <Info strokeWidth={2.5} /> About
+                <Info strokeWidth={2.5} />
+                {resolve(Label.About, lang)}
             </button>
         </>
     );

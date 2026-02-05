@@ -47,6 +47,7 @@ import {
     Leaderboard,
     LeaderboardButtons,
 } from "../components/Leaderboard";
+import { Label, orAutoLang, resolve } from "../../localization";
 
 import * as classes from "../../css/RunEditor.module.scss";
 import * as buttonGroupClasses from "../../css/ButtonGroup.module.scss";
@@ -97,14 +98,19 @@ export function RunEditor(props: Props) {
 
     return props.callbacks.renderViewWithSidebar(
         <View {...props} abortController={abortController} />,
-        <SideBar onClose={(save) => props.callbacks.closeRunEditor(save)} />,
+        <SideBar
+            onClose={(save) => props.callbacks.closeRunEditor(save)}
+            lang={props.generalSettings.lang}
+        />,
     );
 }
 
 function View(props: Props & { abortController: AbortController }) {
+    const lang = props.generalSettings.lang;
     const [editorState, setEditorState] = useState(() => {
         const state = props.editor.stateAsJson(
             props.runEditorUrlCache.imageCache,
+            orAutoLang(lang),
         );
         props.runEditorUrlCache.collect();
         return state as LiveSplit.RunEditorStateJson;
@@ -147,11 +153,12 @@ function View(props: Props & { abortController: AbortController }) {
 
     const update = (options: { switchTab?: Tab; search?: boolean } = {}) => {
         const intendedTab = options.switchTab ?? tab;
-        const showTab = shouldShowTab(intendedTab, editorState);
+        const showTab = shouldShowTab(intendedTab, editorState, lang);
         setTab(showTab ? intendedTab : Tab.RealTime);
 
         const state: LiveSplit.RunEditorStateJson = props.editor.stateAsJson(
             props.runEditorUrlCache.imageCache,
+            orAutoLang(lang),
         );
         if (options.search) {
             setFoundGames(searchGames(state.game));
@@ -172,7 +179,10 @@ function View(props: Props & { abortController: AbortController }) {
 
     const gameIcon = props.runEditorUrlCache.cache(editorState.icon);
 
-    const { category, categoryNames } = getCurrentCategoriesInfo(editorState);
+    const { category, categoryNames } = getCurrentCategoriesInfo(
+        editorState,
+        lang,
+    );
 
     return (
         <>
@@ -183,7 +193,7 @@ function View(props: Props & { abortController: AbortController }) {
                         props.generalSettings.speedrunComIntegration
                     }
                     changeGameIcon={() =>
-                        changeGameIcon(props.editor, maybeUpdate)
+                        changeGameIcon(props.editor, maybeUpdate, lang)
                     }
                     downloadBoxArt={() =>
                         downloadBoxArt(
@@ -191,6 +201,7 @@ function View(props: Props & { abortController: AbortController }) {
                             props.editor,
                             editorState,
                             maybeUpdate,
+                            lang,
                         )
                     }
                     downloadIcon={() =>
@@ -199,9 +210,11 @@ function View(props: Props & { abortController: AbortController }) {
                             props.editor,
                             editorState,
                             maybeUpdate,
+                            lang,
                         )
                     }
                     removeGameIcon={() => removeGameIcon(props.editor, update)}
+                    lang={lang}
                 />
                 <div className={classes.runEditorInfoTable}>
                     <div className={classes.infoTableRow}>
@@ -220,7 +233,7 @@ function View(props: Props & { abortController: AbortController }) {
                                         setFilters,
                                     )
                                 }
-                                label="Game"
+                                label={resolve(Label.Game, lang)}
                                 list={["run-editor-game-list", foundGames]}
                             />
                         </div>
@@ -237,9 +250,10 @@ function View(props: Props & { abortController: AbortController }) {
                                         update,
                                         setExpandedLeaderboardRows,
                                         setFilters,
+                                        lang,
                                     )
                                 }
-                                label="Category"
+                                label={resolve(Label.Category, lang)}
                                 list={[
                                     "run-editor-category-list",
                                     categoryNames,
@@ -258,6 +272,7 @@ function View(props: Props & { abortController: AbortController }) {
                                         editorState,
                                         setEditorState,
                                         setOffsetIsValid,
+                                        lang,
                                     )
                                 }
                                 onBlur={(_) =>
@@ -266,10 +281,11 @@ function View(props: Props & { abortController: AbortController }) {
                                         props.runEditorUrlCache,
                                         setEditorState,
                                         setOffsetIsValid,
+                                        lang,
                                     )
                                 }
                                 invalid={!offsetIsValid}
-                                label="Start Timer At"
+                                label={resolve(Label.StartTimerAt, lang)}
                             />
                         </div>
                         <div className={classes.infoTableCell}>
@@ -290,10 +306,11 @@ function View(props: Props & { abortController: AbortController }) {
                                         props.runEditorUrlCache,
                                         setEditorState,
                                         setAttemptCountIsValid,
+                                        lang,
                                     )
                                 }
                                 invalid={!attemptCountIsValid}
-                                label="Attempts"
+                                label={resolve(Label.Attempts, lang)}
                             />
                         </div>
                     </div>
@@ -315,6 +332,7 @@ function View(props: Props & { abortController: AbortController }) {
                                 setExpandedLeaderboardRows
                             }
                             setFilters={setFilters}
+                            lang={lang}
                         />
                     </div>
                 </div>
@@ -329,6 +347,7 @@ function View(props: Props & { abortController: AbortController }) {
                                 setExpandedLeaderboardRows
                             }
                             setFilters={setFilters}
+                            lang={lang}
                         />
                     </div>
                     <TabContent
@@ -344,6 +363,7 @@ function View(props: Props & { abortController: AbortController }) {
                         allVariables={props.allVariables}
                         maybeUpdate={maybeUpdate}
                         update={update}
+                        lang={lang}
                     />
                 </div>
             </div>
@@ -351,17 +371,25 @@ function View(props: Props & { abortController: AbortController }) {
     );
 }
 
-function SideBar({ onClose }: { onClose: (save: boolean) => void }) {
+function SideBar({
+    onClose,
+    lang,
+}: {
+    onClose: (save: boolean) => void;
+    lang: LiveSplit.Language | undefined;
+}) {
     return (
         <>
-            <h1>Splits Editor</h1>
+            <h1>{resolve(Label.SplitsEditor, lang)}</h1>
             <hr />
             <div className={buttonGroupClasses.group}>
                 <button onClick={(_) => onClose(true)}>
-                    <Check strokeWidth={2.5} /> OK
+                    <Check strokeWidth={2.5} />
+                    {resolve(Label.Ok, lang)}
                 </button>
                 <button onClick={(_) => onClose(false)}>
-                    <X strokeWidth={2.5} /> Cancel
+                    <X strokeWidth={2.5} />
+                    {resolve(Label.Cancel, lang)}
                 </button>
             </div>
         </>
@@ -375,6 +403,7 @@ function TabButtons({
     update,
     setExpandedLeaderboardRows,
     setFilters,
+    lang,
 }: {
     currentTab: Tab;
     editor: LiveSplit.RunEditorRefMut;
@@ -382,17 +411,18 @@ function TabButtons({
     update: () => void;
     setExpandedLeaderboardRows: (map: Map<number, boolean>) => void;
     setFilters: (filters: Filters) => void;
+    lang: LiveSplit.Language | undefined;
 }) {
     const tabNames = {
-        [Tab.RealTime]: "Real Time",
-        [Tab.GameTime]: "Game Time",
-        [Tab.Variables]: "Variables",
-        [Tab.Rules]: "Rules",
-        [Tab.Leaderboard]: "Leaderboard",
+        [Tab.RealTime]: resolve(Label.RealTime, lang),
+        [Tab.GameTime]: resolve(Label.GameTime, lang),
+        [Tab.Variables]: resolve(Label.Variables, lang),
+        [Tab.Rules]: resolve(Label.Rules, lang),
+        [Tab.Leaderboard]: resolve(Label.Leaderboard, lang),
     };
 
     const visibleTabs = Object.values(Tab).filter((tab) =>
-        shouldShowTab(tab as Tab, editorState),
+        shouldShowTab(tab as Tab, editorState, lang),
     );
     return visibleTabs.map((tab) => {
         const buttonClassName =
@@ -428,6 +458,7 @@ function SideButtons({
     update,
     setExpandedLeaderboardRows,
     setFilters,
+    lang,
 }: {
     tab: Tab;
     category: Option<Category>;
@@ -439,6 +470,7 @@ function SideButtons({
     update: () => void;
     setExpandedLeaderboardRows: (map: Map<number, boolean>) => void;
     setFilters: (filters: Filters) => void;
+    lang: LiveSplit.Language | undefined;
 }) {
     switch (tab) {
         case Tab.RealTime:
@@ -448,6 +480,7 @@ function SideButtons({
                     editor={editor}
                     editorState={editorState}
                     update={update}
+                    lang={lang}
                 />
             );
         case Tab.Variables:
@@ -460,6 +493,7 @@ function SideButtons({
                     update={update}
                     setExpandedLeaderboardRows={setExpandedLeaderboardRows}
                     setFilters={setFilters}
+                    lang={lang}
                 />
             );
         case Tab.Rules:
@@ -471,6 +505,7 @@ function SideButtons({
                     maybeUpdate={maybeUpdate}
                     setExpandedLeaderboardRows={setExpandedLeaderboardRows}
                     setFilters={setFilters}
+                    lang={lang}
                 />
             );
         case Tab.Leaderboard:
@@ -485,6 +520,7 @@ function SideButtons({
                     update={update}
                     setExpandedLeaderboardRows={setExpandedLeaderboardRows}
                     setFilters={setFilters}
+                    lang={lang}
                 />
             );
     }
@@ -494,10 +530,12 @@ function SegmentListButtons({
     editor,
     editorState,
     update,
+    lang,
 }: {
     editor: LiveSplit.RunEditorRefMut;
     editorState: LiveSplit.RunEditorStateJson;
     update: () => void;
+    lang: LiveSplit.Language | undefined;
 }) {
     return (
         <>
@@ -507,7 +545,7 @@ function SegmentListButtons({
                     update();
                 }}
             >
-                Insert Above
+                {resolve(Label.InsertAbove, lang)}
             </button>
             <button
                 onClick={(_) => {
@@ -515,7 +553,7 @@ function SegmentListButtons({
                     update();
                 }}
             >
-                Insert Below
+                {resolve(Label.InsertBelow, lang)}
             </button>
             <button
                 onClick={(_) => {
@@ -524,7 +562,7 @@ function SegmentListButtons({
                 }}
                 disabled={!editorState.buttons.can_remove}
             >
-                Remove Segment
+                {resolve(Label.RemoveSegment, lang)}
             </button>
             <button
                 onClick={(_) => {
@@ -533,7 +571,7 @@ function SegmentListButtons({
                 }}
                 disabled={!editorState.buttons.can_move_up}
             >
-                Move Up
+                {resolve(Label.MoveUp, lang)}
             </button>
             <button
                 onClick={(_) => {
@@ -542,15 +580,18 @@ function SegmentListButtons({
                 }}
                 disabled={!editorState.buttons.can_move_down}
             >
-                Move Down
+                {resolve(Label.MoveDown, lang)}
             </button>
             <ComparisonsButton
-                addComparison={() => addComparison(editor, update)}
-                importComparison={() => importComparison(editor, update)}
+                addComparison={() => addComparison(editor, update, lang)}
+                importComparison={() => importComparison(editor, update, lang)}
                 generateGoalComparison={() =>
-                    generateGoalComparison(editor, update)
+                    generateGoalComparison(editor, update, lang)
                 }
-                copyComparison={() => copyComparison(editor, update)}
+                copyComparison={() =>
+                    copyComparison(editor, update, lang, undefined)
+                }
+                lang={lang}
             />
             <CleaningButton
                 clearHistory={() => {
@@ -561,7 +602,8 @@ function SegmentListButtons({
                     editor.clearTimes();
                     update();
                 }}
-                cleanSumOfBest={() => cleanSumOfBest(editor, update)}
+                cleanSumOfBest={() => cleanSumOfBest(editor, update, lang)}
+                lang={lang}
             />
         </>
     );
@@ -575,6 +617,7 @@ function VariablesButtons({
     update,
     setExpandedLeaderboardRows,
     setFilters,
+    lang,
 }: {
     editor: LiveSplit.RunEditorRefMut;
     editorState: LiveSplit.RunEditorStateJson;
@@ -583,6 +626,7 @@ function VariablesButtons({
     update: () => void;
     setExpandedLeaderboardRows: (map: Map<number, boolean>) => void;
     setFilters: (filters: Filters) => void;
+    lang: LiveSplit.Language | undefined;
 }) {
     return (
         <>
@@ -593,9 +637,10 @@ function VariablesButtons({
                 maybeUpdate={maybeUpdate}
                 setExpandedLeaderboardRows={setExpandedLeaderboardRows}
                 setFilters={setFilters}
+                lang={lang}
             />
-            <button onClick={(_) => addCustomVariable(editor, update)}>
-                Add Variable
+            <button onClick={(_) => addCustomVariable(editor, update, lang)}>
+                {resolve(Label.AddVariable, lang)}
             </button>
         </>
     );
@@ -608,6 +653,7 @@ function AssociateRunButton({
     maybeUpdate,
     setExpandedLeaderboardRows,
     setFilters,
+    lang,
 }: {
     generalSettings: GeneralSettings;
     editor: LiveSplit.RunEditorRefMut;
@@ -615,6 +661,7 @@ function AssociateRunButton({
     maybeUpdate: () => void;
     setExpandedLeaderboardRows: (map: Map<number, boolean>) => void;
     setFilters: (filters: Filters) => void;
+    lang: LiveSplit.Language | undefined;
 }) {
     if (generalSettings.speedrunComIntegration) {
         return (
@@ -626,12 +673,13 @@ function AssociateRunButton({
                         maybeUpdate,
                         setExpandedLeaderboardRows,
                         setFilters,
+                        lang,
                     )
                 }
             >
                 {editorState.metadata.run_id !== ""
-                    ? "Open PB Page"
-                    : "Associate Run"}
+                    ? resolve(Label.OpenPbPage, lang)
+                    : resolve(Label.AssociateRun, lang)}
             </button>
         );
     } else {
@@ -649,6 +697,7 @@ function RunEditorLeaderboardButtons({
     update,
     setExpandedLeaderboardRows,
     setFilters,
+    lang,
 }: {
     category: Option<Category>;
     filters: Filters;
@@ -659,6 +708,7 @@ function RunEditorLeaderboardButtons({
     update: () => void;
     setExpandedLeaderboardRows: (map: Map<number, boolean>) => void;
     setFilters: (filters: Filters) => void;
+    lang: LiveSplit.Language | undefined;
 }) {
     const gameInfo = getGameInfo(editorState.game);
     if (gameInfo === undefined) {
@@ -670,6 +720,7 @@ function RunEditorLeaderboardButtons({
                 maybeUpdate={maybeUpdate}
                 setExpandedLeaderboardRows={setExpandedLeaderboardRows}
                 setFilters={setFilters}
+                lang={lang}
             />
         );
     }
@@ -692,8 +743,10 @@ function RunEditorLeaderboardButtons({
                     maybeUpdate,
                     setExpandedLeaderboardRows,
                     setFilters,
+                    lang,
                 )
             }
+            lang={lang}
         />
     );
 }
@@ -711,6 +764,7 @@ function TabContent({
     allVariables,
     maybeUpdate,
     update,
+    lang,
 }: {
     tab: Tab;
     category: Option<Category>;
@@ -724,6 +778,7 @@ function TabContent({
     allVariables: Set<string>;
     maybeUpdate: () => void;
     update: () => LiveSplit.RunEditorStateJson;
+    lang: LiveSplit.Language | undefined;
 }) {
     switch (tab) {
         case Tab.RealTime:
@@ -735,6 +790,7 @@ function TabContent({
                     runEditorUrlCache={runEditorUrlCache}
                     maybeUpdate={maybeUpdate}
                     update={update}
+                    lang={lang}
                 />
             );
         case Tab.Variables:
@@ -748,10 +804,17 @@ function TabContent({
                     allComparisons={allComparisons}
                     allVariables={allVariables}
                     update={update}
+                    lang={lang}
                 />
             );
         case Tab.Rules:
-            return <RulesTab editorState={editorState} category={category} />;
+            return (
+                <RulesTab
+                    editorState={editorState}
+                    category={category}
+                    lang={lang}
+                />
+            );
         case Tab.Leaderboard:
             return (
                 <LeaderboardTab
@@ -760,6 +823,7 @@ function TabContent({
                     filters={filters}
                     expandedLeaderboardRows={expandedLeaderboardRows}
                     update={update}
+                    lang={lang}
                 />
             );
     }
@@ -771,12 +835,14 @@ function SegmentsTable({
     runEditorUrlCache,
     maybeUpdate,
     update,
+    lang,
 }: {
     editor: LiveSplit.RunEditorRefMut;
     editorState: LiveSplit.RunEditorStateJson;
     runEditorUrlCache: UrlCache;
     maybeUpdate: () => void;
     update: () => LiveSplit.RunEditorStateJson;
+    lang: LiveSplit.Language | undefined;
 }) {
     const [dragIndex, setDragIndex] = useState(0);
     const [rowState, setRowState] = useState<RowState>(() => ({
@@ -795,11 +861,11 @@ function SegmentsTable({
         <table className={`${classes.runEditorTab} ${classes.runEditorTable}`}>
             <thead className={classes.tableHeader}>
                 <tr>
-                    <th>Icon</th>
-                    <th>Segment Name</th>
-                    <th>Split Time</th>
-                    <th>Segment Time</th>
-                    <th>Best Segment</th>
+                    <th>{resolve(Label.Icon, lang)}</th>
+                    <th>{resolve(Label.SegmentName, lang)}</th>
+                    <th>{resolve(Label.SplitTime, lang)}</th>
+                    <th>{resolve(Label.SegmentTime, lang)}</th>
+                    <th>{resolve(Label.BestSegment, lang)}</th>
                     {editorState.comparison_names.map(
                         (comparison, comparisonIndex) => {
                             return (
@@ -829,12 +895,14 @@ function SegmentsTable({
                                             comparison,
                                             editor,
                                             update,
+                                            lang,
                                         )
                                     }
                                     copyComparison={() =>
                                         copyComparison(
                                             editor,
                                             update,
+                                            lang,
                                             comparison,
                                         )
                                     }
@@ -842,6 +910,7 @@ function SegmentsTable({
                                         editor.removeComparison(comparison);
                                         update();
                                     }}
+                                    lang={lang}
                                 />
                             );
                         },
@@ -881,6 +950,7 @@ function SegmentsTable({
                                         segmentIndex,
                                         editor,
                                         maybeUpdate,
+                                        lang,
                                     )
                                 }
                                 removeSegmentIcon={() =>
@@ -890,6 +960,7 @@ function SegmentsTable({
                                         update,
                                     )
                                 }
+                                lang={lang}
                             />
                             <td>
                                 <input
@@ -943,6 +1014,7 @@ function SegmentsTable({
                                             rowState,
                                             setRowState,
                                             update,
+                                            lang,
                                         )
                                     }
                                 />
@@ -985,6 +1057,7 @@ function SegmentsTable({
                                             rowState,
                                             setRowState,
                                             update,
+                                            lang,
                                         )
                                     }
                                 />
@@ -1021,6 +1094,7 @@ function SegmentsTable({
                                             rowState,
                                             setRowState,
                                             update,
+                                            lang,
                                         )
                                     }
                                 />
@@ -1081,6 +1155,7 @@ function SegmentsTable({
                                                     rowState,
                                                     setRowState,
                                                     update,
+                                                    lang,
                                                 )
                                             }
                                         />
@@ -1104,6 +1179,7 @@ function VariablesTab({
     allComparisons,
     allVariables,
     update,
+    lang,
 }: {
     editor: LiveSplit.RunEditorRefMut;
     editorState: LiveSplit.RunEditorStateJson;
@@ -1113,6 +1189,7 @@ function VariablesTab({
     allComparisons: string[];
     allVariables: Set<string>;
     update: () => void;
+    lang: LiveSplit.Language | undefined;
 }) {
     const metadata = editorState.metadata;
     const gameInfo = getGameInfo(editorState.game);
@@ -1146,12 +1223,13 @@ function VariablesTab({
         const variables = expect(
             gameInfo.variables,
             "We need the variables to be embedded",
+            lang,
         );
         for (const variable of variables.data) {
             if (isVariableValidForCategory(variable, category)) {
                 speedrunComVariables.push({
                     text: variable.name,
-                    tooltip: "A variable on speedrun.com specific to the game.",
+                    tooltip: resolve(Label.SpeedrunComVariableTooltip, lang),
                     value: {
                         CustomCombobox: {
                             value:
@@ -1174,8 +1252,8 @@ function VariablesTab({
         if (regionList.length > 1) {
             regionOffset = fields.length;
             fields.push({
-                text: "Region",
-                tooltip: "The region of the game that is being played.",
+                text: resolve(Label.Region, lang),
+                tooltip: resolve(Label.RegionDescription, lang),
                 value: {
                     CustomCombobox: {
                         value: metadata.region_name,
@@ -1188,8 +1266,8 @@ function VariablesTab({
         if (platformList.length > 1) {
             platformOffset = fields.length;
             fields.push({
-                text: "Platform",
-                tooltip: "The platform that the game is being played on.",
+                text: resolve(Label.Platform, lang),
+                tooltip: resolve(Label.PlatformDescription, lang),
                 value: {
                     CustomCombobox: {
                         value: metadata.platform_name,
@@ -1202,8 +1280,8 @@ function VariablesTab({
         if (gameInfo.ruleset["emulators-allowed"]) {
             emulatorOffset = fields.length;
             fields.push({
-                text: "Uses Emulator",
-                tooltip: "Whether an emulator is being used to play the game.",
+                text: resolve(Label.UsesEmulator, lang),
+                tooltip: resolve(Label.UsesEmulatorDescription, lang),
                 value: {
                     Bool: metadata.uses_emulator,
                 },
@@ -1217,8 +1295,7 @@ function VariablesTab({
         if (customVariableValue && customVariableValue.is_permanent) {
             customVariables.push({
                 text: customVariableName,
-                tooltip:
-                    "A custom variable specified by you. These can be displayed with the text component.",
+                tooltip: resolve(Label.CustomVariableTooltip, lang),
                 value: {
                     RemovableString: customVariableValue.value,
                 },
@@ -1232,6 +1309,10 @@ function VariablesTab({
     const customVariablesOffset = fields.length;
     fields.push(...customVariables);
 
+    const noVariablesMessage = generalSettings.speedrunComIntegration
+        ? resolve(Label.NoVariablesWithSpeedrunCom, lang)
+        : resolve(Label.NoVariables, lang);
+
     return (
         <div className={classes.runEditorTab}>
             {fields.length === 0 && (
@@ -1239,12 +1320,7 @@ function VariablesTab({
                     <tbody className={tableClasses.tableBody}>
                         <tr>
                             <td>
-                                <p>
-                                    {"There are currently no"}
-                                    {generalSettings.speedrunComIntegration &&
-                                        " Speedrun.com variables or"}
-                                    {" custom variables for this game."}
-                                </p>
+                                <p>{noVariablesMessage}</p>
                             </td>
                         </tr>
                     </tbody>
@@ -1257,6 +1333,7 @@ function VariablesTab({
                 editorUrlCache={runEditorUrlCache}
                 allComparisons={allComparisons}
                 allVariables={allVariables}
+                lang={lang}
                 setValue={(index, value) => {
                     function unwrapString(
                         value: ExtendedSettingsDescriptionValueJson,
@@ -1331,9 +1408,11 @@ function VariablesTab({
 function RulesTab({
     editorState,
     category,
+    lang,
 }: {
     editorState: LiveSplit.RunEditorStateJson;
     category: Option<Category>;
+    lang: LiveSplit.Language | undefined;
 }) {
     let rules = null;
     if (category != null && category.rules != null) {
@@ -1348,23 +1427,27 @@ function RulesTab({
         if (ruleset["default-time"] !== "realtime") {
             additionalRules.push(
                 ruleset["default-time"] === "realtime_noloads"
-                    ? "are timed without the loading times"
-                    : "are timed with Game Time",
+                    ? resolve(Label.TimedWithoutLoads, lang)
+                    : resolve(Label.TimedWithGameTime, lang),
             );
         }
         if (ruleset["require-video"]) {
-            additionalRules.push("require video proof");
+            additionalRules.push(resolve(Label.RequireVideoProof, lang));
         }
         if (additionalRules.length !== 0) {
+            const joiner = ` ${resolve(Label.And, lang)} `;
             gameRules = (
                 <p style={{ fontStyle: "italic" }}>
-                    Runs of this game {additionalRules.join(" and ")}.
+                    {resolve(Label.RunsOfThisGamePrefix, lang)}
+                    {additionalRules.join(joiner)}
+                    {resolve(Label.RunsOfThisGameSuffix, lang)}
                 </p>
             );
         }
         const variables = expect(
             gameInfo.variables,
             "We need the variables to be embedded",
+            lang,
         );
         for (const variable of variables.data) {
             if (
@@ -1379,7 +1462,10 @@ function RulesTab({
                 if (foundValue?.rules != null) {
                     subcategoryRules.push(
                         <Markdown
-                            markdown={`## ${foundValue.label} Rules\n${foundValue.rules}`}
+                            markdown={`## ${foundValue.label} ${resolve(
+                                Label.Rules,
+                                lang,
+                            )}\n${foundValue.rules}`}
                             speedrunCom
                         />,
                     );
@@ -1408,12 +1494,14 @@ function LeaderboardTab({
     filters,
     expandedLeaderboardRows,
     update,
+    lang,
 }: {
     editorState: LiveSplit.RunEditorStateJson;
     category: Option<Category>;
     filters: Filters;
     expandedLeaderboardRows: Map<number, boolean>;
     update: () => void;
+    lang: LiveSplit.Language | undefined;
 }) {
     const leaderboard = getCurrentLeaderboard(category, editorState);
     if (leaderboard === undefined) {
@@ -1430,6 +1518,7 @@ function LeaderboardTab({
             toggleExpandLeaderboardRow={(i) =>
                 toggleExpandLeaderboardRow(i, expandedLeaderboardRows, update)
             }
+            lang={lang}
         />
     );
 }
@@ -1486,6 +1575,7 @@ function GameIcon({
     downloadBoxArt,
     downloadIcon,
     removeGameIcon,
+    lang,
 }: {
     gameIcon: string | undefined;
     speedrunComIntegration: boolean;
@@ -1493,6 +1583,7 @@ function GameIcon({
     downloadBoxArt: () => void;
     downloadIcon: () => void;
     removeGameIcon: () => void;
+    lang: LiveSplit.Language | undefined;
 }) {
     const [position, setPosition] = React.useState<Position | null>(null);
 
@@ -1514,12 +1605,11 @@ function GameIcon({
                     <MenuItem
                         className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={changeGameIcon}
+                        lang={lang}
                     >
-                        Set Icon
+                        {resolve(Label.SetIcon, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Allows you to choose an image file to set as the
-                            game's icon. Certain file formats may not work
-                            everywhere.
+                            {resolve(Label.SetIconDescription, lang)}
                         </span>
                     </MenuItem>
                     {speedrunComIntegration && (
@@ -1527,22 +1617,27 @@ function GameIcon({
                             <MenuItem
                                 className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                                 onClick={downloadBoxArt}
+                                lang={lang}
                             >
-                                Download Box Art
+                                {resolve(Label.DownloadBoxArt, lang)}
                                 <span className={tooltipClasses.tooltipText}>
-                                    Attempts to download the box art of the game
-                                    from speedrun.com, to set as the game's
-                                    icon.
+                                    {resolve(
+                                        Label.DownloadBoxArtDescription,
+                                        lang,
+                                    )}
                                 </span>
                             </MenuItem>
                             <MenuItem
                                 className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                                 onClick={downloadIcon}
+                                lang={lang}
                             >
-                                Download Icon
+                                {resolve(Label.DownloadIcon, lang)}
                                 <span className={tooltipClasses.tooltipText}>
-                                    Attempts to download the icon of the game
-                                    from speedrun.com.
+                                    {resolve(
+                                        Label.DownloadIconDescription,
+                                        lang,
+                                    )}
                                 </span>
                             </MenuItem>
                         </>
@@ -1551,10 +1646,11 @@ function GameIcon({
                         <MenuItem
                             className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                             onClick={removeGameIcon}
+                            lang={lang}
                         >
-                            Remove Icon
+                            {resolve(Label.RemoveIcon, lang)}
                             <span className={tooltipClasses.tooltipText}>
-                                Removes the icon of the game.
+                                {resolve(Label.RemoveIconDescription, lang)}
                             </span>
                         </MenuItem>
                     )}
@@ -1568,10 +1664,12 @@ function CleaningButton({
     clearHistory,
     clearTimes,
     cleanSumOfBest,
+    lang,
 }: {
     clearHistory: () => void;
     clearTimes: () => void;
     cleanSumOfBest: () => void;
+    lang: LiveSplit.Language | undefined;
 }) {
     const [position, setPosition] = React.useState<Position | null>(null);
 
@@ -1580,7 +1678,7 @@ function CleaningButton({
             <button
                 onClick={(e) => setPosition({ x: e.clientX, y: e.clientY })}
             >
-                Cleaning…
+                {resolve(Label.CleaningMenu, lang)}
             </button>
             {position && (
                 <ContextMenu
@@ -1590,42 +1688,31 @@ function CleaningButton({
                     <MenuItem
                         className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={clearHistory}
+                        lang={lang}
                     >
-                        Clear Only History
+                        {resolve(Label.ClearOnlyHistory, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Splits store the entire history of all runs,
-                            including every segment time. This information is
-                            used by various components. You can clear the
-                            history with this. The personal best, the best
-                            segment times, and the comparisons will not be
-                            affected.
+                            {resolve(Label.ClearOnlyHistoryDescription, lang)}
                         </span>
                     </MenuItem>
                     <MenuItem
                         className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={clearTimes}
+                        lang={lang}
                     >
-                        Clear All Times
+                        {resolve(Label.ClearAllTimes, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            This removes all the times from the splits,
-                            including all the history, such that the splits are
-                            completely empty, as if they were just created.
+                            {resolve(Label.ClearAllTimesDescription, lang)}
                         </span>
                     </MenuItem>
                     <MenuItem
                         className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={cleanSumOfBest}
+                        lang={lang}
                     >
-                        Clean Sum of Best
+                        {resolve(Label.CleanSumOfBest, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Allows you to interactively remove potential issues
-                            in the segment history that lead to an inaccurate
-                            Sum of Best. If you skip a split, whenever you will
-                            do the next split, the combined segment time might
-                            be faster than the sum of the individual best
-                            segments. This will point out all such occurrences
-                            and allow you to delete them individually if any of
-                            them seem wrong.
+                            {resolve(Label.CleanSumOfBestDescription, lang)}
                         </span>
                     </MenuItem>
                 </ContextMenu>
@@ -1639,11 +1726,13 @@ function ComparisonsButton({
     importComparison,
     generateGoalComparison,
     copyComparison,
+    lang,
 }: {
     addComparison: () => void;
     importComparison: () => void;
     generateGoalComparison: () => void;
     copyComparison: () => void;
+    lang: LiveSplit.Language | undefined;
 }) {
     const [position, setPosition] = React.useState<Position | null>(null);
 
@@ -1652,7 +1741,7 @@ function ComparisonsButton({
             <button
                 onClick={(e) => setPosition({ x: e.clientX, y: e.clientY })}
             >
-                Comparisons…
+                {resolve(Label.ComparisonsMenu, lang)}
             </button>
             {position && (
                 <ContextMenu
@@ -1662,56 +1751,44 @@ function ComparisonsButton({
                     <MenuItem
                         className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={addComparison}
+                        lang={lang}
                     >
-                        Add Comparison
+                        {resolve(Label.AddComparison, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Adds a new custom comparison where you can store any
-                            times that you would like.
+                            {resolve(Label.AddComparisonDescription, lang)}
                         </span>
                     </MenuItem>
                     <MenuItem
                         className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={importComparison}
+                        lang={lang}
                     >
-                        Import Comparison
+                        {resolve(Label.ImportComparison, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Imports the Personal Best of a splits file you
-                            provide as a comparison.
+                            {resolve(Label.ImportComparisonDescription, lang)}
                         </span>
                     </MenuItem>
                     <MenuItem
                         className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={generateGoalComparison}
+                        lang={lang}
                     >
-                        Generate Goal Comparison
+                        {resolve(Label.GenerateGoalComparison, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Generates a custom goal comparison based on a goal
-                            time that you can specify. The comparison's times
-                            are automatically balanced based on the segment
-                            history such that it roughly represents what the
-                            split times for the goal time would look like. Since
-                            it is populated by the segment history, the goal
-                            times are capped to a range between the sum of the
-                            best segments and the sum of the worst segments. The
-                            comparison is only populated for the selected timing
-                            method. The other timing method's comparison times
-                            are not modified by this, so you can generate it
-                            again with the other timing method to generate the
-                            comparison times for both timing methods.
+                            {resolve(
+                                Label.GenerateGoalComparisonDescription,
+                                lang,
+                            )}
                         </span>
                     </MenuItem>
                     <MenuItem
                         className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={copyComparison}
+                        lang={lang}
                     >
-                        Copy Comparison
+                        {resolve(Label.CopyComparison, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Copies any existing comparison, including the
-                            Personal Best or even any other automatically
-                            provided comparison as a new custom comparison. You
-                            could for example use this to keep the Latest Run
-                            around as a comparison that exists for as long as
-                            you want it to.
+                            {resolve(Label.CopyComparisonDescription, lang)}
                         </span>
                     </MenuItem>
                 </ContextMenu>
@@ -1724,10 +1801,12 @@ function SegmentIcon({
     segmentIcon,
     changeSegmentIcon,
     removeSegmentIcon,
+    lang,
 }: {
     segmentIcon: string | undefined;
     changeSegmentIcon: () => void;
     removeSegmentIcon: () => void;
+    lang: LiveSplit.Language | undefined;
 }) {
     const [position, setPosition] = React.useState<Position | null>(null);
 
@@ -1754,21 +1833,21 @@ function SegmentIcon({
                     <MenuItem
                         className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={changeSegmentIcon}
+                        lang={lang}
                     >
-                        Set Icon
+                        {resolve(Label.SetSegmentIcon, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Allows you to choose an image file to set as the
-                            segment's icon. Certain file formats may not work
-                            everywhere.
+                            {resolve(Label.SetSegmentIconDescription, lang)}
                         </span>
                     </MenuItem>
                     <MenuItem
                         className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={removeSegmentIcon}
+                        lang={lang}
                     >
-                        Remove Icon
+                        {resolve(Label.RemoveSegmentIcon, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Removes the segment's icon.
+                            {resolve(Label.RemoveSegmentIconDescription, lang)}
                         </span>
                     </MenuItem>
                 </ContextMenu>
@@ -1785,6 +1864,7 @@ function CustomComparison({
     renameComparison,
     copyComparison,
     removeComparison,
+    lang,
 }: {
     comparison: string;
     onDragStart: (e: React.DragEvent) => void;
@@ -1793,6 +1873,7 @@ function CustomComparison({
     renameComparison: () => void;
     copyComparison: () => void;
     removeComparison: () => void;
+    lang: LiveSplit.Language | undefined;
 }) {
     const [position, setPosition] = React.useState<Position | null>(null);
 
@@ -1826,30 +1907,31 @@ function CustomComparison({
                     <MenuItem
                         className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={renameComparison}
+                        lang={lang}
                     >
-                        Rename
+                        {resolve(Label.Rename, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Choose a new name for the custom comparison. There
-                            are reserved names that can't be used. You also
-                            can't have duplicate names.
+                            {resolve(Label.RenameDescription, lang)}
                         </span>
                     </MenuItem>
                     <MenuItem
                         className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={copyComparison}
+                        lang={lang}
                     >
-                        Copy
+                        {resolve(Label.CopyAction, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Creates a copy of the custom comparison.
+                            {resolve(Label.CopyDescription, lang)}
                         </span>
                     </MenuItem>
                     <MenuItem
                         className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={removeComparison}
+                        lang={lang}
                     >
-                        Remove
+                        {resolve(Label.Remove, lang)}
                         <span className={tooltipClasses.tooltipText}>
-                            Removes the custom comparison.
+                            {resolve(Label.RemoveDescription, lang)}
                         </span>
                     </MenuItem>
                 </ContextMenu>
@@ -1858,8 +1940,15 @@ function CustomComparison({
     );
 }
 
-function getCurrentCategoriesInfo(editorState: LiveSplit.RunEditorStateJson) {
-    let categoryNames = ["Any%", "Low%", "100%"];
+function getCurrentCategoriesInfo(
+    editorState: LiveSplit.RunEditorStateJson,
+    lang: LiveSplit.Language | undefined,
+) {
+    let categoryNames = [
+        resolve(Label.AnyPercent, lang),
+        resolve(Label.LowPercent, lang),
+        resolve(Label.HundredPercent, lang),
+    ];
     let category = null;
     const categoryList = getCategories(editorState.game);
     if (categoryList !== undefined) {
@@ -1878,13 +1967,16 @@ function getCurrentCategoriesInfo(editorState: LiveSplit.RunEditorStateJson) {
 async function changeGameIcon(
     editor: LiveSplit.RunEditorRefMut,
     maybeUpdate: () => void,
+    lang: LiveSplit.Language | undefined,
 ) {
     const maybeFile = await openFileAsArrayBuffer(FILE_EXT_IMAGES);
     if (maybeFile === undefined) {
         return;
     }
     if (maybeFile instanceof Error) {
-        toast.error(`Failed to read the file: ${maybeFile.message}`);
+        toast.error(
+            `${resolve(Label.FailedToReadFile, lang)} ${maybeFile.message}`,
+        );
         return;
     }
     const [file] = maybeFile;
@@ -1897,6 +1989,7 @@ async function downloadBoxArt(
     editor: LiveSplit.RunEditorRefMut,
     editorState: LiveSplit.RunEditorStateJson,
     maybeUpdate: () => void,
+    lang: LiveSplit.Language | undefined,
 ) {
     const signal = abortController.signal;
     try {
@@ -1916,16 +2009,16 @@ async function downloadBoxArt(
                 editor.setGameIconFromArray(new Uint8Array(buffer));
                 maybeUpdate();
             } else {
-                toast.error("The game doesn't have a box art.");
+                toast.error(resolve(Label.NoBoxArt, lang));
             }
         } else {
-            toast.error("Couldn't find the game.");
+            toast.error(resolve(Label.GameNotFound, lang));
         }
     } catch {
         if (signal.aborted) {
             return;
         }
-        toast.error("Couldn't download the box art.");
+        toast.error(resolve(Label.DownloadBoxArtError, lang));
     }
 }
 
@@ -1934,6 +2027,7 @@ async function downloadIcon(
     editor: LiveSplit.RunEditorRefMut,
     editorState: LiveSplit.RunEditorStateJson,
     maybeUpdate: () => void,
+    lang: LiveSplit.Language | undefined,
 ) {
     const signal = abortController.signal;
     try {
@@ -1953,16 +2047,16 @@ async function downloadIcon(
                 editor.setGameIconFromArray(new Uint8Array(buffer));
                 maybeUpdate();
             } else {
-                toast.error("The game doesn't have an icon.");
+                toast.error(resolve(Label.NoGameIcon, lang));
             }
         } else {
-            toast.error("Couldn't find the game.");
+            toast.error(resolve(Label.GameNotFound, lang));
         }
     } catch {
         if (signal.aborted) {
             return;
         }
-        toast.error("Couldn't download the icon.");
+        toast.error(resolve(Label.DownloadIconError, lang));
     }
 }
 
@@ -2027,7 +2121,11 @@ function resetTotalLeaderboardState(
     setFilters({ variables: new Map(), showObsolete: false });
 }
 
-function shouldShowTab(tab: Tab, editorState: LiveSplit.RunEditorStateJson) {
+function shouldShowTab(
+    tab: Tab,
+    editorState: LiveSplit.RunEditorStateJson,
+    lang: LiveSplit.Language | undefined,
+) {
     if (tab === Tab.RealTime || tab === Tab.GameTime || tab === Tab.Variables) {
         return true;
     }
@@ -2041,7 +2139,7 @@ function shouldShowTab(tab: Tab, editorState: LiveSplit.RunEditorStateJson) {
     }
 
     if (tab === Tab.Leaderboard) {
-        const { category } = getCurrentCategoriesInfo(editorState);
+        const { category } = getCurrentCategoriesInfo(editorState, lang);
         const leaderboard = getCurrentLeaderboard(category, editorState);
         if (leaderboard !== undefined) {
             return true;
@@ -2071,8 +2169,9 @@ function handleCategoryChange(
     update: () => void,
     setExpandedLeaderboardRows: (map: Map<number, boolean>) => void,
     setFilters: (filters: Filters) => void,
+    lang: LiveSplit.Language | undefined,
 ) {
-    clearCategorySpecificVariables(editorState, editor);
+    clearCategorySpecificVariables(editorState, editor, lang);
     editor.setCategoryName(categoryName);
     if (generalSettings.speedrunComIntegration) {
         refreshLeaderboard(editorState.game, categoryName, maybeUpdate);
@@ -2084,6 +2183,7 @@ function handleCategoryChange(
 function clearCategorySpecificVariables(
     editorState: LiveSplit.RunEditorStateJson,
     editor: LiveSplit.RunEditorRefMut,
+    lang: LiveSplit.Language | undefined,
 ) {
     const categoryList = getCategories(editorState.game);
     if (categoryList !== undefined) {
@@ -2098,6 +2198,7 @@ function clearCategorySpecificVariables(
             const variables = expect(
                 gameInfo.variables,
                 "We need the variables to be embedded",
+                lang,
             );
             for (const variable of variables.data) {
                 if (
@@ -2119,8 +2220,9 @@ function handleOffsetChange(
     editorState: LiveSplit.RunEditorStateJson,
     setEditorState: (state: LiveSplit.RunEditorStateJson) => void,
     setOffsetIsValid: (valid: boolean) => void,
+    lang: LiveSplit.Language | undefined,
 ) {
-    const valid = editor.parseAndSetOffset(offset);
+    const valid = editor.parseAndSetOffset(offset, orAutoLang(lang));
     setOffsetIsValid(valid);
     setEditorState({
         ...editorState,
@@ -2133,8 +2235,11 @@ function handleOffsetBlur(
     runEditorUrlCache: UrlCache,
     setEditorState: (state: LiveSplit.RunEditorStateJson) => void,
     setOffsetIsValid: (valid: boolean) => void,
+    lang: LiveSplit.Language | undefined,
 ) {
-    setEditorState(editor.stateAsJson(runEditorUrlCache.imageCache));
+    setEditorState(
+        editor.stateAsJson(runEditorUrlCache.imageCache, orAutoLang(lang)),
+    );
     runEditorUrlCache.collect();
     setOffsetIsValid(true);
 }
@@ -2159,8 +2264,11 @@ function handleAttemptsBlur(
     runEditorUrlCache: UrlCache,
     setEditorState: (state: LiveSplit.RunEditorStateJson) => void,
     setAttemptCountIsValid: (valid: boolean) => void,
+    lang: LiveSplit.Language | undefined,
 ) {
-    setEditorState(editor.stateAsJson(runEditorUrlCache.imageCache));
+    setEditorState(
+        editor.stateAsJson(runEditorUrlCache.imageCache, orAutoLang(lang)),
+    );
     runEditorUrlCache.collect();
     setAttemptCountIsValid(true);
 }
@@ -2168,12 +2276,13 @@ function handleAttemptsBlur(
 async function addComparison(
     editor: LiveSplit.RunEditorRefMut,
     update: () => void,
+    lang: LiveSplit.Language | undefined,
 ) {
     const [result, comparisonName] = await showDialog({
-        title: "Add Comparison",
-        description: "Specify the name of the comparison you want to add:",
+        title: resolve(Label.AddComparison, lang),
+        description: resolve(Label.AddComparisonPrompt, lang),
         textInput: true,
-        buttons: ["Add", "Cancel"],
+        buttons: [resolve(Label.Add, lang), resolve(Label.Cancel, lang)],
     });
 
     if (result === 0) {
@@ -2181,9 +2290,7 @@ async function addComparison(
         if (valid) {
             update();
         } else {
-            toast.error(
-                "The comparison could not be added. It may be a duplicate or a reserved name.",
-            );
+            toast.error(resolve(Label.ComparisonAddError, lang));
         }
     }
 }
@@ -2191,27 +2298,30 @@ async function addComparison(
 async function importComparison(
     editor: LiveSplit.RunEditorRefMut,
     update: () => void,
+    lang: LiveSplit.Language | undefined,
 ) {
     const maybeFile = await openFileAsArrayBuffer(FILE_EXT_SPLITS);
     if (maybeFile === undefined) {
         return;
     }
     if (maybeFile instanceof Error) {
-        toast.error(`Failed to read the file: ${maybeFile.message}`);
+        toast.error(
+            `${resolve(Label.FailedToReadFile, lang)} ${maybeFile.message}`,
+        );
         return;
     }
     const [data, file] = maybeFile;
     using result = LiveSplit.Run.parseArray(new Uint8Array(data), "");
     if (!result.parsedSuccessfully()) {
-        toast.error("Couldn't parse the splits.");
+        toast.error(resolve(Label.CouldNotParseSplits, lang));
         return;
     }
     using run = result.unwrap();
     const [dialogResult, comparisonName] = await showDialog({
-        title: "Import Comparison",
-        description: "Specify the name of the comparison you want to import:",
+        title: resolve(Label.ImportComparison, lang),
+        description: resolve(Label.ImportComparisonPrompt, lang),
         textInput: true,
-        buttons: ["Import", "Cancel"],
+        buttons: [resolve(Label.Import, lang), resolve(Label.Cancel, lang)],
         defaultText: file.name.replace(/\.[^/.]+$/, ""),
     });
     if (dialogResult !== 0) {
@@ -2219,9 +2329,7 @@ async function importComparison(
     }
     const valid = editor.importComparison(run, comparisonName);
     if (!valid) {
-        toast.error(
-            "The comparison could not be added. It may be a duplicate or a reserved name.",
-        );
+        toast.error(resolve(Label.ComparisonAddError, lang));
     } else {
         update();
     }
@@ -2230,21 +2338,20 @@ async function importComparison(
 async function generateGoalComparison(
     editor: LiveSplit.RunEditorRefMut,
     update: () => void,
+    lang: LiveSplit.Language | undefined,
 ) {
     const [result, goalTime] = await showDialog({
-        title: "Generate Goal Comparison",
-        description: "Specify the time you want to achieve:",
+        title: resolve(Label.GenerateGoalComparison, lang),
+        description: resolve(Label.GenerateGoalComparisonPrompt, lang),
         textInput: true,
-        buttons: ["Generate", "Cancel"],
+        buttons: [resolve(Label.Generate, lang), resolve(Label.Cancel, lang)],
     });
 
     if (result === 0) {
-        if (editor.parseAndGenerateGoalComparison(goalTime)) {
+        if (editor.parseAndGenerateGoalComparison(goalTime, orAutoLang(lang))) {
             update();
         } else {
-            toast.error(
-                "Failed generating the goal comparison. Make sure to specify a valid time.",
-            );
+            toast.error(resolve(Label.GenerateGoalComparisonError, lang));
         }
     }
 }
@@ -2252,15 +2359,19 @@ async function generateGoalComparison(
 async function copyComparison(
     editor: LiveSplit.RunEditorRefMut,
     update: () => void,
+    lang: LiveSplit.Language | undefined,
     comparisonToCopy?: string,
 ) {
     let comparison = comparisonToCopy;
     if (comparison === undefined) {
         const [result, comparisonName] = await showDialog({
-            title: "Copy Comparison",
-            description: "Specify the name of the comparison you want to copy:",
+            title: resolve(Label.CopyComparison, lang),
+            description: resolve(Label.CopyComparisonPrompt, lang),
             textInput: true,
-            buttons: ["Copy", "Cancel"],
+            buttons: [
+                resolve(Label.CopyAction, lang),
+                resolve(Label.Cancel, lang),
+            ],
         });
         if (result !== 0) {
             return;
@@ -2269,53 +2380,73 @@ async function copyComparison(
     }
 
     let newName: string | undefined;
-    if (comparison.endsWith(" Copy")) {
+    const copyLabel = resolve(Label.ACopy, lang);
+    const localizedSuffix = ` ${copyLabel}`;
+    const legacySuffix = " Copy";
+    const suffixes =
+        localizedSuffix === legacySuffix
+            ? [localizedSuffix]
+            : [localizedSuffix, legacySuffix];
+
+    const suffixMatch = suffixes.find((suffix) => comparison.endsWith(suffix));
+    if (suffixMatch !== undefined) {
         const before = comparison.substring(
             0,
-            comparison.length - " Copy".length,
+            comparison.length - suffixMatch.length,
         );
-        newName = `${before} Copy 2`;
+        newName = `${before}${suffixMatch} 2`;
     } else {
-        const regexMatch = /^(.* Copy )(\d+)$/.exec(comparison);
-        if (regexMatch !== null) {
-            const copyNumber = Number(regexMatch[2]);
-            newName = `${regexMatch[1]}${copyNumber + 1}`;
+        const numberMatch = suffixes
+            .map((suffix) => new RegExp(`^(.*${escapeRegExp(suffix)} )(\\d+)$`))
+            .map((regex) => regex.exec(comparison))
+            .find((match) => match !== null);
+
+        if (numberMatch !== undefined && numberMatch !== null) {
+            const copyNumber = Number(numberMatch[2]);
+            newName = `${numberMatch[1]}${copyNumber + 1}`;
         } else {
-            newName = `${comparison} Copy`;
+            newName = `${comparison}${localizedSuffix}`;
         }
     }
 
     if (editor.copyComparison(comparison, newName)) {
         update();
     } else {
-        toast.error(
-            "Failed copying the comparison. The comparison may not exist.",
-        );
+        toast.error(resolve(Label.CopyComparisonError, lang));
     }
+}
+
+function escapeRegExp(value: string): string {
+    return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 async function cleanSumOfBest(
     editor: LiveSplit.RunEditorRefMut,
     update: () => void,
+    lang: LiveSplit.Language | undefined,
 ) {
     const ptr = editor.ptr;
     {
-        using cleaner = editor.cleanSumOfBest();
+        using cleaner = editor.cleanSumOfBest(orAutoLang(lang));
         editor.ptr = 0;
         let first = true;
         while (true) {
             using potentialCleanUp = cleaner.nextPotentialCleanUp();
             if (!potentialCleanUp) {
                 if (first) {
-                    toast.info("There is nothing to clean up.");
+                    toast.info(resolve(Label.NothingToCleanUp, lang));
                 }
                 break;
             }
             first = false;
             const [result] = await showDialog({
-                title: "Clean?",
+                title: resolve(Label.CleanPrompt, lang),
                 description: potentialCleanUp.message(),
-                buttons: ["Yes", "No", "Cancel"],
+                buttons: [
+                    resolve(Label.Yes, lang),
+                    resolve(Label.No, lang),
+                    resolve(Label.Cancel, lang),
+                ],
             });
             if (result === 0) {
                 cleaner.apply(potentialCleanUp);
@@ -2355,6 +2486,7 @@ async function interactiveAssociateRunOrOpenPage(
     maybeUpdate: () => void,
     setExpandedLeaderboardRows: (map: Map<number, boolean>) => void,
     setFilters: (filters: Filters) => void,
+    lang: LiveSplit.Language | undefined,
 ) {
     const currentRunId = editorState.metadata.run_id;
     if (currentRunId !== "") {
@@ -2363,10 +2495,10 @@ async function interactiveAssociateRunOrOpenPage(
     }
 
     const [result, idOrUrl] = await showDialog({
-        title: "Associate Run",
-        description: "Specify the speedrun.com ID or URL of the run:",
+        title: resolve(Label.AssociateRun, lang),
+        description: resolve(Label.AssociateRunPrompt, lang),
         textInput: true,
-        buttons: ["Associate", "Cancel"],
+        buttons: [resolve(Label.Associate, lang), resolve(Label.Cancel, lang)],
     });
 
     if (result !== 0) {
@@ -2377,7 +2509,7 @@ async function interactiveAssociateRunOrOpenPage(
         /^(?:(?:https?:\/\/)?(?:www\.)?speedrun\.com\/(?:\w+\/)?run[s]?\/)?(\w+)$/;
     const matches = pattern.exec(idOrUrl);
     if (matches === null) {
-        toast.error("Invalid speedrun.com ID or URL.");
+        toast.error(resolve(Label.InvalidSpeedrunUrl, lang));
         return;
     }
     const runId = matches[1];
@@ -2388,6 +2520,7 @@ async function interactiveAssociateRunOrOpenPage(
         const category = expect(
             categories.find((c) => c.id === run.category),
             "The category doesn't belong to the game.",
+            lang,
         );
 
         const gameName = gameInfo.names.international;
@@ -2399,19 +2532,20 @@ async function interactiveAssociateRunOrOpenPage(
         resetTotalLeaderboardState(setExpandedLeaderboardRows, setFilters);
         maybeUpdate();
     } catch {
-        toast.error("Couldn't associate the run. The ID may be invalid.");
+        toast.error(resolve(Label.AssociateRunError, lang));
     }
 }
 
 async function addCustomVariable(
     editor: LiveSplit.RunEditorRefMut,
     update: () => void,
+    lang: LiveSplit.Language | undefined,
 ) {
     const [result, variableName] = await showDialog({
-        title: "Add Variable",
-        description: "Specify the name of the custom variable you want to add:",
+        title: resolve(Label.AddVariable, lang),
+        description: resolve(Label.AddVariablePrompt, lang),
         textInput: true,
-        buttons: ["OK", "Cancel"],
+        buttons: [resolve(Label.Ok, lang), resolve(Label.Cancel, lang)],
     });
     if (result === 0) {
         editor.addCustomVariable(variableName);
@@ -2445,6 +2579,7 @@ async function changeSegmentIcon(
     index: number,
     editor: LiveSplit.RunEditorRefMut,
     maybeUpdate: () => void,
+    lang: LiveSplit.Language | undefined,
 ) {
     editor.selectOnly(index);
     const maybeFile = await openFileAsArrayBuffer(FILE_EXT_IMAGES);
@@ -2452,7 +2587,9 @@ async function changeSegmentIcon(
         return;
     }
     if (maybeFile instanceof Error) {
-        toast.error(`Failed to read the file: ${maybeFile.message}`);
+        toast.error(
+            `${resolve(Label.FailedToReadFile, lang)} ${maybeFile.message}`,
+        );
         return;
     }
     const [file] = maybeFile;
@@ -2499,9 +2636,10 @@ function handleSplitTimeBlur(
     rowState: RowState,
     setRowState: (rowState: RowState) => void,
     update: () => void,
+    lang: LiveSplit.Language | undefined,
 ) {
     if (rowState.splitTimeChanged) {
-        editor.activeParseAndSetSplitTime(rowState.splitTime);
+        editor.activeParseAndSetSplitTime(rowState.splitTime, orAutoLang(lang));
         update();
         setRowState({ ...rowState, splitTimeChanged: false });
     }
@@ -2512,9 +2650,13 @@ function handleSegmentTimeBlur(
     rowState: RowState,
     setRowState: (rowState: RowState) => void,
     update: () => void,
+    lang: LiveSplit.Language | undefined,
 ) {
     if (rowState.segmentTimeChanged) {
-        editor.activeParseAndSetSegmentTime(rowState.segmentTime);
+        editor.activeParseAndSetSegmentTime(
+            rowState.segmentTime,
+            orAutoLang(lang),
+        );
         update();
         setRowState({ ...rowState, segmentTimeChanged: false });
     }
@@ -2525,9 +2667,13 @@ function handleBestSegmentTimeBlur(
     rowState: RowState,
     setRowState: (rowState: RowState) => void,
     update: () => void,
+    lang: LiveSplit.Language | undefined,
 ) {
     if (rowState.bestSegmentTimeChanged) {
-        editor.activeParseAndSetBestSegmentTime(rowState.bestSegmentTime);
+        editor.activeParseAndSetBestSegmentTime(
+            rowState.bestSegmentTime,
+            orAutoLang(lang),
+        );
         update();
         setRowState({ ...rowState, bestSegmentTimeChanged: false });
     }
@@ -2540,11 +2686,16 @@ function handleComparisonTimeBlur(
     rowState: RowState,
     setRowState: (rowState: RowState) => void,
     update: () => void,
+    lang: LiveSplit.Language | undefined,
 ) {
     if (rowState.comparisonTimesChanged[comparisonIndex]) {
         const comparisonName = editorState.comparison_names[comparisonIndex];
         const comparisonTime = rowState.comparisonTimes[comparisonIndex];
-        editor.activeParseAndSetComparisonTime(comparisonName, comparisonTime);
+        editor.activeParseAndSetComparisonTime(
+            comparisonName,
+            comparisonTime,
+            orAutoLang(lang),
+        );
         update();
 
         const comparisonTimesChanged = [...rowState.comparisonTimesChanged];
@@ -2557,12 +2708,13 @@ async function renameComparison(
     comparison: string,
     editor: LiveSplit.RunEditorRefMut,
     update: () => void,
+    lang: LiveSplit.Language | undefined,
 ) {
     const [result, newName] = await showDialog({
-        title: "Rename Comparison",
-        description: "Specify the new name of the comparison:",
+        title: resolve(Label.RenameComparison, lang),
+        description: resolve(Label.RenameComparisonPrompt, lang),
         textInput: true,
-        buttons: ["Rename", "Cancel"],
+        buttons: [resolve(Label.Rename, lang), resolve(Label.Cancel, lang)],
         defaultText: comparison,
     });
 
@@ -2571,9 +2723,7 @@ async function renameComparison(
         if (valid) {
             update();
         } else {
-            toast.error(
-                "The comparison could not be renamed. It may be a duplicate or a reserved name.",
-            );
+            toast.error(resolve(Label.ComparisonRenameError, lang));
         }
     }
 }

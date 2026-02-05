@@ -1,8 +1,9 @@
 import * as React from "react";
 import { expect } from "../../../util/OptionUtil";
-import { TimingMethodJson } from "../../../livesplit-core";
+import { Language, TimingMethodJson } from "../../../livesplit-core";
 import { SettingValueFactory } from ".";
 import { Switch } from "../Switch";
+import { Label, resolve } from "../../../localization";
 
 import * as tableClasses from "../../../css/Table.module.scss";
 
@@ -10,10 +11,12 @@ export function OptionalTimingMethod<T>({
     value,
     setValue,
     factory,
+    lang,
 }: {
     value: TimingMethodJson | null;
     setValue: (value: T) => void;
     factory: SettingValueFactory<T>;
+    lang: Language | undefined;
 }) {
     const children = [
         <Switch
@@ -24,6 +27,7 @@ export function OptionalTimingMethod<T>({
                         expect(
                             factory.fromOptionalTimingMethod("RealTime"),
                             "Unexpected Optional Timing Method",
+                            lang,
                         ),
                     );
                 } else {
@@ -42,12 +46,17 @@ export function OptionalTimingMethod<T>({
                         expect(
                             factory.fromOptionalTimingMethod(e.target.value),
                             "Unexpected Optional Timing Method",
+                            lang,
                         ),
                     )
                 }
             >
-                <option value="RealTime">Real Time</option>
-                <option value="GameTime">Game Time</option>
+                <option value="RealTime">
+                    {resolve(Label.RealTime, lang)}
+                </option>
+                <option value="GameTime">
+                    {resolve(Label.GameTime, lang)}
+                </option>
             </select>,
         );
     }

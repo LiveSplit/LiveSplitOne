@@ -2,23 +2,31 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Option, expect } from "../../../util/OptionUtil";
 import { hotkeySystem } from "../../LiveSplit";
 import { Circle, Trash } from "lucide-react";
+import { Label, resolve } from "../../../localization";
+import { Language } from "../../../livesplit-core";
 
 import * as classes from "../../../css/HotkeyButton.module.scss";
 import * as tooltipClasses from "../../../css/Tooltip.module.scss";
 
-function resolveKey(keyCode: string): Promise<string> | string {
+function resolveKey(
+    keyCode: string,
+    lang: Language | undefined,
+): Promise<string> | string {
     return expect(
         hotkeySystem,
         "The Hotkey System should always be initialized.",
+        lang,
     ).resolve(keyCode);
 }
 
 export function HotkeyButton({
     value,
     setValue,
+    lang,
 }: {
     value: Option<string>;
     setValue: (value: Option<string>) => void;
+    lang: Language | undefined;
 }) {
     const [listener, setListener] = useState<Option<EventListenerObject>>(null);
     const [intervalHandle, setIntervalHandle] = useState<Option<number>>(null);
@@ -32,9 +40,10 @@ export function HotkeyButton({
                 if (matches != null) {
                     resolvedKey = `${matches[1]}+ ${await resolveKey(
                         matches[2],
+                        lang,
                     )}`;
                 } else {
-                    resolvedKey = await resolveKey(value);
+                    resolvedKey = await resolveKey(value, lang);
                 }
             }
             setResolvedKey(resolvedKey);
@@ -157,9 +166,7 @@ export function HotkeyButton({
             >
                 {buttonText}
                 <span className={tooltipClasses.tooltipText}>
-                    Click to record a hotkey. You may also use buttons on a
-                    gamepad. Global hotkeys are currently not possible. Gamepad
-                    buttons work globally.
+                    {resolve(Label.HotkeyButtonTooltip, lang)}
                 </span>
             </button>
             {value && (

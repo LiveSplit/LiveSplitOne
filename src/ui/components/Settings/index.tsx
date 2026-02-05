@@ -1,5 +1,8 @@
 import * as React from "react";
-import { SettingsDescriptionValueJson } from "../../../livesplit-core";
+import {
+    Language,
+    SettingsDescriptionValueJson,
+} from "../../../livesplit-core";
 import { assertNever, Option } from "../../../util/OptionUtil";
 import { HotkeyButton } from "./HotkeyButton";
 import { UrlCache } from "../../../util/UrlCache";
@@ -29,6 +32,7 @@ import {
     RemovableString,
     String,
 } from "./String";
+import { Label, resolve } from "../../../localization";
 
 import * as tableClasses from "../../../css/Table.module.scss";
 import * as tooltipClasses from "../../../css/Tooltip.module.scss";
@@ -41,6 +45,7 @@ export interface Props<T> {
     editorUrlCache: UrlCache;
     allComparisons: string[];
     allVariables: Set<string>;
+    lang: Language | undefined;
 }
 
 export interface ExtendedSettingsDescriptionJson {
@@ -50,6 +55,7 @@ export interface ExtendedSettingsDescriptionJson {
 export interface ExtendedSettingsDescriptionFieldJson {
     text: string | React.JSX.Element;
     tooltip: string | React.JSX.Element;
+    hint?: "Comparison" | "CustomVariable";
     value: ExtendedSettingsDescriptionValueJson;
 }
 
@@ -132,9 +138,7 @@ export interface SettingValueFactory<T> {
     ): T | null;
 }
 
-export class JsonSettingValueFactory
-    implements SettingValueFactory<ExtendedSettingsDescriptionValueJson>
-{
+export class JsonSettingValueFactory implements SettingValueFactory<ExtendedSettingsDescriptionValueJson> {
     public fromBool(v: boolean): ExtendedSettingsDescriptionValueJson {
         return { Bool: v };
     }
@@ -312,12 +316,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     </div>
                 );
             } else if ("String" in value) {
-                // FIXME: This is a hack that we need for now until the way
-                // settings are represented is refactored.
-                if (
-                    typeof field.text === "string" &&
-                    /^Variable/.test(field.text)
-                ) {
+                if (field.hint === "CustomVariable") {
                     component = (
                         <CustomVariable
                             value={value.String}
@@ -326,6 +325,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             }
                             factory={this.props.factory}
                             allVariables={this.props.allVariables}
+                            lang={this.props.lang}
                         />
                     );
                 } else {
@@ -340,12 +340,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                     );
                 }
             } else if ("OptionalString" in value) {
-                // FIXME: This is a hack that we need for now until the way
-                // settings are represented is refactored.
-                if (
-                    typeof field.text === "string" &&
-                    /^Comparison( \d)?$/.test(field.text)
-                ) {
+                if (field.hint === "Comparison") {
                     component = (
                         <Comparison
                             allComparisons={this.props.allComparisons}
@@ -354,6 +349,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 this.props.setValue(valueIndex, value)
                             }
                             factory={this.props.factory}
+                            lang={this.props.lang}
                         />
                     );
                 } else {
@@ -385,6 +381,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             this.props.setValue(valueIndex, value)
                         }
                         factory={this.props.factory}
+                        lang={this.props.lang}
                     />
                 );
             } else if ("DigitsFormat" in value) {
@@ -395,6 +392,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             this.props.setValue(valueIndex, value)
                         }
                         factory={this.props.factory}
+                        lang={this.props.lang}
                     />
                 );
             } else if ("Color" in value) {
@@ -425,6 +423,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             this.props.setValue(valueIndex, value)
                         }
                         factory={this.props.factory}
+                        lang={this.props.lang}
                     />
                 );
             } else if ("ListGradient" in value) {
@@ -435,6 +434,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             this.props.setValue(valueIndex, value)
                         }
                         factory={this.props.factory}
+                        lang={this.props.lang}
                     />
                 );
             } else if ("OptionalTimingMethod" in value) {
@@ -445,6 +445,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             this.props.setValue(valueIndex, value)
                         }
                         factory={this.props.factory}
+                        lang={this.props.lang}
                     />
                 );
             } else if ("Alignment" in value) {
@@ -455,6 +456,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             this.props.setValue(valueIndex, value)
                         }
                         factory={this.props.factory}
+                        lang={this.props.lang}
                     />
                 );
             } else if ("ColumnKind" in value) {
@@ -465,6 +467,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             this.props.setValue(valueIndex, value)
                         }
                         factory={this.props.factory}
+                        lang={this.props.lang}
                     />
                 );
             } else if ("ColumnStartWith" in value) {
@@ -475,6 +478,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             this.props.setValue(valueIndex, value)
                         }
                         factory={this.props.factory}
+                        lang={this.props.lang}
                     />
                 );
             } else if ("ColumnUpdateWith" in value) {
@@ -485,6 +489,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             this.props.setValue(valueIndex, value)
                         }
                         factory={this.props.factory}
+                        lang={this.props.lang}
                     />
                 );
             } else if ("ColumnUpdateTrigger" in value) {
@@ -495,6 +500,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             this.props.setValue(valueIndex, value)
                         }
                         factory={this.props.factory}
+                        lang={this.props.lang}
                     />
                 );
             } else if ("CustomCombobox" in value) {
@@ -517,9 +523,15 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                     : undefined,
                             }}
                         >
-                            {value.CustomCombobox.list.map((v) => (
-                                <option value={v}>{v}</option>
-                            ))}
+                            {value.CustomCombobox.list
+                                .values()
+                                .map((v) =>
+                                    Array.isArray(v) ? (
+                                        <option value={v[0]}>{v[1]}</option>
+                                    ) : (
+                                        <option value={v}>{v}</option>
+                                    ),
+                                )}
                         </select>
                     </div>
                 );
@@ -541,6 +553,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                     );
                                 }
                             }}
+                            lang={this.props.lang}
                         />
                     </div>
                 );
@@ -552,6 +565,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             this.props.setValue(valueIndex, value)
                         }
                         factory={this.props.factory}
+                        lang={this.props.lang}
                     />
                 );
             } else if ("Font" in value) {
@@ -563,6 +577,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                         }
                         factory={this.props.factory}
                         loadedCallback={() => this.setState({})}
+                        lang={this.props.lang}
                     />
                 );
             } else if ("DeltaGradient" in value) {
@@ -573,6 +588,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             this.props.setValue(valueIndex, value)
                         }
                         factory={this.props.factory}
+                        lang={this.props.lang}
                     />
                 );
             } else if ("LayoutBackground" in value) {
@@ -584,6 +600,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                         }
                         factory={this.props.factory}
                         editorUrlCache={this.props.editorUrlCache}
+                        lang={this.props.lang}
                     />
                 );
             } else if ("ServerConnection" in value) {
@@ -597,6 +614,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 value.ServerConnection.connection,
                             )
                         }
+                        lang={this.props.lang}
                     />
                 );
             } else {
@@ -636,11 +654,17 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
             return;
         }
         const [result, url] = await showDialog({
-            title: "Connect to Server",
-            description: "Specify the WebSocket URL:",
+            title: resolve(Label.ConnectToServerTitle, this.props.lang),
+            description: resolve(
+                Label.ConnectToServerDescription,
+                this.props.lang,
+            ),
             textInput: true,
             defaultText: serverUrl,
-            buttons: ["Connect", "Cancel"],
+            buttons: [
+                resolve(Label.Connect, this.props.lang),
+                resolve(Label.Cancel, this.props.lang),
+            ],
         });
         if (result !== 0) {
             return;

@@ -2,6 +2,8 @@ import * as React from "react";
 import { SettingValueFactory } from ".";
 import { Trash } from "lucide-react";
 import { Switch } from "../Switch";
+import { Label, resolve } from "../../../localization";
+import { Language } from "../../../livesplit-core";
 
 import * as tableClasses from "../../../css/Table.module.scss";
 import * as tooltipClasses from "../../../css/Tooltip.module.scss";
@@ -114,11 +116,13 @@ export function Comparison<T>({
     setValue,
     factory,
     allComparisons,
+    lang,
 }: {
     value: string | null;
     setValue: (value: T) => void;
     factory: SettingValueFactory<T>;
     allComparisons: string[];
+    lang: Language | undefined;
 }) {
     return (
         <div className={tableClasses.settingsValueBox}>
@@ -132,7 +136,9 @@ export function Comparison<T>({
                     }
                 }}
             >
-                <option value="">Current Comparison</option>
+                <option value="">
+                    {resolve(Label.ComparisonCurrentComparison, lang)}
+                </option>
                 {allComparisons.map((comparison) => (
                     <option>{comparison}</option>
                 ))}
@@ -146,11 +152,13 @@ export function CustomVariable<T>({
     setValue,
     factory,
     allVariables,
+    lang,
 }: {
     value: string;
     setValue: (value: T) => void;
     factory: SettingValueFactory<T>;
     allVariables: Set<string>;
+    lang: Language | undefined;
 }) {
     if (allVariables.size === 0) {
         return (
@@ -159,11 +167,12 @@ export function CustomVariable<T>({
                     className={tooltipClasses.tooltip}
                     style={{ textAlign: "center" }}
                 >
-                    No variables available
+                    {resolve(Label.CustomVariableNoneAvailable, lang)}
                     <span className={tooltipClasses.tooltipText}>
-                        Custom variables can be defined in the Variables tab
-                        when editing splits. Additional custom variables can be
-                        provided automatically by auto splitters.
+                        {resolve(
+                            Label.CustomVariableNoneAvailableTooltip,
+                            lang,
+                        )}
                     </span>
                 </span>
             </div>

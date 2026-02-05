@@ -1,9 +1,9 @@
-import { CommandSinkRef, HotkeyConfig, HotkeySystem } from "../livesplit-core";
+import { CommandSinkRef, HotkeyConfig, HotkeySystem, Language } from "../livesplit-core";
 import { expect } from "../util/OptionUtil";
 
 export interface HotkeyImplementation {
     ptr?: number;
-    config(): Promise<HotkeyConfig> | HotkeyConfig;
+    config(lang: Language | undefined): Promise<HotkeyConfig> | HotkeyConfig;
     setConfig(config: HotkeyConfig): void;
     activate(): void;
     deactivate(): void;
@@ -13,12 +13,13 @@ export interface HotkeyImplementation {
 class GlobalHotkeys implements HotkeyImplementation {
     constructor(private hotkeySystem?: HotkeySystem) { }
 
-    public async config(): Promise<HotkeyConfig> {
+    public async config(lang: Language | undefined): Promise<HotkeyConfig> {
         return expect(
             HotkeyConfig.parseJson(
                 await window.__TAURI__!.core.invoke("get_hotkey_config"),
             ),
             "Couldn't parse the hotkey config.",
+            lang,
         );
     }
 
@@ -67,6 +68,7 @@ class GlobalHotkeys implements HotkeyImplementation {
 export function createHotkeys(
     commandSink: CommandSinkRef,
     configJson: unknown,
+    lang: Language | undefined,
 ): HotkeyImplementation {
     let hotkeySystem: HotkeySystem | null = null;
 
@@ -86,6 +88,7 @@ export function createHotkeys(
             hotkeySystem = expect(
                 HotkeySystem.new(commandSink),
                 "Couldn't initialize the hotkeys",
+                lang,
             );
         }
     }

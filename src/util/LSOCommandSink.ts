@@ -5,13 +5,13 @@ import {
     CommandSinkRef,
     Event,
     ImageCacheRefMut,
+    Language,
     LayoutEditorRefMut,
     LayoutRefMut,
     LayoutStateRefMut,
     Run,
     RunRef,
     TimeRef,
-    TimeSpan,
     TimeSpanRef,
     Timer,
     TimerPhase,
@@ -21,12 +21,14 @@ import {
 import { WebCommandSink } from "../livesplit-core/livesplit_core";
 import { assert } from "./OptionUtil";
 import { showDialog } from "../ui/components/Dialog";
+import { Label, orAutoLang, resolve } from "../localization";
 
 interface Callbacks {
     handleEvent(event: Event): void;
     runChanged(): void;
     runNotModifiedAnymore(): void;
     encounteredCustomVariable(name: string): void;
+    getLang(): Language | undefined;
 }
 
 export class LSOCommandSink {
@@ -66,7 +68,7 @@ export class LSOCommandSink {
 
     public unlockInteraction() {
         this.locked--;
-        assert(this.locked >= 0, "The lock count should never be negative.");
+        assert(this.locked >= 0, "The lock count should never be negative.", this.callbacks.getLang());
     }
 
     public start(): CommandResult {
@@ -117,11 +119,16 @@ export class LSOCommandSink {
         }
 
         if (updateSplits === undefined && this.timer.currentAttemptHasNewBestTimes()) {
+            const lang = this.callbacks.getLang();
             const [result] = await showDialog({
-                title: "Save Best Times?",
+                title: resolve(Label.SaveBestTimesTitle, lang),
                 description:
-                    "You have beaten some of your best times. Do you want to update them?",
-                buttons: ["Yes", "No", "Don't Reset"],
+                    resolve(Label.SaveBestTimesDescription, lang),
+                buttons: [
+                    resolve(Label.Yes, lang),
+                    resolve(Label.No, lang),
+                    resolve(Label.DontReset, lang),
+                ],
             });
             if (result === 2) {
                 return CommandError.RunnerDecidedAgainstReset;
@@ -309,15 +316,6 @@ export class LSOCommandSink {
         return this.setGameTimeInner(timeSpan);
     }
 
-    public setGameTimeString(gameTime: string): CommandResult {
-        using time = TimeSpan.parse(gameTime);
-        if (time !== null) {
-            return this.setGameTimeInner(time);
-        } else {
-            return CommandError.CouldNotParseTime;
-        }
-    }
-
     public setGameTimeInner(timeSpan: TimeSpanRef): CommandResult {
         if (this.locked) {
             return CommandError.Busy;
@@ -422,16 +420,18 @@ export class LSOCommandSink {
         layout: LayoutRefMut,
         layoutState: LayoutStateRefMut,
         imageCache: ImageCacheRefMut,
+        lang: Language | undefined,
     ): void {
-        layout.updateState(layoutState, imageCache, this.timer);
+        layout.updateState(layoutState, imageCache, this.timer, orAutoLang(lang));
     }
 
     public updateLayoutEditorLayoutState(
         layoutEditor: LayoutEditorRefMut,
         layoutState: LayoutStateRefMut,
         imageCache: ImageCacheRefMut,
+        lang: Language | undefined,
     ): void {
-        layoutEditor.updateLayoutState(layoutState, imageCache, this.timer);
+        layoutEditor.updateLayoutState(layoutState, imageCache, this.timer, orAutoLang(lang));
     }
 
     public currentTime(): TimeRef {

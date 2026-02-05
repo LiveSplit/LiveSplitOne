@@ -3,7 +3,7 @@
         "sourceMap": true,
         "noImplicitAny": true,
         "module": "ESNext",
-        "target": "ES2022",
+        "target": "ES2024",
         "jsx": "react",
         "strictNullChecks": true,
         "noImplicitReturns": true,
@@ -17,9 +17,10 @@
         "allowSyntheticDefaultImports": true,
         "moduleResolution": "Node",
         "lib": [
-            "ES2022",
+            "ES2024",
             "DOM",
-            "dom.iterable"
+            "DOM.Iterable",
+            "ESNext.Iterator",
         ]
     },
     "include": [
