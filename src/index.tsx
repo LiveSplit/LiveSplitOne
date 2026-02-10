@@ -1,26 +1,8 @@
+// The polyfill must be imported before anything else, as it may be required by
+// other modules.
+import "./polyfill";
 import { preloadWasm } from "./livesplit-core/preload";
 import { Label, resolve } from "./localization";
-
-// FIXME: Remove the polyfill later.
-// https://caniuse.com/mdn-javascript_statements_using
-
-if (typeof Symbol.dispose !== "symbol") {
-    Object.defineProperty(Symbol, "dispose", {
-        configurable: false,
-        enumerable: false,
-        writable: false,
-        value: Symbol.for("dispose"),
-    });
-}
-
-if (typeof Symbol.asyncDispose !== "symbol") {
-    Object.defineProperty(Symbol, "asyncDispose", {
-        configurable: false,
-        enumerable: false,
-        writable: false,
-        value: Symbol.for("asyncDispose"),
-    });
-}
 
 if (
     process.env.NODE_ENV === "production" &&
