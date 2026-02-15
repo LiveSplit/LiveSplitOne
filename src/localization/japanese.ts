@@ -233,7 +233,7 @@ export function resolveJapanese(text: Label): string {
         case Label.ComponentTotalPlaytime: return "総プレイタイム";
         case Label.ComponentTotalPlaytimeDescription: return "カテゴリーの総プレイタイムを表示します。";
         case Label.ComponentVariableDescription: return "カスタム変数「{name}」の値を表示するテキストを作成します。";
-        case Label.ComponentBlankSpace: return "スペース";
+        case Label.ComponentBlankSpace: return "余白";
         case Label.ComponentBlankSpaceDescription: return "背景のみの空コンポーネントです。コンポーネント間の余白として使います。";
         case Label.ComponentSeparator: return "区切り";
         case Label.ComponentSeparatorDescription: return "コンポーネント間の区切り線を表示します。";
