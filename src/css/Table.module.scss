@@ -122,7 +122,7 @@
             }
 
             select {
-                height: variables.$settings-row-height;
+                min-height: variables.$settings-row-height;
                 min-width: 80px;
             }
 
