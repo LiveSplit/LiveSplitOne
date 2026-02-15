@@ -149,7 +149,7 @@ export function resolveJapanese(text: Label): string {
         case Label.CopyComparison: return "比較対象をコピー";
         case Label.CopyComparisonDescription: return "自己ベストやその他の自動生成されたものを含む既存の比較対象を新しい比較対象としてコピーします。";
         case Label.SetSegmentIcon: return "アイコン設定";
-        case Label.SetSegmentIconDescription: return "画画像ファイルを選択して区間のアイコンに設定します。一部の画像形式はすべての環境では正しく表示できない場合があります。";
+        case Label.SetSegmentIconDescription: return "画像ファイルを選択して区間のアイコンに設定します。一部の画像形式はすべての環境では正しく表示できない場合があります。";
         case Label.RemoveSegmentIcon: return "アイコン削除";
         case Label.RemoveSegmentIconDescription: return "区間のアイコンを削除します。";
         case Label.Rename: return "名前変更";
@@ -165,7 +165,7 @@ export function resolveJapanese(text: Label): string {
         case Label.AddComparisonPrompt: return "追加する比較対象の名前を入力してください：";
         case Label.ComparisonAddError: return "比較対象を追加できませんでした。重複または予約名の可能性があります。";
         case Label.ImportComparisonPrompt: return "インポートする比較対象の名前を入力してください：";
-        case Label.GenerateGoalComparisonPrompt: return "目標の時タイムを入力してください：";
+        case Label.GenerateGoalComparisonPrompt: return "目標タイムを入力してください：";
         case Label.Generate: return "生成";
         case Label.GenerateGoalComparisonError: return "目標比較対象の生成に失敗しました。タイムが正しいか確認してください。";
         case Label.CopyComparisonPrompt: return "コピーする比較対象の名前を入力してください：";
@@ -254,9 +254,9 @@ export function resolveJapanese(text: Label): string {
         case Label.GradientVertical: return "垂直";
         case Label.GradientHorizontal: return "水平";
         case Label.GradientAlternating: return "交互";
-        case Label.GradientPlainDelta: return "単色差";
-        case Label.GradientVerticalDelta: return "垂直差";
-        case Label.GradientHorizontalDelta: return "水平差";
+        case Label.GradientPlainDelta: return "単色タイム差";
+        case Label.GradientVerticalDelta: return "垂直タイム差";
+        case Label.GradientHorizontalDelta: return "水平タイム差";
         case Label.LayoutBackgroundImage: return "画像";
         case Label.LayoutBackgroundBrightness: return "明るさ";
         case Label.LayoutBackgroundOpacity: return "不透明度";
