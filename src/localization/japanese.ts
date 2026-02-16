@@ -19,10 +19,10 @@ export function resolveJapanese(text: Label): string {
         case Label.SaveOnResetDescription: return "タイマーをリセットしたときにスプリットを自動的に保存するかどうかを決定します。";
         case Label.ShowControlButtons: return "操作ボタンを表示";
         case Label.ShowControlButtonsDescription: return "タイマー下に操作ボタンを表示するかどうかを決定します。無効にした場合はホットキーを使用する必要があります。";
-        case Label.ShowManualGameTimeInput: return "ゲームタイムの手動入力を表示";
-        case Label.ShowManualGameTimeInputDescription: return "タイマー下にゲームタイムを手動で入力できるテキストボックスを表示します。テキストボックスで Enter キーを押すとタイマーを開始し、スプリットします。計測方法を「ゲームタイム」とするのを忘れないでください。";
-        case Label.ManualGameTimeMode: return "ゲームタイムの手動入力モード";
-        case Label.ManualGameTimeModeDescription: return "ゲームタイムの手動入力を区間タイムとして入力するか、スプリットタイムとして入力するかを決定します。";
+        case Label.ShowManualGameTimeInput: return "ゲーム時間の手動入力を表示";
+        case Label.ShowManualGameTimeInputDescription: return "タイマー下にゲーム時間を手動で入力できるテキストボックスを表示します。テキストボックスで Enter キーを押すとタイマーを開始し、スプリットします。計測方法を「ゲーム時間」とするのを忘れないでください。";
+        case Label.ManualGameTimeMode: return "ゲーム時間の手動入力モード";
+        case Label.ManualGameTimeModeDescription: return "ゲーム時間の手動入力を区間タイムとして入力するか、スプリットタイムとして入力するかを決定します。";
         case Label.ManualGameTimeModeSegmentTimes: return "区間タイム";
         case Label.ManualGameTimeModeSplitTimes: return "スプリットタイム";
         case Label.AlwaysOnTop: return "常に最前面";
@@ -39,7 +39,7 @@ export function resolveJapanese(text: Label): string {
         case Label.UndoSplit: return "スプリットを戻す";
         case Label.Reset: return "リセット";
         case Label.SkipSplit: return "スプリットをスキップ";
-        case Label.ManualGameTimePlaceholder: return "ゲームタイムの手動入力";
+        case Label.ManualGameTimePlaceholder: return "ゲーム時間の手動入力";
         case Label.LiveSplitLogoAlt: return "LiveSplit ロゴ";
         case Label.LiveSplitOne: return "LiveSplit One";
         case Label.Splits: return "スプリット";
@@ -119,7 +119,7 @@ export function resolveJapanese(text: Label): string {
         case Label.NoVariables: return "このゲームには現在カスタム変数がありません。";
         case Label.NoVariablesWithSpeedrunCom: return "このゲームには speedrun.com 変数またはカスタム変数がありません。";
         case Label.TimedWithoutLoads: return "ロード時間を除いて計測されます";
-        case Label.TimedWithGameTime: return "ゲームタイムで計測されます";
+        case Label.TimedWithGameTime: return "ゲーム時間で計測されます";
         case Label.RequireVideoProof: return "証明動画が必要です";
         case Label.RunsOfThisGamePrefix: return "このゲームのランは";
         case Label.RunsOfThisGameSuffix: return "。";
