@@ -4,7 +4,6 @@ export function resolveJapanese(text: Label): string {
     switch (text) {
         case Label.Ok: return "OK";
         case Label.Cancel: return "取消";
-        case Label.Cancel: return "取消";
         case Label.Settings: return "設定";
         case Label.Language: return "言語";
         case Label.LanguageDescription: return "アプリケーションで使用される言語を設定します。";
@@ -30,14 +29,12 @@ export function resolveJapanese(text: Label): string {
         case Label.AlwaysOnTopDescription: return "ウィンドウを常に他のウィンドウの前面に表示します。";
         case Label.SpeedrunComIntegration: return "Speedrun.com 連携";
         case Label.SpeedrunComIntegrationDescription: return "speedrun.com からゲーム、カテゴリー、リーダーボードの一覧を取得します。";
-        case Label.SpeedrunComIntegrationDescription: return "speedrun.com からゲーム、カテゴリー、リーダーボードの一覧を取得します。";
         case Label.ServerConnection: return "サーバー接続";
         case Label.ServerConnectionDescription: return "WebSocket サーバーに接続して、さまざまなコマンドを送信することでタイマーを制御できます。これらのコマンドは現在、元の LiveSplit がサポートするコマンドの一部です。";
         case Label.ServerConnectionExperimental: return "この機能は実験的で、プロトコルは将来変更される可能性があります。";
         case Label.HotkeyAlreadyInUse: return "このホットキーは既に使用されています。";
         case Label.Start: return "開始";
         case Label.Resume: return "再開";
-        case Label.Pause: return "ポーズ";
         case Label.Pause: return "ポーズ";
         case Label.UndoSplit: return "スプリットを戻す";
         case Label.Reset: return "リセット";
@@ -48,8 +45,6 @@ export function resolveJapanese(text: Label): string {
         case Label.Splits: return "スプリット";
         case Label.Layout: return "レイアウト";
         case Label.CompareAgainst: return "比較対象";
-        case Label.RealTime: return "実時間";
-        case Label.GameTime: return "ゲーム時間";
         case Label.RealTime: return "実時間";
         case Label.GameTime: return "ゲーム時間";
         case Label.PopOut: return "ポップアウト";
@@ -73,8 +68,7 @@ export function resolveJapanese(text: Label): string {
         case Label.DiscardChangesTitle: return "変更を破棄しますか？";
         case Label.DiscardChangesDescription: return "現在のスプリットには未保存の変更があります。続行して変更を破棄しますか？";
         case Label.DeleteSplitsTitle: return "スプリットを削除しますか？";
-        case Label.DeleteSplitsDescription: return "スプリットを削除してもよろしいですか？　この操作は元に戻せません。";
-        case Label.DeleteSplitsDescription: return "スプリットを削除してもよろしいですか？　この操作は元に戻せません。";
+        case Label.DeleteSplitsDescription: return "スプリットを削除してもよろしいですか？この操作は元に戻せません。";
         case Label.SaveBestTimesTitle: return "ベストタイムを保存しますか？";
         case Label.SaveBestTimesDescription: return "いくつかのベストタイムを更新しました。更新しますか？";
         case Label.Yes: return "はい";
