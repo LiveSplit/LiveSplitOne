@@ -35,8 +35,8 @@ import {
     Upload,
 } from "lucide-react";
 
-import * as classes from "../../css/SplitsSelection.module.scss";
-import * as sidebarClasses from "../../css/Sidebar.module.scss";
+import * as classes from "../../css/SplitsSelection.module.css";
+import * as sidebarClasses from "../../css/Sidebar.module.css";
 
 export interface EditingInfo {
     splitsKey?: number;

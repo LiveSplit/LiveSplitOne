@@ -1,0 +1,99 @@
+.leaderboardTable {
+    composes: table from "Table.module.css";
+
+    :global(.is-mobile) & {
+        font-size: 13px;
+    }
+}
+
+.leaderboardRow:hover {
+    background: var(--hover-row-color) !important;
+}
+
+.leaderboardRankColumn {
+    width: 36px;
+}
+
+.leaderboardTimeColumn,
+.variableColumn {
+    width: 100px;
+}
+
+.variableColumn {
+    text-align: center;
+}
+
+.leaderboardExpandedRow {
+    & > td {
+        max-width: 0;
+    }
+
+    .runMetaTable {
+        border-spacing: var(--ui-margin) 2px;
+        margin-left: calc(-1 * var(--ui-margin));
+    }
+}
+
+.unregisteredUser {
+    font-style: italic;
+    color: silver;
+}
+
+.filterTable {
+    composes: table from "Table.module.css";
+    width: 100%;
+
+    td {
+        padding: calc(var(--ui-margin) / 2) var(--ui-margin);
+        background: var(--light-row-color);
+    }
+
+    tr:first-child > td {
+        padding-top: var(--ui-margin);
+    }
+
+    tr:last-child > td {
+        padding-bottom: var(--ui-margin);
+    }
+
+    > tbody.tableBody > tr {
+        background-color: var(--light-row-color);
+    }
+
+    > thead.tableHeader > tr {
+        background-color: var(--header-row-color);
+    }
+
+    :global(.is-mobile) & {
+        margin: 0 0 var(--ui-margin) calc(-1 * var(--ui-margin));
+        width: calc(100% + var(--ui-margin));
+    }
+}
+
+.subcategoryTable {
+    composes: filterTable;
+    > tbody > tr {
+        border: 1px solid var(--border-color);
+        text-align: center;
+        cursor: pointer;
+
+        > td:hover {
+            background: var(--hover-row-color);
+        }
+    }
+
+    tr:first-child > td {
+        padding-top: calc(var(--ui-margin) / 2);
+    }
+
+    tr:last-child > td {
+        padding-bottom: calc(var(--ui-margin) / 2);
+    }
+}
+
+.selected {
+    composes: selected from "Table.module.css";
+    &:hover {
+        background: var(--selected-row-hover-color) !important;
+    }
+}

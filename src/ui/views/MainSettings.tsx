@@ -23,7 +23,7 @@ import { Option } from "../../util/OptionUtil";
 import { LSOCommandSink } from "../../util/LSOCommandSink";
 import { Check, FlaskConical, X } from "lucide-react";
 
-import * as buttonGroupClasses from "../../css/ButtonGroup.module.scss";
+import * as buttonGroupClasses from "../../css/ButtonGroup.module.css";
 import { Label, orAutoLang, resolve, setHtmlLang } from "../../localization";
 
 export interface GeneralSettings {

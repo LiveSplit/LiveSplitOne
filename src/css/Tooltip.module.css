@@ -1,6 +1,3 @@
-@use "mobile.module.scss";
-@use "variables.icss";
-
 .tooltip {
     position: relative;
 
@@ -13,10 +10,10 @@
         color: #fff;
         text-align: center;
         border-radius: 6px;
-        padding: variables.$ui-margin;
+        padding: var(--ui-margin);
         position: absolute;
         z-index: 1;
-        bottom: calc(100% + variables.$ui-margin);
+        bottom: calc(100% + var(--ui-margin));
         left: 50%;
         margin-left: -150px;
         opacity: 0;
@@ -25,7 +22,7 @@
         text-wrap: initial;
         font-weight: initial;
 
-        @include mobile.mobile {
+        :global(.is-mobile) & {
             left: 0;
             margin-left: 0;
         }
@@ -38,7 +35,7 @@
 
     &.contextMenuItem .tooltipText {
         bottom: initial;
-        left: calc(100% + variables.$ui-margin);
+        left: calc(100% + var(--ui-margin));
         margin-left: 0;
         top: 0;
     }

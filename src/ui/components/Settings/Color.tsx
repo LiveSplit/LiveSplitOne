@@ -4,7 +4,7 @@ import { SettingValueFactory } from ".";
 import { ColorPicker } from "../ColorPicker";
 import { Switch } from "../Switch";
 
-import * as tableClasses from "../../../css/Table.module.scss";
+import * as tableClasses from "../../../css/Table.module.css";
 
 export function Color<T>({
     value,

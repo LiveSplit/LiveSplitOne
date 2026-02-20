@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { Label, resolve } from "../../localization";
 
-import * as sidebarClasses from "../../css/Sidebar.module.scss";
+import * as sidebarClasses from "../../css/Sidebar.module.css";
 
 export interface Props {
     isDesktop: boolean;

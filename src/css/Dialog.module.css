@@ -1,5 +1,3 @@
-@use "variables.icss";
-
 :global(.is-mobile) + dialog > .dialog {
     min-width: auto;
 }
@@ -22,10 +20,10 @@ dialog {
         min-width: 225px;
         display: flex;
         flex-direction: column;
-        gap: variables.$ui-large-margin;
+        gap: var(--ui-large-margin);
 
         max-width: 400px;
-        padding: variables.$ui-large-margin;
+        padding: var(--ui-large-margin);
 
         h1 {
             font-size: larger;
@@ -51,7 +49,7 @@ dialog {
             flex-direction: row;
             flex-wrap: wrap;
             justify-content: flex-end;
-            gap: variables.$ui-margin;
+            gap: var(--ui-margin);
         }
 
         input {

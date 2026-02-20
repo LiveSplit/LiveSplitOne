@@ -2,7 +2,7 @@ import * as React from "react";
 import markdownit from "markdown-it";
 import { emoteList } from "../../api/EmoteList";
 
-import * as classes from "../../css/Markdown.module.scss";
+import * as classes from "../../css/Markdown.module.css";
 
 const UNSAFE = markdownit({ html: true, breaks: false, linkify: true });
 const SAFE = markdownit({ html: false, breaks: true, linkify: true });

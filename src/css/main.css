@@ -1,7 +1,3 @@
-@use "sass:math";
-
-@use "variables.icss";
-
 @font-face {
     font-family: timer;
     font-display: swap;
@@ -18,7 +14,7 @@ body {
     font-family: "fira", sans-serif;
     color: #eee;
     text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
-    background: variables.$main-background-color;
+    background: var(--main-background-color);
 }
 
 table {
@@ -36,37 +32,37 @@ button {
     justify-content: center;
     margin: 0;
     gap: 0.25em;
-    background: variables.$button-color;
-    color: variables.$button-text-color;
+    background: var(--button-color);
+    color: var(--button-text-color);
     cursor: pointer;
     font-size: 20px;
     line-height: 1.1;
     border-width: 1px;
     border-style: solid;
-    border-color: variables.$border-color;
+    border-color: var(--border-color);
     border-image: initial;
     border-radius: 5px;
     font-weight: bold;
     font-family: "fira", sans-serif;
-    min-height: variables.$button-height;
-    padding: 5px variables.$ui-margin;
+    min-height: var(--button-height);
+    padding: 5px var(--ui-margin);
 
     &:disabled,
     &:disabled:active,
     &:disabled:active:hover,
     &:disabled:hover {
-        background: variables.$button-disabled-color;
-        color: variables.$button-disabled-text-color;
+        background: var(--button-disabled-color);
+        color: var(--button-disabled-text-color);
         cursor: default;
     }
 
     &:hover {
-        background: variables.$button-hover-color;
+        background: var(--button-hover-color);
     }
 
     &:active,
     &:active:hover {
-        background: variables.$button-active-color;
+        background: var(--button-active-color);
     }
 }
 

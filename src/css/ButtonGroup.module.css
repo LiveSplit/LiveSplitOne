@@ -1,6 +1,4 @@
-@use "variables.icss";
-
-// FIXME: This should be a component.
+/* FIXME: This should be a component. */
 .group {
     display: flex;
 
@@ -21,12 +19,12 @@
 
     .pressed,
     .pressed:hover {
-        background: variables.$button-active-color;
+        background: var(--button-active-color);
     }
 
     .pressed.disabled {
-        background: variables.$button-disabled-color;
-        color: variables.$button-disabled-text-color;
+        background: var(--button-disabled-color);
+        color: var(--button-disabled-text-color);
         cursor: default;
     }
 }

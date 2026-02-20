@@ -8,8 +8,8 @@ import { toast } from "react-toastify";
 import { FILE_EXT_IMAGES, openFileAsArrayBuffer } from "../../../util/FileUtil";
 import { Label, resolve } from "../../../localization";
 
-import * as colorPickerClasses from "../../../css/ColorPicker.module.scss";
-import * as tableClasses from "../../../css/Table.module.scss";
+import * as colorPickerClasses from "../../../css/ColorPicker.module.css";
+import * as tableClasses from "../../../css/Table.module.css";
 
 export function LayoutBackground<T>({
     value,

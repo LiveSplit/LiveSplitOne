@@ -6,8 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { GeneralSettings } from "./MainSettings";
 import { formatDate, getLocale, Label, resolve } from "../../localization";
 
-import * as variables from "../../css/variables.icss.scss";
-import * as classes from "../../css/About.module.scss";
+import * as classes from "../../css/About.module.css";
 import { Language, Lang } from "../../livesplit-core";
 
 interface Callbacks {
@@ -18,7 +17,11 @@ interface Callbacks {
     openTimerView(): void;
 }
 
-const contributorAvatarSize = parseFloat(variables.contributorAvatarSize);
+const contributorAvatarSize = parseFloat(
+    getComputedStyle(document.documentElement)
+        .getPropertyValue("--contributor-avatar-size")
+        .trim(),
+);
 
 export function About({
     callbacks,

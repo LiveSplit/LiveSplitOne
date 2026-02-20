@@ -291,13 +291,12 @@ export default async (env, argv) => {
                     exclude: "/node_modules",
                 },
                 {
-                    test: /\.(s?)css$/,
+                    test: /\.css$/,
                     use: [
                         "style-loader",
                         {
                             loader: "css-loader",
                             options: {
-                                importLoaders: 1,
                                 modules: {
                                     auto: true,
                                     // In development mode, we want to know
@@ -308,7 +307,6 @@ export default async (env, argv) => {
                                 },
                             },
                         },
-                        "sass-loader",
                     ],
                 },
                 {

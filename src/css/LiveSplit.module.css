@@ -1,0 +1,26 @@
+.openSidebarButton {
+    position: fixed;
+    bottom: var(--ui-margin);
+    left: var(--ui-margin);
+    z-index: 10;
+    font-size: 24px;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+}
+
+.viewContainer {
+    position: relative;
+    display: inline-block;
+    vertical-align: top;
+    min-width: calc(100% - 2 * var(--main-content-margin));
+    min-height: calc(100% - 2 * var(--main-content-margin));
+    margin: var(--main-content-margin);
+
+    :global(.is-mobile) & {
+        display: block;
+        margin: 0 0 calc(40px + 2 * var(--ui-margin)) 0;
+        min-width: 100%;
+        min-height: calc(100% - (40px + 2 * var(--ui-margin)));
+    }
+}

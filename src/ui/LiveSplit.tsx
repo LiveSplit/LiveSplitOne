@@ -56,21 +56,27 @@ import { createHotkeys, HotkeyImplementation } from "../platform/Hotkeys";
 import { Menu } from "lucide-react";
 import { createRoot } from "react-dom/client";
 
-import * as variables from "../css/variables.icss.scss";
-
 import LiveSplitIcon from "../assets/icon.svg";
 import timerFont from "../css/timer.woff";
 import firaFont from "../css/FiraSans-Regular.woff";
 
 import "react-toastify/dist/ReactToastify.css";
-import * as classes from "../css/LiveSplit.module.scss";
-import * as sidebarClasses from "../css/Sidebar.module.scss";
-import * as toastClasses from "../css/Toast.module.scss";
+import * as classes from "../css/LiveSplit.module.css";
+import * as sidebarClasses from "../css/Sidebar.module.css";
+import * as toastClasses from "../css/Toast.module.css";
 import { Label, orAutoLang, resolve, setHtmlLang } from "../localization";
 
-const buttonHeight = parseFloat(variables.buttonHeight);
-const largeMargin = parseFloat(variables.largeMargin);
-const manualGameTimeHeight = parseFloat(variables.manualGameTimeHeight);
+function getRootCssVar(name: string) {
+    return getComputedStyle(document.documentElement)
+        .getPropertyValue(name)
+        .trim();
+}
+
+const buttonHeight = parseFloat(getRootCssVar("--button-height"));
+const largeMargin = parseFloat(getRootCssVar("--ui-large-margin"));
+const manualGameTimeHeight = parseFloat(
+    getRootCssVar("--manual-game-time-height"),
+);
 
 export enum MenuKind {
     Timer,
@@ -1239,7 +1245,7 @@ async function popOut(
     childDoc.head.appendChild(link);
 
     childDoc.body.style.margin = "0";
-    childDoc.body.style.background = variables.mainBackgroundColor;
+    childDoc.body.style.background = getRootCssVar("--main-background-color");
 
     const timerFontFace = new FontFace("timer", `url(${timerFont})`);
     const firaFontFace = new FontFace("fira", `url(${firaFont})`);

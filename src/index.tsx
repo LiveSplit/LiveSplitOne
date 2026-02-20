@@ -14,7 +14,8 @@ if (
 
 preloadWasm();
 
-import "./css/main.scss";
+import "./css/variables.css";
+import "./css/main.css";
 
 try {
     const { LiveSplit, React, createRoot } = await import("./indexDelayed");
