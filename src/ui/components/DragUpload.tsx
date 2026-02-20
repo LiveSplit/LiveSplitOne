@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 
-import * as classes from "../../css/DragUpload.module.scss";
+import * as classes from "../../css/DragUpload.module.css";
 
 export function DragUpload({
     children,

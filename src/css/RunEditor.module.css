@@ -1,0 +1,249 @@
+.tableHeader {
+    border-bottom: solid 1px var(--border-color);
+
+    > tr {
+        display: table-row;
+        background: var(--header-row-color);
+
+        > th {
+            font-weight: bold;
+            text-align: center;
+            padding: calc(var(--ui-margin) / 2) calc(var(--ui-margin) / 2);
+            display: table-cell;
+
+            &:first-child {
+                padding-left: var(--ui-margin);
+            }
+
+            &:last-child {
+                padding-right: var(--ui-margin);
+            }
+
+            &:nth-child(1):after {
+                margin: 0;
+                margin-left: -4px;
+                margin-right: 7px;
+            }
+        }
+    }
+}
+
+.rulesOuter {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    background-color: var(--light-row-color);
+    width: 625px;
+}
+
+.rulesInner {
+    padding-left: var(--ui-margin);
+    padding-right: var(--ui-margin);
+    border: 1px solid var(--border-color);
+    border-collapse: collapse;
+}
+
+.runEditorTab {
+    margin-left: calc(var(--ui-large-margin) / 2);
+    min-width: 625px;
+    box-sizing: border-box;
+
+    :global(.is-mobile) & {
+        width: 100%;
+        min-width: 0;
+        margin-left: 0;
+    }
+}
+
+.videoOuterContainer {
+    width: 100%;
+    padding-top: calc(100% * 9 / 16);
+    margin-top: calc(var(--ui-margin) / 2);
+    position: relative;
+}
+
+.videoInnerContainer {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+
+    iframe {
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.runEditorInfo {
+    display: inline-flex;
+    align-items: flex-start;
+    margin-bottom: calc(var(--ui-large-margin) - var(--ui-margin) / 2);
+
+    :global(.is-mobile) & {
+        margin: var(--ui-margin) 0 0 var(--ui-margin);
+    }
+}
+
+.gameIconContainer {
+    background-color: var(--light-row-color);
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+    box-sizing: border-box;
+    width: 160px;
+    height: 160px;
+    padding: var(--ui-margin);
+
+    :global(.is-mobile) & {
+        width: 100px;
+        height: 100px;
+        flex-shrink: 0;
+    }
+}
+
+.gameIconImage {
+    object-fit: contain;
+    width: calc(160px - 2 * var(--ui-margin));
+    height: calc(160px - 2 * var(--ui-margin));
+
+    :global(.is-mobile) & {
+        width: calc(100px - 2 * var(--ui-margin));
+        height: calc(100px - 2 * var(--ui-margin));
+    }
+}
+
+.runEditorInfoTable {
+    margin-left: var(--ui-large-margin);
+    width: 625px;
+    display: flex;
+    flex-wrap: wrap;
+
+    :global(.is-mobile) & {
+        width: 100%;
+        margin-left: var(--ui-margin);
+        margin-bottom: calc(var(--ui-large-margin) - var(--ui-margin));
+    }
+}
+
+.infoTableRow {
+    flex-grow: 1;
+    width: 100%;
+    display: flex;
+
+    &:last-child .infoTableCell {
+        padding-bottom: 0;
+
+        :global(.is-mobile) & {
+            padding-bottom: var(--ui-margin);
+        }
+    }
+
+    .infoTableCell {
+        padding: 0 var(--ui-margin) var(--ui-margin) 0;
+        flex-grow: 1;
+
+        &:last-child {
+            padding-right: 0;
+
+            :global(.is-mobile) & {
+                padding-right: var(--ui-margin);
+            }
+        }
+    }
+
+    :global(.is-mobile) & {
+        flex-wrap: wrap;
+    }
+}
+
+.runEditorTable {
+    composes: table from "Table.module.css";
+    td {
+        overflow: hidden;
+
+        > input {
+            width: 100%;
+            text-overflow: ellipsis;
+
+            :global(.is-mobile) & {
+                font-size: 13px;
+            }
+        }
+    }
+
+    :global(.is-mobile) & {
+        font-size: 13px;
+    }
+}
+
+tbody > tr > .segmentIconContainer {
+    height: 19px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+}
+
+.bottomSection {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.editorGroup {
+    :global(.is-mobile) & {
+        min-width: 100%;
+        margin-top: calc(var(--ui-large-margin) - var(--ui-margin));
+    }
+}
+
+.sideButtonsOuter {
+    margin-bottom: var(--ui-margin);
+    :global(.is-mobile) & {
+        width: 100%;
+    }
+}
+
+.tabBar {
+    composes: tabBar from "ButtonGroup.module.css";
+    margin-left: calc(var(--ui-large-margin) / 2);
+    height: 30px;
+
+    :global(.is-mobile) & {
+        height: inherit;
+        margin-left: 0;
+
+        button {
+            font-size: 13px;
+            padding: 1px 3px 1px 3px;
+            margin-top: 0;
+        }
+    }
+}
+
+.sideButtonsInner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-margin);
+    margin-top: 30px;
+    margin-right: calc(var(--ui-large-margin) / 2);
+    width: 160px;
+
+    button {
+        font-size: 15px;
+        width: 160px;
+        min-height: 30px;
+
+        :global(.is-mobile) & {
+            width: 100%;
+        }
+    }
+
+    :global(.is-mobile) & {
+        width: calc(100% - 2 * var(--ui-margin));
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        margin-top: 0;
+        margin-left: var(--ui-margin);
+    }
+}
+
+.bestSegmentTime {
+    /* FIXME: important */
+    color: hsla(50, 100%, 50%, 1) !important;
+}

@@ -6,7 +6,7 @@ import AutoRefresh from "../../util/AutoRefresh";
 import { UrlCache } from "../../util/UrlCache";
 import { GeneralSettings } from "../views/MainSettings";
 
-import * as classes from "../../css/Layout.module.scss";
+import * as classes from "../../css/Layout.module.css";
 
 export function Layout({
     getState,

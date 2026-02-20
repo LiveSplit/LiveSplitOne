@@ -1,20 +1,11 @@
-@use "sass:math";
-
-@use "mobile.module.scss";
-@use "variables.icss";
-
-$loading-text-font-size: 40px;
-$splits-row-width: 500px;
-$splits-row-height: 40px;
-
 .loading {
     display: flex;
     width: fit-content;
-    font-size: $loading-text-font-size;
+    font-size: 40px;
 }
 
 .loadingText {
-    margin-left: variables.$ui-margin;
+    margin-left: var(--ui-margin);
 }
 
 .splitsSelectionContainer {
@@ -29,23 +20,23 @@ $splits-row-height: 40px;
 
     button {
         margin-top: 0;
-        margin-bottom: math.div(variables.$ui-large-margin, 2);
-        margin-right: variables.$ui-margin;
+        margin-bottom: calc(var(--ui-large-margin) / 2);
+        margin-right: var(--ui-margin);
     }
 
-    @include mobile.mobile {
-        margin-top: variables.$ui-margin;
-        margin-left: variables.$ui-margin;
+    :global(.is-mobile) & {
+        margin-top: var(--ui-margin);
+        margin-left: var(--ui-margin);
     }
 }
 
 .splitsTable {
-    background-color: variables.$dark-row-color;
-    border: 1px solid variables.$border-color;
-    margin: math.div(variables.$ui-large-margin, 2) 0;
+    background-color: var(--dark-row-color);
+    border: 1px solid var(--border-color);
+    margin: calc(var(--ui-large-margin) / 2) 0;
     width: fit-content;
 
-    @include mobile.mobile {
+    :global(.is-mobile) & {
         width: 100%;
         box-sizing: border-box;
     }
@@ -53,36 +44,36 @@ $splits-row-height: 40px;
 
 .splitsRow {
     display: flex;
-    gap: variables.$ui-large-margin;
+    gap: var(--ui-large-margin);
     flex-wrap: nowrap;
     align-items: center;
-    padding: variables.$ui-margin;
-    height: $splits-row-height;
-    width: $splits-row-width;
+    padding: var(--ui-margin);
+    height: 40px;
+    width: 500px;
 
     &:nth-of-type(odd) {
-        background-color: variables.$light-row-color;
+        background-color: var(--light-row-color);
     }
 
     &.selected {
-        background: variables.$selected-row-color;
+        background: var(--selected-row-color);
     }
 
     &.selected .splitsRowButtons button {
         opacity: 70%;
     }
 
-    @include mobile.mobile {
+    :global(.is-mobile) & {
         width: 100%;
         box-sizing: border-box;
-        height: $splits-row-height + 2 * variables.$ui-margin;
+        height: calc(40px + 2 * var(--ui-margin));
     }
 }
 
 .splitsRowButtons {
     display: contents;
     flex-shrink: 0;
-    margin-left: variables.$ui-large-margin;
+    margin-left: var(--ui-large-margin);
 
     button {
         background: transparent;
@@ -110,6 +101,6 @@ $splits-row-height: 40px;
     text-overflow: ellipsis;
 
     &.splitsGame {
-        margin-bottom: variables.$ui-margin;
+        margin-bottom: var(--ui-margin);
     }
 }

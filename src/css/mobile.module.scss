@@ -1,5 +1,0 @@
-@mixin mobile {
-    :global(.is-mobile) & {
-        @content;
-    }
-}

@@ -1,6 +1,3 @@
-@use "mobile.module.scss";
-@use "variables.icss";
-
 .uploadDropZone {
     position: absolute;
     top: 0;
@@ -10,9 +7,9 @@
 
     .overlay {
         position: absolute;
-        width: calc(100% + 2 * #{variables.$main-content-margin});
-        height: calc(100% + 2 * #{variables.$main-content-margin});
-        margin: -(variables.$main-content-margin);
+        width: calc(100% + 2 * var(--main-content-margin));
+        height: calc(100% + 2 * var(--main-content-margin));
+        margin: calc(-1 * var(--main-content-margin));
         visibility: hidden;
         pointer-events: none;
         background-color: rgba(50, 50, 50, 0.7);
@@ -21,7 +18,7 @@
         justify-content: center;
         align-items: center;
 
-        @include mobile.mobile {
+        :global(.is-mobile) & {
             width: 100%;
             height: 100%;
             margin: 0;

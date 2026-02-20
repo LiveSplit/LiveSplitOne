@@ -1,10 +1,7 @@
-@use "mobile.module.scss";
-@use "variables.icss";
-
 .layoutEditorOuter {
     display: inline-flex;
 
-    @include mobile.mobile {
+    :global(.is-mobile) & {
         flex-wrap: wrap;
 
         .layoutEditorInnerContainer {
@@ -14,15 +11,15 @@
 }
 
 .layoutEditorInner {
-    width: variables.$settings-table-width;
+    width: var(--settings-table-width);
     display: inline-flex;
-    margin-bottom: variables.$ui-large-margin;
+    margin-bottom: var(--ui-large-margin);
 
     table {
         width: 100%;
     }
 
-    @include mobile.mobile {
+    :global(.is-mobile) & {
         flex-wrap: wrap;
         width: 100%;
         margin-bottom: 0;
@@ -32,26 +29,26 @@
 .btnGroup {
     display: flex;
     flex-direction: column;
-    gap: variables.$ui-margin;
+    gap: var(--ui-margin);
 
     button {
         width: 40px;
         font-size: 15px;
     }
 
-    @include mobile.mobile {
+    :global(.is-mobile) & {
         flex-direction: row;
-        margin: variables.$ui-large-margin;
+        margin: var(--ui-large-margin);
     }
 }
 
 .layoutEditorComponentList {
-    composes: table from "Table.module.scss";
-    margin-left: variables.$ui-large-margin;
+    composes: table from "Table.module.css";
+    margin-left: var(--ui-large-margin);
 
-    @include mobile.mobile {
+    :global(.is-mobile) & {
         margin-left: 0;
-        margin-bottom: variables.$ui-large-margin;
+        margin-bottom: var(--ui-large-margin);
     }
 }
 
@@ -60,10 +57,10 @@
 }
 
 .layoutContainer {
-    margin-left: variables.$ui-large-margin;
+    margin-left: var(--ui-large-margin);
 
-    @include mobile.mobile {
+    :global(.is-mobile) & {
         margin-left: 0;
-        margin-top: variables.$ui-large-margin;
+        margin-top: var(--ui-large-margin);
     }
 }

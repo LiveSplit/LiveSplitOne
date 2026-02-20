@@ -34,8 +34,8 @@ import {
 } from "./String";
 import { Label, resolve } from "../../../localization";
 
-import * as tableClasses from "../../../css/Table.module.scss";
-import * as tooltipClasses from "../../../css/Tooltip.module.scss";
+import * as tableClasses from "../../../css/Table.module.css";
+import * as tooltipClasses from "../../../css/Tooltip.module.css";
 
 export interface Props<T> {
     context: string;

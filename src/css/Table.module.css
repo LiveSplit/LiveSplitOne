@@ -1,25 +1,20 @@
-@use "sass:math";
-
-@use "mobile.module.scss";
-@use "variables.icss";
-
 .table {
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
     display: table;
-    border: 1px solid variables.$border-color;
+    border: 1px solid var(--border-color);
     border-collapse: collapse;
 
     > tbody {
         > tr.explicitEven,
         > :nth-child(even) {
             display: table-row;
-            background: variables.$dark-row-color;
+            background: var(--dark-row-color);
         }
 
         > tr.explicitOdd,
         > :nth-child(odd) {
             display: table-row;
-            background: variables.$light-row-color;
+            background: var(--light-row-color);
         }
     }
 }
@@ -29,19 +24,18 @@
 
     > tr {
         display: table-row;
-        background: variables.$dark-row-color;
+        background: var(--dark-row-color);
 
         > td {
-            padding: math.div(variables.$ui-margin, 2)
-                math.div(variables.$ui-margin, 2);
+            padding: calc(var(--ui-margin) / 2) calc(var(--ui-margin) / 2);
             display: table-cell;
 
             &:first-child {
-                padding-left: variables.$ui-margin;
+                padding-left: var(--ui-margin);
             }
 
             &:last-child {
-                padding-right: variables.$ui-margin;
+                padding-right: var(--ui-margin);
             }
         }
     }
@@ -69,11 +63,11 @@
     }
 
     select {
-        background: variables.$dark-row-color
+        background: var(--dark-row-color)
             url("data:image/svg+xml;charset=UTF-8,%3Csvg width='12' height='12' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='0,4 2,4 5,7 8,4 10,4 5,9' fill='%23fff'/%3E%3C/svg%3E")
             no-repeat right 4px center;
         font-size: 15px;
-        border: 1px solid variables.$border-color;
+        border: 1px solid var(--border-color);
         color: white;
         text-overflow: ellipsis;
         font-family: inherit;
@@ -91,11 +85,11 @@
 }
 
 .selected {
-    background: variables.$selected-row-color !important;
+    background: var(--selected-row-color) !important;
 }
 
 .settingsTable {
-    width: variables.$settings-table-width;
+    width: var(--settings-table-width);
 
     tr {
         height: 30px;
@@ -105,15 +99,14 @@
         }
 
         .settingsValueBox {
-            width: math.div(variables.$settings-table-width, 2) - 2 *
-                variables.$ui-margin;
+            width: calc(var(--settings-table-width) / 2 - 2 * var(--ui-margin));
             display: grid;
-            column-gap: variables.$ui-margin;
-            row-gap: variables.$ui-margin;
+            column-gap: var(--ui-margin);
+            row-gap: var(--ui-margin);
             grid-template-columns: 100%;
 
             input {
-                height: variables.$settings-row-height;
+                height: var(--settings-row-height);
                 box-sizing: border-box;
 
                 &:focus {
@@ -122,7 +115,7 @@
             }
 
             select {
-                height: variables.$settings-row-height;
+                height: var(--settings-row-height);
                 min-width: 80px;
             }
 
@@ -142,14 +135,14 @@
                 grid-template-columns: 1fr 20px;
 
                 .trash {
-                    // FIXME: Deduplicate
+                    /* FIXME: Deduplicate */
                     cursor: pointer;
                 }
 
                 button {
                     margin: 0;
                     font-size: 12px;
-                    min-height: variables.$settings-row-height;
+                    min-height: var(--settings-row-height);
                     padding-top: 0;
                     padding-bottom: 0;
                 }
@@ -157,7 +150,7 @@
         }
     }
 
-    @include mobile.mobile {
+    :global(.is-mobile) & {
         width: 100%;
     }
 }

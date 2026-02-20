@@ -15,10 +15,10 @@ import {
 import { ArrowDown, ArrowUp, Check, Copy, Plus, Trash, X } from "lucide-react";
 import { Label, orAutoLang, resolve } from "../../localization";
 
-import * as classes from "../../css/LayoutEditor.module.scss";
-import * as buttonGroupClasses from "../../css/ButtonGroup.module.scss";
-import * as tableClasses from "../../css/Table.module.scss";
-import * as tooltipClasses from "../../css/Tooltip.module.scss";
+import * as classes from "../../css/LayoutEditor.module.css";
+import * as buttonGroupClasses from "../../css/ButtonGroup.module.css";
+import * as tableClasses from "../../css/Table.module.css";
+import * as tooltipClasses from "../../css/Tooltip.module.css";
 
 export interface Props {
     editor: LiveSplit.LayoutEditor;

@@ -1,0 +1,43 @@
+.sidebarOverlay {
+    z-index: 3 !important;
+}
+
+.sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-margin);
+    background: var(--sidebar-background-color);
+    padding: var(--ui-margin);
+    width: 250px;
+    z-index: 4 !important;
+
+    hr {
+        border-color: var(--border-color);
+        margin: var(--ui-margin) 0;
+    }
+
+    h1,
+    h2 {
+        text-align: center;
+        margin: 0;
+    }
+
+    h1 {
+        font-size: 24px;
+        margin-top: var(--ui-large-margin);
+    }
+
+    h2 {
+        font-size: 22px;
+    }
+
+    button {
+        width: 100%;
+    }
+}
+
+.modifiedIcon {
+    position: absolute;
+    padding-bottom: 10px;
+    padding-left: 5px;
+}

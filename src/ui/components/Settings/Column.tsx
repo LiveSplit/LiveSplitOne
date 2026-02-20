@@ -10,7 +10,7 @@ import {
 import { SettingValueFactory } from ".";
 import { Label, resolve } from "../../../localization";
 
-import * as tableClasses from "../../../css/Table.module.scss";
+import * as tableClasses from "../../../css/Table.module.css";
 
 export function ColumnKind<T>({
     value,

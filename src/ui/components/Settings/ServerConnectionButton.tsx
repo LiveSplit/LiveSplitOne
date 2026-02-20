@@ -4,8 +4,8 @@ import { LiveSplitServer } from "../../../api/LiveSplitServer";
 import { Label, resolve } from "../../../localization";
 import { Language } from "../../../livesplit-core";
 
-import * as classes from "../../../css/LiveSplitServerButton.module.scss";
-import * as tableClasses from "../../../css/Table.module.scss";
+import * as classes from "../../../css/LiveSplitServerButton.module.css";
+import * as tableClasses from "../../../css/Table.module.css";
 
 export function ServerConnectionButton({
     value,

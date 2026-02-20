@@ -1,16 +1,11 @@
-@use "sass:math";
-
-@use "variables.icss";
-
-$label-size: 14px;
-
 .group {
     position: relative;
-    border-bottom: 1px solid variables.$border-color;
+    border-bottom: 1px solid var(--border-color);
 
-    >input {
+    > input {
         font-size: 18px;
-        padding: $label-size + variables.$ui-margin 0 math.div(variables.$ui-margin, 2) math.div(variables.$ui-margin, 2);
+        padding: calc(14px + var(--ui-margin)) 0
+            calc(var(--ui-margin) / 2) calc(var(--ui-margin) / 2);
         display: block;
         width: 100%;
         border: none;
@@ -19,37 +14,37 @@ $label-size: 14px;
         font-family: inherit;
     }
 
-    >input:focus {
+    > input:focus {
         outline: none;
     }
 
-    >label {
+    > label {
         color: hsla(50, 0%, 75%, 1);
-        font-size: $label-size;
+        font-size: 14px;
         font-weight: normal;
         position: absolute;
         pointer-events: none;
-        left: math.div(variables.$ui-margin, 2);
+        left: calc(var(--ui-margin) / 2);
         top: 0;
         transition: 0.2s ease all;
     }
 
-    >input:focus~label {
+    > input:focus ~ label {
         color: hsla(50, 100%, 50%, 1);
     }
 
-    &.invalid>input:focus~label {
+    &.invalid > input:focus ~ label {
         color: hsla(0, 100%, 50%, 1);
     }
 
-    >.bar {
+    > .bar {
         position: relative;
         display: block;
         width: 100%;
     }
 
-    >.bar:before,
-    >.bar:after {
+    > .bar:before,
+    > .bar:after {
         content: "";
         height: 2px;
         width: 0;
@@ -59,21 +54,21 @@ $label-size: 14px;
         transition: 0.2s ease all;
     }
 
-    >.bar:before {
+    > .bar:before {
         left: 50%;
     }
 
-    >.bar:after {
+    > .bar:after {
         right: 50%;
     }
 
-    &.invalid>.bar:before,
-    &.invalid>.bar:after {
+    &.invalid > .bar:before,
+    &.invalid > .bar:after {
         background: hsla(0, 100%, 50%, 1);
     }
 
-    >input:focus~.bar:before,
-    >input:focus~.bar:after {
+    > input:focus ~ .bar:before,
+    > input:focus ~ .bar:after {
         width: 50%;
     }
 }

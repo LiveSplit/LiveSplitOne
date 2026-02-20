@@ -5,8 +5,8 @@ import { Circle, Trash } from "lucide-react";
 import { Label, resolve } from "../../../localization";
 import { Language } from "../../../livesplit-core";
 
-import * as classes from "../../../css/HotkeyButton.module.scss";
-import * as tooltipClasses from "../../../css/Tooltip.module.scss";
+import * as classes from "../../../css/HotkeyButton.module.css";
+import * as tooltipClasses from "../../../css/Tooltip.module.css";
 
 function resolveKey(
     keyCode: string,

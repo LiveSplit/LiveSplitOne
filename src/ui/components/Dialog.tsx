@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-import * as classes from "../../css/Dialog.module.scss";
+import * as classes from "../../css/Dialog.module.css";
 
 export interface Options {
     title: string | React.JSX.Element;

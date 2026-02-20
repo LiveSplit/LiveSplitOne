@@ -13,10 +13,10 @@ import { Markdown, replaceFlag } from "./Markdown";
 import { formatLeaderboardTime } from "../../util/TimeUtil";
 import { formatDate, Label, resolve } from "../../localization";
 
-import * as classes from "../../css/Leaderboard.module.scss";
-import * as runEditorClasses from "../../css/RunEditor.module.scss";
-import * as tableClasses from "../../css/Table.module.scss";
-import * as markdownClasses from "../../css/Markdown.module.scss";
+import * as classes from "../../css/Leaderboard.module.css";
+import * as runEditorClasses from "../../css/RunEditor.module.css";
+import * as tableClasses from "../../css/Table.module.css";
+import * as markdownClasses from "../../css/Markdown.module.css";
 import { Language } from "../../livesplit-core";
 
 export interface Filters {
