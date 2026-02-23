@@ -157,6 +157,12 @@
     composes: table from "Table.module.css";
     td {
         overflow: hidden;
+        &.segmentIconContainer {
+            height: 19px;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+        }
 
         > input {
             width: 100%;
@@ -171,13 +177,6 @@
     :global(.is-mobile) & {
         font-size: 13px;
     }
-}
-
-tbody > tr > .segmentIconContainer {
-    height: 19px;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
 }
 
 .bottomSection {

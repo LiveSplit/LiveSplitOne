@@ -1,10 +1,10 @@
 import * as React from "react";
 import { expect } from "../../../util/OptionUtil";
-import { Language, LayoutDirection } from "../../../livesplit-core";
+import type { Language, LayoutDirection } from "../../../livesplit-core";
 import { SettingValueFactory } from ".";
 import { Label, resolve } from "../../../localization";
 
-import * as tableClasses from "../../../css/Table.module.css";
+import tableClasses from "../../../css/Table.module.css";
 
 export function LayoutDirection<T>({
     value,

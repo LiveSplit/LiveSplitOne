@@ -1,10 +1,10 @@
 import * as React from "react";
 import { expect } from "../../../util/OptionUtil";
-import { Alignment, Language } from "../../../livesplit-core";
+import type { Alignment, Language } from "../../../livesplit-core";
 import { SettingValueFactory } from ".";
 import { Label, resolve } from "../../../localization";
 
-import * as tableClasses from "../../../css/Table.module.css";
+import tableClasses from "../../../css/Table.module.css";
 
 export function Alignment<T>({
     value,

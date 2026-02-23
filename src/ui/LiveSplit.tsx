@@ -61,9 +61,9 @@ import timerFont from "../css/timer.woff";
 import firaFont from "../css/FiraSans-Regular.woff";
 
 import "react-toastify/dist/ReactToastify.css";
-import * as classes from "../css/LiveSplit.module.css";
-import * as sidebarClasses from "../css/Sidebar.module.css";
-import * as toastClasses from "../css/Toast.module.css";
+import classes from "../css/LiveSplit.module.css";
+import sidebarClasses from "../css/Sidebar.module.css";
+import toastClasses from "../css/Toast.module.css";
 import { Label, orAutoLang, resolve, setHtmlLang } from "../localization";
 
 function getRootCssVar(name: string) {

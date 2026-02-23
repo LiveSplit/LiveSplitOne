@@ -5,7 +5,7 @@ import { SettingValueFactory } from ".";
 import { Switch } from "../Switch";
 import { Label, resolve } from "../../../localization";
 
-import * as tableClasses from "../../../css/Table.module.css";
+import tableClasses from "../../../css/Table.module.css";
 
 export function OptionalTimingMethod<T>({
     value,

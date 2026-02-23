@@ -1,7 +1,4 @@
 node_modules
 dist
-npm-debug.log
-src/livesplit_core.wasm
 src/livesplit-core
-
-test/screenshots
+public/icons

@@ -1,5 +1,5 @@
 import * as React from "react";
-import {
+import type {
     Color,
     DeltaGradient,
     Gradient,
@@ -11,7 +11,7 @@ import { assertNever, expect, Option } from "../../../util/OptionUtil";
 import { ColorPicker } from "../ColorPicker";
 import { Label, resolve } from "../../../localization";
 
-import * as tableClasses from "../../../css/Table.module.css";
+import tableClasses from "../../../css/Table.module.css";
 
 export function Gradient<T>({
     value,

@@ -49,11 +49,11 @@ import {
 } from "../components/Leaderboard";
 import { Label, orAutoLang, resolve } from "../../localization";
 
-import * as classes from "../../css/RunEditor.module.css";
-import * as buttonGroupClasses from "../../css/ButtonGroup.module.css";
-import * as tableClasses from "../../css/Table.module.css";
-import * as markdownClasses from "../../css/Markdown.module.css";
-import * as tooltipClasses from "../../css/Tooltip.module.css";
+import classes from "../../css/RunEditor.module.css";
+import buttonGroupClasses from "../../css/ButtonGroup.module.css";
+import tableClasses from "../../css/Table.module.css";
+import markdownClasses from "../../css/Markdown.module.css";
+import tooltipClasses from "../../css/Tooltip.module.css";
 
 export interface Props {
     editor: LiveSplit.RunEditor;

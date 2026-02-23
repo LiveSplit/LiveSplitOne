@@ -1,6 +1,10 @@
 import * as React from "react";
 import { Option, assertNever, expect } from "../../../util/OptionUtil";
-import { Color, Language, LayoutBackground } from "../../../livesplit-core";
+import type {
+    Color,
+    Language,
+    LayoutBackground,
+} from "../../../livesplit-core";
 import { ColorPicker } from "../ColorPicker";
 import { SettingValueFactory } from ".";
 import { UrlCache } from "../../../util/UrlCache";
@@ -8,8 +12,8 @@ import { toast } from "react-toastify";
 import { FILE_EXT_IMAGES, openFileAsArrayBuffer } from "../../../util/FileUtil";
 import { Label, resolve } from "../../../localization";
 
-import * as colorPickerClasses from "../../../css/ColorPicker.module.css";
-import * as tableClasses from "../../../css/Table.module.css";
+import colorPickerClasses from "../../../css/ColorPicker.module.css";
+import tableClasses from "../../../css/Table.module.css";
 
 export function LayoutBackground<T>({
     value,

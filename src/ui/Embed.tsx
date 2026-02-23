@@ -1,7 +1,7 @@
 import * as React from "react";
 import { Option } from "../util/OptionUtil";
 
-import * as runEditorClasses from "../css/RunEditor.module.css";
+import runEditorClasses from "../css/RunEditor.module.css";
 
 export function resolveEmbed(uri: string): Option<React.JSX.Element> {
     const youtube = tryYoutubeFromUri(uri);

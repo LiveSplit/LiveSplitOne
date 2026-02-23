@@ -33,9 +33,9 @@ import {
 
 import LiveSplitIcon from "../../assets/icon.svg";
 
-import * as classes from "../../css/TimerView.module.css";
-import * as sidebarClasses from "../../css/Sidebar.module.css";
-import * as buttonGroupClasses from "../../css/ButtonGroup.module.css";
+import classes from "../../css/TimerView.module.css";
+import sidebarClasses from "../../css/Sidebar.module.css";
+import buttonGroupClasses from "../../css/ButtonGroup.module.css";
 import { Label, orAutoLang, resolve } from "../../localization";
 
 export interface Props {

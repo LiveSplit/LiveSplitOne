@@ -1,12 +1,12 @@
 import * as React from "react";
 import { expect } from "../../../util/OptionUtil";
-import { Font, Language } from "../../../livesplit-core";
+import type { Font, Language } from "../../../livesplit-core";
 import { SettingValueFactory } from ".";
 import { Switch } from "../Switch";
 import * as FontList from "../../../util/FontList";
 import { Label, resolve } from "../../../localization";
 
-import * as tableClasses from "../../../css/Table.module.css";
+import tableClasses from "../../../css/Table.module.css";
 
 export function Font<T>({
     value,
