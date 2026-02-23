@@ -3,7 +3,7 @@ import { expect } from "../../../util/OptionUtil";
 import { DigitsFormatJson, Language } from "../../../livesplit-core";
 import { SettingValueFactory } from ".";
 
-import * as tableClasses from "../../../css/Table.module.css";
+import tableClasses from "../../../css/Table.module.css";
 
 export function DigitsFormat<T>({
     value,

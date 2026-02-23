@@ -1,7 +1,7 @@
 import * as React from "react";
 import { toast } from "react-toastify";
 
-import * as toastClasses from "../css/Toast.module.css";
+import toastClasses from "../css/Toast.module.css";
 import { Label, resolve } from "../localization";
 import { Language } from "../livesplit-core";
 

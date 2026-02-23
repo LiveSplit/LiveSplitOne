@@ -1,6 +1,6 @@
 import * as React from "react";
 import { expect } from "../../../util/OptionUtil";
-import {
+import type {
     ColumnKind,
     ColumnStartWith,
     ColumnUpdateWith,
@@ -10,7 +10,7 @@ import {
 import { SettingValueFactory } from ".";
 import { Label, resolve } from "../../../localization";
 
-import * as tableClasses from "../../../css/Table.module.css";
+import tableClasses from "../../../css/Table.module.css";
 
 export function ColumnKind<T>({
     value,

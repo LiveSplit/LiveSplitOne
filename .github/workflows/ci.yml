@@ -1,208 +1,212 @@
 name: CI
 
 on:
-  pull_request:
-  push:
-    branches:
-      - "master"
+    pull_request:
+    push:
+        branches:
+            - "master"
 
 jobs:
-  build:
-    runs-on: ${{ matrix.os }}
-    permissions:
-      contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        label:
-          - Web
-          - Tauri on Windows
-          - Tauri on Linux
-          - Tauri on macOS ARM
+    build:
+        runs-on: ${{ matrix.os }}
+        permissions:
+            contents: write
+        strategy:
+            fail-fast: false
+            matrix:
+                label:
+                    - Web
+                    - Tauri on Windows
+                    - Tauri on Linux
+                    - Tauri on macOS ARM
 
-        include:
-          - label: Web
-            platform: web
-            dist_path: dist
-            os: ubuntu-latest
-            target: x86_64-unknown-linux-musl
-            binaryen: x86_64-linux
-            cargo_bin: /home/runner/.cargo/bin
+                include:
+                    - label: Web
+                      platform: web
+                      dist_path: dist
+                      os: ubuntu-latest
+                      target: x86_64-unknown-linux-musl
+                      binaryen: x86_64-linux
+                      cargo_bin: /home/runner/.cargo/bin
 
-          - label: Tauri on Windows
-            platform: tauri
-            dist_path: src-tauri/target/dist
-            os: windows-latest
-            target: x86_64-pc-windows-msvc
-            binaryen: x86_64-windows
-            cargo_bin: C:/Users/runneradmin/.cargo/bin
+                    - label: Tauri on Windows
+                      platform: tauri
+                      dist_path: src-tauri/target/dist
+                      os: windows-latest
+                      target: x86_64-pc-windows-msvc
+                      binaryen: x86_64-windows
+                      cargo_bin: C:/Users/runneradmin/.cargo/bin
 
-          - label: Tauri on Linux
-            platform: tauri
-            dist_path: src-tauri/target/dist
-            os: ubuntu-22.04
-            target: x86_64-unknown-linux-musl
-            binaryen: x86_64-linux
-            cargo_bin: /home/runner/.cargo/bin
+                    - label: Tauri on Linux
+                      platform: tauri
+                      dist_path: src-tauri/target/dist
+                      os: ubuntu-22.04
+                      target: x86_64-unknown-linux-musl
+                      binaryen: x86_64-linux
+                      cargo_bin: /home/runner/.cargo/bin
 
-          - label: Tauri on macOS ARM
-            platform: tauri
-            dist_path: src-tauri/target/dist
-            os: macos-latest
-            target: aarch64-apple-darwin
-            binaryen: arm64-macos
-            cargo_bin: /Users/runner/.cargo/bin
+                    - label: Tauri on macOS ARM
+                      platform: tauri
+                      dist_path: src-tauri/target/dist
+                      os: macos-latest
+                      target: aarch64-apple-darwin
+                      binaryen: arm64-macos
+                      cargo_bin: /Users/runner/.cargo/bin
 
-    steps:
-      - name: Checkout commit
-        uses: actions/checkout@v4
-        with:
-          submodules: recursive
-          # This forces the entire history to be cloned, which is necessary for
-          # the changelog generation to work correctly.
-          fetch-depth: 0
+        steps:
+            - name: Checkout commit
+              uses: actions/checkout@v4
+              with:
+                  submodules: recursive
+                  # This forces the entire history to be cloned, which is necessary for
+                  # the changelog generation to work correctly.
+                  fetch-depth: 0
 
-      - name: Install Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "lts/*"
+            - name: Install Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "lts/*"
 
-      - name: Install Rust
-        uses: hecrj/setup-rust-action@v2
-        with:
-          rust-version: nightly
-          components: rust-src
-          targets: wasm32-unknown-unknown
+            - name: Install Rust
+              uses: hecrj/setup-rust-action@v2
+              with:
+                  rust-version: nightly
+                  components: rust-src
+                  targets: wasm32-unknown-unknown
 
-      - name: Download binaryen
-        if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
-        uses: robinraju/release-downloader@v1.10
-        with:
-          repository: "WebAssembly/binaryen"
-          latest: true
-          fileName: "binaryen-*-${{ matrix.binaryen }}.tar.gz"
-          out-file-path: ${{ matrix.cargo_bin }}
+            - name: Download binaryen
+              if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
+              uses: robinraju/release-downloader@v1.10
+              with:
+                  repository: "WebAssembly/binaryen"
+                  latest: true
+                  fileName: "binaryen-*-${{ matrix.binaryen }}.tar.gz"
+                  out-file-path: ${{ matrix.cargo_bin }}
 
-      - name: Install binaryen
-        if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
-        shell: bash
-        run: |
-          cd ${{ matrix.cargo_bin }}/..
-          tar -xzf bin/binaryen-*-${{ matrix.binaryen }}.tar.gz
-          mkdir -p lib
-          cp -R binaryen-*/bin/* bin
-          cp -R binaryen-*/lib/* lib
+            - name: Install binaryen
+              if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
+              shell: bash
+              run: |
+                  cd ${{ matrix.cargo_bin }}/..
+                  tar -xzf bin/binaryen-*-${{ matrix.binaryen }}.tar.gz
+                  mkdir -p lib
+                  cp -R binaryen-*/bin/* bin
+                  cp -R binaryen-*/lib/* lib
 
-      - name: Choose wasm-bindgen-cli version
-        shell: bash
-        run: echo "version=$(cd livesplit-core && cargo tree -i wasm-bindgen --features wasm-web --target wasm32-unknown-unknown --depth 0 | sed 's/.* v//g')" >> $GITHUB_OUTPUT
-        id: wasm-bindgen
+            - name: Choose wasm-bindgen-cli version
+              shell: bash
+              run: echo "version=$(cd livesplit-core && cargo tree -i wasm-bindgen --features wasm-web --target wasm32-unknown-unknown --depth 0 | sed 's/.* v//g')" >> $GITHUB_OUTPUT
+              id: wasm-bindgen
 
-      - name: Download wasm-bindgen-cli
-        uses: robinraju/release-downloader@v1.9
-        with:
-          repository: "rustwasm/wasm-bindgen"
-          tag: ${{ steps.wasm-bindgen.outputs.version }}
-          fileName: "wasm-bindgen-${{ steps.wasm-bindgen.outputs.version }}-${{ matrix.target }}.tar.gz"
-          out-file-path: ${{ matrix.cargo_bin }}
+            - name: Download wasm-bindgen-cli
+              uses: robinraju/release-downloader@v1.9
+              with:
+                  repository: "rustwasm/wasm-bindgen"
+                  tag: ${{ steps.wasm-bindgen.outputs.version }}
+                  fileName: "wasm-bindgen-${{ steps.wasm-bindgen.outputs.version }}-${{ matrix.target }}.tar.gz"
+                  out-file-path: ${{ matrix.cargo_bin }}
 
-      - name: Install wasm-bindgen-cli
-        shell: bash
-        run: |
-          cd ${{ matrix.cargo_bin }}
-          tar -xzf wasm-bindgen-${{ steps.wasm-bindgen.outputs.version }}-${{ matrix.target }}.tar.gz
-          mv wasm-bindgen-${{ steps.wasm-bindgen.outputs.version }}-${{ matrix.target }}/wasm* .
+            - name: Install wasm-bindgen-cli
+              shell: bash
+              run: |
+                  cd ${{ matrix.cargo_bin }}
+                  tar -xzf wasm-bindgen-${{ steps.wasm-bindgen.outputs.version }}-${{ matrix.target }}.tar.gz
+                  mv wasm-bindgen-${{ steps.wasm-bindgen.outputs.version }}-${{ matrix.target }}/wasm* .
 
-      - name: Install npm packages
-        run: npm ci
-        env:
-          DETECT_CHROMEDRIVER_VERSION: true
+            - name: Install npm packages
+              run: npm ci
+              env:
+                  DETECT_CHROMEDRIVER_VERSION: true
 
-      - name: Install native dependencies (Tauri)
-        if: matrix.platform == 'tauri' && startsWith(matrix.os, 'ubuntu')
-        run: |
-          sudo apt update
-          sudo apt install libwebkit2gtk-4.1-dev \
-            build-essential \
-            curl \
-            wget \
-            file \
-            libxdo-dev \
-            libssl-dev \
-            libayatana-appindicator3-dev \
-            librsvg2-dev
+            - name: Install native dependencies (Tauri)
+              if: matrix.platform == 'tauri' && startsWith(matrix.os, 'ubuntu')
+              run: |
+                  sudo apt update
+                  sudo apt install libwebkit2gtk-4.1-dev \
+                    build-essential \
+                    curl \
+                    wget \
+                    file \
+                    libxdo-dev \
+                    libssl-dev \
+                    libayatana-appindicator3-dev \
+                    librsvg2-dev
 
-      - name: Build Core
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npm run build:core:deploy
+            - name: Build Core
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: npm run build:core:deploy
 
-      - name: Run eslint (Web)
-        if: matrix.platform == 'web'
-        run: npm run lint
+            - name: Run eslint (Web)
+              if: matrix.platform == 'web'
+              run: npm run lint
 
-      - name: Build Frontend (Web)
-        if: matrix.platform == 'web'
-        run: npm run publish
+            - name: Build Frontend (Web)
+              if: matrix.platform == 'web'
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: npm run publish
 
-      - name: Build Frontend (Tauri)
-        if: matrix.platform == 'tauri'
-        run: npm run tauri:build-html
+            - name: Build Frontend (Tauri)
+              if: matrix.platform == 'tauri'
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: npm run tauri:build-html
 
-      - name: Generate Icons (Tauri)
-        if: matrix.platform == 'tauri'
-        run: npm run tauri:icons
+            - name: Generate Icons (Tauri)
+              if: matrix.platform == 'tauri'
+              run: npm run tauri:icons
 
-      - name: Optimize
-        if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
-        shell: bash
-        run: |
-          WASM_FILE=$(ls ${{ matrix.dist_path }}/*.wasm)
-          wasm-opt \
-            --enable-bulk-memory \
-            --enable-mutable-globals \
-            --enable-nontrapping-float-to-int \
-            --enable-sign-ext \
-            --enable-simd \
-            --enable-extended-const \
-            --enable-multivalue \
-            --enable-reference-types \
-            --enable-tail-call \
-            --strip-dwarf \
-            --strip-producers \
-            --strip-target-features \
-            -O4 "$WASM_FILE" -o "$WASM_FILE"
+            - name: Optimize
+              if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
+              shell: bash
+              run: |
+                  WASM_FILE=$(ls ${{ matrix.dist_path }}/**/*.wasm)
+                  wasm-opt \
+                    --enable-bulk-memory \
+                    --enable-mutable-globals \
+                    --enable-nontrapping-float-to-int \
+                    --enable-sign-ext \
+                    --enable-simd \
+                    --enable-extended-const \
+                    --enable-multivalue \
+                    --enable-reference-types \
+                    --enable-tail-call \
+                    --strip-dwarf \
+                    --strip-producers \
+                    --strip-target-features \
+                    -O4 "$WASM_FILE" -o "$WASM_FILE"
 
-      - name: Build (Tauri)
-        if: matrix.platform == 'tauri'
-        run: npm run tauri:publish
+            - name: Build (Tauri)
+              if: matrix.platform == 'tauri'
+              run: npm run tauri:publish
 
-      - name: Add CNAME file (Web)
-        if: matrix.platform == 'web' && github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
-        run: cp ./.github/workflows/CNAME ./${{ matrix.dist_path }}/CNAME
+            - name: Add CNAME file (Web)
+              if: matrix.platform == 'web' && github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
+              run: cp ./.github/workflows/CNAME ./${{ matrix.dist_path }}/CNAME
 
-      - name: Deploy (Web)
-        if: matrix.platform == 'web' && github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          publish_branch: gh-pages
-          publish_dir: ./${{ matrix.dist_path }}
-          force_orphan: true
+            - name: Deploy (Web)
+              if: matrix.platform == 'web' && github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
+              uses: peaceiris/actions-gh-pages@v4
+              with:
+                  deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
+                  publish_branch: gh-pages
+                  publish_dir: ./${{ matrix.dist_path }}
+                  force_orphan: true
 
-      - name: Prepare Release (Tauri)
-        if: matrix.platform == 'tauri' && github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
-        shell: bash
-        run: .github/workflows/build_zip.sh
-        env:
-          OS_NAME: ${{ matrix.os }}
-          TARGET: ${{ matrix.binaryen }}
+            - name: Prepare Release (Tauri)
+              if: matrix.platform == 'tauri' && github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
+              shell: bash
+              run: .github/workflows/build_zip.sh
+              env:
+                  OS_NAME: ${{ matrix.os }}
+                  TARGET: ${{ matrix.binaryen }}
 
-      - name: Release (Tauri)
-        if: matrix.platform == 'tauri' && github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
-        uses: softprops/action-gh-release@v2
-        with:
-          files: LiveSplitOne-*.*
-          name: Latest
-          tag_name: latest
-          body: The latest desktop version of LiveSplit One, which has support for global hotkeys.
+            - name: Release (Tauri)
+              if: matrix.platform == 'tauri' && github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
+              uses: softprops/action-gh-release@v2
+              with:
+                  files: LiveSplitOne-*.*
+                  name: Latest
+                  tag_name: latest
+                  body: The latest desktop version of LiveSplit One, which has support for global hotkeys.

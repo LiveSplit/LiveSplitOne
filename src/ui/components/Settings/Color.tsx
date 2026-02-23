@@ -1,10 +1,10 @@
 import * as React from "react";
-import { Color } from "../../../livesplit-core";
+import type { Color } from "../../../livesplit-core";
 import { SettingValueFactory } from ".";
 import { ColorPicker } from "../ColorPicker";
 import { Switch } from "../Switch";
 
-import * as tableClasses from "../../../css/Table.module.css";
+import tableClasses from "../../../css/Table.module.css";
 
 export function Color<T>({
     value,

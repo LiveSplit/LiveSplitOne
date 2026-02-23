@@ -5,8 +5,8 @@ import { Switch } from "../Switch";
 import { Label, resolve } from "../../../localization";
 import { Language } from "../../../livesplit-core";
 
-import * as tableClasses from "../../../css/Table.module.css";
-import * as tooltipClasses from "../../../css/Tooltip.module.css";
+import tableClasses from "../../../css/Table.module.css";
+import tooltipClasses from "../../../css/Tooltip.module.css";
 
 export function String<T>({
     value,

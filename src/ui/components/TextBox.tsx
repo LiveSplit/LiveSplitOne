@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import * as classes from "../../css/TextBox.module.css";
+import classes from "../../css/TextBox.module.css";
 
 export function TextBox({
     className,

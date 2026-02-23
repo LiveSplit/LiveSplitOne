@@ -6,7 +6,7 @@ import { ArrowLeft } from "lucide-react";
 import { GeneralSettings } from "./MainSettings";
 import { formatDate, getLocale, Label, resolve } from "../../localization";
 
-import * as classes from "../../css/About.module.css";
+import classes from "../../css/About.module.css";
 import { Language, Lang } from "../../livesplit-core";
 
 interface Callbacks {
