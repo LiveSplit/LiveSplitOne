@@ -1,9 +1,10 @@
 :global(.Toastify) {
     .toastClass {
         font-family: "fira", sans-serif;
-        background: rgba(28, 28, 28, 0.8) !important;
+        background: var(--overlay-background-color) !important;
         backdrop-filter: blur(5px);
-        border: 2px solid rgba(255, 255, 255, 0.25) !important;
+        border: 2px solid var(--overlay-border-color) !important;
+        color: var(--overlay-text-color);
         border-radius: 10px !important;
         min-height: 48px !important;
         padding-right: 28px;
@@ -24,5 +25,6 @@
 
     .toastBody {
         margin: 5px 5px 5px 5px !important;
+        color: var(--overlay-text-color);
     }
 }

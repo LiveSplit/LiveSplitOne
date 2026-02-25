@@ -8,6 +8,10 @@ export function resolveKorean(text: Label): string {
         case Label.Language: return "언어";
         case Label.LanguageDescription: return "애플리케이션에서 사용되는 언어를 설정합니다.";
         case Label.LanguageAuto: return "자동";
+        case Label.Theme: return "테마";
+        case Label.ThemeDescription: return "시스템 테마를 따르거나 라이트 또는 다크 모드를 강제할지 결정합니다.";
+        case Label.ThemeLightMode: return "라이트 모드";
+        case Label.ThemeDarkMode: return "다크 모드";
         case Label.HotkeysHeading: return "단축키";
         case Label.GeneralHeading: return "일반";
         case Label.NetworkHeading: return "네트워크";

@@ -5,18 +5,19 @@
 
 .panel {
     z-index: 3;
-    background-color: rgba(28, 28, 28, 0.8);
+    background-color: var(--overlay-background-color);
     backdrop-filter: blur(5px);
     min-width: 100px;
     padding: 4px 0;
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    border: 1px solid var(--overlay-border-color);
     border-radius: 9px;
-    box-shadow: 0 5px 10px 0px rgba(28, 28, 28, 0.8);
+    box-shadow: 0 5px 10px 0px var(--overlay-shadow-color);
     display: flex;
     flex-direction: column;
     user-select: none;
     text-align: left;
     font-weight: initial;
+    color: var(--overlay-text-color);
 }
 
 .overlay {
@@ -33,13 +34,13 @@
     margin: 0 4px;
 
     &:hover {
-        background-color: rgba(255, 255, 255, 0.25);
+        background-color: var(--overlay-hover-color);
     }
 }
 
 .hr {
     height: 1px;
     border-width: 0px;
-    background: rgba(255, 255, 255, 0.25);
+    background: var(--overlay-border-color);
     margin: 4px 0;
 }

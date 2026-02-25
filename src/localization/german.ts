@@ -8,6 +8,10 @@ export function resolveGerman(text: Label): string {
         case Label.Language: return "Sprache";
         case Label.LanguageDescription: return "Legt die in der Anwendung verwendete Sprache fest.";
         case Label.LanguageAuto: return "Automatisch";
+        case Label.Theme: return "Design";
+        case Label.ThemeDescription: return "Legt fest, ob das Systemdesign übernommen oder der helle bzw. dunkle Modus erzwungen wird.";
+        case Label.ThemeLightMode: return "Heller Modus";
+        case Label.ThemeDarkMode: return "Dunkler Modus";
         case Label.HotkeysHeading: return "Tastenkürzel";
         case Label.GeneralHeading: return "Allgemein";
         case Label.NetworkHeading: return "Netzwerk";

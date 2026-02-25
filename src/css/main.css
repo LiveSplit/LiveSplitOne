@@ -12,8 +12,8 @@
 
 body {
     font-family: "fira", sans-serif;
-    color: #eee;
-    text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+    color: var(--main-text-color);
+    text-shadow: var(--main-text-shadow);
     background: var(--main-background-color);
 }
 
@@ -67,7 +67,7 @@ button {
 }
 
 a {
-    color: #56b0ff;
+    color: var(--link-color);
     text-decoration: none;
     &:hover {
         text-decoration: underline;
@@ -82,7 +82,7 @@ a {
 
 ::-webkit-scrollbar-thumb {
     background-clip: padding-box;
-    background-color: #303030;
+    background-color: var(--scrollbar-thumb-color);
     border: 0 solid #0000;
     border-radius: 10px;
 }
@@ -92,7 +92,7 @@ a {
 }
 
 ::-webkit-scrollbar-corner {
-    background-color: hsla(0, 0%, 9%, 1);
+    background-color: var(--scrollbar-corner-color);
 }
 
 .initial-load {

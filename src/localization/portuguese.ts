@@ -8,6 +8,10 @@ export function resolvePortuguese(text: Label): string {
         case Label.Language: return "Idioma";
         case Label.LanguageDescription: return "Define o idioma usado no aplicativo.";
         case Label.LanguageAuto: return "Automático";
+        case Label.Theme: return "Tema";
+        case Label.ThemeDescription: return "Determina se deve seguir o tema do sistema ou forçar um modo claro ou escuro.";
+        case Label.ThemeLightMode: return "Modo Claro";
+        case Label.ThemeDarkMode: return "Modo Escuro";
         case Label.HotkeysHeading: return "Teclas de atalho";
         case Label.GeneralHeading: return "Geral";
         case Label.NetworkHeading: return "Rede";
@@ -15,8 +19,8 @@ export function resolvePortuguese(text: Label): string {
         case Label.FrameRateDescription: return "Determina a taxa de quadros em que o timer é exibido. “Sensível à bateria” tenta determinar o tipo de dispositivo e o estado de carregamento para selecionar uma boa taxa de quadros. “Correspondente à tela” faz o timer corresponder à taxa de atualização da tela.";
         case Label.FrameRateBatteryAware: return "Sensível à bateria";
         case Label.FrameRateMatchScreen: return "Correspondente à tela";
-        case Label.SaveOnReset: return "Salvar ao resetar";
-        case Label.SaveOnResetDescription: return "Determina se os splits devem ser salvos automaticamente ao resetar o timer.";
+        case Label.SaveOnReset: return "Guardar ao reiniciar";
+        case Label.SaveOnResetDescription: return "Determina se os splits devem ser guardados automaticamente ao reiniciar o temporizador.";
         case Label.ShowControlButtons: return "Mostrar botões de controle";
         case Label.ShowControlButtonsDescription: return "Determina se deve mostrar botões abaixo do timer que permitem controlá‑lo. Quando desativado, você deve usar as teclas de atalho.";
         case Label.ShowManualGameTimeInput: return "Mostrar entrada manual do tempo de jogo";
@@ -37,8 +41,8 @@ export function resolvePortuguese(text: Label): string {
         case Label.Resume: return "Retomar";
         case Label.Pause: return "Pausar";
         case Label.UndoSplit: return "Desfazer split";
-        case Label.Reset: return "Redefinir";
-        case Label.SkipSplit: return "Pular split";
+        case Label.Reset: return "Reiniciar";
+        case Label.SkipSplit: return "Ignorar split";
         case Label.ManualGameTimePlaceholder: return "Tempo de jogo manual";
         case Label.LiveSplitLogoAlt: return "Logo do LiveSplit";
         case Label.LiveSplitOne: return "LiveSplit One";

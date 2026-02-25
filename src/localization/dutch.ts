@@ -8,6 +8,10 @@ export function resolveDutch(text: Label): string {
         case Label.Language: return "Taal";
         case Label.LanguageDescription: return "Stelt de taal in die in de applicatie wordt gebruikt.";
         case Label.LanguageAuto: return "Automatisch";
+        case Label.Theme: return "Thema";
+        case Label.ThemeDescription: return "Bepaalt of het systeemthema wordt gevolgd of dat een lichte of donkere modus wordt afgedwongen.";
+        case Label.ThemeLightMode: return "Lichte modus";
+        case Label.ThemeDarkMode: return "Donkere modus";
         case Label.HotkeysHeading: return "Sneltoetsen";
         case Label.GeneralHeading: return "Algemeen";
         case Label.NetworkHeading: return "Netwerk";

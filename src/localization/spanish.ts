@@ -8,6 +8,10 @@ export function resolveSpanish(text: Label): string {
         case Label.Language: return "Idioma";
         case Label.LanguageDescription: return "Establece el idioma utilizado en la aplicación.";
         case Label.LanguageAuto: return "Automático";
+        case Label.Theme: return "Tema";
+        case Label.ThemeDescription: return "Determina si se sigue el tema del sistema o se fuerza el modo claro u oscuro.";
+        case Label.ThemeLightMode: return "Modo Claro";
+        case Label.ThemeDarkMode: return "Modo Oscuro";
         case Label.HotkeysHeading: return "Atajos de teclado";
         case Label.GeneralHeading: return "General";
         case Label.NetworkHeading: return "Red";
@@ -38,7 +42,7 @@ export function resolveSpanish(text: Label): string {
         case Label.Pause: return "Pausar";
         case Label.UndoSplit: return "Deshacer split";
         case Label.Reset: return "Reiniciar";
-        case Label.SkipSplit: return "Saltar split";
+        case Label.SkipSplit: return "Omitir split";
         case Label.ManualGameTimePlaceholder: return "Tiempo de juego manual";
         case Label.LiveSplitLogoAlt: return "Logotipo de LiveSplit";
         case Label.LiveSplitOne: return "LiveSplit One";

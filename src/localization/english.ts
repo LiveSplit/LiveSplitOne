@@ -8,6 +8,10 @@ export function resolveEnglish(text: Label): string {
         case Label.Language: return "Language";
         case Label.LanguageDescription: return "Sets the language used in the application.";
         case Label.LanguageAuto: return "Automatic";
+        case Label.Theme: return "Theme";
+        case Label.ThemeDescription: return "Determines whether to follow the system theme or force a light or dark mode.";
+        case Label.ThemeLightMode: return "Light Mode";
+        case Label.ThemeDarkMode: return "Dark Mode";
         case Label.HotkeysHeading: return "Hotkeys";
         case Label.GeneralHeading: return "General";
         case Label.NetworkHeading: return "Network";

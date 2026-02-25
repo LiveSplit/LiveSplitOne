@@ -8,6 +8,10 @@ export function resolveRussian(text: Label): string {
         case Label.Language: return "Язык";
         case Label.LanguageDescription: return "Устанавливает язык, используемый в приложении.";
         case Label.LanguageAuto: return "Автоматически";
+        case Label.Theme: return "Тема";
+        case Label.ThemeDescription: return "Определяет, следовать ли системной теме или принудительно включить светлый или тёмный режим.";
+        case Label.ThemeLightMode: return "Светлый режим";
+        case Label.ThemeDarkMode: return "Тёмный режим";
         case Label.HotkeysHeading: return "Горячие клавиши";
         case Label.GeneralHeading: return "Общие";
         case Label.NetworkHeading: return "Сеть";

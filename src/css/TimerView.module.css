@@ -67,7 +67,7 @@
     background: var(--button-middle-color);
     border: 1px solid var(--border-color);
     border-radius: 5px;
-    color: white;
+    color: var(--button-text-color);
     cursor: pointer;
     font-family: "fira", sans-serif;
     font-size: 20px;
