@@ -8,6 +8,10 @@ export function resolvePolish(text: Label): string {
         case Label.Language: return "Język";
         case Label.LanguageDescription: return "Ustawia język używany w aplikacji.";
         case Label.LanguageAuto: return "Automatyczny";
+        case Label.Theme: return "Motyw";
+        case Label.ThemeDescription: return "Określa, czy używać motywu systemowego, czy wymusić tryb jasny lub ciemny.";
+        case Label.ThemeLightMode: return "Tryb jasny";
+        case Label.ThemeDarkMode: return "Tryb ciemny";
         case Label.HotkeysHeading: return "Skróty klawiszowe";
         case Label.GeneralHeading: return "Ogólne";
         case Label.NetworkHeading: return "Sieć";

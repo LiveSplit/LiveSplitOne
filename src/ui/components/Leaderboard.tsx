@@ -27,6 +27,20 @@ export interface Filters {
     variables: Map<string, string>;
 }
 
+function getThemeStyleVariant(): "light" | "dark" {
+    const root = document.documentElement;
+    const forcedTheme = root.getAttribute("data-theme");
+    if (forcedTheme === "light") {
+        return "light";
+    }
+    if (forcedTheme === "dark") {
+        return "dark";
+    }
+    return window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+}
+
 export function Leaderboard({
     game,
     category,
@@ -44,6 +58,8 @@ export function Leaderboard({
     toggleExpandLeaderboardRow: (rowIndex: number) => void;
     lang: Language | undefined;
 }) {
+    const themeStyleVariant = getThemeStyleVariant();
+
     const gameInfo = getGameInfo(game);
     const platformList = getPlatforms();
     const regionList = getRegions();
@@ -293,9 +309,13 @@ export function Leaderboard({
                                         const style = p["name-style"];
                                         let color;
                                         if (style.style === "gradient") {
-                                            color = style["color-from"].dark;
+                                            color =
+                                                style["color-from"][
+                                                    themeStyleVariant
+                                                ];
                                         } else {
-                                            color = style.color.dark;
+                                            color =
+                                                style.color[themeStyleVariant];
                                         }
                                         const flag = map(p.location, (l) =>
                                             replaceFlag(l.country.code),
@@ -345,7 +365,7 @@ export function Leaderboard({
                                 <a
                                     href={run.weblink}
                                     target="_blank"
-                                    style={{ color: "white" }}
+                                    style={{ color: "var(--main-text-color)" }}
                                     onClick={(e) => e.stopPropagation()}
                                 >
                                     {formatLeaderboardTime(

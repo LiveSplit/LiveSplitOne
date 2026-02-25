@@ -26,10 +26,40 @@
     --button-max-width: 300px;
     --button-height: 40px;
 
+    --color-button-border-color: #fff;
+
     --manual-game-time-height: 25px;
 
     --main-background-color: #171717;
     --sidebar-background-color: #1a1a1a;
+    --main-text-color: #eee;
+    --main-text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.5);
+    --link-color: #56b0ff;
+    --scrollbar-thumb-color: #303030;
+    --scrollbar-corner-color: hsla(0, 0%, 9%, 1);
+    --input-text-color: var(--main-text-color);
+    --input-border-color: hsla(0, 0%, 100%, 0.25);
+    --field-label-color: hsla(50, 0%, 75%, 1);
+    --field-label-focus-color: hsla(50, 100%, 50%, 1);
+    --field-label-invalid-color: hsla(0, 100%, 50%, 1);
+    --field-highlight-color: hsla(50, 100%, 50%, 1);
+    --field-highlight-invalid-color: hsla(0, 100%, 50%, 1);
+    --best-segment-color: var(--field-highlight-color);
+    --best-segment-selected-color: hsla(50, 100%, 50%, 1);
+    --select-arrow-color: var(--main-text-color);
+    --switch-track-color: #ffffff20;
+    --switch-track-hover-color: #ffffff40;
+    --switch-track-checked-color: #ffffff60;
+    --switch-track-checked-hover-color: #ffffff80;
+    --switch-thumb-color: #fff;
+    --overlay-background-color: rgba(28, 28, 28, 0.8);
+    --overlay-border-color: rgba(255, 255, 255, 0.25);
+    --overlay-text-color: #eee;
+    --overlay-muted-text-color: rgba(255, 255, 255, 0.7);
+    --overlay-input-border-color: rgba(255, 255, 255, 0.25);
+    --overlay-input-text-color: #fff;
+    --overlay-hover-color: rgba(255, 255, 255, 0.25);
+    --overlay-shadow-color: rgba(28, 28, 28, 0.8);
 
     --dark-row-color: #0b0b0b;
     --header-row-color: #090909;
@@ -44,4 +74,113 @@
         hsl(220, 90%, 70%) 0%,
         hsl(220, 69%, 40%) 100%
     );
+    --selected-row-text-color: #fff;
+}
+
+:root[data-theme="light"] {
+    --border-color: #b8bcc2;
+
+    --button-active-color: linear-gradient(#cfd5dd 0%, #b4bcc8 100%);
+    --button-color: linear-gradient(#f5f7fb 0%, #dbe2ec 100%);
+    --button-middle-color: #dde3ec;
+    --button-disabled-color: #e5e8ed;
+    --button-disabled-text-color: #8a9097;
+    --button-hover-color: linear-gradient(#ffffff 0%, #e8eef7 100%);
+    --button-text-color: #202733;
+
+    --color-button-border-color: var(--overlay-border-color);
+
+    --main-background-color: #eef1f6;
+    --sidebar-background-color: #e4e8ef;
+    --main-text-color: #202733;
+    --main-text-shadow: none;
+    --link-color: #0a58ca;
+    --scrollbar-thumb-color: #bcc4d1;
+    --scrollbar-corner-color: #d8dee8;
+    --input-text-color: var(--main-text-color);
+    --input-border-color: #8e99aa;
+    --field-label-color: #5f6d83;
+    --field-label-focus-color: oklch(70% 0.25 94);
+    --field-label-invalid-color: #b3261e;
+    --field-highlight-color: oklch(70% 0.25 94);
+    --field-highlight-invalid-color: #b3261e;
+    --select-arrow-color: #2b3442;
+    --switch-track-color: #9ca8ba;
+    --switch-track-hover-color: #8f9db1;
+    --switch-track-checked-color: #3d74e0;
+    --switch-track-checked-hover-color: #3167d1;
+    --switch-thumb-color: #fff;
+    --overlay-background-color: rgba(245, 248, 252, 0.8);
+    --overlay-border-color: rgba(43, 52, 66, 0.25);
+    --overlay-text-color: #202733;
+    --overlay-muted-text-color: #3a475c;
+    --overlay-input-border-color: #8e99aa;
+    --overlay-input-text-color: #202733;
+    --overlay-hover-color: rgba(43, 52, 66, 0.12);
+    --overlay-shadow-color: rgba(43, 52, 66, 0.28);
+
+    --dark-row-color: #d9e0ea;
+    --header-row-color: #cfd8e4;
+    --hover-row-color: #c3cedd;
+    --light-row-color: #e7edf5;
+
+    --selected-row-color: linear-gradient(#4b7be1 0%, #2f5fca 100%);
+    --selected-row-hover-color: linear-gradient(#5688ea 0%, #3769d3 100%);
+    --selected-row-text-color: #fff;
+}
+
+/* FIXME: Possibly deduplicate this in the future with CSS if() once that's
+supported in all browsers */
+@media (prefers-color-scheme: light) {
+    :root:not([data-theme]) {
+        --border-color: #b8bcc2;
+
+        --button-active-color: linear-gradient(#cfd5dd 0%, #b4bcc8 100%);
+        --button-color: linear-gradient(#f5f7fb 0%, #dbe2ec 100%);
+        --button-middle-color: #dde3ec;
+        --button-disabled-color: #e5e8ed;
+        --button-disabled-text-color: #8a9097;
+        --button-hover-color: linear-gradient(#ffffff 0%, #e8eef7 100%);
+        --button-text-color: #202733;
+
+        --color-button-border-color: var(--overlay-border-color);
+
+        --main-background-color: #eef1f6;
+        --sidebar-background-color: #e4e8ef;
+        --main-text-color: #202733;
+        --main-text-shadow: none;
+        --link-color: #0a58ca;
+        --scrollbar-thumb-color: #bcc4d1;
+        --scrollbar-corner-color: #d8dee8;
+        --input-text-color: var(--main-text-color);
+        --input-border-color: #8e99aa;
+        --field-label-color: #5f6d83;
+        --field-label-focus-color: oklch(70% 0.25 94);
+        --field-label-invalid-color: #b3261e;
+        --field-highlight-color: oklch(70% 0.25 94);
+        --field-highlight-invalid-color: #b3261e;
+        --select-arrow-color: #2b3442;
+        --switch-track-color: #9ca8ba;
+        --switch-track-hover-color: #8f9db1;
+        --switch-track-checked-color: #3d74e0;
+        --switch-track-checked-hover-color: #3167d1;
+        --switch-thumb-color: #fff;
+        --overlay-background-color: rgba(245, 248, 252, 0.8);
+        --overlay-border-color: rgba(43, 52, 66, 0.25);
+        --overlay-text-color: #202733;
+        --overlay-muted-text-color: #3a475c;
+        --overlay-input-border-color: #8e99aa;
+        --overlay-input-text-color: #202733;
+        --overlay-hover-color: rgba(43, 52, 66, 0.12);
+        --overlay-shadow-color: rgba(43, 52, 66, 0.28);
+
+        --dark-row-color: #d9e0ea;
+        --header-row-color: #cfd8e4;
+        --hover-row-color: #c3cedd;
+        --light-row-color: #e7edf5;
+
+        --selected-row-color: linear-gradient(#4b7be1 0%, #2f5fca 100%);
+        --selected-row-hover-color: linear-gradient(#5688ea 0%, #3769d3 100%);
+        --selected-row-text-color: #fff;
+    }
 }

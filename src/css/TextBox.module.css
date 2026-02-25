@@ -4,13 +4,13 @@
 
     > input {
         font-size: 18px;
-        padding: calc(14px + var(--ui-margin)) 0
-            calc(var(--ui-margin) / 2) calc(var(--ui-margin) / 2);
+        padding: calc(14px + var(--ui-margin)) 0 calc(var(--ui-margin) / 2)
+            calc(var(--ui-margin) / 2);
         display: block;
         width: 100%;
         border: none;
         background: transparent;
-        color: white;
+        color: var(--input-text-color);
         font-family: inherit;
     }
 
@@ -19,7 +19,7 @@
     }
 
     > label {
-        color: hsla(50, 0%, 75%, 1);
+        color: var(--field-label-color);
         font-size: 14px;
         font-weight: normal;
         position: absolute;
@@ -30,11 +30,11 @@
     }
 
     > input:focus ~ label {
-        color: hsla(50, 100%, 50%, 1);
+        color: var(--field-label-focus-color);
     }
 
     &.invalid > input:focus ~ label {
-        color: hsla(0, 100%, 50%, 1);
+        color: var(--field-label-invalid-color);
     }
 
     > .bar {
@@ -50,7 +50,7 @@
         width: 0;
         bottom: 0;
         position: absolute;
-        background: hsla(50, 100%, 50%, 1);
+        background: var(--field-highlight-color);
         transition: 0.2s ease all;
     }
 
@@ -64,7 +64,7 @@
 
     &.invalid > .bar:before,
     &.invalid > .bar:after {
-        background: hsla(0, 100%, 50%, 1);
+        background: var(--field-highlight-invalid-color);
     }
 
     > input:focus ~ .bar:before,

@@ -6,6 +6,7 @@ export function resolveChineseTraditional(text: Label): string {
 }
 
 const TRADITIONAL_REPLACEMENTS: [string, string][] = [
+    ["重置时保存", "重設時保存"],
     ["游戏时间", "遊戲時間"],
     ["实时时间", "實時時間"],
     ["计时器", "計時器"],

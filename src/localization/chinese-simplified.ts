@@ -8,6 +8,10 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.Language: return "语言";
         case Label.LanguageDescription: return "设置应用程序使用的语言。";
         case Label.LanguageAuto: return "自动";
+        case Label.Theme: return "主题";
+        case Label.ThemeDescription: return "决定是跟随系统主题，还是强制使用浅色或深色模式。";
+        case Label.ThemeLightMode: return "浅色模式";
+        case Label.ThemeDarkMode: return "深色模式";
         case Label.HotkeysHeading: return "热键";
         case Label.GeneralHeading: return "常规";
         case Label.NetworkHeading: return "网络";

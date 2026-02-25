@@ -27,6 +27,7 @@ import buttonGroupClasses from "../../css/ButtonGroup.module.css";
 import { Label, orAutoLang, resolve, setHtmlLang } from "../../localization";
 
 export interface GeneralSettings {
+    themeMode: ThemeMode;
     frameRate: FrameRateSetting;
     showControlButtons: boolean;
     showManualGameTime: ManualGameTimeSettings | false;
@@ -35,6 +36,24 @@ export interface GeneralSettings {
     serverUrl?: string;
     alwaysOnTop?: boolean;
     lang: Language | undefined;
+}
+
+export type ThemeMode =
+    | typeof THEME_MODE_AUTOMATIC
+    | typeof THEME_MODE_LIGHT
+    | typeof THEME_MODE_DARK;
+
+export const THEME_MODE_AUTOMATIC = "automatic";
+export const THEME_MODE_LIGHT = "light";
+export const THEME_MODE_DARK = "dark";
+
+export function previewThemeMode(themeMode: ThemeMode) {
+    const root = document.documentElement;
+    if (themeMode === THEME_MODE_AUTOMATIC) {
+        root.removeAttribute("data-theme");
+    } else {
+        root.setAttribute("data-theme", themeMode);
+    }
 }
 
 export interface ManualGameTimeSettings {
@@ -161,6 +180,24 @@ export function View({
                         ],
                         [`${Language.Japanese}`, Lang.name(Language.Japanese)],
                         [`${Language.Korean}`, Lang.name(Language.Korean)],
+                    ] as [string, string][],
+                    mandatory: true,
+                },
+            },
+        },
+        {
+            text: resolve(Label.Theme, lang),
+            tooltip: resolve(Label.ThemeDescription, lang),
+            value: {
+                CustomCombobox: {
+                    value: generalSettings.themeMode,
+                    list: [
+                        [
+                            THEME_MODE_AUTOMATIC,
+                            resolve(Label.AlignmentAutomatic, lang),
+                        ],
+                        [THEME_MODE_LIGHT, resolve(Label.ThemeLightMode, lang)],
+                        [THEME_MODE_DARK, resolve(Label.ThemeDarkMode, lang)],
                     ] as [string, string][],
                     mandatory: true,
                 },
@@ -306,6 +343,25 @@ export function View({
                             break;
                         case 1:
                             if ("String" in value) {
+                                const themeMode = value.String as ThemeMode;
+                                if (
+                                    themeMode !== THEME_MODE_AUTOMATIC &&
+                                    themeMode !== THEME_MODE_LIGHT &&
+                                    themeMode !== THEME_MODE_DARK
+                                ) {
+                                    break;
+                                }
+
+                                previewThemeMode(themeMode);
+
+                                setGeneralSettings({
+                                    ...generalSettings,
+                                    themeMode,
+                                });
+                            }
+                            break;
+                        case 2:
+                            if ("String" in value) {
                                 setGeneralSettings({
                                     ...generalSettings,
                                     frameRate:
@@ -321,7 +377,7 @@ export function View({
                                 });
                             }
                             break;
-                        case 2:
+                        case 3:
                             if ("Bool" in value) {
                                 setGeneralSettings({
                                     ...generalSettings,
@@ -329,7 +385,7 @@ export function View({
                                 });
                             }
                             break;
-                        case 3:
+                        case 4:
                             if ("Bool" in value) {
                                 setGeneralSettings({
                                     ...generalSettings,
@@ -337,7 +393,7 @@ export function View({
                                 });
                             }
                             break;
-                        case 4:
+                        case 5:
                             if ("Bool" in value) {
                                 setGeneralSettings({
                                     ...generalSettings,

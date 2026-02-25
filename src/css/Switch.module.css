@@ -13,7 +13,7 @@
 
     span {
         position: absolute;
-        background-color: #ffffff20;
+        background-color: var(--switch-track-color);
         border-radius: 20px;
         top: 0;
         left: 0;
@@ -23,7 +23,7 @@
     }
 
     span::before {
-        background-color: white;
+        background-color: var(--switch-thumb-color);
         border-radius: 50%;
         content: "";
         position: absolute;
@@ -35,15 +35,15 @@
     }
 
     &:hover input + span {
-        background-color: #ffffff40;
+        background-color: var(--switch-track-hover-color);
     }
 
     &:hover input:checked + span {
-        background-color: #ffffff80;
+        background-color: var(--switch-track-checked-hover-color);
     }
 
     input:checked + span {
-        background-color: #ffffff60;
+        background-color: var(--switch-track-checked-color);
     }
 
     input:checked + span::before {

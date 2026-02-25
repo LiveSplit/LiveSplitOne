@@ -4,6 +4,7 @@ import { RunRef, Run, TimingMethod, Language } from "../livesplit-core";
 import {
     GeneralSettings,
     MANUAL_GAME_TIME_SETTINGS_DEFAULT,
+    THEME_MODE_AUTOMATIC,
 } from "../ui/views/MainSettings";
 import { FRAME_RATE_AUTOMATIC } from "../util/FrameRate";
 import { fromLocaleOpt, getLocaleOpt, setHtmlLang } from "../localization";
@@ -272,6 +273,7 @@ export async function loadGeneralSettings(): Promise<GeneralSettings> {
     setHtmlLang(lang);
 
     return {
+        themeMode: generalSettings.themeMode ?? THEME_MODE_AUTOMATIC,
         frameRate: generalSettings.frameRate ?? FRAME_RATE_AUTOMATIC,
         showControlButtons: generalSettings.showControlButtons ?? !isTauri,
         showManualGameTime: generalSettings.showManualGameTime ?? false,

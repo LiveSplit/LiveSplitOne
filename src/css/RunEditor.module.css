@@ -244,5 +244,5 @@
 
 .bestSegmentTime {
     /* FIXME: important */
-    color: hsla(50, 100%, 50%, 1) !important;
+    color: var(--best-segment-color) !important;
 }

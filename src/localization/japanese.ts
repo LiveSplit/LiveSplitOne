@@ -8,6 +8,10 @@ export function resolveJapanese(text: Label): string {
         case Label.Language: return "言語";
         case Label.LanguageDescription: return "アプリケーションで使用される言語を設定します。";
         case Label.LanguageAuto: return "自動";
+        case Label.Theme: return "テーマ";
+        case Label.ThemeDescription: return "システムのテーマに従うか、ライトモードまたはダークモードを強制するかを決定します。";
+        case Label.ThemeLightMode: return "ライトモード";
+        case Label.ThemeDarkMode: return "ダークモード";
         case Label.HotkeysHeading: return "ホットキー";
         case Label.GeneralHeading: return "一般";
         case Label.NetworkHeading: return "ネットワーク";

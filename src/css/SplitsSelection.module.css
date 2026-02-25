@@ -57,10 +57,12 @@
 
     &.selected {
         background: var(--selected-row-color);
+        color: var(--selected-row-text-color);
     }
 
     &.selected .splitsRowButtons button {
         opacity: 70%;
+        color: var(--selected-row-text-color);
     }
 
     :global(.is-mobile) & {
@@ -81,7 +83,7 @@
         opacity: 50%;
         margin: 0;
         transition: 0.3s;
-        color: white;
+        color: var(--main-text-color);
         padding: 0;
 
         &:hover {

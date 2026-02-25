@@ -36,6 +36,8 @@ import { RunEditor as RunEditorComponent } from "./views/RunEditor";
 import {
     GeneralSettings,
     MainSettings as SettingsEditorComponent,
+    THEME_MODE_AUTOMATIC,
+    THEME_MODE_DARK,
 } from "./views/MainSettings";
 import { TimerView } from "./views/TimerView";
 import { About } from "./views/About";
@@ -180,6 +182,9 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     private isDesktopQuery = window.matchMedia("(min-width: 600px)");
+    private colorSchemeQuery = window.matchMedia(
+        "(prefers-color-scheme: dark)",
+    );
     private scrollEvent: Option<EventListenerObject>;
     private rightClickEvent: Option<EventListenerObject>;
     private resizeEvent: Option<EventListenerObject>;
@@ -276,6 +281,7 @@ export class LiveSplit extends React.Component<Props, State> {
         });
 
         this.updateTauriSettings(props.generalSettings);
+        this.applyTheme(props.generalSettings);
 
         this.updateBadge();
 
@@ -309,6 +315,10 @@ export class LiveSplit extends React.Component<Props, State> {
         window.addEventListener("contextmenu", this.rightClickEvent, false);
         this.resizeEvent = { handleEvent: () => this.handleAutomaticResize() };
         window.addEventListener("resize", this.resizeEvent, false);
+        this.colorSchemeQuery.addEventListener(
+            "change",
+            this.colorSchemeChanged,
+        );
 
         window.onbeforeunload = () => {
             if (this.state.splitsModified || this.state.layoutModified) {
@@ -374,6 +384,10 @@ export class LiveSplit extends React.Component<Props, State> {
             // This is bound in the constructor
             // eslint-disable-next-line @typescript-eslint/unbound-method
             this.mediaQueryChanged,
+        );
+        this.colorSchemeQuery.removeEventListener(
+            "change",
+            this.colorSchemeChanged,
         );
 
         const { serviceWorker } = navigator;
@@ -509,10 +523,38 @@ export class LiveSplit extends React.Component<Props, State> {
                     position="bottom-right"
                     toastClassName={toastClasses.toastClass}
                     className={toastClasses.toastBody}
-                    theme="dark"
+                    theme={
+                        this.getResolvedTheme() === THEME_MODE_DARK
+                            ? "dark"
+                            : "light"
+                    }
                 />
             </>
         );
+    }
+
+    private colorSchemeChanged = () => {
+        if (this.state.generalSettings.themeMode === THEME_MODE_AUTOMATIC) {
+            this.forceUpdate();
+        }
+    };
+
+    private applyTheme(generalSettings: GeneralSettings) {
+        const root = document.documentElement;
+
+        if (generalSettings.themeMode === THEME_MODE_AUTOMATIC) {
+            root.removeAttribute("data-theme");
+        } else {
+            root.setAttribute("data-theme", generalSettings.themeMode);
+        }
+    }
+
+    private getResolvedTheme() {
+        if (this.state.generalSettings.themeMode === THEME_MODE_AUTOMATIC) {
+            return this.colorSchemeQuery.matches ? THEME_MODE_DARK : "light";
+        }
+
+        return this.state.generalSettings.themeMode;
     }
 
     public renderViewWithSidebar(
@@ -797,8 +839,10 @@ export class LiveSplit extends React.Component<Props, State> {
             this.state.hotkeySystem.setConfig(menu.config);
             this.setState({ generalSettings });
             this.updateTauriSettings(generalSettings);
+            this.applyTheme(generalSettings);
         } else {
             setHtmlLang(this.state.generalSettings.lang);
+            this.applyTheme(this.state.generalSettings);
             menu.config[Symbol.dispose]();
         }
 

@@ -8,6 +8,10 @@ export function resolveBrazilianPortuguese(text: Label): string {
         case Label.Language: return "Idioma";
         case Label.LanguageDescription: return "Define o idioma usado no aplicativo.";
         case Label.LanguageAuto: return "Automático";
+        case Label.Theme: return "Tema";
+        case Label.ThemeDescription: return "Determina se deve seguir o tema do sistema ou forçar um modo claro ou escuro.";
+        case Label.ThemeLightMode: return "Modo Claro";
+        case Label.ThemeDarkMode: return "Modo Escuro";
         case Label.HotkeysHeading: return "Teclas de atalho";
         case Label.GeneralHeading: return "Geral";
         case Label.NetworkHeading: return "Rede";
@@ -37,7 +41,7 @@ export function resolveBrazilianPortuguese(text: Label): string {
         case Label.Resume: return "Retomar";
         case Label.Pause: return "Pausar";
         case Label.UndoSplit: return "Desfazer split";
-        case Label.Reset: return "Redefinir";
+        case Label.Reset: return "Resetar";
         case Label.SkipSplit: return "Pular split";
         case Label.ManualGameTimePlaceholder: return "Tempo de jogo manual";
         case Label.LiveSplitLogoAlt: return "Logo do LiveSplit";
