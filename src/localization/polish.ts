@@ -36,6 +36,12 @@ export function resolvePolish(text: Label): string {
         case Label.ServerConnection: return "Połączenie z serwerem";
         case Label.ServerConnectionDescription: return "Pozwala połączyć się z serwerem WebSocket, który może sterować timerem poprzez wysyłanie różnych poleceń. Polecenia są obecnie podzbiorem poleceń obsługiwanych przez oryginalny LiveSplit.";
         case Label.ServerConnectionExperimental: return "Ta funkcja jest eksperymentalna i protokół prawdopodobnie zmieni się w przyszłości.";
+        case Label.TheRunGgIntegration: return "Integracja z TheRun.gg";
+        case Label.TheRunGgIntegrationDescription: return "Integruje z therun.gg, zapewniając śledzenie biegu na żywo oraz automatyczne przesyłanie statystyk. Aby korzystać z tej funkcji, potrzebujesz klucza przesyłania z therun.gg.";
+        case Label.TheRunGgLiveTracking: return "Śledzenie na żywo";
+        case Label.TheRunGgLiveTrackingDescription: return "Po włączeniu dane splitów na żywo są wysyłane do therun.gg po każdej akcji splitu, co umożliwia śledzenie biegu na żywo na stronie.";
+        case Label.TheRunGgStatsUploading: return "Przesyłanie statystyk";
+        case Label.TheRunGgStatsUploadingDescription: return "Po włączeniu plik splitów jest przesyłany do therun.gg po każdym resecie lub ukończonym biegu, automatycznie synchronizując biegi ze stroną.";
         case Label.HotkeyAlreadyInUse: return "Ten skrót klawiszowy jest już używany.";
         case Label.Start: return "Start";
         case Label.Resume: return "Wznów";

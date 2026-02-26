@@ -36,6 +36,12 @@ export function resolveDutch(text: Label): string {
         case Label.ServerConnection: return "Serververbinding";
         case Label.ServerConnectionDescription: return "Staat toe om verbinding te maken met een WebSocket-server die de timer kan besturen door verschillende opdrachten te verzenden. De opdrachten zijn momenteel een subset van de opdrachten die de originele LiveSplit ondersteunt.";
         case Label.ServerConnectionExperimental: return "Deze functie is experimenteel en het protocol zal waarschijnlijk in de toekomst veranderen.";
+        case Label.TheRunGgIntegration: return "TheRun.gg-integratie";
+        case Label.TheRunGgIntegrationDescription: return "Integreert met therun.gg voor live run-tracking en automatisch uploaden van statistieken. Je hebt een uploadsleutel van therun.gg nodig om deze functie te gebruiken.";
+        case Label.TheRunGgLiveTracking: return "Live tracking";
+        case Label.TheRunGgLiveTrackingDescription: return "Wanneer ingeschakeld, worden live splitgegevens na elke splitactie naar therun.gg gestuurd, zodat de run live op de website gevolgd kan worden.";
+        case Label.TheRunGgStatsUploading: return "Statistieken uploaden";
+        case Label.TheRunGgStatsUploadingDescription: return "Wanneer ingeschakeld, wordt het splitsbestand na elke reset of voltooide run naar therun.gg geüpload, zodat je runs automatisch met de site worden gesynchroniseerd.";
         case Label.HotkeyAlreadyInUse: return "De sneltoets is al in gebruik.";
         case Label.Start: return "Start";
         case Label.Resume: return "Hervatten";

@@ -36,6 +36,12 @@ export function resolveItalian(text: Label): string {
         case Label.ServerConnection: return "Connessione server";
         case Label.ServerConnectionDescription: return "Consente di connettersi a un server WebSocket che può controllare il timer inviando vari comandi. I comandi sono attualmente un sottoinsieme di quelli supportati dal LiveSplit originale.";
         case Label.ServerConnectionExperimental: return "Questa funzionalità è sperimentale e il protocollo probabilmente cambierà in futuro.";
+        case Label.TheRunGgIntegration: return "Integrazione TheRun.gg";
+        case Label.TheRunGgIntegrationDescription: return "Si integra con therun.gg per il tracciamento live delle run e il caricamento automatico delle statistiche. Per usare questa funzionalità è necessaria una chiave di upload di therun.gg.";
+        case Label.TheRunGgLiveTracking: return "Tracciamento live";
+        case Label.TheRunGgLiveTrackingDescription: return "Quando è attivo, i dati live degli split vengono inviati a therun.gg dopo ogni azione di split, consentendo il tracciamento in tempo reale sul sito.";
+        case Label.TheRunGgStatsUploading: return "Caricamento statistiche";
+        case Label.TheRunGgStatsUploadingDescription: return "Quando è attivo, il file degli split viene caricato su therun.gg dopo ogni reset o run completata, sincronizzando automaticamente le tue run con il sito.";
         case Label.HotkeyAlreadyInUse: return "La scorciatoia è già in uso.";
         case Label.Start: return "Avvia";
         case Label.Resume: return "Riprendi";

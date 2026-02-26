@@ -36,6 +36,12 @@ export function resolveSpanish(text: Label): string {
         case Label.ServerConnection: return "Conexión al servidor";
         case Label.ServerConnectionDescription: return "Permite conectarte a un servidor WebSocket que puede controlar el temporizador enviando varios comandos. Los comandos actualmente son un subconjunto de los comandos compatibles con el LiveSplit original.";
         case Label.ServerConnectionExperimental: return "Esta función es experimental y es probable que el protocolo cambie en el futuro.";
+        case Label.TheRunGgIntegration: return "Integración con TheRun.gg";
+        case Label.TheRunGgIntegrationDescription: return "Se integra con therun.gg para el seguimiento en vivo de tus runs y la subida automática de estadísticas. Necesitas una clave de subida de therun.gg para usar esta función.";
+        case Label.TheRunGgLiveTracking: return "Seguimiento en vivo";
+        case Label.TheRunGgLiveTrackingDescription: return "Cuando está activado, los datos de splits en vivo se envían a therun.gg después de cada acción de split, lo que permite seguir la run en vivo en el sitio web.";
+        case Label.TheRunGgStatsUploading: return "Subida de estadísticas";
+        case Label.TheRunGgStatsUploadingDescription: return "Cuando está activado, el archivo de splits se sube a therun.gg tras cada reinicio o run finalizada, sincronizando automáticamente tus runs con el sitio.";
         case Label.HotkeyAlreadyInUse: return "El atajo de teclado ya está en uso.";
         case Label.Start: return "Iniciar";
         case Label.Resume: return "Reanudar";

@@ -36,6 +36,12 @@ export function resolveKorean(text: Label): string {
         case Label.ServerConnection: return "서버 연결";
         case Label.ServerConnectionDescription: return "WebSocket 서버에 연결하여 다양한 명령을 전송함으로써 타이머를 제어할 수 있습니다. 현재 명령은 원래 LiveSplit이 지원하는 명령의 일부입니다.";
         case Label.ServerConnectionExperimental: return "이 기능은 실험적이며 프로토콜은 향후 변경될 가능성이 있습니다.";
+        case Label.TheRunGgIntegration: return "TheRun.gg 통합";
+        case Label.TheRunGgIntegrationDescription: return "therun.gg와 통합하여 런 실시간 추적과 통계 자동 업로드를 제공합니다. 이 기능을 사용하려면 therun.gg 업로드 키가 필요합니다.";
+        case Label.TheRunGgLiveTracking: return "실시간 추적";
+        case Label.TheRunGgLiveTrackingDescription: return "활성화하면 스플릿 동작을 할 때마다 실시간 스플릿 데이터가 therun.gg로 전송되어 웹사이트에서 런을 실시간으로 추적할 수 있습니다.";
+        case Label.TheRunGgStatsUploading: return "통계 업로드";
+        case Label.TheRunGgStatsUploadingDescription: return "활성화하면 리셋하거나 런을 완료할 때마다 스플릿 파일이 therun.gg에 업로드되어 런 기록이 웹사이트와 자동으로 동기화됩니다.";
         case Label.HotkeyAlreadyInUse: return "해당 단축키는 이미 사용 중입니다.";
         case Label.Start: return "시작";
         case Label.Resume: return "재개";

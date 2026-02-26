@@ -1,6 +1,7 @@
 import * as React from "react";
+import { useState } from "react";
 import { SettingValueFactory } from ".";
-import { Trash } from "lucide-react";
+import { Eye, EyeOff, Trash } from "lucide-react";
 import { Switch } from "../Switch";
 import { Label, resolve } from "../../../localization";
 import { Language } from "../../../livesplit-core";
@@ -194,4 +195,56 @@ export function CustomVariable<T>({
             </div>
         );
     }
+}
+
+export function Password<T>({
+    value,
+    setValue,
+    factory,
+}: {
+    value: string;
+    setValue: (value: T) => void;
+    factory: SettingValueFactory<T>;
+}) {
+    const [showPassword, setShowPassword] = useState(false);
+
+    return (
+        <div className={tableClasses.settingsValueBox}>
+            <div
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    borderBottom: "1px solid var(--input-border-color)",
+                }}
+            >
+                <input
+                    className={tableClasses.textBox}
+                    style={{ borderBottom: "none", flex: 1, minWidth: 0 }}
+                    type={showPassword ? "text" : "password"}
+                    autoComplete="off"
+                    value={value}
+                    onChange={(e) =>
+                        setValue(factory.fromString(e.target.value))
+                    }
+                />
+                <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    style={{
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        padding: "2px 5px 3px 4px",
+                        display: "flex",
+                        alignItems: "center",
+                        color: "var(--text-color)",
+                        flexShrink: 0,
+                        minHeight: 0,
+                    }}
+                >
+                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
+            </div>
+        </div>
+    );
 }

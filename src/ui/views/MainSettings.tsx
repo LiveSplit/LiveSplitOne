@@ -21,7 +21,7 @@ import {
 import { LiveSplitServer } from "../../api/LiveSplitServer";
 import { Option } from "../../util/OptionUtil";
 import { LSOCommandSink } from "../../util/LSOCommandSink";
-import { Check, FlaskConical, X } from "lucide-react";
+import { Check, ExternalLink, FlaskConical, X } from "lucide-react";
 
 import buttonGroupClasses from "../../css/ButtonGroup.module.css";
 import { Label, orAutoLang, resolve, setHtmlLang } from "../../localization";
@@ -34,8 +34,15 @@ export interface GeneralSettings {
     saveOnReset: boolean;
     speedrunComIntegration: boolean;
     serverUrl?: string;
+    theRunGgIntegration?: TheRunGgSettings;
     alwaysOnTop?: boolean;
     lang: Language | undefined;
+}
+
+export interface TheRunGgSettings {
+    uploadKey: string;
+    liveTracking: boolean;
+    statsUploading: boolean;
 }
 
 export type ThemeMode =
@@ -426,7 +433,7 @@ export function View({
             />
             <h2>{resolve(Label.NetworkHeading, lang)}</h2>
             <SettingsComponent
-                context="settings-editor-general"
+                context="settings-editor-network"
                 factory={new JsonSettingValueFactory()}
                 state={{
                     fields: [
@@ -480,6 +487,73 @@ export function View({
                                 },
                             },
                         },
+                        {
+                            text: (
+                                <div
+                                    style={{
+                                        display: "flex",
+                                        alignItems: "center",
+                                        gap: "0.25em",
+                                    }}
+                                >
+                                    {resolve(Label.TheRunGgIntegration, lang)}
+                                    <a
+                                        href="https://therun.gg/livesplit"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        title="therun.gg/livesplit"
+                                    >
+                                        <ExternalLink
+                                            size={16}
+                                            strokeWidth={2.5}
+                                        />
+                                    </a>
+                                </div>
+                            ),
+                            tooltip: resolve(
+                                Label.TheRunGgIntegrationDescription,
+                                lang,
+                            ),
+                            hint: "Password" as const,
+                            value: {
+                                String:
+                                    generalSettings.theRunGgIntegration
+                                        ?.uploadKey ?? "",
+                            },
+                        },
+                        ...(generalSettings.theRunGgIntegration
+                            ? [
+                                  {
+                                      text: resolve(
+                                          Label.TheRunGgLiveTracking,
+                                          lang,
+                                      ),
+                                      tooltip: resolve(
+                                          Label.TheRunGgLiveTrackingDescription,
+                                          lang,
+                                      ),
+                                      value: {
+                                          Bool: generalSettings
+                                              .theRunGgIntegration.liveTracking,
+                                      },
+                                  },
+                                  {
+                                      text: resolve(
+                                          Label.TheRunGgStatsUploading,
+                                          lang,
+                                      ),
+                                      tooltip: resolve(
+                                          Label.TheRunGgStatsUploadingDescription,
+                                          lang,
+                                      ),
+                                      value: {
+                                          Bool: generalSettings
+                                              .theRunGgIntegration
+                                              .statsUploading,
+                                      },
+                                  },
+                              ]
+                            : []),
                     ],
                 }}
                 editorUrlCache={urlCache}
@@ -514,6 +588,58 @@ export function View({
                                 setGeneralSettings({
                                     ...generalSettings,
                                     serverUrl: value.String,
+                                });
+                            }
+                            break;
+                        case 2:
+                            if ("String" in value) {
+                                const uploadKey = value.String;
+                                setGeneralSettings({
+                                    ...generalSettings,
+                                    theRunGgIntegration:
+                                        uploadKey.length > 0
+                                            ? {
+                                                  uploadKey,
+                                                  liveTracking:
+                                                      generalSettings
+                                                          .theRunGgIntegration
+                                                          ?.liveTracking ??
+                                                      true,
+                                                  statsUploading:
+                                                      generalSettings
+                                                          .theRunGgIntegration
+                                                          ?.statsUploading ??
+                                                      true,
+                                              }
+                                            : undefined,
+                                });
+                            }
+                            break;
+                        case 3:
+                            if (
+                                "Bool" in value &&
+                                generalSettings.theRunGgIntegration
+                            ) {
+                                setGeneralSettings({
+                                    ...generalSettings,
+                                    theRunGgIntegration: {
+                                        ...generalSettings.theRunGgIntegration,
+                                        liveTracking: value.Bool,
+                                    },
+                                });
+                            }
+                            break;
+                        case 4:
+                            if (
+                                "Bool" in value &&
+                                generalSettings.theRunGgIntegration
+                            ) {
+                                setGeneralSettings({
+                                    ...generalSettings,
+                                    theRunGgIntegration: {
+                                        ...generalSettings.theRunGgIntegration,
+                                        statsUploading: value.Bool,
+                                    },
                                 });
                             }
                             break;

@@ -36,6 +36,12 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.ServerConnection: return "服务器连接";
         case Label.ServerConnectionDescription: return "允许你连接到 WebSocket 服务器，通过发送各种命令来控制计时器。目前这些命令是原版 LiveSplit 支持命令的子集。";
         case Label.ServerConnectionExperimental: return "此功能为实验性，协议未来可能会更改。";
+        case Label.TheRunGgIntegration: return "TheRun.gg 集成";
+        case Label.TheRunGgIntegrationDescription: return "与 therun.gg 集成，用于实时追踪跑图并自动上传统计数据。使用此功能需要 therun.gg 的上传密钥。";
+        case Label.TheRunGgLiveTracking: return "实时追踪";
+        case Label.TheRunGgLiveTrackingDescription: return "启用后，每次分段操作后都会将实时分段数据发送到 therun.gg，从而可以在网站上实时追踪跑图。";
+        case Label.TheRunGgStatsUploading: return "统计上传";
+        case Label.TheRunGgStatsUploadingDescription: return "启用后，每次重置或完成跑图后都会将分段文件上传到 therun.gg，自动将你的跑图与网站同步。";
         case Label.HotkeyAlreadyInUse: return "该热键已被使用。";
         case Label.Start: return "开始";
         case Label.Resume: return "继续";

@@ -36,6 +36,12 @@ export function resolveFrench(text: Label): string {
         case Label.ServerConnection: return "Connexion au serveur";
         case Label.ServerConnectionDescription: return "Permet de se connecter à un serveur WebSocket qui peut contrôler le minuteur en envoyant diverses commandes. Les commandes sont actuellement un sous‑ensemble de celles que le LiveSplit original prend en charge.";
         case Label.ServerConnectionExperimental: return "Cette fonctionnalité est expérimentale et le protocole changera probablement à l’avenir.";
+        case Label.TheRunGgIntegration: return "Intégration TheRun.gg";
+        case Label.TheRunGgIntegrationDescription: return "S’intègre à therun.gg pour le suivi en direct des runs et l’envoi automatique des statistiques. Vous avez besoin d’une clé d’envoi therun.gg pour utiliser cette fonctionnalité.";
+        case Label.TheRunGgLiveTracking: return "Suivi en direct";
+        case Label.TheRunGgLiveTrackingDescription: return "Lorsqu’il est activé, les données de split en direct sont envoyées à therun.gg après chaque action de split, ce qui permet un suivi en direct sur le site.";
+        case Label.TheRunGgStatsUploading: return "Envoi des statistiques";
+        case Label.TheRunGgStatsUploadingDescription: return "Lorsqu’il est activé, le fichier de splits est envoyé à therun.gg après chaque réinitialisation ou run terminée, ce qui synchronise automatiquement vos runs avec le site.";
         case Label.HotkeyAlreadyInUse: return "Le raccourci est déjà utilisé.";
         case Label.Start: return "Démarrer";
         case Label.Resume: return "Reprendre";

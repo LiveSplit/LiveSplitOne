@@ -36,6 +36,12 @@ export function resolveJapanese(text: Label): string {
         case Label.ServerConnection: return "サーバー接続";
         case Label.ServerConnectionDescription: return "WebSocket サーバーに接続して、さまざまなコマンドを送信することでタイマーを制御できます。これらのコマンドは現在、元の LiveSplit がサポートするコマンドの一部です。";
         case Label.ServerConnectionExperimental: return "この機能は実験的で、プロトコルは将来変更される可能性があります。";
+        case Label.TheRunGgIntegration: return "TheRun.gg 連携";
+        case Label.TheRunGgIntegrationDescription: return "therun.gg と連携し、ランのライブ追跡と統計情報の自動アップロードを行います。この機能を使うには therun.gg のアップロードキーが必要です。";
+        case Label.TheRunGgLiveTracking: return "ライブ追跡";
+        case Label.TheRunGgLiveTrackingDescription: return "有効にすると、スプリット操作のたびにライブスプリットデータが therun.gg に送信され、サイト上でランをライブ追跡できます。";
+        case Label.TheRunGgStatsUploading: return "統計のアップロード";
+        case Label.TheRunGgStatsUploadingDescription: return "有効にすると、リセット時またはラン完了時にスプリットファイルが therun.gg にアップロードされ、ランがサイトと自動的に同期されます。";
         case Label.HotkeyAlreadyInUse: return "このホットキーは既に使用されています。";
         case Label.Start: return "開始";
         case Label.Resume: return "再開";
