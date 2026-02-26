@@ -63,7 +63,7 @@ execSync(`cargo ${toolchain} run`, {
 });
 
 execSync(
-    `cargo ${toolchain} rustc -p livesplit-core-capi --crate-type cdylib --features wasm-web,web-rendering --target ${target} ${cargoFlags}`,
+    `cargo ${toolchain} rustc -p livesplit-core-capi --crate-type cdylib --features wasm-web,web-rendering,therun-gg --target ${target} ${cargoFlags}`,
     {
         cwd: "livesplit-core",
         stdio: "inherit",

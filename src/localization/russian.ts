@@ -36,6 +36,12 @@ export function resolveRussian(text: Label): string {
         case Label.ServerConnection: return "Подключение к серверу";
         case Label.ServerConnectionDescription: return "Позволяет подключиться к серверу WebSocket, который может управлять таймером, отправляя различные команды. Команды сейчас являются подмножеством команд, поддерживаемых оригинальным LiveSplit.";
         case Label.ServerConnectionExperimental: return "Эта функция экспериментальная, и протокол, вероятно, изменится в будущем.";
+        case Label.TheRunGgIntegration: return "Интеграция с TheRun.gg";
+        case Label.TheRunGgIntegrationDescription: return "Интегрируется с therun.gg для отслеживания забегов в реальном времени и автоматической загрузки статистики. Для использования этой функции нужен ключ загрузки из therun.gg.";
+        case Label.TheRunGgLiveTracking: return "Отслеживание в реальном времени";
+        case Label.TheRunGgLiveTrackingDescription: return "Если включено, данные сплитов в реальном времени отправляются на therun.gg после каждого действия со сплитом, что позволяет отслеживать забег на сайте в реальном времени.";
+        case Label.TheRunGgStatsUploading: return "Загрузка статистики";
+        case Label.TheRunGgStatsUploadingDescription: return "Если включено, файл сплитов загружается на therun.gg после каждого сброса или завершённого забега, автоматически синхронизируя ваши забеги с сайтом.";
         case Label.HotkeyAlreadyInUse: return "Эта горячая клавиша уже используется.";
         case Label.Start: return "Старт";
         case Label.Resume: return "Продолжить";

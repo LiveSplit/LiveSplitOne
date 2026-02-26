@@ -36,6 +36,12 @@ export function resolveEnglish(text: Label): string {
         case Label.ServerConnection: return "Server Connection";
         case Label.ServerConnectionDescription: return "Allows you to connect to a WebSocket server that can control the timer by sending various commands. The commands are currently a subset of the commands the original LiveSplit supports.";
         case Label.ServerConnectionExperimental: return "This feature is experimental and the protocol will likely change in the future.";
+        case Label.TheRunGgIntegration: return "TheRun.gg Integration";
+        case Label.TheRunGgIntegrationDescription: return "Integrates with therun.gg for live run tracking and automatic stats uploading. You need an upload key from therun.gg to use this feature.";
+        case Label.TheRunGgLiveTracking: return "Live Tracking";
+        case Label.TheRunGgLiveTrackingDescription: return "When enabled, live split data is sent to therun.gg after every split action, enabling live run tracking on the website.";
+        case Label.TheRunGgStatsUploading: return "Stats Uploading";
+        case Label.TheRunGgStatsUploadingDescription: return "When enabled, the splits file is uploaded to therun.gg after every reset or finished run, automatically syncing your runs with the site.";
         case Label.HotkeyAlreadyInUse: return "The hotkey is already in use.";
         case Label.Start: return "Start";
         case Label.Resume: return "Resume";

@@ -280,6 +280,7 @@ export async function loadGeneralSettings(): Promise<GeneralSettings> {
         saveOnReset: generalSettings.saveOnReset ?? false,
         speedrunComIntegration: generalSettings.speedrunComIntegration ?? true,
         serverUrl: generalSettings.serverUrl,
+        theRunGgIntegration: generalSettings.theRunGgIntegration,
         alwaysOnTop:
             generalSettings.alwaysOnTop ?? (isTauri ? true : undefined),
         lang,

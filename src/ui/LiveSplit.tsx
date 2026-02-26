@@ -49,6 +49,7 @@ import { UrlCache } from "../util/UrlCache";
 import {
     HotkeySystem_add_window,
     ServerProtocol,
+    TheRunClient,
     WebRenderer,
 } from "../livesplit-core/livesplit_core";
 import { LiveSplitServer } from "../api/LiveSplitServer";
@@ -67,6 +68,20 @@ import classes from "../css/LiveSplit.module.css";
 import sidebarClasses from "../css/Sidebar.module.css";
 import toastClasses from "../css/Toast.module.css";
 import { Label, orAutoLang, resolve, setHtmlLang } from "../localization";
+
+function createTheRunClient(
+    generalSettings: GeneralSettings,
+): Option<TheRunClient> {
+    const theRunGg = generalSettings.theRunGgIntegration;
+    if (theRunGg != null && theRunGg.uploadKey.length > 0) {
+        return new TheRunClient(
+            theRunGg.uploadKey,
+            theRunGg.liveTracking,
+            theRunGg.statsUploading,
+        );
+    }
+    return null;
+}
 
 function getRootCssVar(name: string) {
     return getComputedStyle(document.documentElement)
@@ -141,6 +156,7 @@ export interface State {
     renderer: WebRenderer;
     generalSettings: GeneralSettings;
     serverConnection: Option<LiveSplitServer>;
+    theRunClient: Option<TheRunClient>;
     currentComparison: string;
     currentTimingMethod: TimingMethod;
     currentPhase: TimerPhase;
@@ -262,6 +278,7 @@ export class LiveSplit extends React.Component<Props, State> {
             renderer,
             generalSettings: props.generalSettings,
             serverConnection: null,
+            theRunClient: createTheRunClient(props.generalSettings),
             currentComparison: commandSink.currentComparison(),
             currentTimingMethod: commandSink.currentTimingMethod(),
             currentPhase: commandSink.currentPhase(),
@@ -378,6 +395,7 @@ export class LiveSplit extends React.Component<Props, State> {
         this.state.commandSink[Symbol.dispose]();
         this.state.layout[Symbol.dispose]();
         this.state.layoutState[Symbol.dispose]();
+        this.state.theRunClient?.[Symbol.dispose]();
 
         this.isDesktopQuery.removeEventListener(
             "change",
@@ -840,6 +858,7 @@ export class LiveSplit extends React.Component<Props, State> {
             this.setState({ generalSettings });
             this.updateTauriSettings(generalSettings);
             this.applyTheme(generalSettings);
+            this.updateTheRunClient(generalSettings);
         } else {
             setHtmlLang(this.state.generalSettings.lang);
             this.applyTheme(this.state.generalSettings);
@@ -853,6 +872,15 @@ export class LiveSplit extends React.Component<Props, State> {
         window.__TAURI__?.core.invoke("settings_changed", {
             alwaysOnTop: generalSettings.alwaysOnTop,
         });
+    }
+
+    private updateTheRunClient(generalSettings: GeneralSettings) {
+        const oldClient = this.state.theRunClient;
+        const newClient = createTheRunClient(generalSettings);
+        if (oldClient != null) {
+            oldClient[Symbol.dispose]();
+        }
+        this.setState({ theRunClient: newClient });
     }
 
     public onResize(width: number, height: number) {
@@ -1049,6 +1077,10 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     handleEvent(event: Event): void {
+        this.state.theRunClient?.handleEvent(
+            event,
+            this.state.commandSink.getTimer(),
+        );
         switch (event) {
             case Event.Started:
                 this.splitsModifiedChanged();

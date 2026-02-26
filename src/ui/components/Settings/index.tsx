@@ -29,6 +29,7 @@ import {
     Comparison,
     CustomVariable,
     OptionalString,
+    Password,
     RemovableString,
     String,
 } from "./String";
@@ -55,7 +56,7 @@ export interface ExtendedSettingsDescriptionJson {
 export interface ExtendedSettingsDescriptionFieldJson {
     text: string | React.JSX.Element;
     tooltip: string | React.JSX.Element;
-    hint?: "Comparison" | "CustomVariable";
+    hint?: "Comparison" | "CustomVariable" | "Password";
     value: ExtendedSettingsDescriptionValueJson;
 }
 
@@ -326,6 +327,16 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                             factory={this.props.factory}
                             allVariables={this.props.allVariables}
                             lang={this.props.lang}
+                        />
+                    );
+                } else if (field.hint === "Password") {
+                    component = (
+                        <Password
+                            value={value.String}
+                            setValue={(value) =>
+                                this.props.setValue(valueIndex, value)
+                            }
+                            factory={this.props.factory}
                         />
                     );
                 } else {
