@@ -247,6 +247,10 @@ export function resolveFrench(text: Label): string {
         case Label.ComponentBlankSpaceDescription: return "Composant vide servant d’espacement.";
         case Label.ComponentSeparator: return "Séparateur";
         case Label.ComponentSeparatorDescription: return "Affiche un séparateur entre les composants.";
+        case Label.Row: return "Ligne";
+        case Label.RowDescription: return "Une ligne de composants disposés horizontalement, changeant la direction du layout pour les composants à l'intérieur.";
+        case Label.Column: return "Colonne";
+        case Label.ColumnDescription: return "Une colonne de composants disposés verticalement, changeant la direction du layout pour les composants à l'intérieur.";
         case Label.AccuracySeconds: return "Secondes";
         case Label.AccuracyTenths: return "Dixièmes";
         case Label.AccuracyHundredths: return "Centièmes";

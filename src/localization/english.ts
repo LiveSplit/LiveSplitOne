@@ -247,6 +247,10 @@ export function resolveEnglish(text: Label): string {
         case Label.ComponentBlankSpaceDescription: return "An empty component that doesn't show anything other than a background. It mostly serves as padding between other components.";
         case Label.ComponentSeparator: return "Separator";
         case Label.ComponentSeparatorDescription: return "A simple component that just renders a separator between components.";
+        case Label.Row: return "Row";
+        case Label.RowDescription: return "A row of components laid out horizontally, changing the layout direction for the components inside.";
+        case Label.Column: return "Column";
+        case Label.ColumnDescription: return "A column of components laid out vertically, changing the layout direction for the components inside.";
         case Label.AccuracySeconds: return "Seconds";
         case Label.AccuracyTenths: return "Tenths";
         case Label.AccuracyHundredths: return "Hundredths";

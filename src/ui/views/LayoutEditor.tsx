@@ -134,6 +134,8 @@ export function View({
         if (i === state.selected_component) {
             className += " " + tableClasses.selected;
         }
+        const indent = state.indent_levels[i];
+        const isPlaceholder = state.is_placeholder[i];
         return (
             <tr
                 key={i}
@@ -159,7 +161,18 @@ export function View({
                     return false;
                 }}
             >
-                <td className={className}>{c}</td>
+                <td
+                    className={className}
+                    style={{ paddingLeft: indent * 20 + 8 }}
+                >
+                    <span
+                        className={
+                            isPlaceholder ? classes.placeholder : undefined
+                        }
+                    >
+                        {c}
+                    </span>
+                </td>
             </tr>
         );
     });
@@ -207,6 +220,7 @@ export function View({
                             allVariables={allVariables}
                             addVariable={(v) => addVariable(v)}
                             addComponent={(v) => addComponent(v)}
+                            layoutDirection={state.layout_direction}
                             lang={lang}
                         />
                         <button
@@ -219,6 +233,7 @@ export function View({
                         <button
                             aria-label={resolve(Label.DuplicateComponent, lang)}
                             onClick={duplicateComponent}
+                            disabled={!state.buttons.can_duplicate}
                         >
                             <Copy strokeWidth={2.5} />
                         </button>
@@ -324,11 +339,13 @@ function AddComponentButton({
     allVariables,
     addVariable,
     addComponent,
+    layoutDirection,
     lang,
 }: {
     allVariables: Set<string>;
     addVariable: (name: string) => void;
     addComponent: (componentClass: ComponentClass) => void;
+    layoutDirection: LiveSplit.LayoutDirection;
     lang?: LiveSplit.Language;
 }) {
     const [position, setPosition] = useState<Position | null>(null);
@@ -579,6 +596,26 @@ function AddComponentButton({
                         <span className={tooltipClasses.tooltipText}>
                             {resolve(
                                 Label.ComponentBlankSpaceDescription,
+                                lang,
+                            )}
+                        </span>
+                    </MenuItem>
+                    <MenuItem
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
+                        onClick={() => addComponent(LiveSplit.GroupComponent)}
+                        lang={lang}
+                    >
+                        {resolve(
+                            layoutDirection === "Vertical"
+                                ? Label.Row
+                                : Label.Column,
+                            lang,
+                        )}
+                        <span className={tooltipClasses.tooltipText}>
+                            {resolve(
+                                layoutDirection === "Vertical"
+                                    ? Label.RowDescription
+                                    : Label.ColumnDescription,
                                 lang,
                             )}
                         </span>

@@ -247,6 +247,10 @@ export function resolveGerman(text: Label): string {
         case Label.ComponentBlankSpaceDescription: return "Leere Komponente als Abstand zwischen anderen.";
         case Label.ComponentSeparator: return "Trenner";
         case Label.ComponentSeparatorDescription: return "Zeichnet einen Trenner zwischen Komponenten.";
+        case Label.Row: return "Zeile";
+        case Label.RowDescription: return "Eine Zeile von Komponenten, die horizontal angeordnet sind und die Layoutrichtung für die enthaltenen Komponenten ändern.";
+        case Label.Column: return "Spalte";
+        case Label.ColumnDescription: return "Eine Spalte von Komponenten, die vertikal angeordnet sind und die Layoutrichtung für die enthaltenen Komponenten ändern.";
         case Label.AccuracySeconds: return "Sekunden";
         case Label.AccuracyTenths: return "Zehntel";
         case Label.AccuracyHundredths: return "Hundertstel";

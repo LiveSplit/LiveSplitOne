@@ -247,6 +247,10 @@ export function resolveJapanese(text: Label): string {
         case Label.ComponentBlankSpaceDescription: return "背景のみの空コンポーネントです。コンポーネント間の余白として使います。";
         case Label.ComponentSeparator: return "区切り";
         case Label.ComponentSeparatorDescription: return "コンポーネント間の区切り線を表示します。";
+        case Label.Row: return "行";
+        case Label.RowDescription: return "水平に配置されたコンポーネントの行で、内部のコンポーネントのレイアウト方向を変更します。";
+        case Label.Column: return "列";
+        case Label.ColumnDescription: return "垂直に配置されたコンポーネントの列で、内部のコンポーネントのレイアウト方向を変更します。";
         case Label.AccuracySeconds: return "秒";
         case Label.AccuracyTenths: return "1/10 秒";
         case Label.AccuracyHundredths: return "1/100 秒";
