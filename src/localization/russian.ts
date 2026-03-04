@@ -247,6 +247,10 @@ export function resolveRussian(text: Label): string {
         case Label.ComponentBlankSpaceDescription: return "Пустой компонент только с фоном.";
         case Label.ComponentSeparator: return "Разделитель";
         case Label.ComponentSeparatorDescription: return "Показывает разделительную линию между компонентами.";
+        case Label.Row: return "Строка";
+        case Label.RowDescription: return "Строка компонентов, расположенных горизонтально, изменяющая направление разметки для компонентов внутри.";
+        case Label.Column: return "Столбец";
+        case Label.ColumnDescription: return "Столбец компонентов, расположенных вертикально, изменяющий направление разметки для компонентов внутри.";
         case Label.AccuracySeconds: return "Секунды";
         case Label.AccuracyTenths: return "Десятые";
         case Label.AccuracyHundredths: return "Сотые";

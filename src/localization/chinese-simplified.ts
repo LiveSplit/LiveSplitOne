@@ -247,6 +247,10 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.ComponentBlankSpaceDescription: return "仅显示背景的空组件，用作间距。";
         case Label.ComponentSeparator: return "分隔线";
         case Label.ComponentSeparatorDescription: return "在组件之间渲染分隔线。";
+        case Label.Row: return "行";
+        case Label.RowDescription: return "一行水平排列的组件，改变内部组件的布局方向。";
+        case Label.Column: return "列";
+        case Label.ColumnDescription: return "一列垂直排列的组件，改变内部组件的布局方向。";
         case Label.AccuracySeconds: return "秒";
         case Label.AccuracyTenths: return "十分之一秒";
         case Label.AccuracyHundredths: return "百分之一秒";

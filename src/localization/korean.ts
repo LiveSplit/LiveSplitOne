@@ -247,6 +247,10 @@ export function resolveKorean(text: Label): string {
         case Label.ComponentBlankSpaceDescription: return "배경만 있는 빈 컴포넌트입니다.";
         case Label.ComponentSeparator: return "구분선";
         case Label.ComponentSeparatorDescription: return "컴포넌트 사이의 구분선을 표시합니다.";
+        case Label.Row: return "행";
+        case Label.RowDescription: return "수평으로 배치된 구성 요소의 행으로, 내부 구성 요소의 레이아웃 방향을 변경합니다.";
+        case Label.Column: return "열";
+        case Label.ColumnDescription: return "수직으로 배치된 구성 요소의 열로, 내부 구성 요소의 레이아웃 방향을 변경합니다.";
         case Label.AccuracySeconds: return "초";
         case Label.AccuracyTenths: return "0.1초";
         case Label.AccuracyHundredths: return "0.01초";

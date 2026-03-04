@@ -247,6 +247,10 @@ export function resolvePolish(text: Label): string {
         case Label.ComponentBlankSpaceDescription: return "Pusty komponent, który nie pokazuje nic poza tłem. Służy głównie jako odstęp między innymi komponentami.";
         case Label.ComponentSeparator: return "Separator";
         case Label.ComponentSeparatorDescription: return "Prosty komponent, który renderuje separator między komponentami.";
+        case Label.Row: return "Wiersz";
+        case Label.RowDescription: return "Wiersz komponentów ułożonych poziomo, zmieniający kierunek układu dla komponentów wewnątrz.";
+        case Label.Column: return "Kolumna";
+        case Label.ColumnDescription: return "Kolumna komponentów ułożonych pionowo, zmieniająca kierunek układu dla komponentów wewnątrz.";
         case Label.AccuracySeconds: return "Sekundy";
         case Label.AccuracyTenths: return "Dziesiąte";
         case Label.AccuracyHundredths: return "Setne";

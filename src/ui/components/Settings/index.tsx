@@ -73,6 +73,8 @@ export type ExtendedSettingsDescriptionValueJson =
 export interface SettingValueFactory<T> {
     fromBool(v: boolean): T;
     fromUint(value: number): T;
+    fromOptionalUint(value: number): T;
+    fromOptionalEmptyUint(): T;
     fromInt(value: number): T;
     fromString(value: string): T;
     fromOptionalString(value: string): T;
@@ -144,6 +146,12 @@ export class JsonSettingValueFactory implements SettingValueFactory<ExtendedSett
         return { Bool: v };
     }
     public fromUint(_: number): ExtendedSettingsDescriptionValueJson {
+        throw new Error("Not implemented");
+    }
+    public fromOptionalUint(_: number): ExtendedSettingsDescriptionValueJson {
+        throw new Error("Not implemented");
+    }
+    public fromOptionalEmptyUint(): ExtendedSettingsDescriptionValueJson {
         throw new Error("Not implemented");
     }
     public fromInt(_: number): ExtendedSettingsDescriptionValueJson {
@@ -298,6 +306,52 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                                 );
                             }}
                         />
+                    </div>
+                );
+            } else if ("OptionalUInt" in value) {
+                const children = [
+                    <Switch
+                        checked={value.OptionalUInt !== null}
+                        setIsChecked={(checked) => {
+                            if (checked) {
+                                this.props.setValue(
+                                    valueIndex,
+                                    factory.fromOptionalUint(1),
+                                );
+                            } else {
+                                this.props.setValue(
+                                    valueIndex,
+                                    factory.fromOptionalEmptyUint(),
+                                );
+                            }
+                        }}
+                    />,
+                ];
+
+                if (value.OptionalUInt !== null) {
+                    children.push(
+                        <input
+                            type="number"
+                            className={`${tableClasses.number} ${tableClasses.textBox}`}
+                            value={value.OptionalUInt}
+                            min="1"
+                            onChange={(e) => {
+                                this.props.setValue(
+                                    valueIndex,
+                                    factory.fromOptionalUint(
+                                        e.target.valueAsNumber,
+                                    ),
+                                );
+                            }}
+                        />,
+                    );
+                }
+
+                component = (
+                    <div
+                        className={`${tableClasses.settingsValueBox} ${tableClasses.optionalValue}`}
+                    >
+                        {children}
                     </div>
                 );
             } else if ("Int" in value) {

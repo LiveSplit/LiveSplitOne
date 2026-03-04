@@ -56,6 +56,11 @@
     cursor: pointer;
 }
 
+.placeholder {
+    font-style: italic;
+    opacity: 0.5;
+}
+
 .layoutContainer {
     margin-left: var(--ui-large-margin);
 

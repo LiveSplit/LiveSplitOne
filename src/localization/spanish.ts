@@ -247,6 +247,10 @@ export function resolveSpanish(text: Label): string {
         case Label.ComponentBlankSpaceDescription: return "Componente vacío con solo el fondo.";
         case Label.ComponentSeparator: return "Separador";
         case Label.ComponentSeparatorDescription: return "Muestra una línea separadora entre componentes.";
+        case Label.Row: return "Fila";
+        case Label.RowDescription: return "Una fila de componentes dispuestos horizontalmente, cambiando la dirección del diseño para los componentes interiores.";
+        case Label.Column: return "Columna";
+        case Label.ColumnDescription: return "Una columna de componentes dispuestos verticalmente, cambiando la dirección del diseño para los componentes interiores.";
         case Label.AccuracySeconds: return "Segundos";
         case Label.AccuracyTenths: return "Décimas";
         case Label.AccuracyHundredths: return "Centésimas";

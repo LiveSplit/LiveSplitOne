@@ -247,6 +247,10 @@ export function resolveDutch(text: Label): string {
         case Label.ComponentBlankSpaceDescription: return "Leeg component voor padding tussen onderdelen.";
         case Label.ComponentSeparator: return "Scheiding";
         case Label.ComponentSeparatorDescription: return "Tekent een scheidingslijn tussen componenten.";
+        case Label.Row: return "Rij";
+        case Label.RowDescription: return "Een rij componenten die horizontaal zijn ingedeeld, waardoor de lay-outrichting voor de componenten binnenin verandert.";
+        case Label.Column: return "Kolom";
+        case Label.ColumnDescription: return "Een kolom componenten die verticaal zijn ingedeeld, waardoor de lay-outrichting voor de componenten binnenin verandert.";
         case Label.AccuracySeconds: return "Seconden";
         case Label.AccuracyTenths: return "Tienden";
         case Label.AccuracyHundredths: return "Honderdsten";
