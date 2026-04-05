@@ -15,11 +15,12 @@
         "strictFunctionTypes": true,
         "strict": true,
         "allowSyntheticDefaultImports": true,
-        "moduleResolution": "Node",
+        "moduleResolution": "Bundler",
         "lib": [
             "ES2024",
             "DOM",
             "DOM.Iterable",
+            "ESNext.Disposable",
             "ESNext.Iterator",
         ]
     },

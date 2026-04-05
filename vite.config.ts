@@ -1,10 +1,18 @@
 import { execSync } from "node:child_process";
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import babel from "@rolldown/plugin-babel";
 import { defineConfig, type Plugin, type UserConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import favicons from "favicons";
+
+type Contributor = {
+    contributions: number;
+    id: number;
+    login: string;
+    type: string;
+};
 
 let faviconGenerationPromise: Promise<void> | undefined;
 let faviconHtmlTags: string[] = [];
@@ -148,7 +156,10 @@ function parseChangelogEntries(commit: string) {
     return entries.filter((entry) => entry.message);
 }
 
-async function getContributorsForRepo(repoName: string, githubToken?: string) {
+async function getContributorsForRepo(
+    repoName: string,
+    githubToken?: string,
+): Promise<Contributor[]> {
     const contributorsData = await fetch(
         `https://api.github.com/repos/LiveSplit/${repoName}/contributors`,
         {
@@ -166,7 +177,7 @@ async function getContributorsForRepo(repoName: string, githubToken?: string) {
         );
     }
 
-    return contributorsData.json();
+    return (await contributorsData.json()) as Contributor[];
 }
 
 function preloadPlugin() {
@@ -250,7 +261,7 @@ export default defineConfig(async ({ mode }) => {
             getContributorsForRepo("livesplit-core", process.env.GITHUB_TOKEN),
         ]);
 
-        const coreContributorsMap: Record<string, any> = {};
+        const coreContributorsMap: Record<string, Contributor> = {};
         for (const coreContributor of coreContributorsList) {
             if (
                 coreContributor.type === "User" &&
@@ -275,11 +286,11 @@ export default defineConfig(async ({ mode }) => {
         }
 
         contributorsList = Object.values(coreContributorsMap)
-            .sort((a: any, b: any) =>
+            .sort((a, b) =>
                 a.login > b.login ? 1 : b.login > a.login ? -1 : 0,
             )
-            .sort((a: any, b: any) => b.contributions - a.contributions)
-            .map((user: any) => {
+            .sort((a, b) => b.contributions - a.contributions)
+            .map((user) => {
                 return { id: user.id, name: user.login };
             });
     } catch (e) {
@@ -298,15 +309,14 @@ export default defineConfig(async ({ mode }) => {
     return {
         plugins: [
             isBuildOptimized ? preloadPlugin() : undefined,
-            react({
-                babel: {
-                    plugins: [
-                        // Necessary until Safari supports `using` declarations:
-                        // https://caniuse.com/mdn-javascript_statements_using
-                        // https://caniuse.com/mdn-javascript_statements_await_using
-                        "@babel/plugin-transform-explicit-resource-management",
-                    ],
-                },
+            react(),
+            babel({
+                plugins: [
+                    // Necessary until Safari supports `using` declarations:
+                    // https://caniuse.com/mdn-javascript_statements_using
+                    // https://caniuse.com/mdn-javascript_statements_await_using
+                    "@babel/plugin-transform-explicit-resource-management",
+                ],
             }),
             ...(!isTauri
                 ? [
@@ -343,7 +353,6 @@ export default defineConfig(async ({ mode }) => {
                             runtimeCaching: [
                                 {
                                     urlPattern: ({ url }: { url: URL }) =>
-                                        url.origin === self.origin &&
                                         url.pathname.startsWith("/icons/"),
                                     handler: "CacheFirst" as const,
                                 },
@@ -375,6 +384,5 @@ export default defineConfig(async ({ mode }) => {
             emptyOutDir: true,
             chunkSizeWarningLimit: 1024,
         },
-        esbuild: { legalComments: 'none' },
     } satisfies UserConfig;
 });
