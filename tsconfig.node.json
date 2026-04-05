@@ -5,14 +5,9 @@
         "moduleResolution": "Bundler",
         "strict": true,
         "noImplicitAny": true,
-        "types": [
-            "node"
-        ],
-        "lib": [
-            "ES2024"
-        ]
+        "skipLibCheck": true,
+        "types": ["node"],
+        "lib": ["ES2024", "DOM", "WebWorker"]
     },
-    "include": [
-        "vite.config.ts"
-    ]
+    "include": ["vite.config.ts", "src/type-definitions/babel-core-shim.d.ts"]
 }
