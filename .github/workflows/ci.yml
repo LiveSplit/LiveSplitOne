@@ -55,7 +55,7 @@ jobs:
 
         steps:
             - name: Checkout commit
-              uses: actions/checkout@v4
+              uses: actions/checkout@v6
               with:
                   submodules: recursive
                   # This forces the entire history to be cloned, which is necessary for
@@ -63,30 +63,29 @@ jobs:
                   fetch-depth: 0
 
             - name: Install Node
-              uses: actions/setup-node@v4
+              uses: actions/setup-node@v6
               with:
                   node-version: "lts/*"
 
             - name: Install Rust
-              uses: hecrj/setup-rust-action@v2
-              with:
-                  rust-version: nightly
-                  components: rust-src
-                  targets: wasm32-unknown-unknown
-
-            - name: Download binaryen
-              if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
-              uses: robinraju/release-downloader@v1.10
-              with:
-                  repository: "WebAssembly/binaryen"
-                  latest: true
-                  fileName: "binaryen-*-${{ matrix.binaryen }}.tar.gz"
-                  out-file-path: ${{ matrix.cargo_bin }}
+              shell: bash
+              run: |
+                  rustup set profile minimal
+                  rustup toolchain install nightly \
+                    --component rust-src \
+                    --target wasm32-unknown-unknown
+                  rustup default nightly
 
             - name: Install binaryen
               if: github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
               shell: bash
+              env:
+                  GH_TOKEN: ${{ github.token }}
               run: |
+                  gh release download \
+                    --repo WebAssembly/binaryen \
+                    --pattern "binaryen-*-${{ matrix.binaryen }}.tar.gz" \
+                    --dir "${{ matrix.cargo_bin }}"
                   cd ${{ matrix.cargo_bin }}/..
                   tar -xzf bin/binaryen-*-${{ matrix.binaryen }}.tar.gz
                   mkdir -p lib
@@ -98,17 +97,15 @@ jobs:
               run: echo "version=$(cd livesplit-core && cargo tree -i wasm-bindgen --features wasm-web --target wasm32-unknown-unknown --depth 0 | sed 's/.* v//g')" >> $GITHUB_OUTPUT
               id: wasm-bindgen
 
-            - name: Download wasm-bindgen-cli
-              uses: robinraju/release-downloader@v1.9
-              with:
-                  repository: "rustwasm/wasm-bindgen"
-                  tag: ${{ steps.wasm-bindgen.outputs.version }}
-                  fileName: "wasm-bindgen-${{ steps.wasm-bindgen.outputs.version }}-${{ matrix.target }}.tar.gz"
-                  out-file-path: ${{ matrix.cargo_bin }}
-
             - name: Install wasm-bindgen-cli
               shell: bash
+              env:
+                  GH_TOKEN: ${{ github.token }}
               run: |
+                  gh release download "${{ steps.wasm-bindgen.outputs.version }}" \
+                    --repo rustwasm/wasm-bindgen \
+                    --pattern "wasm-bindgen-${{ steps.wasm-bindgen.outputs.version }}-${{ matrix.target }}.tar.gz" \
+                    --dir "${{ matrix.cargo_bin }}"
                   cd ${{ matrix.cargo_bin }}
                   tar -xzf wasm-bindgen-${{ steps.wasm-bindgen.outputs.version }}-${{ matrix.target }}.tar.gz
                   mv wasm-bindgen-${{ steps.wasm-bindgen.outputs.version }}-${{ matrix.target }}/wasm* .
@@ -133,9 +130,17 @@ jobs:
                     librsvg2-dev
 
             - name: Build Core
+              shell: bash
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: npm run build:core:deploy
+              run: |
+                  # Pull requests only need a smoke test of the desktop path, so use
+                  # the cheaper debug core build for Tauri jobs outside master.
+                  if [[ "${{ matrix.platform }}" == "tauri" && "${{ github.ref }}" != "refs/heads/master" ]]; then
+                    npm run build:core
+                  else
+                    npm run build:core:deploy
+                  fi
 
             - name: Run eslint (Web)
               if: matrix.platform == 'web'
@@ -179,7 +184,15 @@ jobs:
 
             - name: Build (Tauri)
               if: matrix.platform == 'tauri'
-              run: npm run tauri:publish
+              shell: bash
+              run: |
+                  # Master still produces release bundles. Other refs only need a
+                  # debug compile, which skips bundling and returns much faster.
+                  if [[ "${{ github.ref }}" == "refs/heads/master" ]]; then
+                    npm run tauri:publish -- --ci
+                  else
+                    npm run tauri:build:debug -- --ci
+                  fi
 
             - name: Add CNAME file (Web)
               if: matrix.platform == 'web' && github.repository == 'LiveSplit/LiveSplitOne' && github.ref == 'refs/heads/master'
