@@ -11,6 +11,7 @@
     "serve": "vite",
     "tauri:icons": "tauri icon src/assets/icon.png",
     "tauri:build-html": "vite build --mode tauri",
+    "tauri:build:debug": "tauri build --debug --no-bundle",
     "tauri:watch": "tauri dev",
     "tauri:publish": "tauri build"
   },
