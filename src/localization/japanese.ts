@@ -2,323 +2,645 @@ import { Label } from ".";
 
 export function resolveJapanese(text: Label): string {
     switch (text) {
-        case Label.Ok: return "OK";
-        case Label.Cancel: return "取消";
-        case Label.Settings: return "設定";
-        case Label.Language: return "言語";
-        case Label.LanguageDescription: return "アプリケーションで使用される言語を設定します。";
-        case Label.LanguageAuto: return "自動";
-        case Label.Theme: return "テーマ";
-        case Label.ThemeDescription: return "システムのテーマに従うか、ライトモードまたはダークモードを強制するかを決定します。";
-        case Label.ThemeLightMode: return "ライトモード";
-        case Label.ThemeDarkMode: return "ダークモード";
-        case Label.HotkeysHeading: return "ホットキー";
-        case Label.GeneralHeading: return "一般";
-        case Label.NetworkHeading: return "ネットワーク";
-        case Label.FrameRate: return "フレームレート";
-        case Label.FrameRateDescription: return "タイマーを表示するフレームレートを決定します。「バッテリー考慮」はデバイスの種類と充電状態を判断して適切なフレームレートを選択します。「画面に合わせる」はタイマーを画面のリフレッシュレートに合わせます。";
-        case Label.FrameRateBatteryAware: return "バッテリー考慮";
-        case Label.FrameRateMatchScreen: return "画面に合わせる";
-        case Label.SaveOnReset: return "リセット時に保存";
-        case Label.SaveOnResetDescription: return "タイマーをリセットしたときにスプリットを自動的に保存するかどうかを決定します。";
-        case Label.ShowControlButtons: return "操作ボタンを表示";
-        case Label.ShowControlButtonsDescription: return "タイマー下に操作ボタンを表示するかどうかを決定します。無効にした場合はホットキーを使用する必要があります。";
-        case Label.ShowManualGameTimeInput: return "ゲーム時間の手動入力を表示";
-        case Label.ShowManualGameTimeInputDescription: return "タイマー下にゲーム時間を手動で入力できるテキストボックスを表示します。テキストボックスで Enter キーを押すとタイマーを開始し、スプリットします。計測方法を「ゲーム時間」とするのを忘れないでください。";
-        case Label.ManualGameTimeMode: return "ゲーム時間の手動入力モード";
-        case Label.ManualGameTimeModeDescription: return "ゲーム時間の手動入力を区間タイムとして入力するか、スプリットタイムとして入力するかを決定します。";
-        case Label.ManualGameTimeModeSegmentTimes: return "区間タイム";
-        case Label.ManualGameTimeModeSplitTimes: return "スプリットタイム";
-        case Label.AlwaysOnTop: return "常に最前面";
-        case Label.AlwaysOnTopDescription: return "ウィンドウを常に他のウィンドウの前面に表示します。";
-        case Label.SpeedrunComIntegration: return "Speedrun.com 連携";
-        case Label.SpeedrunComIntegrationDescription: return "speedrun.com からゲーム、カテゴリー、リーダーボードの一覧を取得します。";
-        case Label.ServerConnection: return "サーバー接続";
-        case Label.ServerConnectionDescription: return "WebSocket サーバーに接続して、さまざまなコマンドを送信することでタイマーを制御できます。これらのコマンドは現在、元の LiveSplit がサポートするコマンドの一部です。";
-        case Label.ServerConnectionExperimental: return "この機能は実験的で、プロトコルは将来変更される可能性があります。";
-        case Label.TheRunGgIntegration: return "TheRun.gg 連携";
-        case Label.TheRunGgIntegrationDescription: return "therun.gg と連携し、ランのライブ追跡と統計情報の自動アップロードを行います。この機能を使うには therun.gg のアップロードキーが必要です。";
-        case Label.TheRunGgLiveTracking: return "ライブ追跡";
-        case Label.TheRunGgLiveTrackingDescription: return "有効にすると、スプリット操作のたびにライブスプリットデータが therun.gg に送信され、サイト上でランをライブ追跡できます。";
-        case Label.TheRunGgStatsUploading: return "統計のアップロード";
-        case Label.TheRunGgStatsUploadingDescription: return "有効にすると、リセット時またはラン完了時にスプリットファイルが therun.gg にアップロードされ、ランがサイトと自動的に同期されます。";
-        case Label.HotkeyAlreadyInUse: return "このホットキーは既に使用されています。";
-        case Label.Start: return "開始";
-        case Label.Resume: return "再開";
-        case Label.Pause: return "ポーズ";
-        case Label.UndoSplit: return "スプリットを戻す";
-        case Label.Reset: return "リセット";
-        case Label.SkipSplit: return "スプリットをスキップ";
-        case Label.ManualGameTimePlaceholder: return "ゲーム時間の手動入力";
-        case Label.LiveSplitLogoAlt: return "LiveSplit ロゴ";
-        case Label.LiveSplitOne: return "LiveSplit One";
-        case Label.Splits: return "スプリット";
-        case Label.Layout: return "レイアウト";
-        case Label.CompareAgainst: return "比較対象";
-        case Label.RealTime: return "実時間";
-        case Label.GameTime: return "ゲーム時間";
-        case Label.PopOut: return "ポップアウト";
-        case Label.About: return "このアプリについて";
-        case Label.Back: return "戻る";
-        case Label.AboutVersionPrefix: return "バージョン：";
-        case Label.AboutDescription: return "LiveSplit One は LiveSplit のマルチプラットフォーム版で、スピードランナー向けの洗練された高いカスタマイズ性を持つタイマーです。";
-        case Label.AboutViewSource: return "GitHub でソースコードを見る";
-        case Label.AboutRecentChanges: return "最近の変更";
-        case Label.AboutContributors: return "貢献者";
-        case Label.Loading: return "読み込み中...";
-        case Label.Add: return "追加";
-        case Label.Import: return "インポート";
-        case Label.OpenSplits: return "スプリットを開く";
-        case Label.EditSplits: return "スプリットを編集";
-        case Label.ExportSplits: return "スプリットをエクスポート";
-        case Label.CopySplits: return "スプリットをコピー";
-        case Label.RemoveSplits: return "スプリットを削除";
-        case Label.Untitled: return "無題";
-        case Label.NoCategory: return "—";
-        case Label.DiscardChangesTitle: return "変更を破棄しますか？";
-        case Label.DiscardChangesDescription: return "現在のスプリットには未保存の変更があります。続行して変更を破棄しますか？";
-        case Label.DeleteSplitsTitle: return "スプリットを削除しますか？";
-        case Label.DeleteSplitsDescription: return "スプリットを削除してもよろしいですか？　この操作は元に戻せません。";
-        case Label.SaveBestTimesTitle: return "ベストタイムを保存しますか？";
-        case Label.SaveBestTimesDescription: return "いくつかのベストタイムを更新しました。更新しますか？";
-        case Label.Yes: return "はい";
-        case Label.No: return "いいえ";
-        case Label.DontReset: return "リセットしない";
-        case Label.FailedToExportSplits: return "スプリットのエクスポートに失敗しました。";
-        case Label.CantImportEmptySplits: return "空のスプリットはインポートできません。";
-        case Label.FailedToReadFile: return "ファイルの読み込みに失敗しました：";
-        case Label.FailedToImportSplits: return "スプリットのインポートに失敗しました：";
-        case Label.CouldNotParseSplits: return "スプリットを解析できませんでした。";
-        case Label.LoadedSplitsInvalid: return "読み込んだスプリットが無効です。";
-        case Label.NewSegmentName: return "タイム";
-        case Label.EditWhileRunningError: return "タイマーが動作中はスプリットを編集できません。";
-        case Label.Edit: return "編集";
-        case Label.Save: return "保存";
-        case Label.Export: return "エクスポート";
-        case Label.FailedToParseTimeSpan: return "TimeSpan を解析できませんでした";
-        case Label.Default: return "デフォルト";
-        case Label.Game: return "ゲーム";
-        case Label.Category: return "カテゴリー";
-        case Label.StartTimerAt: return "開始タイム";
-        case Label.Attempts: return "試行回数";
-        case Label.SplitsEditor: return "スプリット編集";
-        case Label.Variables: return "変数";
-        case Label.Rules: return "ルール";
-        case Label.Leaderboard: return "リーダーボード";
-        case Label.InsertAbove: return "上に挿入";
-        case Label.InsertBelow: return "下に挿入";
-        case Label.RemoveSegment: return "区間削除";
-        case Label.MoveUp: return "上へ移動";
-        case Label.MoveDown: return "下へ移動";
-        case Label.AddVariable: return "変数を追加";
-        case Label.OpenPbPage: return "自己ベストのページを開く";
-        case Label.AssociateRun: return "ランを関連付け";
-        case Label.Icon: return "アイコン";
-        case Label.SegmentName: return "区間名";
-        case Label.SplitTime: return "スプリットタイム";
-        case Label.SegmentTime: return "区間タイム";
-        case Label.BestSegment: return "区間ベスト";
-        case Label.SpeedrunComVariableTooltip: return "speedrun.com のゲーム固有の変数。";
-        case Label.Region: return "地域";
-        case Label.RegionDescription: return "プレイしているゲームの地域。";
-        case Label.Platform: return "プラットフォーム";
-        case Label.PlatformDescription: return "ゲームをプレイするプラットフォーム。";
-        case Label.UsesEmulator: return "エミュレーター使用";
-        case Label.UsesEmulatorDescription: return "エミュレーターを使用しているかどうか。";
-        case Label.CustomVariableTooltip: return "あなたが指定したカスタム変数。テキストコンポーネントで表示できます。";
-        case Label.NoVariables: return "このゲームには現在カスタム変数がありません。";
-        case Label.NoVariablesWithSpeedrunCom: return "このゲームには speedrun.com 変数またはカスタム変数がありません。";
-        case Label.TimedWithoutLoads: return "ロード時間を除いて計測されます";
-        case Label.TimedWithGameTime: return "ゲーム時間で計測されます";
-        case Label.RequireVideoProof: return "証明動画が必要です";
-        case Label.RunsOfThisGamePrefix: return "このゲームのランは";
-        case Label.RunsOfThisGameSuffix: return "。";
-        case Label.And: return "と";
-        case Label.SetIcon: return "アイコン設定";
-        case Label.SetIconDescription: return "画像ファイルを選択してゲームのアイコンに設定します。形式によっては対応していない場合があります。";
-        case Label.DownloadBoxArt: return "ボックスアートをダウンロード";
-        case Label.DownloadBoxArtDescription: return "speedrun.com からボックスアートをダウンロードしてゲームのアイコンに設定します。";
-        case Label.DownloadIcon: return "アイコンをダウンロード";
-        case Label.DownloadIconDescription: return "speedrun.com からゲームのアイコンをダウンロードします。";
-        case Label.RemoveIcon: return "アイコン削除";
-        case Label.RemoveIconDescription: return "ゲームのアイコンを削除します。";
-        case Label.CleaningMenu: return "クリーンアップ…";
-        case Label.ClearOnlyHistory: return "履歴のみ削除";
-        case Label.ClearOnlyHistoryDescription: return "すべての履歴（各区間タイム）を削除します。自己ベスト、区間ベスト、比較対象には影響しません。";
-        case Label.ClearAllTimes: return "全てのタイムを削除";
-        case Label.ClearAllTimesDescription: return "履歴を含むすべてのタイムを削除し、スプリットを初期状態に戻します。";
-        case Label.CleanSumOfBest: return "区間ベストの合計をクリーニング";
-        case Label.CleanSumOfBestDescription: return "区間の履歴の問題を対話的に修正し、区間ベストの合計が不正確になるのを解消します。（スプリットをスキップした場合に、次に行うスプリットでは複数区間のタイムが結合されて記録され、区間ベストの合計が正しい合計よりも速くなってしまう可能性があります）";
-        case Label.ComparisonsMenu: return "比較対象…";
-        case Label.AddComparison: return "比較対象を追加";
-        case Label.AddComparisonDescription: return "任意のタイムを保持できるカスタム比較対象を追加します。";
-        case Label.ImportComparison: return "比較対象をインポート";
-        case Label.ImportComparisonDescription: return "スプリットファイルの自己ベストを比較対象としてインポートします。";
-        case Label.GenerateGoalComparison: return "目標比較対象を生成";
-        case Label.GenerateGoalComparisonDescription: return "目標タイムに基づく比較対象を生成します。比較対象タイムは履歴に基づき自動的に調整されます。（区間ベストの合計と区間ワーストの合計との間のタイムとなります）比較対象は選択した計測方法（実時間・ゲーム時間）に対してのみ生成されます。";
-        case Label.CopyComparison: return "比較対象をコピー";
-        case Label.CopyComparisonDescription: return "自己ベストやその他の自動生成されたものを含む既存の比較対象を新しい比較対象としてコピーします。";
-        case Label.SetSegmentIcon: return "アイコン設定";
-        case Label.SetSegmentIconDescription: return "画像ファイルを選択して区間のアイコンに設定します。一部の画像形式はすべての環境では正しく表示できない場合があります。";
-        case Label.RemoveSegmentIcon: return "アイコン削除";
-        case Label.RemoveSegmentIconDescription: return "区間のアイコンを削除します。";
-        case Label.Rename: return "名前変更";
-        case Label.RenameDescription: return "比較対象の新しい名前を入力します。予約名や重複名は使用できません。";
-        case Label.CopyAction: return "コピー";
-        case Label.CopyDescription: return "比較対象のコピーを作成します。";
-        case Label.ACopy: return "コピー";
-        case Label.Remove: return "削除";
-        case Label.RemoveDescription: return "比較対象を削除します。";
-        case Label.AnyPercent: return "Any%";
-        case Label.LowPercent: return "Low%";
-        case Label.HundredPercent: return "100%";
-        case Label.AddComparisonPrompt: return "追加する比較対象の名前を入力してください：";
-        case Label.ComparisonAddError: return "比較対象を追加できませんでした。重複または予約名の可能性があります。";
-        case Label.ImportComparisonPrompt: return "インポートする比較対象の名前を入力してください：";
-        case Label.GenerateGoalComparisonPrompt: return "目標タイムを入力してください：";
-        case Label.Generate: return "生成";
-        case Label.GenerateGoalComparisonError: return "目標比較対象の生成に失敗しました。タイムが正しいか確認してください。";
-        case Label.CopyComparisonPrompt: return "コピーする比較対象の名前を入力してください：";
-        case Label.CopyComparisonError: return "比較対象のコピーに失敗しました。比較対象が存在しない可能性があります。";
-        case Label.NothingToCleanUp: return "クリーンアップするものはありません。";
-        case Label.CleanPrompt: return "クリーンアップしますか？";
-        case Label.AssociateRunPrompt: return "speedrun.com のラン ID または URL を入力してください：";
-        case Label.Associate: return "関連付け";
-        case Label.InvalidSpeedrunUrl: return "speedrun.com の ID または URL が無効です。";
-        case Label.AssociateRunError: return "ランを関連付けできませんでした。ID が無効な可能性があります。";
-        case Label.AddVariablePrompt: return "追加するカスタム変数名を入力してください：";
-        case Label.RenameComparison: return "比較対象名を変更";
-        case Label.RenameComparisonPrompt: return "新しい比較対象名を入力してください：";
-        case Label.ComparisonRenameError: return "比較対象名を変更できませんでした。重複または予約名の可能性があります。";
-        case Label.GameNotFound: return "ゲームが見つかりませんでした。";
-        case Label.NoBoxArt: return "このゲームにはボックスアートがありません。";
-        case Label.DownloadBoxArtError: return "ボックスアートをダウンロードできませんでした。";
-        case Label.NoGameIcon: return "このゲームにはアイコンがありません。";
-        case Label.DownloadIconError: return "アイコンをダウンロードできませんでした。";
-        case Label.Rank: return "順位";
-        case Label.Player: return "プレイヤー";
-        case Label.Time: return "タイム";
-        case Label.Date: return "日付：";
-        case Label.Emulator: return "エミュレーター";
-        case Label.EmulatorTag: return "エミュレーター";
-        case Label.ObsoleteRuns: return "古い記録";
-        case Label.Shown: return "表示";
-        case Label.Hidden: return "非表示";
-        case Label.OpenLeaderboard: return "リーダーボードを開く";
-        case Label.Filters: return "フィルター";
-        case Label.LayoutEditor: return "レイアウト編集";
-        case Label.Component: return "コンポーネント";
-        case Label.AddComponent: return "コンポーネント追加";
-        case Label.RemoveComponent: return "コンポーネント削除";
-        case Label.DuplicateComponent: return "コンポーネント複製";
-        case Label.MoveComponentUp: return "コンポーネントを上へ";
-        case Label.MoveComponentDown: return "コンポーネントを下へ";
-        case Label.ComponentTitle: return "タイトル";
-        case Label.ComponentTitleDescription: return "ゲーム名とカテゴリー、アイコン、試行回数、完走数を表示します。";
-        case Label.ComponentGraph: return "グラフ";
-        case Label.ComponentGraphDescription: return "比較対象に対するリード/遅れを全体を通して可視化します。";
-        case Label.ComponentSplitsDescription: return "スプリットタイムを表示する主要コンポーネント。区間アイコン、区間名、タイム差やスプリットタイムを表形式で表示し、スクロールできます。";
-        case Label.ComponentDetailedTimer: return "詳細タイマー";
-        case Label.ComponentDetailedTimerDescription: return "タイマースタートからのタイムと、現在の区間タイムの2つを表示します。比較対象の区間タイム、区間アイコン、区間名などの情報も表示可能です。";
-        case Label.ComponentTimer: return "タイマー";
-        case Label.ComponentTimerDescription: return "タイマースタートからのタイムを表示します。タイムの色は比較対象とのタイム差に基づきます。";
-        case Label.ComponentCurrentComparison: return "現在の比較対象";
-        case Label.ComponentCurrentComparisonDescription: return "現在の比較対象名を表示します。";
-        case Label.ComponentCurrentPace: return "現在のペース";
-        case Label.ComponentCurrentPaceDescription: return "選択した比較対象に基づきゴールタイムを予測します。例えば「区間ベスト」を選択すると、残りの区間全てで区間ベストペースだった場合のゴールタイムが表示されます。";
-        case Label.ComponentDelta: return "タイム差";
-        case Label.ComponentDeltaDescription: return "比較対象に対するリード/遅れを表示します。";
-        case Label.ComponentPbChance: return "更新確率";
-        case Label.ComponentPbChanceDescription: return "自己ベストの更新確率を表示します。計測中はそのペースに応じてリアルタイムで変化します。";
-        case Label.ComponentPossibleTimeSave: return "更新余地";
-        case Label.ComponentPossibleTimeSaveDescription: return "その区間における更新余地を表示します。ゴールタイムの更新余地も表示できます。";
-        case Label.ComponentPreviousSegment: return "前の区間";
-        case Label.ComponentPreviousSegmentDescription: return "前の区間での比較対象に対するタイムの増減を表示します。前の区間での更新余地も表示できます。現在の区間でタイムをロスしている場合に、ロス分の実時間リアルタイム表示に切り替わります。";
-        case Label.ComponentSegmentTime: return "区間タイム";
-        case Label.ComponentSegmentTimeDescription: return "選択した比較対象の区間タイムを表示します。";
-        case Label.ComponentSumOfBest: return "合計区間ベスト";
-        case Label.ComponentSumOfBestDescription: return "履歴に基づく最速のゴールタイムを表示します。通常はすべての区間ベストの合計タイムと一致しますが、スキップにより複数の区間が結合して記録された場合に一致しなくなる可能性があります。";
-        case Label.ComponentText: return "テキスト";
-        case Label.ComponentTextDescription: return "中央あるいは左右に指定したテキストを表示します。スプリット編集で指定したカスタム変数を表示するオプションもあります。";
-        case Label.ComponentTotalPlaytime: return "総プレイタイム";
-        case Label.ComponentTotalPlaytimeDescription: return "カテゴリーの総プレイタイムを表示します。";
-        case Label.ComponentVariableDescription: return "カスタム変数「{name}」の値を表示するテキストを作成します。";
-        case Label.ComponentBlankSpace: return "余白";
-        case Label.ComponentBlankSpaceDescription: return "背景のみの空コンポーネントです。コンポーネント間の余白として使います。";
-        case Label.ComponentSeparator: return "区切り";
-        case Label.ComponentSeparatorDescription: return "コンポーネント間の区切り線を表示します。";
-        case Label.Row: return "行";
-        case Label.RowDescription: return "水平に配置されたコンポーネントの行で、内部のコンポーネントのレイアウト方向を変更します。";
-        case Label.Column: return "列";
-        case Label.ColumnDescription: return "垂直に配置されたコンポーネントの列で、内部のコンポーネントのレイアウト方向を変更します。";
-        case Label.AccuracySeconds: return "秒";
-        case Label.AccuracyTenths: return "1/10 秒";
-        case Label.AccuracyHundredths: return "1/100 秒";
-        case Label.AccuracyMilliseconds: return "ミリ秒";
-        case Label.FontStyle: return "スタイル";
-        case Label.FontWeight: return "太さ";
-        case Label.FontStretch: return "幅";
-        case Label.FontStyleNormal: return "標準";
-        case Label.FontStyleItalic: return "斜体";
-        case Label.AlignmentAutomatic: return "自動";
-        case Label.AlignmentLeft: return "左";
-        case Label.AlignmentCenter: return "中央";
-        case Label.GradientTransparent: return "透明";
-        case Label.GradientPlain: return "単色";
-        case Label.GradientVertical: return "垂直";
-        case Label.GradientHorizontal: return "水平";
-        case Label.GradientAlternating: return "交互";
-        case Label.GradientPlainDelta: return "単色タイム差";
-        case Label.GradientVerticalDelta: return "垂直タイム差";
-        case Label.GradientHorizontalDelta: return "水平タイム差";
-        case Label.LayoutBackgroundImage: return "画像";
-        case Label.LayoutBackgroundBrightness: return "明るさ";
-        case Label.LayoutBackgroundOpacity: return "不透明度";
-        case Label.LayoutBackgroundBlur: return "ぼかし";
-        case Label.LayoutDirectionVertical: return "垂直";
-        case Label.LayoutDirectionHorizontal: return "水平";
-        case Label.ColumnKindTime: return "タイム";
-        case Label.ColumnKindVariable: return "変数";
-        case Label.ColumnStartWithEmpty: return "空";
-        case Label.ColumnStartWithComparisonTime: return "比較対象タイム";
-        case Label.ColumnStartWithComparisonSegmentTime: return "比較対象区間タイム";
-        case Label.ColumnStartWithPossibleTimeSave: return "更新余地";
-        case Label.ColumnUpdateWithDontUpdate: return "更新しない";
-        case Label.ColumnUpdateWithSplitTime: return "スプリットタイム";
-        case Label.ColumnUpdateWithDelta: return "リード/遅れタイム";
-        case Label.ColumnUpdateWithDeltaWithFallback: return "リード/遅れタイム（空ならスプリットタイム）";
-        case Label.ColumnUpdateWithSegmentTime: return "区間タイム";
-        case Label.ColumnUpdateWithSegmentDelta: return "短縮/ロスタイム";
-        case Label.ColumnUpdateWithSegmentDeltaWithFallback: return "短縮/ロスタイム（空なら区間タイム）";
-        case Label.ColumnUpdateTriggerOnStartingSegment: return "区間開始時";
-        case Label.ColumnUpdateTriggerContextual: return "状況に応じて";
-        case Label.ColumnUpdateTriggerOnEndingSegment: return "区間終了時";
-        case Label.ComparisonCurrentComparison: return "現在の比較対象";
-        case Label.CustomVariableNoneAvailable: return "利用可能な変数がありません";
-        case Label.CustomVariableNoneAvailableTooltip: return "スプリット編集時の「変数」タブでカスタム変数を定義できます。追加のカスタム変数はオートスプリッターが自動的に提供する場合があります。";
-        case Label.HotkeyButtonTooltip: return "クリックしてホットキーを記録します。ゲームパッドのボタンも使用できます。グローバルホットキーは現在利用できません。ゲームパッドのボタンはグローバルに動作します。";
-        case Label.ServerConnect: return "接続";
-        case Label.ServerDisconnect: return "切断";
-        case Label.ServerConnecting: return "接続中...";
-        case Label.ServerDisconnecting: return "切断中...";
-        case Label.ConnectToServerTitle: return "サーバーに接続";
-        case Label.ConnectToServerDescription: return "WebSocket URL を指定してください:";
-        case Label.Connect: return "接続";
-        case Label.UpdateAvailable: return "LiveSplit One の新しいバージョンがあります。ここをクリックして再読み込みしてください。";
-        case Label.UnsavedChangesBeforeUnload: return "未保存の変更があります。本当に LiveSplit One を閉じますか？";
-        case Label.OpenSidebarAriaLabel: return "サイドバーを開く";
-        case Label.FailedToSaveLayout: return "レイアウトの保存に失敗しました。";
-        case Label.FailedToSaveHotkeys: return "ホットキー設定の保存に失敗しました。";
-        case Label.FailedToSaveGeneralSettings: return "一般設定の保存に失敗しました。";
-        case Label.FailedToSaveSplits: return "スプリットの保存に失敗しました。";
-        case Label.LayoutCouldNotBeLoaded: return "レイアウトを読み込めませんでした。LiveSplit または LiveSplit One の有効なレイアウトではない可能性があります。";
-        case Label.EmptySplitsNotSupported: return "空のスプリットはサポートされていません。";
-        case Label.BugEncountered: return "バグが発生しました:";
-        case Label.PleaseReportIssueStart: return "この問題は";
-        case Label.ReportHere: return "こちら";
-        case Label.PleaseReportIssueEnd: return "に報告してください。";
-        case Label.BugReportInstructions: return "この問題の修正に役立つよう、再現手順を記載し、問題が発生したときに使用していたスプリットとレイアウトを添付してください。";
-        case Label.LoadFailedPrivateBrowsing: return "LiveSplit One を読み込めませんでした。\nプライベートブラウジングを使用している可能性があります。\nブラウザのプライベートブラウジングの制限により、LiveSplit One はスプリット、レイアウト、その他の設定を保存できません。\nこれらの制限は将来解除される可能性があります。\n今すぐ LiveSplit One を使うには、設定でプライベートブラウジングを無効にしてください。";
-        case Label.LoadFailedOutdatedBrowser: return "LiveSplit One を読み込めませんでした。\nブラウザが最新でない可能性があります。\nブラウザまたは iOS のバージョンを更新して、もう一度お試しください。\n別の原因として、広告ブロッカーなどのブラウザ拡張機能が重要なスクリプトへのアクセスをブロックしている可能性があります。";
+        case Label.Ok:
+            return "OK";
+        case Label.Cancel:
+            return "取消";
+        case Label.Settings:
+            return "設定";
+        case Label.Language:
+            return "言語";
+        case Label.LanguageDescription:
+            return "アプリケーションで使用される言語を設定します。";
+        case Label.LanguageAuto:
+            return "自動";
+        case Label.Theme:
+            return "テーマ";
+        case Label.ThemeDescription:
+            return "システムのテーマに従うか、ライトモードまたはダークモードを強制するかを決定します。";
+        case Label.ThemeLightMode:
+            return "ライトモード";
+        case Label.ThemeDarkMode:
+            return "ダークモード";
+        case Label.HotkeysHeading:
+            return "ホットキー";
+        case Label.GeneralHeading:
+            return "一般";
+        case Label.NetworkHeading:
+            return "ネットワーク";
+        case Label.FrameRate:
+            return "フレームレート";
+        case Label.FrameRateDescription:
+            return "タイマーを表示するフレームレートを決定します。「バッテリー考慮」はデバイスの種類と充電状態を判断して適切なフレームレートを選択します。「画面に合わせる」はタイマーを画面のリフレッシュレートに合わせます。";
+        case Label.FrameRateBatteryAware:
+            return "バッテリー考慮";
+        case Label.FrameRateMatchScreen:
+            return "画面に合わせる";
+        case Label.SaveOnReset:
+            return "リセット時に保存";
+        case Label.SaveOnResetDescription:
+            return "タイマーをリセットしたときにスプリットを自動的に保存するかどうかを決定します。";
+        case Label.ShowControlButtons:
+            return "操作ボタンを表示";
+        case Label.ShowControlButtonsDescription:
+            return "タイマー下に操作ボタンを表示するかどうかを決定します。無効にした場合はホットキーを使用する必要があります。";
+        case Label.ShowManualGameTimeInput:
+            return "ゲーム時間の手動入力を表示";
+        case Label.ShowManualGameTimeInputDescription:
+            return "タイマー下にゲーム時間を手動で入力できるテキストボックスを表示します。テキストボックスで Enter キーを押すとタイマーを開始し、スプリットします。計測方法を「ゲーム時間」とするのを忘れないでください。";
+        case Label.ManualGameTimeMode:
+            return "ゲーム時間の手動入力モード";
+        case Label.ManualGameTimeModeDescription:
+            return "ゲーム時間の手動入力を区間タイムとして入力するか、スプリットタイムとして入力するかを決定します。";
+        case Label.ManualGameTimeModeSegmentTimes:
+            return "区間タイム";
+        case Label.ManualGameTimeModeSplitTimes:
+            return "スプリットタイム";
+        case Label.AlwaysOnTop:
+            return "常に最前面";
+        case Label.AlwaysOnTopDescription:
+            return "ウィンドウを常に他のウィンドウの前面に表示します。";
+        case Label.SpeedrunComIntegration:
+            return "Speedrun.com 連携";
+        case Label.SpeedrunComIntegrationDescription:
+            return "speedrun.com からゲーム、カテゴリー、リーダーボードの一覧を取得します。";
+        case Label.ServerConnection:
+            return "サーバー接続";
+        case Label.ServerConnectionDescription:
+            return "WebSocket サーバーに接続して、さまざまなコマンドを送信することでタイマーを制御できます。これらのコマンドは現在、元の LiveSplit がサポートするコマンドの一部です。";
+        case Label.ServerConnectionExperimental:
+            return "この機能は実験的で、プロトコルは将来変更される可能性があります。";
+        case Label.TheRunGgIntegration:
+            return "TheRun.gg 連携";
+        case Label.TheRunGgIntegrationDescription:
+            return "therun.gg と連携し、ランのライブ追跡と統計情報の自動アップロードを行います。この機能を使うには therun.gg のアップロードキーが必要です。";
+        case Label.TheRunGgLiveTracking:
+            return "ライブ追跡";
+        case Label.TheRunGgLiveTrackingDescription:
+            return "有効にすると、スプリット操作のたびにライブスプリットデータが therun.gg に送信され、サイト上でランをライブ追跡できます。";
+        case Label.TheRunGgStatsUploading:
+            return "統計のアップロード";
+        case Label.TheRunGgStatsUploadingDescription:
+            return "有効にすると、リセット時またはラン完了時にスプリットファイルが therun.gg にアップロードされ、ランがサイトと自動的に同期されます。";
+        case Label.HotkeyAlreadyInUse:
+            return "このホットキーは既に使用されています。";
+        case Label.Start:
+            return "開始";
+        case Label.Resume:
+            return "再開";
+        case Label.Pause:
+            return "ポーズ";
+        case Label.UndoSplit:
+            return "スプリットを戻す";
+        case Label.Reset:
+            return "リセット";
+        case Label.SkipSplit:
+            return "スプリットをスキップ";
+        case Label.ManualGameTimePlaceholder:
+            return "ゲーム時間の手動入力";
+        case Label.LiveSplitLogoAlt:
+            return "LiveSplit ロゴ";
+        case Label.LiveSplitOne:
+            return "LiveSplit One";
+        case Label.Splits:
+            return "スプリット";
+        case Label.Layout:
+            return "レイアウト";
+        case Label.CompareAgainst:
+            return "比較対象";
+        case Label.RealTime:
+            return "実時間";
+        case Label.GameTime:
+            return "ゲーム時間";
+        case Label.PopOut:
+            return "ポップアウト";
+        case Label.About:
+            return "このアプリについて";
+        case Label.Back:
+            return "戻る";
+        case Label.AboutVersionPrefix:
+            return "バージョン：";
+        case Label.AboutDescription:
+            return "LiveSplit One は LiveSplit のマルチプラットフォーム版で、スピードランナー向けの洗練された高いカスタマイズ性を持つタイマーです。";
+        case Label.AboutViewSource:
+            return "GitHub でソースコードを見る";
+        case Label.AboutRecentChanges:
+            return "最近の変更";
+        case Label.AboutContributors:
+            return "貢献者";
+        case Label.Loading:
+            return "読み込み中...";
+        case Label.Add:
+            return "追加";
+        case Label.Import:
+            return "インポート";
+        case Label.OpenSplits:
+            return "スプリットを開く";
+        case Label.EditSplits:
+            return "スプリットを編集";
+        case Label.ExportSplits:
+            return "スプリットをエクスポート";
+        case Label.CopySplits:
+            return "スプリットをコピー";
+        case Label.RemoveSplits:
+            return "スプリットを削除";
+        case Label.Untitled:
+            return "無題";
+        case Label.NoCategory:
+            return "—";
+        case Label.DiscardChangesTitle:
+            return "変更を破棄しますか？";
+        case Label.DiscardChangesDescription:
+            return "現在のスプリットには未保存の変更があります。続行して変更を破棄しますか？";
+        case Label.DeleteSplitsTitle:
+            return "スプリットを削除しますか？";
+        case Label.DeleteSplitsDescription:
+            return "スプリットを削除してもよろしいですか？　この操作は元に戻せません。";
+        case Label.SaveBestTimesTitle:
+            return "ベストタイムを保存しますか？";
+        case Label.SaveBestTimesDescription:
+            return "いくつかのベストタイムを更新しました。更新しますか？";
+        case Label.Yes:
+            return "はい";
+        case Label.No:
+            return "いいえ";
+        case Label.DontReset:
+            return "リセットしない";
+        case Label.FailedToExportSplits:
+            return "スプリットのエクスポートに失敗しました。";
+        case Label.CantImportEmptySplits:
+            return "空のスプリットはインポートできません。";
+        case Label.FailedToReadFile:
+            return "ファイルの読み込みに失敗しました：";
+        case Label.FailedToImportSplits:
+            return "スプリットのインポートに失敗しました：";
+        case Label.CouldNotParseSplits:
+            return "スプリットを解析できませんでした。";
+        case Label.LoadedSplitsInvalid:
+            return "読み込んだスプリットが無効です。";
+        case Label.NewSegmentName:
+            return "タイム";
+        case Label.EditWhileRunningError:
+            return "タイマーが動作中はスプリットを編集できません。";
+        case Label.Edit:
+            return "編集";
+        case Label.Save:
+            return "保存";
+        case Label.Export:
+            return "エクスポート";
+        case Label.FailedToParseTimeSpan:
+            return "TimeSpan を解析できませんでした";
+        case Label.Default:
+            return "デフォルト";
+        case Label.Game:
+            return "ゲーム";
+        case Label.Category:
+            return "カテゴリー";
+        case Label.StartTimerAt:
+            return "開始タイム";
+        case Label.Attempts:
+            return "試行回数";
+        case Label.SplitsEditor:
+            return "スプリット編集";
+        case Label.Variables:
+            return "変数";
+        case Label.Rules:
+            return "ルール";
+        case Label.Leaderboard:
+            return "リーダーボード";
+        case Label.InsertAbove:
+            return "上に挿入";
+        case Label.InsertBelow:
+            return "下に挿入";
+        case Label.RemoveSegment:
+            return "区間削除";
+        case Label.MoveUp:
+            return "上へ移動";
+        case Label.MoveDown:
+            return "下へ移動";
+        case Label.AddVariable:
+            return "変数を追加";
+        case Label.OpenPbPage:
+            return "自己ベストのページを開く";
+        case Label.AssociateRun:
+            return "ランを関連付け";
+        case Label.Icon:
+            return "アイコン";
+        case Label.SegmentName:
+            return "区間名";
+        case Label.SplitTime:
+            return "スプリットタイム";
+        case Label.SegmentTime:
+            return "区間タイム";
+        case Label.BestSegment:
+            return "区間ベスト";
+        case Label.SpeedrunComVariableTooltip:
+            return "speedrun.com のゲーム固有の変数。";
+        case Label.Region:
+            return "地域";
+        case Label.RegionDescription:
+            return "プレイしているゲームの地域。";
+        case Label.Platform:
+            return "プラットフォーム";
+        case Label.PlatformDescription:
+            return "ゲームをプレイするプラットフォーム。";
+        case Label.UsesEmulator:
+            return "エミュレーター使用";
+        case Label.UsesEmulatorDescription:
+            return "エミュレーターを使用しているかどうか。";
+        case Label.CustomVariableTooltip:
+            return "あなたが指定したカスタム変数。テキストコンポーネントで表示できます。";
+        case Label.NoVariables:
+            return "このゲームには現在カスタム変数がありません。";
+        case Label.NoVariablesWithSpeedrunCom:
+            return "このゲームには speedrun.com 変数またはカスタム変数がありません。";
+        case Label.TimedWithoutLoads:
+            return "ロード時間を除いて計測されます";
+        case Label.TimedWithGameTime:
+            return "ゲーム時間で計測されます";
+        case Label.RequireVideoProof:
+            return "証明動画が必要です";
+        case Label.RunsOfThisGamePrefix:
+            return "このゲームのランは";
+        case Label.RunsOfThisGameSuffix:
+            return "。";
+        case Label.And:
+            return "と";
+        case Label.SetIcon:
+            return "アイコン設定";
+        case Label.SetIconDescription:
+            return "画像ファイルを選択してゲームのアイコンに設定します。形式によっては対応していない場合があります。";
+        case Label.DownloadBoxArt:
+            return "ボックスアートをダウンロード";
+        case Label.DownloadBoxArtDescription:
+            return "speedrun.com からボックスアートをダウンロードしてゲームのアイコンに設定します。";
+        case Label.DownloadIcon:
+            return "アイコンをダウンロード";
+        case Label.DownloadIconDescription:
+            return "speedrun.com からゲームのアイコンをダウンロードします。";
+        case Label.RemoveIcon:
+            return "アイコン削除";
+        case Label.RemoveIconDescription:
+            return "ゲームのアイコンを削除します。";
+        case Label.CleaningMenu:
+            return "クリーンアップ…";
+        case Label.ClearOnlyHistory:
+            return "履歴のみ削除";
+        case Label.ClearOnlyHistoryDescription:
+            return "すべての履歴（各区間タイム）を削除します。自己ベスト、区間ベスト、比較対象には影響しません。";
+        case Label.ClearAllTimes:
+            return "全てのタイムを削除";
+        case Label.ClearAllTimesDescription:
+            return "履歴を含むすべてのタイムを削除し、スプリットを初期状態に戻します。";
+        case Label.CleanSumOfBest:
+            return "区間ベストの合計をクリーニング";
+        case Label.CleanSumOfBestDescription:
+            return "区間の履歴の問題を対話的に修正し、区間ベストの合計が不正確になるのを解消します。（スプリットをスキップした場合に、次に行うスプリットでは複数区間のタイムが結合されて記録され、区間ベストの合計が正しい合計よりも速くなってしまう可能性があります）";
+        case Label.ComparisonsMenu:
+            return "比較対象…";
+        case Label.AddComparison:
+            return "比較対象を追加";
+        case Label.AddComparisonDescription:
+            return "任意のタイムを保持できるカスタム比較対象を追加します。";
+        case Label.ImportComparison:
+            return "比較対象をインポート";
+        case Label.ImportComparisonDescription:
+            return "スプリットファイルの自己ベストを比較対象としてインポートします。";
+        case Label.GenerateGoalComparison:
+            return "目標比較対象を生成";
+        case Label.GenerateGoalComparisonDescription:
+            return "目標タイムに基づく比較対象を生成します。比較対象タイムは履歴に基づき自動的に調整されます。（区間ベストの合計と区間ワーストの合計との間のタイムとなります）比較対象は選択した計測方法（実時間・ゲーム時間）に対してのみ生成されます。";
+        case Label.CopyComparison:
+            return "比較対象をコピー";
+        case Label.CopyComparisonDescription:
+            return "自己ベストやその他の自動生成されたものを含む既存の比較対象を新しい比較対象としてコピーします。";
+        case Label.SetSegmentIcon:
+            return "アイコン設定";
+        case Label.SetSegmentIconDescription:
+            return "画像ファイルを選択して区間のアイコンに設定します。一部の画像形式はすべての環境では正しく表示できない場合があります。";
+        case Label.RemoveSegmentIcon:
+            return "アイコン削除";
+        case Label.RemoveSegmentIconDescription:
+            return "区間のアイコンを削除します。";
+        case Label.Rename:
+            return "名前変更";
+        case Label.RenameDescription:
+            return "比較対象の新しい名前を入力します。予約名や重複名は使用できません。";
+        case Label.CopyAction:
+            return "コピー";
+        case Label.CopyDescription:
+            return "比較対象のコピーを作成します。";
+        case Label.ACopy:
+            return "コピー";
+        case Label.Remove:
+            return "削除";
+        case Label.RemoveDescription:
+            return "比較対象を削除します。";
+        case Label.AnyPercent:
+            return "Any%";
+        case Label.LowPercent:
+            return "Low%";
+        case Label.HundredPercent:
+            return "100%";
+        case Label.AddComparisonPrompt:
+            return "追加する比較対象の名前を入力してください：";
+        case Label.ComparisonAddError:
+            return "比較対象を追加できませんでした。重複または予約名の可能性があります。";
+        case Label.ImportComparisonPrompt:
+            return "インポートする比較対象の名前を入力してください：";
+        case Label.GenerateGoalComparisonPrompt:
+            return "目標タイムを入力してください：";
+        case Label.Generate:
+            return "生成";
+        case Label.GenerateGoalComparisonError:
+            return "目標比較対象の生成に失敗しました。タイムが正しいか確認してください。";
+        case Label.CopyComparisonPrompt:
+            return "コピーする比較対象の名前を入力してください：";
+        case Label.CopyComparisonError:
+            return "比較対象のコピーに失敗しました。比較対象が存在しない可能性があります。";
+        case Label.NothingToCleanUp:
+            return "クリーンアップするものはありません。";
+        case Label.CleanPrompt:
+            return "クリーンアップしますか？";
+        case Label.AssociateRunPrompt:
+            return "speedrun.com のラン ID または URL を入力してください：";
+        case Label.Associate:
+            return "関連付け";
+        case Label.InvalidSpeedrunUrl:
+            return "speedrun.com の ID または URL が無効です。";
+        case Label.AssociateRunError:
+            return "ランを関連付けできませんでした。ID が無効な可能性があります。";
+        case Label.AddVariablePrompt:
+            return "追加するカスタム変数名を入力してください：";
+        case Label.RenameComparison:
+            return "比較対象名を変更";
+        case Label.RenameComparisonPrompt:
+            return "新しい比較対象名を入力してください：";
+        case Label.ComparisonRenameError:
+            return "比較対象名を変更できませんでした。重複または予約名の可能性があります。";
+        case Label.GameNotFound:
+            return "ゲームが見つかりませんでした。";
+        case Label.NoBoxArt:
+            return "このゲームにはボックスアートがありません。";
+        case Label.DownloadBoxArtError:
+            return "ボックスアートをダウンロードできませんでした。";
+        case Label.NoGameIcon:
+            return "このゲームにはアイコンがありません。";
+        case Label.DownloadIconError:
+            return "アイコンをダウンロードできませんでした。";
+        case Label.Rank:
+            return "順位";
+        case Label.Player:
+            return "プレイヤー";
+        case Label.Time:
+            return "タイム";
+        case Label.Date:
+            return "日付：";
+        case Label.Emulator:
+            return "エミュレーター";
+        case Label.EmulatorTag:
+            return "エミュレーター";
+        case Label.ObsoleteRuns:
+            return "古い記録";
+        case Label.Shown:
+            return "表示";
+        case Label.Hidden:
+            return "非表示";
+        case Label.OpenLeaderboard:
+            return "リーダーボードを開く";
+        case Label.Filters:
+            return "フィルター";
+        case Label.LayoutEditor:
+            return "レイアウト編集";
+        case Label.Component:
+            return "コンポーネント";
+        case Label.AddComponent:
+            return "コンポーネント追加";
+        case Label.RemoveComponent:
+            return "コンポーネント削除";
+        case Label.DuplicateComponent:
+            return "コンポーネント複製";
+        case Label.MoveComponentUp:
+            return "コンポーネントを上へ";
+        case Label.MoveComponentDown:
+            return "コンポーネントを下へ";
+        case Label.ComponentTitle:
+            return "タイトル";
+        case Label.ComponentTitleDescription:
+            return "ゲーム名とカテゴリー、アイコン、試行回数、完走数を表示します。";
+        case Label.ComponentGraph:
+            return "グラフ";
+        case Label.ComponentGraphDescription:
+            return "比較対象に対するリード/遅れを全体を通して可視化します。";
+        case Label.ComponentSplitsDescription:
+            return "スプリットタイムを表示する主要コンポーネント。区間アイコン、区間名、タイム差やスプリットタイムを表形式で表示し、スクロールできます。";
+        case Label.ComponentDetailedTimer:
+            return "詳細タイマー";
+        case Label.ComponentDetailedTimerDescription:
+            return "タイマースタートからのタイムと、現在の区間タイムの2つを表示します。比較対象の区間タイム、区間アイコン、区間名などの情報も表示可能です。";
+        case Label.ComponentTimer:
+            return "タイマー";
+        case Label.ComponentTimerDescription:
+            return "タイマースタートからのタイムを表示します。タイムの色は比較対象とのタイム差に基づきます。";
+        case Label.ComponentCurrentComparison:
+            return "現在の比較対象";
+        case Label.ComponentCurrentComparisonDescription:
+            return "現在の比較対象名を表示します。";
+        case Label.ComponentCurrentPace:
+            return "現在のペース";
+        case Label.ComponentCurrentPaceDescription:
+            return "選択した比較対象に基づきゴールタイムを予測します。例えば「区間ベスト」を選択すると、残りの区間全てで区間ベストペースだった場合のゴールタイムが表示されます。";
+        case Label.ComponentDelta:
+            return "タイム差";
+        case Label.ComponentDeltaDescription:
+            return "比較対象に対するリード/遅れを表示します。";
+        case Label.ComponentPbChance:
+            return "更新確率";
+        case Label.ComponentPbChanceDescription:
+            return "自己ベストの更新確率を表示します。計測中はそのペースに応じてリアルタイムで変化します。";
+        case Label.ComponentPossibleTimeSave:
+            return "更新余地";
+        case Label.ComponentPossibleTimeSaveDescription:
+            return "その区間における更新余地を表示します。ゴールタイムの更新余地も表示できます。";
+        case Label.ComponentPreviousSegment:
+            return "前の区間";
+        case Label.ComponentPreviousSegmentDescription:
+            return "前の区間での比較対象に対するタイムの増減を表示します。前の区間での更新余地も表示できます。現在の区間でタイムをロスしている場合に、ロス分の実時間リアルタイム表示に切り替わります。";
+        case Label.ComponentSegmentTime:
+            return "区間タイム";
+        case Label.ComponentSegmentTimeDescription:
+            return "選択した比較対象の区間タイムを表示します。";
+        case Label.ComponentSumOfBest:
+            return "合計区間ベスト";
+        case Label.ComponentSumOfBestDescription:
+            return "履歴に基づく最速のゴールタイムを表示します。通常はすべての区間ベストの合計タイムと一致しますが、スキップにより複数の区間が結合して記録された場合に一致しなくなる可能性があります。";
+        case Label.ComponentText:
+            return "テキスト";
+        case Label.ComponentTextDescription:
+            return "中央あるいは左右に指定したテキストを表示します。スプリット編集で指定したカスタム変数を表示するオプションもあります。";
+        case Label.ComponentTotalPlaytime:
+            return "総プレイタイム";
+        case Label.ComponentTotalPlaytimeDescription:
+            return "カテゴリーの総プレイタイムを表示します。";
+        case Label.ComponentVariableDescription:
+            return "カスタム変数「{name}」の値を表示するテキストを作成します。";
+        case Label.ComponentBlankSpace:
+            return "余白";
+        case Label.ComponentBlankSpaceDescription:
+            return "背景のみの空コンポーネントです。コンポーネント間の余白として使います。";
+        case Label.ComponentCarousel:
+            return "カルーセル";
+        case Label.ComponentCarouselDescription:
+            return "子コンポーネントを一度に1つだけ表示し、順番に切り替えます。内容が変化した子を優先し、そうでなければ一定間隔で切り替えます。";
+        case Label.ComponentSeparator:
+            return "区切り";
+        case Label.ComponentSeparatorDescription:
+            return "コンポーネント間の区切り線を表示します。";
+        case Label.Row:
+            return "行";
+        case Label.RowDescription:
+            return "水平に配置されたコンポーネントの行で、内部のコンポーネントのレイアウト方向を変更します。";
+        case Label.Column:
+            return "列";
+        case Label.ColumnDescription:
+            return "垂直に配置されたコンポーネントの列で、内部のコンポーネントのレイアウト方向を変更します。";
+        case Label.AccuracySeconds:
+            return "秒";
+        case Label.AccuracyTenths:
+            return "1/10 秒";
+        case Label.AccuracyHundredths:
+            return "1/100 秒";
+        case Label.AccuracyMilliseconds:
+            return "ミリ秒";
+        case Label.FontStyle:
+            return "スタイル";
+        case Label.FontWeight:
+            return "太さ";
+        case Label.FontStretch:
+            return "幅";
+        case Label.FontStyleNormal:
+            return "標準";
+        case Label.FontStyleItalic:
+            return "斜体";
+        case Label.AlignmentAutomatic:
+            return "自動";
+        case Label.AlignmentLeft:
+            return "左";
+        case Label.AlignmentCenter:
+            return "中央";
+        case Label.GradientTransparent:
+            return "透明";
+        case Label.GradientPlain:
+            return "単色";
+        case Label.GradientVertical:
+            return "垂直";
+        case Label.GradientHorizontal:
+            return "水平";
+        case Label.GradientAlternating:
+            return "交互";
+        case Label.GradientPlainDelta:
+            return "単色タイム差";
+        case Label.GradientVerticalDelta:
+            return "垂直タイム差";
+        case Label.GradientHorizontalDelta:
+            return "水平タイム差";
+        case Label.LayoutBackgroundImage:
+            return "画像";
+        case Label.LayoutBackgroundBrightness:
+            return "明るさ";
+        case Label.LayoutBackgroundOpacity:
+            return "不透明度";
+        case Label.LayoutBackgroundBlur:
+            return "ぼかし";
+        case Label.LayoutDirectionVertical:
+            return "垂直";
+        case Label.LayoutDirectionHorizontal:
+            return "水平";
+        case Label.ColumnKindTime:
+            return "タイム";
+        case Label.ColumnKindVariable:
+            return "変数";
+        case Label.ColumnStartWithEmpty:
+            return "空";
+        case Label.ColumnStartWithComparisonTime:
+            return "比較対象タイム";
+        case Label.ColumnStartWithComparisonSegmentTime:
+            return "比較対象区間タイム";
+        case Label.ColumnStartWithPossibleTimeSave:
+            return "更新余地";
+        case Label.ColumnUpdateWithDontUpdate:
+            return "更新しない";
+        case Label.ColumnUpdateWithSplitTime:
+            return "スプリットタイム";
+        case Label.ColumnUpdateWithDelta:
+            return "リード/遅れタイム";
+        case Label.ColumnUpdateWithDeltaWithFallback:
+            return "リード/遅れタイム（空ならスプリットタイム）";
+        case Label.ColumnUpdateWithSegmentTime:
+            return "区間タイム";
+        case Label.ColumnUpdateWithSegmentDelta:
+            return "短縮/ロスタイム";
+        case Label.ColumnUpdateWithSegmentDeltaWithFallback:
+            return "短縮/ロスタイム（空なら区間タイム）";
+        case Label.ColumnUpdateTriggerOnStartingSegment:
+            return "区間開始時";
+        case Label.ColumnUpdateTriggerContextual:
+            return "状況に応じて";
+        case Label.ColumnUpdateTriggerOnEndingSegment:
+            return "区間終了時";
+        case Label.ComparisonCurrentComparison:
+            return "現在の比較対象";
+        case Label.CustomVariableNoneAvailable:
+            return "利用可能な変数がありません";
+        case Label.CustomVariableNoneAvailableTooltip:
+            return "スプリット編集時の「変数」タブでカスタム変数を定義できます。追加のカスタム変数はオートスプリッターが自動的に提供する場合があります。";
+        case Label.HotkeyButtonTooltip:
+            return "クリックしてホットキーを記録します。ゲームパッドのボタンも使用できます。グローバルホットキーは現在利用できません。ゲームパッドのボタンはグローバルに動作します。";
+        case Label.ServerConnect:
+            return "接続";
+        case Label.ServerDisconnect:
+            return "切断";
+        case Label.ServerConnecting:
+            return "接続中...";
+        case Label.ServerDisconnecting:
+            return "切断中...";
+        case Label.ConnectToServerTitle:
+            return "サーバーに接続";
+        case Label.ConnectToServerDescription:
+            return "WebSocket URL を指定してください:";
+        case Label.Connect:
+            return "接続";
+        case Label.UpdateAvailable:
+            return "LiveSplit One の新しいバージョンがあります。ここをクリックして再読み込みしてください。";
+        case Label.UnsavedChangesBeforeUnload:
+            return "未保存の変更があります。本当に LiveSplit One を閉じますか？";
+        case Label.OpenSidebarAriaLabel:
+            return "サイドバーを開く";
+        case Label.FailedToSaveLayout:
+            return "レイアウトの保存に失敗しました。";
+        case Label.FailedToSaveHotkeys:
+            return "ホットキー設定の保存に失敗しました。";
+        case Label.FailedToSaveGeneralSettings:
+            return "一般設定の保存に失敗しました。";
+        case Label.FailedToSaveSplits:
+            return "スプリットの保存に失敗しました。";
+        case Label.LayoutCouldNotBeLoaded:
+            return "レイアウトを読み込めませんでした。LiveSplit または LiveSplit One の有効なレイアウトではない可能性があります。";
+        case Label.EmptySplitsNotSupported:
+            return "空のスプリットはサポートされていません。";
+        case Label.BugEncountered:
+            return "バグが発生しました:";
+        case Label.PleaseReportIssueStart:
+            return "この問題は";
+        case Label.ReportHere:
+            return "こちら";
+        case Label.PleaseReportIssueEnd:
+            return "に報告してください。";
+        case Label.BugReportInstructions:
+            return "この問題の修正に役立つよう、再現手順を記載し、問題が発生したときに使用していたスプリットとレイアウトを添付してください。";
+        case Label.LoadFailedPrivateBrowsing:
+            return "LiveSplit One を読み込めませんでした。\nプライベートブラウジングを使用している可能性があります。\nブラウザのプライベートブラウジングの制限により、LiveSplit One はスプリット、レイアウト、その他の設定を保存できません。\nこれらの制限は将来解除される可能性があります。\n今すぐ LiveSplit One を使うには、設定でプライベートブラウジングを無効にしてください。";
+        case Label.LoadFailedOutdatedBrowser:
+            return "LiveSplit One を読み込めませんでした。\nブラウザが最新でない可能性があります。\nブラウザまたは iOS のバージョンを更新して、もう一度お試しください。\n別の原因として、広告ブロッカーなどのブラウザ拡張機能が重要なスクリプトへのアクセスをブロックしている可能性があります。";
     }
 }

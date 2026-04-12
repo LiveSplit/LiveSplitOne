@@ -623,6 +623,18 @@ function AddComponentButton({
                     <MenuItem
                         className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
                         onClick={() =>
+                            addComponent(LiveSplit.CarouselComponent)
+                        }
+                        lang={lang}
+                    >
+                        {resolve(Label.ComponentCarousel, lang)}
+                        <span className={tooltipClasses.tooltipText}>
+                            {resolve(Label.ComponentCarouselDescription, lang)}
+                        </span>
+                    </MenuItem>
+                    <MenuItem
+                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
+                        onClick={() =>
                             addComponent(LiveSplit.SeparatorComponent)
                         }
                         lang={lang}

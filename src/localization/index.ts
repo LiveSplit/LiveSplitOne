@@ -258,6 +258,8 @@ export enum Label {
     ComponentVariableDescription,
     ComponentBlankSpace,
     ComponentBlankSpaceDescription,
+    ComponentCarousel,
+    ComponentCarouselDescription,
     ComponentSeparator,
     ComponentSeparatorDescription,
     Row,
@@ -337,20 +339,34 @@ export enum Label {
 
 export function resolve(text: Label, lang: Language | undefined): string {
     switch (orAutoLang(lang)) {
-        case Language.ChineseSimplified: return resolveChineseSimplified(text);
-        case Language.ChineseTraditional: return resolveChineseTraditional(text);
-        case Language.Dutch: return resolveDutch(text);
-        case Language.French: return resolveFrench(text);
-        case Language.German: return resolveGerman(text);
-        case Language.Italian: return resolveItalian(text);
-        case Language.Japanese: return resolveJapanese(text);
-        case Language.Korean: return resolveKorean(text);
-        case Language.Polish: return resolvePolish(text);
-        case Language.Portuguese: return resolvePortuguese(text);
-        case Language.BrazilianPortuguese: return resolveBrazilianPortuguese(text);
-        case Language.Russian: return resolveRussian(text);
-        case Language.Spanish: return resolveSpanish(text);
-        case Language.English: return resolveEnglish(text);
+        case Language.ChineseSimplified:
+            return resolveChineseSimplified(text);
+        case Language.ChineseTraditional:
+            return resolveChineseTraditional(text);
+        case Language.Dutch:
+            return resolveDutch(text);
+        case Language.French:
+            return resolveFrench(text);
+        case Language.German:
+            return resolveGerman(text);
+        case Language.Italian:
+            return resolveItalian(text);
+        case Language.Japanese:
+            return resolveJapanese(text);
+        case Language.Korean:
+            return resolveKorean(text);
+        case Language.Polish:
+            return resolvePolish(text);
+        case Language.Portuguese:
+            return resolvePortuguese(text);
+        case Language.BrazilianPortuguese:
+            return resolveBrazilianPortuguese(text);
+        case Language.Russian:
+            return resolveRussian(text);
+        case Language.Spanish:
+            return resolveSpanish(text);
+        case Language.English:
+            return resolveEnglish(text);
     }
 }
 
@@ -363,20 +379,34 @@ export function getLocaleOpt(lang: Language | undefined): string | undefined {
         return undefined;
     }
     switch (lang) {
-        case Language.ChineseSimplified: return "zh-Hans";
-        case Language.ChineseTraditional: return "zh-Hant";
-        case Language.Dutch: return "nl";
-        case Language.French: return "fr";
-        case Language.German: return "de";
-        case Language.Italian: return "it";
-        case Language.Japanese: return "ja";
-        case Language.Korean: return "ko";
-        case Language.Polish: return "pl";
-        case Language.Portuguese: return "pt";
-        case Language.BrazilianPortuguese: return "pt-BR";
-        case Language.Russian: return "ru";
-        case Language.Spanish: return "es";
-        case Language.English: return "en";
+        case Language.ChineseSimplified:
+            return "zh-Hans";
+        case Language.ChineseTraditional:
+            return "zh-Hant";
+        case Language.Dutch:
+            return "nl";
+        case Language.French:
+            return "fr";
+        case Language.German:
+            return "de";
+        case Language.Italian:
+            return "it";
+        case Language.Japanese:
+            return "ja";
+        case Language.Korean:
+            return "ko";
+        case Language.Polish:
+            return "pl";
+        case Language.Portuguese:
+            return "pt";
+        case Language.BrazilianPortuguese:
+            return "pt-BR";
+        case Language.Russian:
+            return "ru";
+        case Language.Spanish:
+            return "es";
+        case Language.English:
+            return "en";
     }
 }
 
