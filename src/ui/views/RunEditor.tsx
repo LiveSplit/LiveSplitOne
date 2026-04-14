@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import * as LiveSplit from "../../livesplit-core";
 import {
     FILE_EXT_IMAGES,
@@ -83,6 +83,9 @@ interface RowState {
     comparisonTimesChanged: boolean[];
     index: number;
 }
+
+type SegmentSelectionState =
+    LiveSplit.RunEditorStateJson["segments"][number]["selected"];
 
 enum Tab {
     RealTime,
@@ -845,6 +848,8 @@ function SegmentsTable({
     lang: LiveSplit.Language | undefined;
 }) {
     const [dragIndex, setDragIndex] = useState(0);
+    const skipNextFocusedSegmentSelection = useRef(false);
+    const segmentNameInputRefs = useRef<(HTMLInputElement | null)[]>([]);
     const [rowState, setRowState] = useState<RowState>(() => ({
         bestSegmentTime: "",
         bestSegmentTimeChanged: false,
@@ -856,6 +861,82 @@ function SegmentsTable({
         splitTime: "",
         splitTimeChanged: false,
     }));
+
+    const handleSegmentInputMouseDown = (
+        event: React.MouseEvent<HTMLInputElement, MouseEvent>,
+        index: number,
+        selectionState: SegmentSelectionState,
+    ) => {
+        event.stopPropagation();
+
+        const preserveCurrentFocus = shouldPreserveCurrentFocus(
+            event,
+            selectionState,
+        );
+        const focusClickedRow = shouldFocusClickedRow(event, selectionState);
+
+        if (event.shiftKey || preserveCurrentFocus) {
+            event.preventDefault();
+        }
+
+        skipNextFocusedSegmentSelection.current = focusClickedRow;
+
+        changeSegmentSelection(
+            event,
+            index,
+            selectionState,
+            editor,
+            rowState,
+            setRowState,
+            update,
+        );
+
+        if (event.shiftKey && focusClickedRow) {
+            event.currentTarget.focus();
+        }
+    };
+
+    const handleSegmentInputClick = (
+        event: React.MouseEvent<HTMLInputElement, MouseEvent>,
+    ) => {
+        // Input selection is already handled on mousedown so the row's click
+        // handler must not run again on mouseup.
+        event.stopPropagation();
+    };
+
+    const handleSegmentRowMouseDown = (
+        event: React.MouseEvent<HTMLTableRowElement, MouseEvent>,
+        index: number,
+        selectionState: SegmentSelectionState,
+    ) => {
+        const preserveCurrentFocus = shouldPreserveCurrentFocus(
+            event,
+            selectionState,
+        );
+        const focusClickedRow = shouldFocusClickedRow(event, selectionState);
+
+        if (event.shiftKey || preserveCurrentFocus) {
+            // Modifier-based selection should not trigger native text selection
+            // behavior or move focus away from the currently edited field.
+            event.preventDefault();
+        }
+
+        skipNextFocusedSegmentSelection.current = focusClickedRow;
+
+        changeSegmentSelection(
+            event,
+            index,
+            selectionState,
+            editor,
+            rowState,
+            setRowState,
+            update,
+        );
+
+        if (focusClickedRow) {
+            segmentNameInputRefs.current[index]?.focus();
+        }
+    };
 
     return (
         <table className={`${classes.runEditorTab} ${classes.runEditorTable}`}>
@@ -934,12 +1015,11 @@ function SegmentsTable({
                                     ? tableClasses.selected
                                     : ""
                             }
-                            onClick={(e) =>
-                                changeSegmentSelection(
+                            onMouseDown={(e) =>
+                                handleSegmentRowMouseDown(
                                     e,
                                     segmentIndex,
-                                    editor,
-                                    update,
+                                    s.selected,
                                 )
                             }
                         >
@@ -966,11 +1046,25 @@ function SegmentsTable({
                                 <input
                                     className={tableClasses.textBox}
                                     type="text"
+                                    ref={(element) => {
+                                        segmentNameInputRefs.current[
+                                            segmentIndex
+                                        ] = element;
+                                    }}
                                     value={s.name}
+                                    onClick={handleSegmentInputClick}
+                                    onMouseDown={(e) =>
+                                        handleSegmentInputMouseDown(
+                                            e,
+                                            segmentIndex,
+                                            s.selected,
+                                        )
+                                    }
                                     onFocus={(_) =>
                                         focusSegment(
                                             segmentIndex,
                                             editor,
+                                            skipNextFocusedSegmentSelection,
                                             rowState,
                                             setRowState,
                                             update,
@@ -992,10 +1086,19 @@ function SegmentsTable({
                                             ? rowState.splitTime
                                             : s.split_time
                                     }
+                                    onClick={handleSegmentInputClick}
+                                    onMouseDown={(e) =>
+                                        handleSegmentInputMouseDown(
+                                            e,
+                                            segmentIndex,
+                                            s.selected,
+                                        )
+                                    }
                                     onFocus={(_) =>
                                         focusSegment(
                                             segmentIndex,
                                             editor,
+                                            skipNextFocusedSegmentSelection,
                                             rowState,
                                             setRowState,
                                             update,
@@ -1035,10 +1138,19 @@ function SegmentsTable({
                                             ? rowState.segmentTime
                                             : s.segment_time
                                     }
+                                    onClick={handleSegmentInputClick}
+                                    onMouseDown={(e) =>
+                                        handleSegmentInputMouseDown(
+                                            e,
+                                            segmentIndex,
+                                            s.selected,
+                                        )
+                                    }
                                     onFocus={(_) =>
                                         focusSegment(
                                             segmentIndex,
                                             editor,
+                                            skipNextFocusedSegmentSelection,
                                             rowState,
                                             setRowState,
                                             update,
@@ -1072,10 +1184,19 @@ function SegmentsTable({
                                             ? rowState.bestSegmentTime
                                             : s.best_segment_time
                                     }
+                                    onClick={handleSegmentInputClick}
+                                    onMouseDown={(e) =>
+                                        handleSegmentInputMouseDown(
+                                            e,
+                                            segmentIndex,
+                                            s.selected,
+                                        )
+                                    }
                                     onFocus={(_) =>
                                         focusSegment(
                                             segmentIndex,
                                             editor,
+                                            skipNextFocusedSegmentSelection,
                                             rowState,
                                             setRowState,
                                             update,
@@ -1118,10 +1239,19 @@ function SegmentsTable({
                                                       ]
                                                     : comparisonTime
                                             }
+                                            onClick={handleSegmentInputClick}
+                                            onMouseDown={(e) =>
+                                                handleSegmentInputMouseDown(
+                                                    e,
+                                                    segmentIndex,
+                                                    s.selected,
+                                                )
+                                            }
                                             onFocus={(_) =>
                                                 focusSegment(
                                                     segmentIndex,
                                                     editor,
+                                                    skipNextFocusedSegmentSelection,
                                                     rowState,
                                                     setRowState,
                                                     update,
@@ -2562,17 +2692,68 @@ function getSegmentIconUrl(
 }
 
 function changeSegmentSelection(
-    event: React.MouseEvent<HTMLTableRowElement, MouseEvent>,
-    i: number,
+    event:
+        | React.MouseEvent<HTMLElement, MouseEvent>
+        | React.MouseEvent<HTMLTableRowElement, MouseEvent>,
+    index: number,
+    selectionState: SegmentSelectionState,
     editor: LiveSplit.RunEditorRefMut,
-    update: () => void,
+    rowState: RowState,
+    setRowState: (rowState: RowState) => void,
+    update: () => LiveSplit.RunEditorStateJson,
 ) {
-    if (!event.currentTarget.classList.contains(tableClasses.selected)) {
-        editor.selectAdditionally(i);
+    if (event.shiftKey) {
+        editor.selectRange(index);
+    } else if (event.ctrlKey || event.metaKey) {
+        if (selectionState === "Selected") {
+            editor.unselect(index);
+        } else {
+            editor.selectAdditionally(index);
+        }
     } else {
-        editor.unselect(i);
+        editor.selectOnly(index);
     }
-    update();
+
+    const editorState = update();
+    setFocusedSegmentRowState(
+        editorState,
+        getActiveSegmentIndex(editorState, index),
+        rowState,
+        setRowState,
+    );
+}
+
+function shouldPreserveCurrentFocus(
+    event: React.MouseEvent<HTMLElement, MouseEvent>,
+    selectionState: SegmentSelectionState,
+) {
+    return (event.ctrlKey || event.metaKey) && selectionState === "Selected";
+}
+
+function shouldFocusClickedRow(
+    event: React.MouseEvent<HTMLElement, MouseEvent>,
+    selectionState: SegmentSelectionState,
+) {
+    if (event.shiftKey) {
+        return true;
+    }
+
+    if (event.ctrlKey || event.metaKey) {
+        return selectionState !== "Selected";
+    }
+
+    return true;
+}
+
+function getActiveSegmentIndex(
+    editorState: LiveSplit.RunEditorStateJson,
+    fallbackIndex: number,
+) {
+    const activeIndex = editorState.segments.findIndex(
+        (segment) => segment.selected === "Active",
+    );
+
+    return activeIndex === -1 ? fallbackIndex : activeIndex;
 }
 
 async function changeSegmentIcon(
@@ -2610,16 +2791,45 @@ function removeSegmentIcon(
 }
 
 function focusSegment(
-    i: number,
+    index: number,
     editor: LiveSplit.RunEditorRefMut,
+    skipNextFocusedSegmentSelection: React.MutableRefObject<boolean>,
     rowState: RowState,
     setRowState: (rowState: RowState) => void,
     update: () => LiveSplit.RunEditorStateJson,
 ) {
-    editor.selectOnly(i);
-    const editorState = update();
+    // Mouse-based selection is handled on mousedown so modifier keys can change
+    // selection without the subsequent focus event collapsing it back to a
+    // single row. Keyboard focus still falls back to exclusive selection.
+    if (skipNextFocusedSegmentSelection.current) {
+        skipNextFocusedSegmentSelection.current = false;
+        const editorState = update();
+        setFocusedSegmentRowState(
+            editorState,
+            getActiveSegmentIndex(editorState, index),
+            rowState,
+            setRowState,
+        );
+        return;
+    }
 
-    const comparisonTimes = editorState.segments[i].comparison_times;
+    editor.selectOnly(index);
+    const editorState = update();
+    setFocusedSegmentRowState(
+        editorState,
+        getActiveSegmentIndex(editorState, index),
+        rowState,
+        setRowState,
+    );
+}
+
+function setFocusedSegmentRowState(
+    editorState: LiveSplit.RunEditorStateJson,
+    index: number,
+    rowState: RowState,
+    setRowState: (rowState: RowState) => void,
+) {
+    const comparisonTimes = editorState.segments[index].comparison_times;
     setRowState({
         ...rowState,
         splitTimeChanged: false,
@@ -2627,7 +2837,7 @@ function focusSegment(
         bestSegmentTimeChanged: false,
         comparisonTimes,
         comparisonTimesChanged: comparisonTimes.map(() => false),
-        index: i,
+        index,
     });
 }
 
