@@ -114,6 +114,8 @@ export function resolveFrench(text: Label): string {
             return "Temps de jeu";
         case Label.PopOut:
             return "Fenêtre détachée";
+        case Label.PopOutFailed:
+            return "Impossible d’ouvrir une nouvelle fenêtre.";
         case Label.About:
             return "À propos";
         case Label.Back:
