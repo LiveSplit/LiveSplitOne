@@ -114,6 +114,8 @@ export function resolveGerman(text: Label): string {
             return "Spielzeit";
         case Label.PopOut:
             return "Pop‑out";
+        case Label.PopOutFailed:
+            return "Neues Fenster konnte nicht geöffnet werden.";
         case Label.About:
             return "Über";
         case Label.Back:
