@@ -204,6 +204,9 @@ export class LiveSplit extends React.Component<Props, State> {
     private scrollEvent: Option<EventListenerObject>;
     private rightClickEvent: Option<EventListenerObject>;
     private resizeEvent: Option<EventListenerObject>;
+    private autoSaveInterval: Option<ReturnType<typeof setInterval>> = null;
+    private autoSaveInProgress = false;
+    private autoSaveAfterCurrent = false;
 
     constructor(props: Props) {
         super(props);
@@ -353,6 +356,7 @@ export class LiveSplit extends React.Component<Props, State> {
         this.isDesktopQuery.addEventListener("change", this.mediaQueryChanged);
 
         this.handleAutomaticResize();
+        this.updateAutoSaveInterval();
 
         const { serviceWorker } = navigator;
         if (serviceWorker && serviceWorker.controller) {
@@ -368,6 +372,7 @@ export class LiveSplit extends React.Component<Props, State> {
     }
 
     public componentWillUnmount() {
+        this.stopAutoSaveInterval();
         window.removeEventListener(
             "wheel",
             expect(
@@ -1068,6 +1073,66 @@ export class LiveSplit extends React.Component<Props, State> {
         }
     }
 
+    private shouldAutoSaveSplits(): boolean {
+        const phase = this.state.commandSink.currentPhase();
+        return (
+            phase === TimerPhase.Running ||
+            phase === TimerPhase.Paused ||
+            phase === TimerPhase.Ended
+        );
+    }
+
+    private updateAutoSaveInterval(): void {
+        if (!this.shouldAutoSaveSplits()) {
+            this.stopAutoSaveInterval();
+            return;
+        }
+
+        if (this.autoSaveInterval !== null) {
+            return;
+        }
+
+        // The serialized timer snapshot contains the in-progress attempt, so
+        // periodically saving the splits keeps browser restarts from wiping the
+        // current run's progress.
+        this.autoSaveInterval = setInterval(() => {
+            void this.autoSaveSplits();
+        }, 3000);
+    }
+
+    private stopAutoSaveInterval(): void {
+        if (this.autoSaveInterval === null) {
+            return;
+        }
+
+        clearInterval(this.autoSaveInterval);
+        this.autoSaveInterval = null;
+    }
+
+    private async autoSaveSplits(): Promise<void> {
+        if (!this.shouldAutoSaveSplits()) {
+            this.stopAutoSaveInterval();
+            return;
+        }
+
+        if (this.autoSaveInProgress) {
+            this.autoSaveAfterCurrent = true;
+            return;
+        }
+
+        this.autoSaveInProgress = true;
+        try {
+            await this.saveSplits();
+        } finally {
+            this.autoSaveInProgress = false;
+        }
+
+        if (this.autoSaveAfterCurrent) {
+            this.autoSaveAfterCurrent = false;
+            void this.autoSaveSplits();
+        }
+    }
+
     onServerConnectionOpened(serverConnection: LiveSplitServer): void {
         this.setState({ serverConnection });
     }
@@ -1134,6 +1199,11 @@ export class LiveSplit extends React.Component<Props, State> {
 
         if (this.state.serverConnection != null) {
             this.state.serverConnection.sendEvent(event);
+        }
+
+        this.updateAutoSaveInterval();
+        if (this.shouldAutoSaveSplits()) {
+            void this.autoSaveSplits();
         }
     }
 
