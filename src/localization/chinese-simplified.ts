@@ -568,6 +568,12 @@ export function resolveChineseSimplified(text: Label): string {
             return "对比区间时间";
         case Label.ColumnStartWithPossibleTimeSave:
             return "可节省时间";
+        case Label.SubsplitDisplayModeFlat:
+            return "平铺";
+        case Label.SubsplitDisplayModeAllGroupsExpanded:
+            return "全部分组展开";
+        case Label.SubsplitDisplayModeCurrentGroupExpanded:
+            return "当前分组展开";
         case Label.ColumnUpdateWithDontUpdate:
             return "不更新";
         case Label.ColumnUpdateWithSplitTime:

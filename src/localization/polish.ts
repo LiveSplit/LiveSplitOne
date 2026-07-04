@@ -568,6 +568,12 @@ export function resolvePolish(text: Label): string {
             return "Czas segmentu porównania";
         case Label.ColumnStartWithPossibleTimeSave:
             return "Możliwa oszczędność czasu";
+        case Label.SubsplitDisplayModeFlat:
+            return "Płasko";
+        case Label.SubsplitDisplayModeAllGroupsExpanded:
+            return "Wszystkie grupy rozwinięte";
+        case Label.SubsplitDisplayModeCurrentGroupExpanded:
+            return "Bieżąca grupa rozwinięta";
         case Label.ColumnUpdateWithDontUpdate:
             return "Nie aktualizuj";
         case Label.ColumnUpdateWithSplitTime:

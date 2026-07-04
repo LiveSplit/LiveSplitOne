@@ -568,6 +568,12 @@ export function resolveDutch(text: Label): string {
             return "Vergelijking segmenttijd";
         case Label.ColumnStartWithPossibleTimeSave:
             return "Mogelijke tijdswinst";
+        case Label.SubsplitDisplayModeFlat:
+            return "Plat";
+        case Label.SubsplitDisplayModeAllGroupsExpanded:
+            return "Alle groepen uitgeklapt";
+        case Label.SubsplitDisplayModeCurrentGroupExpanded:
+            return "Huidige groep uitgeklapt";
         case Label.ColumnUpdateWithDontUpdate:
             return "Niet bijwerken";
         case Label.ColumnUpdateWithSplitTime:

@@ -568,6 +568,12 @@ export function resolveJapanese(text: Label): string {
             return "比較対象区間タイム";
         case Label.ColumnStartWithPossibleTimeSave:
             return "更新余地";
+        case Label.SubsplitDisplayModeFlat:
+            return "フラット";
+        case Label.SubsplitDisplayModeAllGroupsExpanded:
+            return "すべてのグループを展開";
+        case Label.SubsplitDisplayModeCurrentGroupExpanded:
+            return "現在のグループを展開";
         case Label.ColumnUpdateWithDontUpdate:
             return "更新しない";
         case Label.ColumnUpdateWithSplitTime:

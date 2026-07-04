@@ -568,6 +568,12 @@ export function resolveSpanish(text: Label): string {
             return "Tiempo de segmento de comparación";
         case Label.ColumnStartWithPossibleTimeSave:
             return "Tiempo posible de ahorrar";
+        case Label.SubsplitDisplayModeFlat:
+            return "Plano";
+        case Label.SubsplitDisplayModeAllGroupsExpanded:
+            return "Todos los grupos expandidos";
+        case Label.SubsplitDisplayModeCurrentGroupExpanded:
+            return "Grupo actual expandido";
         case Label.ColumnUpdateWithDontUpdate:
             return "No actualizar";
         case Label.ColumnUpdateWithSplitTime:

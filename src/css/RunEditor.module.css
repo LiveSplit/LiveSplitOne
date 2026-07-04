@@ -179,6 +179,32 @@
     }
 }
 
+.segmentGroupHeader {
+    td {
+        border-top: 1px solid var(--border-color);
+        font-weight: bold;
+        padding-left: var(--ui-margin) !important;
+        padding-right: var(--ui-margin) !important;
+    }
+}
+
+.segmentGroupHeaderInput {
+    font-weight: bold;
+    width: 100%;
+}
+
+.segmentGroupHeaderIcon {
+    width: 1%;
+}
+
+.segmentGroupName {
+    padding-left: calc(var(--ui-large-margin) + var(--ui-margin)) !important;
+}
+
+.segmentGroupMajor {
+    font-weight: bold;
+}
+
 .bottomSection {
     display: flex;
     flex-wrap: wrap;
