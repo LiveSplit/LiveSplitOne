@@ -1,6 +1,6 @@
 import * as React from "react";
 import { expect } from "../../../util/OptionUtil";
-import { SubsplitDisplayModeJson, Language } from "../../../livesplit-core";
+import { SubsplitDisplayMode as SubsplitDisplayModeType, Language } from "../../../livesplit-core";
 import { SettingValueFactory } from ".";
 import { Label, resolve } from "../../../localization";
 
@@ -12,7 +12,7 @@ export function SubsplitDisplayMode<T>({
     factory,
     lang,
 }: {
-    value: SubsplitDisplayModeJson;
+    value: SubsplitDisplayModeType;
     setValue: (value: T) => void;
     factory: SettingValueFactory<T>;
     lang: Language | undefined;

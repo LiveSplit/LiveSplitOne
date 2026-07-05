@@ -218,6 +218,10 @@ export function resolveDutch(text: Label): string {
             return "Omhoog";
         case Label.MoveDown:
             return "Omlaag";
+        case Label.CreateGroup:
+            return "Groep aanmaken";
+        case Label.RemoveGroup:
+            return "Groep verwijderen";
         case Label.AddVariable:
             return "Variabele toevoegen";
         case Label.OpenPbPage:

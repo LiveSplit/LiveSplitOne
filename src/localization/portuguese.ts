@@ -218,6 +218,10 @@ export function resolvePortuguese(text: Label): string {
             return "Mover para cima";
         case Label.MoveDown:
             return "Mover para baixo";
+        case Label.CreateGroup:
+            return "Criar grupo";
+        case Label.RemoveGroup:
+            return "Remover grupo";
         case Label.AddVariable:
             return "Adicionar variável";
         case Label.OpenPbPage:

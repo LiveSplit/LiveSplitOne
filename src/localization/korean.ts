@@ -218,6 +218,10 @@ export function resolveKorean(text: Label): string {
             return "위로";
         case Label.MoveDown:
             return "아래로";
+        case Label.CreateGroup:
+            return "그룹 만들기";
+        case Label.RemoveGroup:
+            return "그룹 해제";
         case Label.AddVariable:
             return "변수 추가";
         case Label.OpenPbPage:

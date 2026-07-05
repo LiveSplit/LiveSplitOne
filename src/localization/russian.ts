@@ -218,6 +218,10 @@ export function resolveRussian(text: Label): string {
             return "Вверх";
         case Label.MoveDown:
             return "Вниз";
+        case Label.CreateGroup:
+            return "Создать группу";
+        case Label.RemoveGroup:
+            return "Удалить группу";
         case Label.AddVariable:
             return "Добавить переменную";
         case Label.OpenPbPage:

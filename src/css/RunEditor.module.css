@@ -197,6 +197,11 @@
 .segmentGroupHeaderInput {
     font-weight: bold;
     width: 100%;
+
+    &::placeholder {
+        color: var(--input-text-color);
+        opacity: 0.65;
+    }
 }
 
 .segmentGroupHeaderIcon {

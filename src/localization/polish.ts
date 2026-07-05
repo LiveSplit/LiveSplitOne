@@ -218,6 +218,10 @@ export function resolvePolish(text: Label): string {
             return "Przenieś w górę";
         case Label.MoveDown:
             return "Przenieś w dół";
+        case Label.CreateGroup:
+            return "Utwórz grupę";
+        case Label.RemoveGroup:
+            return "Usuń grupę";
         case Label.AddVariable:
             return "Dodaj zmienną";
         case Label.OpenPbPage:

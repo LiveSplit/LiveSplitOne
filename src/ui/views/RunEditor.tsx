@@ -90,7 +90,8 @@ type SegmentSelectionState =
 interface SegmentGroupBounds {
     startIndex: number;
     endIndex: number;
-    name: string;
+    explicitName: string | null;
+    defaultName: string;
 }
 
 enum Tab {
@@ -593,13 +594,13 @@ function SegmentListButtons({
             </button>
             <button
                 onClick={(_) => {
-                    if (editor.createSegmentGroupFromSelection(null)) {
+                    if (editor.createSegmentGroupFromSelection("")) {
                         update();
                     }
                 }}
                 disabled={!editorState.buttons.can_create_segment_group}
             >
-                Create Group
+                {resolve(Label.CreateGroup, lang)}
             </button>
             <button
                 onClick={(_) => {
@@ -609,7 +610,7 @@ function SegmentListButtons({
                 }}
                 disabled={!editorState.buttons.can_remove_segment_group}
             >
-                Remove Group
+                {resolve(Label.RemoveGroup, lang)}
             </button>
             <ComparisonsButton
                 addComparison={() => addComparison(editor, update, lang)}
@@ -887,10 +888,13 @@ function getSegmentGroupBounds(
         return undefined;
     }
 
+    const defaultName = editorState.segments[endIndex].name;
+
     return {
         startIndex,
         endIndex,
-        name: explicitName ?? editorState.segments[endIndex].name,
+        explicitName: explicitName === defaultName ? null : explicitName,
+        defaultName,
     };
 }
 
@@ -1191,7 +1195,13 @@ function SegmentsTable({
                                     <input
                                         className={`${tableClasses.textBox} ${classes.segmentGroupHeaderInput}`}
                                         type="text"
-                                        value={segmentGroupBounds.name}
+                                        value={
+                                            segmentGroupBounds.explicitName ??
+                                            ""
+                                        }
+                                        placeholder={
+                                            segmentGroupBounds.defaultName
+                                        }
                                         onMouseDown={(e) => e.stopPropagation()}
                                         onClick={(e) => e.stopPropagation()}
                                         onFocus={(_) =>
@@ -1209,9 +1219,7 @@ function SegmentsTable({
                                                 segmentGroupBounds.endIndex,
                                             );
                                             editor.renameActiveSegmentGroup(
-                                                e.target.value === ""
-                                                    ? null
-                                                    : e.target.value,
+                                                e.target.value,
                                             );
                                             update();
                                         }}

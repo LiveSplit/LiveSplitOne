@@ -218,6 +218,10 @@ export function resolveSpanish(text: Label): string {
             return "Subir";
         case Label.MoveDown:
             return "Bajar";
+        case Label.CreateGroup:
+            return "Crear grupo";
+        case Label.RemoveGroup:
+            return "Eliminar grupo";
         case Label.AddVariable:
             return "Agregar variable";
         case Label.OpenPbPage:

@@ -123,6 +123,8 @@ export enum Label {
     RemoveSegment,
     MoveUp,
     MoveDown,
+    CreateGroup,
+    RemoveGroup,
     AddVariable,
     OpenPbPage,
     AssociateRun,

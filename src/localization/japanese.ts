@@ -218,6 +218,10 @@ export function resolveJapanese(text: Label): string {
             return "上へ移動";
         case Label.MoveDown:
             return "下へ移動";
+        case Label.CreateGroup:
+            return "グループを作成";
+        case Label.RemoveGroup:
+            return "グループを解除";
         case Label.AddVariable:
             return "変数を追加";
         case Label.OpenPbPage:
