@@ -1216,6 +1216,9 @@ function SegmentsTable({
                                         }
                                         onChange={(e) => {
                                             editor.selectOnly(
+                                                segmentGroupBounds.startIndex,
+                                            );
+                                            editor.selectRange(
                                                 segmentGroupBounds.endIndex,
                                             );
                                             editor.renameActiveSegmentGroup(
