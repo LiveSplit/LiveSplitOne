@@ -908,6 +908,18 @@ function isFirstSegmentInGroup(
     return previousSegment?.segment_group.group_index !== groupIndex;
 }
 
+function startsUngroupedSectionAfterGroup(
+    editorState: LiveSplit.RunEditorStateJson,
+    segmentIndex: number,
+) {
+    if (editorState.segments[segmentIndex].segment_group.group_index !== null) {
+        return false;
+    }
+
+    const previousSegment = editorState.segments[segmentIndex - 1];
+    return previousSegment?.segment_group.group_index !== null;
+}
+
 function selectSegmentGroup(
     editor: LiveSplit.RunEditorRefMut,
     editorState: LiveSplit.RunEditorStateJson,
@@ -1121,6 +1133,12 @@ function SegmentsTable({
                         s.selected === "Selected" || s.selected === "Active";
                     const rowClassName = [
                         isSelected ? tableClasses.selected : "",
+                        startsUngroupedSectionAfterGroup(
+                            editorState,
+                            segmentIndex,
+                        )
+                            ? classes.segmentGroupBoundary
+                            : "",
                         s.segment_group.is_major_split
                             ? classes.segmentGroupMajor
                             : "",

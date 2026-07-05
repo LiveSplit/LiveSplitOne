@@ -188,6 +188,12 @@
     }
 }
 
+.segmentGroupBoundary {
+    td {
+        border-top: 1px solid var(--border-color);
+    }
+}
+
 .segmentGroupHeaderInput {
     font-weight: bold;
     width: 100%;
