@@ -7,12 +7,17 @@
 
         > th {
             font-weight: bold;
-            text-align: center;
+            text-align: right;
             padding: calc(var(--ui-margin) / 2) calc(var(--ui-margin) / 2);
             display: table-cell;
 
             &:first-child {
                 padding-left: var(--ui-margin);
+                text-align: center;
+            }
+
+            &:nth-child(2) {
+                text-align: left;
             }
 
             &:last-child {
@@ -162,6 +167,14 @@
             cursor: pointer;
             display: flex;
             justify-content: center;
+
+            img {
+                display: block;
+                height: 19px;
+                margin: 0 auto;
+                object-fit: contain;
+                width: 19px;
+            }
         }
 
         > input {
@@ -183,8 +196,13 @@
     td {
         border-top: 1px solid var(--border-color);
         font-weight: bold;
-        padding-left: var(--ui-margin) !important;
-        padding-right: var(--ui-margin) !important;
+    }
+
+    td.segmentIconContainer {
+        display: table-cell;
+        height: auto;
+        text-align: center;
+        vertical-align: middle;
     }
 }
 
@@ -195,17 +213,19 @@
 }
 
 .segmentGroupHeaderInput {
+    display: block;
     font-weight: bold;
     width: 100%;
 
     &::placeholder {
-        color: var(--input-text-color);
+        color: currentColor;
         opacity: 0.65;
     }
 }
 
-.segmentGroupHeaderIcon {
-    width: 1%;
+
+.placeholderSegmentIcon {
+    opacity: 0.5;
 }
 
 .segmentGroupName {

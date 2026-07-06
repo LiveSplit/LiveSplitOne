@@ -92,6 +92,8 @@ interface SegmentGroupBounds {
     endIndex: number;
     explicitName: string | null;
     defaultName: string;
+    icon: LiveSplit.ImageId;
+    hasExplicitIcon: boolean;
 }
 
 enum Tab {
@@ -866,6 +868,8 @@ function getSegmentGroupBounds(
     let startIndex: number | undefined;
     let endIndex: number | undefined;
     let explicitName: string | null = null;
+    let icon: LiveSplit.ImageId | undefined;
+    let hasExplicitIcon = false;
 
     editorState.segments.forEach((segment, segmentIndex) => {
         const segmentGroup = segment.segment_group;
@@ -874,6 +878,8 @@ function getSegmentGroupBounds(
         }
 
         startIndex ??= segmentIndex;
+        icon = segmentGroup.icon;
+        hasExplicitIcon = segmentGroup.has_explicit_icon;
 
         if (segmentGroup.name !== null) {
             explicitName = segmentGroup.name;
@@ -895,6 +901,8 @@ function getSegmentGroupBounds(
         endIndex,
         explicitName: explicitName === defaultName ? null : explicitName,
         defaultName,
+        icon: icon ?? editorState.segments[endIndex].icon,
+        hasExplicitIcon,
     };
 }
 
@@ -921,7 +929,10 @@ function startsUngroupedSectionAfterGroup(
     }
 
     const previousSegment = editorState.segments[segmentIndex - 1];
-    return previousSegment?.segment_group.group_index !== null;
+    return (
+        previousSegment !== undefined &&
+        previousSegment.segment_group.group_index !== null
+    );
 }
 
 function selectSegmentGroup(
@@ -1188,8 +1199,33 @@ function SegmentsTable({
                                     );
                                 }}
                             >
-                                <td
+                                <SegmentIcon
+                                    segmentIcon={runEditorUrlCache.cache(
+                                        segmentGroupBounds.icon,
+                                    )}
+                                    changeSegmentIcon={() =>
+                                        changeSegmentGroupIcon(
+                                            segmentGroupBounds,
+                                            editor,
+                                            maybeUpdate,
+                                            lang,
+                                        )
+                                    }
+                                    removeSegmentIcon={() =>
+                                        removeSegmentGroupIcon(
+                                            segmentGroupBounds,
+                                            editor,
+                                            update,
+                                        )
+                                    }
                                     className={classes.segmentGroupHeaderIcon}
+                                    isPlaceholder={
+                                        !segmentGroupBounds.hasExplicitIcon
+                                    }
+                                    canRemoveIcon={
+                                        segmentGroupBounds.hasExplicitIcon
+                                    }
+                                    lang={lang}
                                 />
                                 <td colSpan={columnCount - 1}>
                                     <input
@@ -2159,18 +2195,26 @@ function SegmentIcon({
     segmentIcon,
     changeSegmentIcon,
     removeSegmentIcon,
+    className,
+    isPlaceholder = false,
+    canRemoveIcon = true,
     lang,
 }: {
     segmentIcon: string | undefined;
     changeSegmentIcon: () => void;
     removeSegmentIcon: () => void;
+    className?: string;
+    isPlaceholder?: boolean;
+    canRemoveIcon?: boolean;
     lang: LiveSplit.Language | undefined;
 }) {
     const [position, setPosition] = React.useState<Position | null>(null);
 
     return (
         <td
-            className={classes.segmentIconContainer}
+            className={[classes.segmentIconContainer, className]
+                .filter(Boolean)
+                .join(" ")}
             onClick={(e) => {
                 if (position !== null) {
                     return;
@@ -2182,7 +2226,14 @@ function SegmentIcon({
                 }
             }}
         >
-            {segmentIcon !== undefined && <img src={segmentIcon} />}
+            {segmentIcon !== undefined && (
+                <img
+                    className={
+                        isPlaceholder ? classes.placeholderSegmentIcon : ""
+                    }
+                    src={segmentIcon}
+                />
+            )}
             {position && (
                 <ContextMenu
                     position={position}
@@ -2198,16 +2249,18 @@ function SegmentIcon({
                             {resolve(Label.SetSegmentIconDescription, lang)}
                         </span>
                     </MenuItem>
-                    <MenuItem
-                        className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
-                        onClick={removeSegmentIcon}
-                        lang={lang}
-                    >
-                        {resolve(Label.RemoveSegmentIcon, lang)}
-                        <span className={tooltipClasses.tooltipText}>
-                            {resolve(Label.RemoveSegmentIconDescription, lang)}
-                        </span>
-                    </MenuItem>
+                    {canRemoveIcon && (
+                        <MenuItem
+                            className={`${tooltipClasses.contextMenuItem} ${tooltipClasses.tooltip}`}
+                            onClick={removeSegmentIcon}
+                            lang={lang}
+                        >
+                            {resolve(Label.RemoveSegmentIcon, lang)}
+                            <span className={tooltipClasses.tooltipText}>
+                                {resolve(Label.RemoveSegmentIconDescription, lang)}
+                            </span>
+                        </MenuItem>
+                    )}
                 </ContextMenu>
             )}
         </td>
@@ -3016,6 +3069,42 @@ function removeSegmentIcon(
     editor.selectOnly(index);
     editor.activeRemoveIcon();
     update();
+}
+
+async function changeSegmentGroupIcon(
+    bounds: SegmentGroupBounds,
+    editor: LiveSplit.RunEditorRefMut,
+    maybeUpdate: () => void,
+    lang: LiveSplit.Language | undefined,
+) {
+    editor.selectOnly(bounds.startIndex);
+    editor.selectRange(bounds.endIndex);
+    const maybeFile = await openFileAsArrayBuffer(FILE_EXT_IMAGES);
+    if (maybeFile === undefined) {
+        return;
+    }
+    if (maybeFile instanceof Error) {
+        toast.error(
+            `${resolve(Label.FailedToReadFile, lang)} ${maybeFile.message}`,
+        );
+        return;
+    }
+    const [file] = maybeFile;
+    if (editor.activeSetSegmentGroupIconFromArray(new Uint8Array(file))) {
+        maybeUpdate();
+    }
+}
+
+function removeSegmentGroupIcon(
+    bounds: SegmentGroupBounds,
+    editor: LiveSplit.RunEditorRefMut,
+    update: () => void,
+) {
+    editor.selectOnly(bounds.startIndex);
+    editor.selectRange(bounds.endIndex);
+    if (editor.activeRemoveSegmentGroupIcon()) {
+        update();
+    }
 }
 
 function focusSegment(
