@@ -1,6 +1,9 @@
 import * as React from "react";
 import { expect } from "../../../util/OptionUtil";
-import { SubsplitDisplayMode as SubsplitDisplayModeType, Language } from "../../../livesplit-core";
+import {
+    SubsplitDisplayMode as SubsplitDisplayModeType,
+    Language,
+} from "../../../livesplit-core";
 import { SettingValueFactory } from ".";
 import { Label, resolve } from "../../../localization";
 

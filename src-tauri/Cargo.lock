@@ -2131,6 +2131,7 @@ dependencies = [
  "simdutf8",
  "slab",
  "smallstr",
+ "smallvec",
  "snafu",
  "time",
  "tiny-skia",

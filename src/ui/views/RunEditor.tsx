@@ -865,44 +865,26 @@ function getSegmentGroupBounds(
     editorState: LiveSplit.RunEditorStateJson,
     groupIndex: number,
 ): SegmentGroupBounds | undefined {
-    let startIndex: number | undefined;
-    let endIndex: number | undefined;
-    let explicitName: string | null = null;
-    let icon: LiveSplit.ImageId | undefined;
-    let hasExplicitIcon = false;
-
-    editorState.segments.forEach((segment, segmentIndex) => {
-        const segmentGroup = segment.segment_group;
-        if (segmentGroup.group_index !== groupIndex) {
-            return;
-        }
-
-        startIndex ??= segmentIndex;
-        icon = segmentGroup.icon;
-        hasExplicitIcon = segmentGroup.has_explicit_icon;
-
-        if (segmentGroup.name !== null) {
-            explicitName = segmentGroup.name;
-        }
-
-        if (segmentGroup.is_major_split) {
-            endIndex = segmentIndex;
-        }
-    });
-
-    if (startIndex === undefined || endIndex === undefined) {
+    const group = editorState.segment_groups[groupIndex];
+    if (group === undefined || group.start >= group.end) {
         return undefined;
     }
 
+    const startIndex = group.start;
+    const endIndex = group.end - 1;
     const defaultName = editorState.segments[endIndex].name;
 
     return {
         startIndex,
         endIndex,
-        explicitName: explicitName === defaultName ? null : explicitName,
+        // An explicit name may intentionally match the major split's current
+        // name so it remains stable if that segment is renamed later. Keep the
+        // distinction visible instead of presenting persisted explicit data as
+        // an inherited placeholder value.
+        explicitName: group.name,
         defaultName,
-        icon: icon ?? editorState.segments[endIndex].icon,
-        hasExplicitIcon,
+        icon: group.icon,
+        hasExplicitIcon: group.has_explicit_icon,
     };
 }
 
@@ -910,28 +892,26 @@ function isFirstSegmentInGroup(
     editorState: LiveSplit.RunEditorStateJson,
     segmentIndex: number,
 ) {
-    const groupIndex =
-        editorState.segments[segmentIndex].segment_group.group_index;
+    const groupIndex = editorState.segments[segmentIndex].segment_group_index;
     if (groupIndex === null) {
         return false;
     }
 
-    const previousSegment = editorState.segments[segmentIndex - 1];
-    return previousSegment?.segment_group.group_index !== groupIndex;
+    return editorState.segment_groups[groupIndex]?.start === segmentIndex;
 }
 
 function startsUngroupedSectionAfterGroup(
     editorState: LiveSplit.RunEditorStateJson,
     segmentIndex: number,
 ) {
-    if (editorState.segments[segmentIndex].segment_group.group_index !== null) {
+    if (editorState.segments[segmentIndex].segment_group_index !== null) {
         return false;
     }
 
     const previousSegment = editorState.segments[segmentIndex - 1];
     return (
         previousSegment !== undefined &&
-        previousSegment.segment_group.group_index !== null
+        previousSegment.segment_group_index !== null
     );
 }
 
@@ -1135,7 +1115,7 @@ function SegmentsTable({
                         runEditorUrlCache,
                         editorState,
                     );
-                    const segmentGroupIndex = s.segment_group.group_index;
+                    const segmentGroupIndex = s.segment_group_index;
                     const segmentGroupBounds =
                         segmentGroupIndex !== null
                             ? getSegmentGroupBounds(
@@ -1154,7 +1134,7 @@ function SegmentsTable({
                         )
                             ? classes.segmentGroupBoundary
                             : "",
-                        s.segment_group.is_major_split
+                        segmentGroupBounds?.endIndex === segmentIndex
                             ? classes.segmentGroupMajor
                             : "",
                     ]
@@ -1555,7 +1535,7 @@ function SegmentsTable({
                                     </td>
                                 ),
                             )}
-                        </tr>
+                        </tr>,
                     );
                     return rows;
                 })}
@@ -2257,7 +2237,10 @@ function SegmentIcon({
                         >
                             {resolve(Label.RemoveSegmentIcon, lang)}
                             <span className={tooltipClasses.tooltipText}>
-                                {resolve(Label.RemoveSegmentIconDescription, lang)}
+                                {resolve(
+                                    Label.RemoveSegmentIconDescription,
+                                    lang,
+                                )}
                             </span>
                         </MenuItem>
                     )}
