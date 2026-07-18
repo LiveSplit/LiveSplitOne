@@ -85,16 +85,7 @@ interface RowState {
 }
 
 type SegmentSelectionState =
-    LiveSplit.RunEditorStateJson["segments"][number]["selected"];
-
-interface SegmentGroupBounds {
-    startIndex: number;
-    endIndex: number;
-    explicitName: string | null;
-    defaultName: string;
-    icon: LiveSplit.ImageId;
-    hasExplicitIcon: boolean;
-}
+    LiveSplit.RunEditorSegmentRowJson["selected"];
 
 enum Tab {
     RealTime,
@@ -606,11 +597,11 @@ function SegmentListButtons({
             </button>
             <button
                 onClick={(_) => {
-                    if (editor.removeActiveSegmentGroup()) {
+                    if (editor.removeSelectedSegmentGroups()) {
                         update();
                     }
                 }}
-                disabled={!editorState.buttons.can_remove_segment_group}
+                disabled={!editorState.buttons.can_remove_segment_groups}
             >
                 {resolve(Label.RemoveGroup, lang)}
             </button>
@@ -861,60 +852,6 @@ function TabContent({
     }
 }
 
-function getSegmentGroupBounds(
-    editorState: LiveSplit.RunEditorStateJson,
-    groupIndex: number,
-): SegmentGroupBounds | undefined {
-    const group = editorState.segment_groups[groupIndex];
-    if (group === undefined || group.start >= group.end) {
-        return undefined;
-    }
-
-    const startIndex = group.start;
-    const endIndex = group.end - 1;
-    const defaultName = editorState.segments[endIndex].name;
-
-    return {
-        startIndex,
-        endIndex,
-        // An explicit name may intentionally match the major split's current
-        // name so it remains stable if that segment is renamed later. Keep the
-        // distinction visible instead of presenting persisted explicit data as
-        // an inherited placeholder value.
-        explicitName: group.name,
-        defaultName,
-        icon: group.icon,
-        hasExplicitIcon: group.has_explicit_icon,
-    };
-}
-
-function isFirstSegmentInGroup(
-    editorState: LiveSplit.RunEditorStateJson,
-    segmentIndex: number,
-) {
-    const groupIndex = editorState.segments[segmentIndex].segment_group_index;
-    if (groupIndex === null) {
-        return false;
-    }
-
-    return editorState.segment_groups[groupIndex]?.start === segmentIndex;
-}
-
-function startsUngroupedSectionAfterGroup(
-    editorState: LiveSplit.RunEditorStateJson,
-    segmentIndex: number,
-) {
-    if (editorState.segments[segmentIndex].segment_group_index !== null) {
-        return false;
-    }
-
-    const previousSegment = editorState.segments[segmentIndex - 1];
-    return (
-        previousSegment !== undefined &&
-        previousSegment.segment_group_index !== null
-    );
-}
-
 function commitFocusedInputBeforeSelectionChange() {
     const focusedElement = document.activeElement;
     if (focusedElement instanceof HTMLInputElement) {
@@ -930,23 +867,19 @@ function commitFocusedInputBeforeSelectionChange() {
 
 function selectSegmentGroup(
     editor: LiveSplit.RunEditorRefMut,
-    editorState: LiveSplit.RunEditorStateJson,
     groupIndex: number,
     rowState: RowState,
     setRowState: React.Dispatch<React.SetStateAction<RowState>>,
     update: () => LiveSplit.RunEditorStateJson,
 ) {
-    const bounds = getSegmentGroupBounds(editorState, groupIndex);
-    if (bounds === undefined) {
-        return editorState;
+    if (!editor.selectSegmentGroup(groupIndex)) {
+        return;
     }
 
-    editor.selectOnly(bounds.startIndex);
-    editor.selectRange(bounds.endIndex);
     const state = update();
     setFocusedSegmentRowState(
         state,
-        getActiveSegmentIndex(state, bounds.endIndex),
+        getActiveSegmentIndex(state, rowState.index),
         rowState,
         setRowState,
     );
@@ -1122,61 +1055,16 @@ function SegmentsTable({
                 </tr>
             </thead>
             <tbody className={tableClasses.tableBody}>
-                {editorState.segments.flatMap((s, segmentIndex) => {
-                    const segmentIcon = getSegmentIconUrl(
-                        segmentIndex,
-                        runEditorUrlCache,
-                        editorState,
-                    );
-                    const segmentGroupIndex = s.segment_group_index;
-                    const segmentGroupBounds =
-                        segmentGroupIndex !== null
-                            ? getSegmentGroupBounds(
-                                  editorState,
-                                  segmentGroupIndex,
-                              )
-                            : undefined;
-                    const isGroupedSegment = segmentGroupIndex !== null;
-                    const isSelected =
-                        s.selected === "Selected" || s.selected === "Active";
-                    const rowClassName = [
-                        isSelected ? tableClasses.selected : "",
-                        startsUngroupedSectionAfterGroup(
-                            editorState,
-                            segmentIndex,
-                        )
-                            ? classes.segmentGroupBoundary
-                            : "",
-                        segmentGroupBounds?.endIndex === segmentIndex
-                            ? classes.segmentGroupMajor
-                            : "",
-                    ]
-                        .filter(Boolean)
-                        .join(" ");
-                    const rows: React.JSX.Element[] = [];
+                {editorState.rows.map((row) => {
+                    if (row.kind === "SegmentGroup") {
+                        const groupIndex = row.group_index;
 
-                    if (
-                        segmentGroupIndex !== null &&
-                        segmentGroupBounds !== undefined &&
-                        isFirstSegmentInGroup(editorState, segmentIndex)
-                    ) {
-                        const groupSelected = editorState.segments
-                            .slice(
-                                segmentGroupBounds.startIndex,
-                                segmentGroupBounds.endIndex + 1,
-                            )
-                            .every(
-                                (segment) =>
-                                    segment.selected === "Selected" ||
-                                    segment.selected === "Active",
-                            );
-
-                        rows.push(
+                        return (
                             <tr
-                                key={`group-${segmentGroupIndex}`}
+                                key={`group-${groupIndex}`}
                                 className={[
                                     classes.segmentGroupHeader,
-                                    groupSelected ? tableClasses.selected : "",
+                                    row.selected ? tableClasses.selected : "",
                                 ]
                                     .filter(Boolean)
                                     .join(" ")}
@@ -1185,8 +1073,7 @@ function SegmentsTable({
                                     e.preventDefault();
                                     selectSegmentGroup(
                                         editor,
-                                        editorState,
-                                        segmentGroupIndex,
+                                        groupIndex,
                                         rowState,
                                         setRowState,
                                         update,
@@ -1195,11 +1082,11 @@ function SegmentsTable({
                             >
                                 <SegmentIcon
                                     segmentIcon={runEditorUrlCache.cache(
-                                        segmentGroupBounds.icon,
+                                        row.icon,
                                     )}
                                     changeSegmentIcon={() =>
                                         changeSegmentGroupIcon(
-                                            segmentGroupBounds,
+                                            groupIndex,
                                             editor,
                                             maybeUpdate,
                                             lang,
@@ -1207,62 +1094,63 @@ function SegmentsTable({
                                     }
                                     removeSegmentIcon={() =>
                                         removeSegmentGroupIcon(
-                                            segmentGroupBounds,
+                                            groupIndex,
                                             editor,
                                             update,
                                         )
                                     }
                                     className={classes.segmentGroupHeaderIcon}
-                                    isPlaceholder={
-                                        !segmentGroupBounds.hasExplicitIcon
-                                    }
-                                    canRemoveIcon={
-                                        segmentGroupBounds.hasExplicitIcon
-                                    }
+                                    isPlaceholder={!row.has_explicit_icon}
+                                    canRemoveIcon={row.has_explicit_icon}
                                     lang={lang}
                                 />
                                 <td colSpan={columnCount - 1}>
                                     <input
                                         className={`${tableClasses.textBox} ${classes.segmentGroupHeaderInput}`}
                                         type="text"
-                                        value={
-                                            segmentGroupBounds.explicitName ??
-                                            ""
-                                        }
-                                        placeholder={
-                                            segmentGroupBounds.defaultName
-                                        }
+                                        value={row.explicit_name ?? ""}
+                                        placeholder={row.name}
                                         onMouseDown={(e) => e.stopPropagation()}
                                         onClick={(e) => e.stopPropagation()}
                                         onFocus={(_) =>
                                             selectSegmentGroup(
                                                 editor,
-                                                editorState,
-                                                segmentGroupIndex,
+                                                groupIndex,
                                                 rowState,
                                                 setRowState,
                                                 update,
                                             )
                                         }
                                         onChange={(e) => {
-                                            editor.selectOnly(
-                                                segmentGroupBounds.startIndex,
-                                            );
-                                            editor.selectRange(
-                                                segmentGroupBounds.endIndex,
-                                            );
-                                            editor.renameActiveSegmentGroup(
+                                            editor.renameSegmentGroup(
+                                                groupIndex,
                                                 e.target.value,
                                             );
                                             update();
                                         }}
                                     />
                                 </td>
-                            </tr>,
+                            </tr>
                         );
                     }
 
-                    rows.push(
+                    const s = row;
+                    const segmentIndex = s.segment_index;
+                    const segmentIcon = runEditorUrlCache.cache(s.icon);
+                    const isSelected =
+                        s.selected === "Selected" || s.selected === "Active";
+                    const rowClassName = [
+                        isSelected ? tableClasses.selected : "",
+                        s.starts_new_section
+                            ? classes.segmentGroupBoundary
+                            : "",
+                        s.is_major_segment
+                            ? classes.segmentGroupMajor
+                            : "",
+                    ]
+                        .filter(Boolean)
+                        .join(" ");
+                    return (
                         <tr
                             key={`segment-${segmentIndex}`}
                             className={rowClassName}
@@ -1295,7 +1183,7 @@ function SegmentsTable({
                             />
                             <td
                                 className={
-                                    isGroupedSegment
+                                    s.is_indented
                                         ? classes.segmentGroupName
                                         : ""
                                 }
@@ -1477,9 +1365,7 @@ function SegmentsTable({
                                     }
                                 />
                             </td>
-                            {editorState.segments[
-                                segmentIndex
-                            ].comparison_times.map(
+                            {s.comparison_times.map(
                                 (comparisonTime, comparisonIndex) => (
                                     <td key={comparisonIndex}>
                                         <input
@@ -1549,9 +1435,8 @@ function SegmentsTable({
                                     </td>
                                 ),
                             )}
-                        </tr>,
+                        </tr>
                     );
-                    return rows;
                 })}
             </tbody>
         </table>
@@ -2961,14 +2846,6 @@ async function addCustomVariable(
     }
 }
 
-function getSegmentIconUrl(
-    index: number,
-    runEditorUrlCache: UrlCache,
-    editorState: LiveSplit.RunEditorStateJson,
-): string | undefined {
-    return runEditorUrlCache.cache(editorState.segments[index].icon);
-}
-
 function changeSegmentSelection(
     event:
         | React.MouseEvent<HTMLElement, MouseEvent>
@@ -3023,15 +2900,26 @@ function shouldFocusClickedRow(
     return true;
 }
 
+function getSegmentRow(
+    editorState: LiveSplit.RunEditorStateJson,
+    segmentIndex: number,
+): LiveSplit.RunEditorSegmentRowJson | undefined {
+    return editorState.rows.find(
+        (row): row is LiveSplit.RunEditorSegmentRowJson =>
+            row.kind === "Segment" && row.segment_index === segmentIndex,
+    );
+}
+
 function getActiveSegmentIndex(
     editorState: LiveSplit.RunEditorStateJson,
     fallbackIndex: number,
 ) {
-    const activeIndex = editorState.segments.findIndex(
-        (segment) => segment.selected === "Active",
+    const activeSegment = editorState.rows.find(
+        (row): row is LiveSplit.RunEditorSegmentRowJson =>
+            row.kind === "Segment" && row.selected === "Active",
     );
 
-    return activeIndex === -1 ? fallbackIndex : activeIndex;
+    return activeSegment?.segment_index ?? fallbackIndex;
 }
 
 async function changeSegmentIcon(
@@ -3069,13 +2957,11 @@ function removeSegmentIcon(
 }
 
 async function changeSegmentGroupIcon(
-    bounds: SegmentGroupBounds,
+    groupIndex: number,
     editor: LiveSplit.RunEditorRefMut,
     maybeUpdate: () => void,
     lang: LiveSplit.Language | undefined,
 ) {
-    editor.selectOnly(bounds.startIndex);
-    editor.selectRange(bounds.endIndex);
     const maybeFile = await openFileAsArrayBuffer(FILE_EXT_IMAGES);
     if (maybeFile === undefined) {
         return;
@@ -3087,19 +2973,22 @@ async function changeSegmentGroupIcon(
         return;
     }
     const [file] = maybeFile;
-    if (editor.activeSetSegmentGroupIconFromArray(new Uint8Array(file))) {
+    if (
+        editor.setSegmentGroupIconFromArray(
+            groupIndex,
+            new Uint8Array(file),
+        )
+    ) {
         maybeUpdate();
     }
 }
 
 function removeSegmentGroupIcon(
-    bounds: SegmentGroupBounds,
+    groupIndex: number,
     editor: LiveSplit.RunEditorRefMut,
     update: () => void,
 ) {
-    editor.selectOnly(bounds.startIndex);
-    editor.selectRange(bounds.endIndex);
-    if (editor.activeRemoveSegmentGroupIcon()) {
+    if (editor.removeSegmentGroupIcon(groupIndex)) {
         update();
     }
 }
@@ -3143,7 +3032,11 @@ function setFocusedSegmentRowState(
     rowState: RowState,
     setRowState: (rowState: RowState) => void,
 ) {
-    const comparisonTimes = editorState.segments[index].comparison_times;
+    const segment = getSegmentRow(editorState, index);
+    if (segment === undefined) {
+        return;
+    }
+    const comparisonTimes = segment.comparison_times;
     setRowState({
         ...rowState,
         splitTimeChanged: false,
