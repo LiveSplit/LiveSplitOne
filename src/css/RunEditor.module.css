@@ -232,10 +232,6 @@
     padding-left: calc(var(--ui-large-margin) + var(--ui-margin)) !important;
 }
 
-.segmentGroupMajor {
-    font-weight: bold;
-}
-
 .bottomSection {
     display: flex;
     flex-wrap: wrap;

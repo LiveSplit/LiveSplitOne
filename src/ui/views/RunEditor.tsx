@@ -1144,9 +1144,6 @@ function SegmentsTable({
                         s.starts_new_section
                             ? classes.segmentGroupBoundary
                             : "",
-                        s.is_major_segment
-                            ? classes.segmentGroupMajor
-                            : "",
                     ]
                         .filter(Boolean)
                         .join(" ");
