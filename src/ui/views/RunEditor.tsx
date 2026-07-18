@@ -915,6 +915,19 @@ function startsUngroupedSectionAfterGroup(
     );
 }
 
+function commitFocusedInputBeforeSelectionChange() {
+    const focusedElement = document.activeElement;
+    if (focusedElement instanceof HTMLInputElement) {
+        // The time editors deliberately commit their parsed value on blur. A
+        // group header prevents the browser's default mouse-down behavior so
+        // that the header itself never takes focus, which also suppresses the
+        // browser-generated blur. Trigger it explicitly while the old segment
+        // is still active; its handler runs synchronously and commits the edit
+        // before selecting the group's range resets the row-local draft state.
+        focusedElement.blur();
+    }
+}
+
 function selectSegmentGroup(
     editor: LiveSplit.RunEditorRefMut,
     editorState: LiveSplit.RunEditorStateJson,
@@ -1168,6 +1181,7 @@ function SegmentsTable({
                                     .filter(Boolean)
                                     .join(" ")}
                                 onMouseDown={(e) => {
+                                    commitFocusedInputBeforeSelectionChange();
                                     e.preventDefault();
                                     selectSegmentGroup(
                                         editor,
