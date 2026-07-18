@@ -10,6 +10,8 @@ export function TextBox({
     label,
     invalid,
     list,
+    disabled,
+    placeholder,
 }: {
     className?: string;
     value?: string | number | readonly string[];
@@ -18,6 +20,8 @@ export function TextBox({
     label: string;
     invalid?: boolean;
     list?: [string, string[]];
+    disabled?: boolean;
+    placeholder?: string;
 }) {
     let outerClassName = classes.group;
     if (invalid) {
@@ -43,6 +47,8 @@ export function TextBox({
                 list={name}
                 type="text text-box"
                 required
+                disabled={disabled}
+                placeholder={placeholder}
                 className={className}
                 value={value}
                 onChange={onChange}

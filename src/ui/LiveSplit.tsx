@@ -42,6 +42,7 @@ import {
 import { TimerView } from "./views/TimerView";
 import { About } from "./views/About";
 import { SplitsSelection, EditingInfo } from "./views/SplitsSelection";
+import { ShareTimes, ShareTimesInfo } from "./views/ShareTimes";
 import { LayoutView } from "./views/LayoutView";
 import { ToastContainer, toast } from "react-toastify";
 import * as Storage from "../storage";
@@ -99,6 +100,7 @@ export enum MenuKind {
     Timer,
     Splits,
     RunEditor,
+    ShareTimes,
     Layout,
     LayoutEditor,
     MainSettings,
@@ -119,6 +121,7 @@ type Menu =
     | { kind: MenuKind.Timer }
     | { kind: MenuKind.Splits }
     | { kind: MenuKind.RunEditor; editor: RunEditor; splitsKey?: number }
+    | { kind: MenuKind.ShareTimes; run: Run; splitsKey?: number }
     | { kind: MenuKind.Layout }
     | { kind: MenuKind.LayoutEditor; editor: LayoutEditor }
     | { kind: MenuKind.MainSettings; config: HotkeyConfig }
@@ -478,6 +481,10 @@ export class LiveSplit extends React.Component<Props, State> {
                     splitsModified={this.state.splitsModified}
                 />
             );
+        } else if (this.state.menu.kind === MenuKind.ShareTimes) {
+            view = (
+                <ShareTimes run={this.state.menu.run} callbacks={this} />
+            );
         } else if (this.state.menu.kind === MenuKind.Timer) {
             view = (
                 <TimerView
@@ -769,6 +776,21 @@ export class LiveSplit extends React.Component<Props, State> {
         } else {
             run[Symbol.dispose]();
         }
+        this.openSplitsView();
+    }
+
+    public openShareTimes({ splitsKey, run }: ShareTimesInfo) {
+        this.changeMenu({ kind: MenuKind.ShareTimes, run, splitsKey });
+    }
+
+    public closeShareTimes() {
+        if (this.state.menu.kind !== MenuKind.ShareTimes) {
+            panic(
+                "No Share Times view to close",
+                this.state.generalSettings.lang,
+            );
+        }
+        this.state.menu.run[Symbol.dispose]();
         this.openSplitsView();
     }
 

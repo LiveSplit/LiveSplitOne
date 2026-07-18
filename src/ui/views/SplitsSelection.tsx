@@ -30,6 +30,7 @@ import {
     FolderOpen,
     Plus,
     Save,
+    Share2,
     SquarePen,
     Trash,
     Upload,
@@ -53,6 +54,7 @@ export interface Props {
 
 interface Callbacks {
     openRunEditor(editingInfo: EditingInfo): void;
+    openShareTimes(editingInfo: EditingInfo): void;
     setSplitsKey(newKey?: number): void;
     openTimerView(): void;
     renderViewWithSidebar(
@@ -480,6 +482,15 @@ function SideBar({
             <button onClick={exportTimerSplits}>
                 <Upload strokeWidth={2.5} />
                 {resolve(Label.Export, lang)}
+            </button>
+            <button
+                onClick={() => {
+                    const run = commandSink.getRun().clone();
+                    callbacks.openShareTimes({ run });
+                }}
+            >
+                <Share2 strokeWidth={2.5} />
+                Share Times
             </button>
             <hr />
             <button onClick={openTimerView}>
