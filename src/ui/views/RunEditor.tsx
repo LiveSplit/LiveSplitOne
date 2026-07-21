@@ -84,8 +84,7 @@ interface RowState {
     index: number;
 }
 
-type SegmentSelectionState =
-    LiveSplit.RunEditorSegmentRowJson["selected"];
+type SegmentSelectionState = LiveSplit.RunEditorSegmentRowJson["selected"];
 
 enum Tab {
     RealTime,
@@ -2970,12 +2969,7 @@ async function changeSegmentGroupIcon(
         return;
     }
     const [file] = maybeFile;
-    if (
-        editor.setSegmentGroupIconFromArray(
-            groupIndex,
-            new Uint8Array(file),
-        )
-    ) {
+    if (editor.setSegmentGroupIconFromArray(groupIndex, new Uint8Array(file))) {
         maybeUpdate();
     }
 }
