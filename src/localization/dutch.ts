@@ -574,10 +574,10 @@ export function resolveDutch(text: Label): string {
             return "Mogelijke tijdswinst";
         case Label.SubsplitDisplayModeFlat:
             return "Plat";
-        case Label.SubsplitDisplayModeAllGroupsExpanded:
-            return "Alle groepen uitgeklapt";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:
             return "Huidige groep uitgeklapt";
+        case Label.SubsplitDisplayModeAllGroupsExpanded:
+            return "Alle groepen uitgeklapt";
         case Label.ColumnUpdateWithDontUpdate:
             return "Niet bijwerken";
         case Label.ColumnUpdateWithSplitTime:

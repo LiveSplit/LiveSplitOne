@@ -574,10 +574,10 @@ export function resolveKorean(text: Label): string {
             return "절약 가능한 시간";
         case Label.SubsplitDisplayModeFlat:
             return "플랫";
-        case Label.SubsplitDisplayModeAllGroupsExpanded:
-            return "모든 그룹 펼침";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:
             return "현재 그룹 펼침";
+        case Label.SubsplitDisplayModeAllGroupsExpanded:
+            return "모든 그룹 펼침";
         case Label.ColumnUpdateWithDontUpdate:
             return "업데이트 안 함";
         case Label.ColumnUpdateWithSplitTime:

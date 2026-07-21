@@ -574,10 +574,10 @@ export function resolveEnglish(text: Label): string {
             return "Possible Time Save";
         case Label.SubsplitDisplayModeFlat:
             return "Flat";
-        case Label.SubsplitDisplayModeAllGroupsExpanded:
-            return "All Groups Expanded";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:
             return "Current Group Expanded";
+        case Label.SubsplitDisplayModeAllGroupsExpanded:
+            return "All Groups Expanded";
         case Label.ColumnUpdateWithDontUpdate:
             return "Don't Update";
         case Label.ColumnUpdateWithSplitTime:

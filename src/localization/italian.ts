@@ -574,10 +574,10 @@ export function resolveItalian(text: Label): string {
             return "Tempo risparmiabile";
         case Label.SubsplitDisplayModeFlat:
             return "Elenco piatto";
-        case Label.SubsplitDisplayModeAllGroupsExpanded:
-            return "Tutti i gruppi espansi";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:
             return "Gruppo attuale espanso";
+        case Label.SubsplitDisplayModeAllGroupsExpanded:
+            return "Tutti i gruppi espansi";
         case Label.ColumnUpdateWithDontUpdate:
             return "Non aggiornare";
         case Label.ColumnUpdateWithSplitTime:

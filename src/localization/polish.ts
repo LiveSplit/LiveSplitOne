@@ -574,10 +574,10 @@ export function resolvePolish(text: Label): string {
             return "Możliwa oszczędność czasu";
         case Label.SubsplitDisplayModeFlat:
             return "Płasko";
-        case Label.SubsplitDisplayModeAllGroupsExpanded:
-            return "Wszystkie grupy rozwinięte";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:
             return "Bieżąca grupa rozwinięta";
+        case Label.SubsplitDisplayModeAllGroupsExpanded:
+            return "Wszystkie grupy rozwinięte";
         case Label.ColumnUpdateWithDontUpdate:
             return "Nie aktualizuj";
         case Label.ColumnUpdateWithSplitTime:

@@ -37,14 +37,14 @@ export function SubsplitDisplayMode<T>({
                 <option value="Flat">
                     {resolve(Label.SubsplitDisplayModeFlat, lang)}
                 </option>
-                <option value="AllGroupsExpanded">
-                    {resolve(Label.SubsplitDisplayModeAllGroupsExpanded, lang)}
-                </option>
                 <option value="CurrentGroupExpanded">
                     {resolve(
                         Label.SubsplitDisplayModeCurrentGroupExpanded,
                         lang,
                     )}
+                </option>
+                <option value="AllGroupsExpanded">
+                    {resolve(Label.SubsplitDisplayModeAllGroupsExpanded, lang)}
                 </option>
             </select>
         </div>
