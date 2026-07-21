@@ -1,0 +1,114 @@
+.shareTimes {
+    display: flex;
+    padding: var(--ui-large-margin);
+
+    :global(.is-mobile) & {
+        width: 100%;
+        box-sizing: border-box;
+    }
+}
+
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-large-margin);
+    width: 100%;
+    max-width: 480px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-margin);
+}
+
+.label {
+    font-weight: bold;
+}
+
+.runSelect {
+    width: 100%;
+    height: 40px;
+    box-sizing: border-box;
+    padding: 0 6px;
+    appearance: none;
+    background: var(--button-middle-color);
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    color: var(--button-text-color);
+    cursor: pointer;
+    font-family: "fira", sans-serif;
+    font-size: 20px;
+    text-align: left;
+    text-overflow: ellipsis;
+}
+
+.offsetRow {
+    display: flex;
+    gap: var(--ui-margin);
+    align-items: flex-end;
+    width: 100%;
+}
+
+.offsetCell {
+    flex: 5 1 0;
+    min-width: 0;
+}
+
+.fpsCell {
+    flex: 1 1 0;
+    min-width: 0;
+}
+
+.error {
+    color: #e46;
+    font-size: 0.9em;
+}
+
+.warning {
+    color: #e9a13b;
+    font-size: 0.9em;
+}
+
+.timingMethod {
+    opacity: 0.7;
+}
+
+.hidden {
+    visibility: hidden;
+}
+
+.activeTab {
+    box-shadow: inset 3px 0 0 var(--button-text-color);
+    font-weight: bold;
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--ui-margin);
+
+    button {
+        margin: 0;
+    }
+}
+
+.youtube {
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-margin);
+}
+
+.youtubeText {
+    width: 100%;
+    box-sizing: border-box;
+    resize: vertical;
+    font-family: var(--fira, monospace);
+    white-space: pre;
+}
+
+.copyButton {
+    align-self: flex-start;
+    margin: 0;
+}
