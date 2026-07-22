@@ -218,6 +218,10 @@ export function resolveDutch(text: Label): string {
             return "Omhoog";
         case Label.MoveDown:
             return "Omlaag";
+        case Label.CreateGroup:
+            return "Groep aanmaken";
+        case Label.RemoveGroup:
+            return "Groep verwijderen";
         case Label.AddVariable:
             return "Variabele toevoegen";
         case Label.OpenPbPage:
@@ -568,6 +572,12 @@ export function resolveDutch(text: Label): string {
             return "Vergelijking segmenttijd";
         case Label.ColumnStartWithPossibleTimeSave:
             return "Mogelijke tijdswinst";
+        case Label.SubsplitDisplayModeFlat:
+            return "Plat";
+        case Label.SubsplitDisplayModeCurrentGroupExpanded:
+            return "Huidige groep uitgeklapt";
+        case Label.SubsplitDisplayModeAllGroupsExpanded:
+            return "Alle groepen uitgeklapt";
         case Label.ColumnUpdateWithDontUpdate:
             return "Niet bijwerken";
         case Label.ColumnUpdateWithSplitTime:

@@ -218,6 +218,10 @@ export function resolvePolish(text: Label): string {
             return "Przenieś w górę";
         case Label.MoveDown:
             return "Przenieś w dół";
+        case Label.CreateGroup:
+            return "Utwórz grupę";
+        case Label.RemoveGroup:
+            return "Usuń grupę";
         case Label.AddVariable:
             return "Dodaj zmienną";
         case Label.OpenPbPage:
@@ -568,6 +572,12 @@ export function resolvePolish(text: Label): string {
             return "Czas segmentu porównania";
         case Label.ColumnStartWithPossibleTimeSave:
             return "Możliwa oszczędność czasu";
+        case Label.SubsplitDisplayModeFlat:
+            return "Płasko";
+        case Label.SubsplitDisplayModeCurrentGroupExpanded:
+            return "Bieżąca grupa rozwinięta";
+        case Label.SubsplitDisplayModeAllGroupsExpanded:
+            return "Wszystkie grupy rozwinięte";
         case Label.ColumnUpdateWithDontUpdate:
             return "Nie aktualizuj";
         case Label.ColumnUpdateWithSplitTime:

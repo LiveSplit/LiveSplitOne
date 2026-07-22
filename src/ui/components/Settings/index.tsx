@@ -20,6 +20,7 @@ import {
     ColumnUpdateTrigger,
 } from "./Column";
 import { Alignment } from "./Alignment";
+import { SubsplitDisplayMode } from "./SubsplitDisplayMode";
 import { OptionalTimingMethod } from "./TimingMethod";
 import { DeltaGradient, Gradient, ListGradient } from "./Gradient";
 import { Color, OptionalColor } from "./Color";
@@ -125,6 +126,7 @@ export interface SettingValueFactory<T> {
     fromColumnUpdateWith(value: string): T | null;
     fromColumnUpdateTrigger(value: string): T | null;
     fromLayoutDirection(value: string): T | null;
+    fromSubsplitDisplayMode(value: string): T | null;
     fromFont(
         name: string,
         style: string,
@@ -239,6 +241,11 @@ export class JsonSettingValueFactory implements SettingValueFactory<ExtendedSett
         throw new Error("Not implemented");
     }
     public fromLayoutDirection(
+        _: string,
+    ): ExtendedSettingsDescriptionValueJson | null {
+        throw new Error("Not implemented");
+    }
+    public fromSubsplitDisplayMode(
         _: string,
     ): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
@@ -665,6 +672,17 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                         }
                         factory={this.props.factory}
                         editorUrlCache={this.props.editorUrlCache}
+                        lang={this.props.lang}
+                    />
+                );
+            } else if ("SubsplitDisplayMode" in value) {
+                component = (
+                    <SubsplitDisplayMode
+                        value={value.SubsplitDisplayMode}
+                        setValue={(value) =>
+                            this.props.setValue(valueIndex, value)
+                        }
+                        factory={this.props.factory}
                         lang={this.props.lang}
                     />
                 );

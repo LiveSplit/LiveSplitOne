@@ -218,6 +218,10 @@ export function resolveKorean(text: Label): string {
             return "위로";
         case Label.MoveDown:
             return "아래로";
+        case Label.CreateGroup:
+            return "그룹 만들기";
+        case Label.RemoveGroup:
+            return "그룹 해제";
         case Label.AddVariable:
             return "변수 추가";
         case Label.OpenPbPage:
@@ -568,6 +572,12 @@ export function resolveKorean(text: Label): string {
             return "비교 세그먼트 시간";
         case Label.ColumnStartWithPossibleTimeSave:
             return "절약 가능한 시간";
+        case Label.SubsplitDisplayModeFlat:
+            return "플랫";
+        case Label.SubsplitDisplayModeCurrentGroupExpanded:
+            return "현재 그룹 펼침";
+        case Label.SubsplitDisplayModeAllGroupsExpanded:
+            return "모든 그룹 펼침";
         case Label.ColumnUpdateWithDontUpdate:
             return "업데이트 안 함";
         case Label.ColumnUpdateWithSplitTime:

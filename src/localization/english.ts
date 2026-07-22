@@ -218,6 +218,10 @@ export function resolveEnglish(text: Label): string {
             return "Move Up";
         case Label.MoveDown:
             return "Move Down";
+        case Label.CreateGroup:
+            return "Create Group";
+        case Label.RemoveGroup:
+            return "Remove Group";
         case Label.AddVariable:
             return "Add Variable";
         case Label.OpenPbPage:
@@ -568,6 +572,12 @@ export function resolveEnglish(text: Label): string {
             return "Comparison Segment Time";
         case Label.ColumnStartWithPossibleTimeSave:
             return "Possible Time Save";
+        case Label.SubsplitDisplayModeFlat:
+            return "Flat";
+        case Label.SubsplitDisplayModeCurrentGroupExpanded:
+            return "Current Group Expanded";
+        case Label.SubsplitDisplayModeAllGroupsExpanded:
+            return "All Groups Expanded";
         case Label.ColumnUpdateWithDontUpdate:
             return "Don't Update";
         case Label.ColumnUpdateWithSplitTime:
