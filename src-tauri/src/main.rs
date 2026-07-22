@@ -4,7 +4,10 @@ use std::{
     borrow::Cow,
     future::Future,
     str::FromStr,
-    sync::{Arc, RwLock},
+    sync::{
+        atomic::{AtomicUsize, Ordering},
+        Arc, RwLock,
+    },
 };
 
 use livesplit_core::{
@@ -13,7 +16,15 @@ use livesplit_core::{
     networking::server_protocol::Command,
     HotkeyConfig, HotkeySystem, TimeSpan, TimingMethod,
 };
-use tauri::{Emitter, Manager, WebviewWindow};
+use tauri::{
+    webview::NewWindowResponse, Emitter, Manager, WebviewUrl, WebviewWindow, WebviewWindowBuilder,
+};
+
+mod constants;
+use constants::{
+    ABOUT_BLANK, APP_TITLE, INDEX_HTML, MAIN_WINDOW_HEIGHT, MAIN_WINDOW_LABEL, MAIN_WINDOW_WIDTH,
+    POPOUT_WINDOW_LABEL_PREFIX,
+};
 
 struct State {
     hotkey_system: RwLock<Option<HotkeySystem<TauriCommandSink>>>,
@@ -214,7 +225,47 @@ fn main() {
             window: RwLock::new(None),
         })
         .setup(move |app| {
-            let main_window = app.webview_windows().values().next().unwrap().clone();
+            let app_handle = app.handle().clone();
+            let popout_counter = Arc::new(AtomicUsize::new(0));
+            let popout_counter_for_handler = popout_counter.clone();
+
+            let main_window = WebviewWindowBuilder::new(
+                app,
+                MAIN_WINDOW_LABEL,
+                WebviewUrl::App(INDEX_HTML.into()),
+            )
+            .title(APP_TITLE)
+            .inner_size(MAIN_WINDOW_WIDTH, MAIN_WINDOW_HEIGHT)
+            .use_https_scheme(true)
+            // WebKitGTK can return `null` for the browser-managed `window.open`
+            // flow. Creating the requested window here keeps the frontend code
+            // portable while giving Tauri full control over Linux popouts.
+            .on_new_window(move |_url, features| {
+                let label = format!(
+                    "{POPOUT_WINDOW_LABEL_PREFIX}-{}",
+                    popout_counter_for_handler.fetch_add(1, Ordering::Relaxed)
+                );
+                let builder = WebviewWindowBuilder::new(
+                    &app_handle,
+                    label,
+                    WebviewUrl::External(ABOUT_BLANK.parse().unwrap()),
+                )
+                .window_features(features)
+                .on_document_title_changed(|window, title| {
+                    let _ = window.set_title(&title);
+                })
+                .title(APP_TITLE);
+
+                match builder.build() {
+                    Ok(window) => NewWindowResponse::Create { window },
+                    Err(err) => {
+                        eprintln!("failed to create popout window: {err}");
+                        NewWindowResponse::Deny
+                    }
+                }
+            })
+            .build()?;
+
             app.state::<State>()
                 .window
                 .write()

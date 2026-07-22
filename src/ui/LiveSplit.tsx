@@ -1290,12 +1290,11 @@ async function openPopupWindow(
         // It's fine if it fails, as not all browsers support this.
     }
 
-    const childWindow = window.open(
-        "",
-        "_blank",
-        `popup,width=${width},height=${height}`,
-    );
-    return childWindow;
+    try {
+        return window.open("about:blank", "_blank");
+    } catch {
+        return null;
+    }
 }
 
 async function popOut(
@@ -1307,6 +1306,9 @@ async function popOut(
 ) {
     const childWindow = await openPopupWindow(width, height);
     if (!childWindow) {
+        toast.error(
+            `${resolve(Label.PopOut, generalSettings.lang)}: ${resolve(Label.PopOutFailed, generalSettings.lang)}`,
+        );
         return;
     }
 

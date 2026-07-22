@@ -114,6 +114,8 @@ export function resolveKorean(text: Label): string {
             return "게임 시간";
         case Label.PopOut:
             return "팝아웃";
+        case Label.PopOutFailed:
+            return "새 창을 열지 못했습니다.";
         case Label.About:
             return "정보";
         case Label.Back:

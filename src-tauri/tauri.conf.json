@@ -20,14 +20,7 @@
   "plugins": {},
   "app": {
     "withGlobalTauri": true,
-    "windows": [
-      {
-        "title": "LiveSplit One",
-        "width": 850,
-        "height": 750,
-        "useHttpsScheme": true
-      }
-    ],
+    "windows": [],
     "security": {
       "csp": null
     }

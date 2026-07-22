@@ -114,6 +114,8 @@ export function resolveDutch(text: Label): string {
             return "Speltijd";
         case Label.PopOut:
             return "Pop‑out";
+        case Label.PopOutFailed:
+            return "Kan geen nieuw venster openen.";
         case Label.About:
             return "Over";
         case Label.Back:

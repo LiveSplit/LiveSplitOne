@@ -71,6 +71,7 @@ export enum Label {
     RealTime,
     GameTime,
     PopOut,
+    PopOutFailed,
     About,
     Back,
     AboutVersionPrefix,
