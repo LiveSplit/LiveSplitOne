@@ -76,7 +76,7 @@ export class LSOCommandSink {
             return CommandError.Busy;
         }
 
-        const result = this.timer.start() as CommandResult;
+        const result: CommandResult = this.timer.start();
 
         if (isEvent(result)) {
             this.callbacks.handleEvent(result);
@@ -90,7 +90,7 @@ export class LSOCommandSink {
             return CommandError.Busy;
         }
 
-        const result = this.timer.split() as CommandResult;
+        const result: CommandResult = this.timer.split();
 
         if (isEvent(result)) {
             this.callbacks.handleEvent(result);
@@ -104,7 +104,7 @@ export class LSOCommandSink {
             return CommandError.Busy;
         }
 
-        const result = this.timer.splitOrStart() as CommandResult;
+        const result: CommandResult = this.timer.splitOrStart();
 
         if (isEvent(result)) {
             this.callbacks.handleEvent(result);
@@ -136,7 +136,7 @@ export class LSOCommandSink {
             updateSplits = result === 0;
         }
 
-        const result = this.timer.reset(updateSplits ?? true) as CommandResult;
+        const result: CommandResult = this.timer.reset(updateSplits ?? true);
 
         if (isEvent(result)) {
             this.callbacks.handleEvent(result);
@@ -150,7 +150,7 @@ export class LSOCommandSink {
             return CommandError.Busy;
         }
 
-        const result = this.timer.undoSplit() as CommandResult;
+        const result: CommandResult = this.timer.undoSplit();
 
         if (isEvent(result)) {
             this.callbacks.handleEvent(result);
@@ -164,7 +164,7 @@ export class LSOCommandSink {
             return CommandError.Busy;
         }
 
-        const result = this.timer.skipSplit() as CommandResult;
+        const result: CommandResult = this.timer.skipSplit();
 
         if (isEvent(result)) {
             this.callbacks.handleEvent(result);
@@ -178,7 +178,7 @@ export class LSOCommandSink {
             return CommandError.Busy;
         }
 
-        const result = this.timer.togglePauseOrStart() as CommandResult;
+        const result: CommandResult = this.timer.togglePauseOrStart();
 
         if (isEvent(result)) {
             this.callbacks.handleEvent(result);
@@ -192,7 +192,7 @@ export class LSOCommandSink {
             return CommandError.Busy;
         }
 
-        const result = this.timer.pause() as CommandResult;
+        const result: CommandResult = this.timer.pause();
 
         if (isEvent(result)) {
             this.callbacks.handleEvent(result);
@@ -206,7 +206,7 @@ export class LSOCommandSink {
             return CommandError.Busy;
         }
 
-        const result = this.timer.resume() as CommandResult;
+        const result: CommandResult = this.timer.resume();
 
         if (isEvent(result)) {
             this.callbacks.handleEvent(result);
@@ -220,7 +220,7 @@ export class LSOCommandSink {
             return CommandError.Busy;
         }
 
-        const result = this.timer.undoAllPauses() as CommandResult;
+        const result: CommandResult = this.timer.undoAllPauses();
 
         if (isEvent(result)) {
             this.callbacks.handleEvent(result);
@@ -260,9 +260,9 @@ export class LSOCommandSink {
             return CommandError.Busy;
         }
 
-        const result = this.timer.setCurrentComparison(
+        const result: CommandResult = this.timer.setCurrentComparison(
             comparison,
-        ) as CommandResult;
+        );
 
         if (isEvent(result)) {
             this.callbacks.handleEvent(result);
@@ -302,7 +302,7 @@ export class LSOCommandSink {
             return CommandError.Busy;
         }
 
-        const result = this.timer.initializeGameTime() as CommandResult;
+        const result: CommandResult = this.timer.initializeGameTime();
 
         if (isEvent(result)) {
             this.callbacks.handleEvent(result);
@@ -321,7 +321,7 @@ export class LSOCommandSink {
             return CommandError.Busy;
         }
 
-        const result = this.timer.setGameTime(timeSpan) as CommandResult;
+        const result: CommandResult = this.timer.setGameTime(timeSpan);
 
         if (isEvent(result)) {
             this.callbacks.handleEvent(result);
@@ -335,7 +335,7 @@ export class LSOCommandSink {
             return CommandError.Busy;
         }
 
-        const result = this.timer.pauseGameTime() as CommandResult;
+        const result: CommandResult = this.timer.pauseGameTime();
 
         if (isEvent(result)) {
             this.callbacks.handleEvent(result);
@@ -349,7 +349,7 @@ export class LSOCommandSink {
             return CommandError.Busy;
         }
 
-        const result = this.timer.resumeGameTime() as CommandResult;
+        const result: CommandResult = this.timer.resumeGameTime();
 
         if (isEvent(result)) {
             this.callbacks.handleEvent(result);
@@ -364,7 +364,7 @@ export class LSOCommandSink {
         }
 
         const timeSpan = new TimeSpanRef(timeSpanPtr);
-        const result = this.timer.setLoadingTimes(timeSpan) as CommandResult;
+        const result: CommandResult = this.timer.setLoadingTimes(timeSpan);
 
         if (isEvent(result)) {
             this.callbacks.handleEvent(result);
