@@ -1,8 +1,8 @@
 import * as React from "react";
-import { Option } from "../../../util/OptionUtil";
-import { LiveSplitServer } from "../../../api/LiveSplitServer";
+import { type Option } from "../../../util/OptionUtil";
+import { type LiveSplitServer } from "../../../api/LiveSplitServer";
 import { Label, resolve } from "../../../localization";
-import { Language } from "../../../livesplit-core";
+import { type Language } from "../../../livesplit-core";
 
 import classes from "../../../css/LiveSplitServerButton.module.css";
 import tableClasses from "../../../css/Table.module.css";

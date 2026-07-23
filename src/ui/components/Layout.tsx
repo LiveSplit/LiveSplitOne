@@ -1,10 +1,10 @@
 import * as React from "react";
 import { ResizableBox } from "react-resizable";
-import { LayoutStateRef } from "../../livesplit-core";
-import { WebRenderer } from "../../livesplit-core/livesplit_core";
+import { type LayoutStateRef } from "../../livesplit-core";
+import { type WebRenderer } from "../../livesplit-core/livesplit_core";
 import AutoRefresh from "../../util/AutoRefresh";
-import { UrlCache } from "../../util/UrlCache";
-import { GeneralSettings } from "../views/MainSettings";
+import { type UrlCache } from "../../util/UrlCache";
+import { type GeneralSettings } from "../views/MainSettings";
 
 import classes from "../../css/Layout.module.css";
 
@@ -42,7 +42,14 @@ export function Layout({
             layoutUrlCache.imageCache.ptr,
         );
         if (newDims != null) {
-            onResize(newDims[0], newDims[1]);
+            const [newWidth, newHeight] = newDims;
+            if (newWidth === undefined || newHeight === undefined) {
+                // The renderer contract returns exactly two dimensions. Treat
+                // malformed binding data as an error instead of forwarding
+                // undefined dimensions into the layout state.
+                throw new Error("Renderer returned incomplete dimensions.");
+            }
+            onResize(newWidth, newHeight);
         }
     };
 

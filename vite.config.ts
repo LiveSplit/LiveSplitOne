@@ -117,7 +117,7 @@ function parseChangelog() {
                 messages[entry.lang] = entry.message;
             }
             const message =
-                messages.en ??
+                messages["en"] ??
                 messages["en-US"] ??
                 Object.values(messages)[0] ??
                 "";
@@ -142,7 +142,7 @@ function parseChangelogEntries(commit: string) {
                 entries.push(current);
             }
             const lang = match[1] || "en";
-            current = { lang, message: match[2] };
+            current = { lang, message: match[2] ?? "" };
             continue;
         }
         if (current && line.startsWith("    ")) {
@@ -257,8 +257,8 @@ export default defineConfig(async ({ mode }) => {
     const changelog = parseChangelog();
     try {
         const [lsoContributorsList, coreContributorsList] = await Promise.all([
-            getContributorsForRepo("LiveSplitOne", process.env.GITHUB_TOKEN),
-            getContributorsForRepo("livesplit-core", process.env.GITHUB_TOKEN),
+            getContributorsForRepo("LiveSplitOne", process.env["GITHUB_TOKEN"]),
+            getContributorsForRepo("livesplit-core", process.env["GITHUB_TOKEN"]),
         ]);
 
         const coreContributorsMap: Record<string, Contributor> = {};

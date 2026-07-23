@@ -1,8 +1,8 @@
-import { openDB, IDBPDatabase } from "idb";
-import { Option, assert } from "../util/OptionUtil";
-import { RunRef, Run, TimingMethod, Language } from "../livesplit-core";
+import { openDB, type IDBPDatabase } from "idb";
+import { type Option, assert } from "../util/OptionUtil";
+import { type RunRef, Run, TimingMethod, type Language } from "../livesplit-core";
 import {
-    GeneralSettings,
+    type GeneralSettings,
     MANUAL_GAME_TIME_SETTINGS_DEFAULT,
     THEME_MODE_AUTOMATIC,
 } from "../ui/views/MainSettings";
@@ -35,8 +35,8 @@ function getSplitsInfo(run: RunRef): SplitsInfo {
     return {
         game: run.gameName(),
         category: run.extendedCategoryName(true, true, true),
-        realTime,
-        gameTime,
+        ...(realTime === undefined ? {} : { realTime }),
+        ...(gameTime === undefined ? {} : { gameTime }),
     };
 }
 

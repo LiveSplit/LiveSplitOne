@@ -1,12 +1,12 @@
 import * as React from "react";
 import {
-    Language,
-    SettingsDescriptionValueJson,
+    type Language,
+    type SettingsDescriptionValueJson,
 } from "../../../livesplit-core";
-import { assertNever, Option } from "../../../util/OptionUtil";
+import { assertNever, type Option } from "../../../util/OptionUtil";
 import { HotkeyButton } from "./HotkeyButton";
-import { UrlCache } from "../../../util/UrlCache";
-import { LiveSplitServer } from "../../../api/LiveSplitServer";
+import { type UrlCache } from "../../../util/UrlCache";
+import { type LiveSplitServer } from "../../../api/LiveSplitServer";
 import { showDialog } from "../Dialog";
 import { Switch } from "../Switch";
 import { ServerConnectionButton } from "./ServerConnectionButton";
@@ -277,7 +277,7 @@ export class JsonSettingValueFactory implements SettingValueFactory<ExtendedSett
 }
 
 export class SettingsComponent<T> extends React.Component<Props<T>> {
-    public render() {
+    public override render() {
         const settingsRows: React.JSX.Element[] = [];
         const { factory } = this.props;
 
@@ -743,7 +743,7 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                 this.props.lang,
             ),
             textInput: true,
-            defaultText: serverUrl,
+            ...(serverUrl === undefined ? {} : { defaultText: serverUrl }),
             buttons: [
                 resolve(Label.Connect, this.props.lang),
                 resolve(Label.Cancel, this.props.lang),

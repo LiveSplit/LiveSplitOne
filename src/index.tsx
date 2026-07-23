@@ -58,12 +58,12 @@ try {
     const root = createRoot(container!);
     root.render(
         <LiveSplit
-            splits={splits}
-            layout={layout}
-            comparison={comparison}
+            {...(splits === undefined ? {} : { splits })}
+            {...(layout === undefined ? {} : { layout })}
+            {...(comparison === undefined ? {} : { comparison })}
             timingMethod={timingMethod}
-            hotkeys={hotkeys}
-            splitsKey={splitsKey}
+            {...(hotkeys === undefined ? {} : { hotkeys })}
+            {...(splitsKey === undefined ? {} : { splitsKey })}
             layoutWidth={layoutWidth}
             layoutHeight={layoutHeight}
             generalSettings={generalSettings}

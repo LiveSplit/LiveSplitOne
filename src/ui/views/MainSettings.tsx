@@ -5,22 +5,22 @@ import {
     SettingsComponent,
 } from "../components/Settings";
 import {
-    SettingsDescriptionJson,
+    type SettingsDescriptionJson,
     SettingValue,
-    HotkeyConfig,
+    type HotkeyConfig,
     Lang,
     Language,
 } from "../../livesplit-core";
 import { toast } from "react-toastify";
-import { UrlCache } from "../../util/UrlCache";
+import { type UrlCache } from "../../util/UrlCache";
 import {
     FRAME_RATE_AUTOMATIC as FRAME_RATE_BATTERY_AWARE,
     FRAME_RATE_MATCH_SCREEN as FRAME_RATE_MATCH_SCREEN,
-    FrameRateSetting,
+    type FrameRateSetting,
 } from "../../util/FrameRate";
 import { LiveSplitServer } from "../../api/LiveSplitServer";
-import { Option } from "../../util/OptionUtil";
-import { LSOCommandSink } from "../../util/LSOCommandSink";
+import { type Option } from "../../util/OptionUtil";
+import { type LSOCommandSink } from "../../util/LSOCommandSink";
 import { Check, ExternalLink, FlaskConical, X } from "lucide-react";
 
 import buttonGroupClasses from "../../css/ButtonGroup.module.css";
@@ -33,9 +33,9 @@ export interface GeneralSettings {
     showManualGameTime: ManualGameTimeSettings | false;
     saveOnReset: boolean;
     speedrunComIntegration: boolean;
-    serverUrl?: string;
-    theRunGgIntegration?: TheRunGgSettings;
-    alwaysOnTop?: boolean;
+    serverUrl: string | undefined;
+    theRunGgIntegration: TheRunGgSettings | undefined;
+    alwaysOnTop: boolean | undefined;
     lang: Language | undefined;
 }
 
@@ -161,32 +161,62 @@ export function View({
                             : "Auto",
                     list: [
                         ["Auto", resolve(Label.LanguageAuto, lang)],
-                        [`${Language.English}`, Lang.name(Language.English)],
-                        [`${Language.Dutch}`, Lang.name(Language.Dutch)],
-                        [`${Language.French}`, Lang.name(Language.French)],
-                        [`${Language.German}`, Lang.name(Language.German)],
-                        [`${Language.Italian}`, Lang.name(Language.Italian)],
+                        [
+                            `${Language.English}`,
+                            Lang.displayName(Language.English),
+                        ],
+                        [
+                            `${Language.Dutch}`,
+                            Lang.displayName(Language.Dutch),
+                        ],
+                        [
+                            `${Language.French}`,
+                            Lang.displayName(Language.French),
+                        ],
+                        [
+                            `${Language.German}`,
+                            Lang.displayName(Language.German),
+                        ],
+                        [
+                            `${Language.Italian}`,
+                            Lang.displayName(Language.Italian),
+                        ],
                         [
                             `${Language.Portuguese}`,
-                            Lang.name(Language.Portuguese),
+                            Lang.displayName(Language.Portuguese),
                         ],
-                        [`${Language.Polish}`, Lang.name(Language.Polish)],
-                        [`${Language.Russian}`, Lang.name(Language.Russian)],
-                        [`${Language.Spanish}`, Lang.name(Language.Spanish)],
+                        [
+                            `${Language.Polish}`,
+                            Lang.displayName(Language.Polish),
+                        ],
+                        [
+                            `${Language.Russian}`,
+                            Lang.displayName(Language.Russian),
+                        ],
+                        [
+                            `${Language.Spanish}`,
+                            Lang.displayName(Language.Spanish),
+                        ],
                         [
                             `${Language.BrazilianPortuguese}`,
-                            Lang.name(Language.BrazilianPortuguese),
+                            Lang.displayName(Language.BrazilianPortuguese),
                         ],
                         [
                             `${Language.ChineseSimplified}`,
-                            Lang.name(Language.ChineseSimplified),
+                            Lang.displayName(Language.ChineseSimplified),
                         ],
                         [
                             `${Language.ChineseTraditional}`,
-                            Lang.name(Language.ChineseTraditional),
+                            Lang.displayName(Language.ChineseTraditional),
                         ],
-                        [`${Language.Japanese}`, Lang.name(Language.Japanese)],
-                        [`${Language.Korean}`, Lang.name(Language.Korean)],
+                        [
+                            `${Language.Japanese}`,
+                            Lang.displayName(Language.Japanese),
+                        ],
+                        [
+                            `${Language.Korean}`,
+                            Lang.displayName(Language.Korean),
+                        ],
                     ] as [string, string][],
                     mandatory: true,
                 },
@@ -377,10 +407,7 @@ export function View({
                                             : value.String ===
                                                 FRAME_RATE_BATTERY_AWARE
                                               ? FRAME_RATE_BATTERY_AWARE
-                                              : parseInt(
-                                                    value.String.split(" ")[0],
-                                                    10,
-                                                ),
+                                              : parseInt(value.String, 10),
                                 });
                             }
                             break;

@@ -1,16 +1,16 @@
 import {
     getGameHeaders,
     getCategories as apiGetCategories,
-    Category,
+    type Category,
     getRuns as apiGetRuns,
     getPlatforms as apiGetPlatforms,
     getRegions as apiGetRegions,
     getGame as apiGetGame,
-    Game,
-    Run,
-    PlayersEmbedded,
+    type Game,
+    type Run,
+    type PlayersEmbedded,
 } from "./SpeedrunCom";
-import { Option } from "../util/OptionUtil";
+import { type Option } from "../util/OptionUtil";
 import { FuzzyList } from "../livesplit-core";
 
 const gameList: string[] = [];
@@ -197,11 +197,10 @@ export async function downloadLeaderboard(
             if (categories === undefined) {
                 return;
             }
-            const index = categories.map((c) => c.name).indexOf(categoryName);
-            if (index < 0) {
+            const category = categories.find((c) => c.name === categoryName);
+            if (category === undefined) {
                 return;
             }
-            const category = categories[index];
             const runPages = await apiGetRuns(
                 true,
                 category.id,

@@ -1,10 +1,10 @@
 import * as React from "react";
 import { useState } from "react";
-import { SettingValueFactory } from ".";
+import { type SettingValueFactory } from ".";
 import { Eye, EyeOff, Trash } from "lucide-react";
 import { Switch } from "../Switch";
 import { Label, resolve } from "../../../localization";
-import { Language } from "../../../livesplit-core";
+import { type Language } from "../../../livesplit-core";
 
 import tableClasses from "../../../css/Table.module.css";
 import tooltipClasses from "../../../css/Tooltip.module.css";

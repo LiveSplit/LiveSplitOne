@@ -1,6 +1,6 @@
-import React, { ChangeEvent, MouseEvent } from "react";
+import React, { type ChangeEvent, type MouseEvent } from "react";
 import { useEffect, useState } from "react";
-import { Color } from "../../livesplit-core";
+import { type Color } from "../../livesplit-core";
 import { Pipette } from "lucide-react";
 
 import classes from "../../css/ColorPicker.module.css";
@@ -417,10 +417,10 @@ function Hex({
                             .toString(16)
                             .padStart(2, "0")}`.toUpperCase()
                     }
-                    parse={(value) => {
+                    parse={(value): Color | undefined => {
                         const parsed = parseHex(value);
                         if (parsed) {
-                            return [...parsed, a];
+                            return [parsed[0], parsed[1], parsed[2], a];
                         }
                         return undefined;
                     }}
@@ -541,8 +541,14 @@ function ColorComponent({
     );
 }
 
-function PredefinedColors({ setColor }: { setColor: (color: Color) => void }) {
-    const predefinedColors = [
+function PredefinedColors({
+    setColor,
+}: {
+    setColor: (color: Color) => void;
+}) {
+    const predefinedColors: ReadonlyArray<
+        ReadonlyArray<readonly [string, number, number, number]>
+    > = [
         [
             ["Red", 244, 67, 54],
             ["Pink", 233, 30, 99],
@@ -570,7 +576,7 @@ function PredefinedColors({ setColor }: { setColor: (color: Color) => void }) {
             ["Black", 0, 0, 0],
             ["White", 255, 255, 255],
         ],
-    ] as unknown as [[[string, number, number, number]]];
+    ];
 
     return (
         <div className={classes.predefinedColors}>
@@ -593,7 +599,7 @@ function PredefinedColor({
     color: [title, r, g, b],
     setColor,
 }: {
-    color: [string, number, number, number];
+    color: readonly [string, number, number, number];
     setColor: (color: Color) => void;
 }) {
     return (
@@ -606,7 +612,7 @@ function PredefinedColor({
     );
 }
 
-function hsvToRgb(h: number, s: number, v: number) {
+function hsvToRgb(h: number, s: number, v: number): [number, number, number] {
     const xDivC = 1 - Math.abs(((h / 60) % 2) - 1);
 
     const [rc, rx, gc, gx, bc, bx] =
@@ -633,7 +639,7 @@ function hsvToRgb(h: number, s: number, v: number) {
     return [r, g, b];
 }
 
-function rgbToHsv(r: number, g: number, b: number) {
+function rgbToHsv(r: number, g: number, b: number): [number, number, number] {
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
     const delta = max - min;

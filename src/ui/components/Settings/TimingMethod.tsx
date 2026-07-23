@@ -1,7 +1,7 @@
 import * as React from "react";
 import { expect } from "../../../util/OptionUtil";
-import { Language, TimingMethodJson } from "../../../livesplit-core";
-import { SettingValueFactory } from ".";
+import { type Language, type TimingMethodJson } from "../../../livesplit-core";
+import { type SettingValueFactory } from ".";
 import { Switch } from "../Switch";
 import { Label, resolve } from "../../../localization";
 

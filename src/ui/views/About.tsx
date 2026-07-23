@@ -3,11 +3,11 @@ import * as React from "react";
 import LiveSplitIcon from "../../assets/icon.svg";
 import { Markdown } from "../components/Markdown";
 import { ArrowLeft } from "lucide-react";
-import { GeneralSettings } from "./MainSettings";
+import { type GeneralSettings } from "./MainSettings";
 import { formatDate, getLocale, Label, resolve } from "../../localization";
 
 import classes from "../../css/About.module.css";
-import { Language, Lang } from "../../livesplit-core";
+import { type Language, Lang } from "../../livesplit-core";
 
 interface Callbacks {
     renderViewWithSidebar(
@@ -131,12 +131,14 @@ function resolveChangelogMessage(
     }
 
     const base = locale.split("-")[0];
-    const baseMatch = change.messages[base];
-    if (baseMatch) {
-        return baseMatch;
+    if (base !== undefined) {
+        const baseMatch = change.messages[base];
+        if (baseMatch) {
+            return baseMatch;
+        }
     }
 
-    return change.messages.en ?? change.message;
+    return change.messages["en"] ?? change.message;
 }
 
 function SideBar({

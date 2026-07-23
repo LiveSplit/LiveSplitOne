@@ -7,14 +7,14 @@ import {
     RunEditor,
     Segment,
     Timer,
-    HotkeyConfig,
+    type HotkeyConfig,
     LayoutState,
-    LayoutStateJson,
-    TimingMethod,
-    TimerPhase,
+    type LayoutStateJson,
+    type TimingMethod,
+    type TimerPhase,
     Event,
-    LayoutRefMut,
-    Language,
+    type LayoutRefMut,
+    type Language,
 } from "../livesplit-core";
 import { Layout as ShowLayout } from "./components/Layout";
 import {
@@ -25,7 +25,7 @@ import {
     openFileAsString,
 } from "../util/FileUtil";
 import {
-    Option,
+    type Option,
     assertNull,
     expect,
     maybeDisposeAndThen,
@@ -34,14 +34,14 @@ import {
 import { LayoutEditor as LayoutEditorComponent } from "./views/LayoutEditor";
 import { RunEditor as RunEditorComponent } from "./views/RunEditor";
 import {
-    GeneralSettings,
+    type GeneralSettings,
     MainSettings as SettingsEditorComponent,
     THEME_MODE_AUTOMATIC,
     THEME_MODE_DARK,
 } from "./views/MainSettings";
 import { TimerView } from "./views/TimerView";
 import { About } from "./views/About";
-import { SplitsSelection, EditingInfo } from "./views/SplitsSelection";
+import { SplitsSelection, type EditingInfo } from "./views/SplitsSelection";
 import { LayoutView } from "./views/LayoutView";
 import { ToastContainer, toast } from "react-toastify";
 import * as Storage from "../storage";
@@ -52,10 +52,10 @@ import {
     TheRunClient,
     WebRenderer,
 } from "../livesplit-core/livesplit_core";
-import { LiveSplitServer } from "../api/LiveSplitServer";
+import { type LiveSplitServer } from "../api/LiveSplitServer";
 import { LSOCommandSink } from "../util/LSOCommandSink";
 import { DialogContainer } from "./components/Dialog";
-import { createHotkeys, HotkeyImplementation } from "../platform/Hotkeys";
+import { createHotkeys, type HotkeyImplementation } from "../platform/Hotkeys";
 import { Menu } from "lucide-react";
 import { createRoot } from "react-dom/client";
 
@@ -118,7 +118,11 @@ function isMenuLocked(menuKind: MenuKind) {
 type Menu =
     | { kind: MenuKind.Timer }
     | { kind: MenuKind.Splits }
-    | { kind: MenuKind.RunEditor; editor: RunEditor; splitsKey?: number }
+    | {
+          kind: MenuKind.RunEditor;
+          editor: RunEditor;
+          splitsKey: number | undefined;
+      }
     | { kind: MenuKind.Layout }
     | { kind: MenuKind.LayoutEditor; editor: LayoutEditor }
     | { kind: MenuKind.MainSettings; config: HotkeyConfig }
@@ -147,7 +151,7 @@ export interface State {
     layoutWidth: number;
     layoutHeight: number;
     menu: Menu;
-    openedSplitsKey?: number;
+    openedSplitsKey: number | undefined;
     sidebarOpen: boolean;
     sidebarTransitionsEnabled: boolean;
     storedLayoutWidth: number;
@@ -323,7 +327,7 @@ export class LiveSplit extends React.Component<Props, State> {
         }
     }
 
-    public componentDidMount() {
+    public override componentDidMount() {
         this.scrollEvent = { handleEvent: (e: WheelEvent) => this.onScroll(e) };
         window.addEventListener("wheel", this.scrollEvent);
         this.rightClickEvent = {
@@ -363,11 +367,11 @@ export class LiveSplit extends React.Component<Props, State> {
         }
     }
 
-    public componentDidUpdate() {
+    public override componentDidUpdate() {
         this.handleAutomaticResize();
     }
 
-    public componentWillUnmount() {
+    public override componentWillUnmount() {
         window.removeEventListener(
             "wheel",
             expect(
@@ -416,7 +420,7 @@ export class LiveSplit extends React.Component<Props, State> {
         }
     }
 
-    public render() {
+    public override render() {
         let view: React.JSX.Element | undefined;
 
         if (this.state.menu.kind === MenuKind.RunEditor) {

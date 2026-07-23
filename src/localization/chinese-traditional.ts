@@ -1,4 +1,4 @@
-import { Label } from ".";
+import { type Label } from ".";
 import { resolveChineseSimplified } from "./chinese-simplified";
 
 export function resolveChineseTraditional(text: Label): string {

@@ -1,19 +1,27 @@
 import * as React from "react";
-import { Option, assertNever, expect } from "../../../util/OptionUtil";
+import { type Option, assertNever, expect } from "../../../util/OptionUtil";
 import type {
     Color,
     Language,
     LayoutBackground,
 } from "../../../livesplit-core";
 import { ColorPicker } from "../ColorPicker";
-import { SettingValueFactory } from ".";
-import { UrlCache } from "../../../util/UrlCache";
+import { type SettingValueFactory } from ".";
+import { type UrlCache } from "../../../util/UrlCache";
 import { toast } from "react-toastify";
 import { FILE_EXT_IMAGES, openFileAsArrayBuffer } from "../../../util/FileUtil";
 import { Label, resolve } from "../../../localization";
 
 import colorPickerClasses from "../../../css/ColorPicker.module.css";
 import tableClasses from "../../../css/Table.module.css";
+
+function firstBackgroundKey(value: object): string {
+    const key = Object.keys(value)[0];
+    if (key === undefined) {
+        throw new Error("Expected a layout background variant.");
+    }
+    return key;
+}
 
 export function LayoutBackground<T>({
     value,
@@ -44,39 +52,39 @@ export function LayoutBackground<T>({
         color1: Option<Color>,
         color2: Option<Color>,
     ) => {
-        color1 = color1 ?? [0, 0, 0, 0];
-        color2 = color2 ?? color1;
+        const rgba1: Color = color1 ?? [0, 0, 0, 0];
+        const rgba2: Color = color2 ?? rgba1;
         switch (type) {
             case "Transparent":
                 return factory.fromTransparentGradient();
             case "Plain":
                 return factory.fromColor(
-                    color1[0],
-                    color1[1],
-                    color1[2],
-                    color1[3],
+                    rgba1[0],
+                    rgba1[1],
+                    rgba1[2],
+                    rgba1[3],
                 );
             case "Vertical":
                 return factory.fromVerticalGradient(
-                    color1[0],
-                    color1[1],
-                    color1[2],
-                    color1[3],
-                    color2[0],
-                    color2[1],
-                    color2[2],
-                    color2[3],
+                    rgba1[0],
+                    rgba1[1],
+                    rgba1[2],
+                    rgba1[3],
+                    rgba2[0],
+                    rgba2[1],
+                    rgba2[2],
+                    rgba2[3],
                 );
             case "Horizontal":
                 return factory.fromHorizontalGradient(
-                    color1[0],
-                    color1[1],
-                    color1[2],
-                    color1[3],
-                    color2[0],
-                    color2[1],
-                    color2[2],
-                    color2[3],
+                    rgba1[0],
+                    rgba1[1],
+                    rgba1[2],
+                    rgba1[3],
+                    rgba2[0],
+                    rgba2[1],
+                    rgba2[2],
+                    rgba2[3],
                 );
             default:
                 return expect(
@@ -93,7 +101,7 @@ export function LayoutBackground<T>({
     };
 
     if (typeof value !== "string") {
-        [type] = Object.keys(value);
+        type = firstBackgroundKey(value);
         if ("Plain" in value) {
             color1 = value.Plain;
         } else if ("Vertical" in value) {

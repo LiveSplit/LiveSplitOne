@@ -1,7 +1,7 @@
 import * as React from "react";
 import {
     FRAME_RATE_AUTOMATIC,
-    FrameRateSetting,
+    type FrameRateSetting,
     batteryAwareFrameRate,
 } from "./FrameRate";
 

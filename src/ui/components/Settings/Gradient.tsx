@@ -6,12 +6,20 @@ import type {
     Language,
     ListGradient,
 } from "../../../livesplit-core";
-import { SettingValueFactory } from ".";
-import { assertNever, expect, Option } from "../../../util/OptionUtil";
+import { type SettingValueFactory } from ".";
+import { assertNever, expect, type Option } from "../../../util/OptionUtil";
 import { ColorPicker } from "../ColorPicker";
 import { Label, resolve } from "../../../localization";
 
 import tableClasses from "../../../css/Table.module.css";
+
+function firstGradientKey(value: object): string {
+    const key = Object.keys(value)[0];
+    if (key === undefined) {
+        throw new Error("Expected a gradient variant.");
+    }
+    return key;
+}
 
 export function Gradient<T>({
     value,
@@ -29,7 +37,7 @@ export function Gradient<T>({
     let color2: Color | undefined;
 
     if (value !== "Transparent") {
-        type = Object.keys(value)[0];
+        type = firstGradientKey(value);
         if ("Plain" in value) {
             color1 = value.Plain;
         } else if ("Vertical" in value) {
@@ -48,39 +56,39 @@ export function Gradient<T>({
         color1: Option<Color>,
         color2: Option<Color>,
     ) => {
-        color1 = color1 ?? [0, 0, 0, 0];
-        color2 = color2 ?? color1;
+        const rgba1: Color = color1 ?? [0, 0, 0, 0];
+        const rgba2: Color = color2 ?? rgba1;
         switch (type) {
             case "Transparent":
                 return factory.fromTransparentGradient();
             case "Plain":
                 return factory.fromColor(
-                    color1[0],
-                    color1[1],
-                    color1[2],
-                    color1[3],
+                    rgba1[0],
+                    rgba1[1],
+                    rgba1[2],
+                    rgba1[3],
                 );
             case "Vertical":
                 return factory.fromVerticalGradient(
-                    color1[0],
-                    color1[1],
-                    color1[2],
-                    color1[3],
-                    color2[0],
-                    color2[1],
-                    color2[2],
-                    color2[3],
+                    rgba1[0],
+                    rgba1[1],
+                    rgba1[2],
+                    rgba1[3],
+                    rgba2[0],
+                    rgba2[1],
+                    rgba2[2],
+                    rgba2[3],
                 );
             case "Horizontal":
                 return factory.fromHorizontalGradient(
-                    color1[0],
-                    color1[1],
-                    color1[2],
-                    color1[3],
-                    color2[0],
-                    color2[1],
-                    color2[2],
-                    color2[3],
+                    rgba1[0],
+                    rgba1[1],
+                    rgba1[2],
+                    rgba1[3],
+                    rgba2[0],
+                    rgba2[1],
+                    rgba2[2],
+                    rgba2[3],
                 );
             default:
                 throw new Error("Unexpected Gradient Type");
@@ -165,7 +173,7 @@ export function DeltaGradient<T>({
     let color2: Color | undefined;
 
     if (typeof value !== "string") {
-        [type] = Object.keys(value);
+        type = firstGradientKey(value);
         if ("Plain" in value) {
             color1 = value.Plain;
         } else if ("Vertical" in value) {
@@ -184,39 +192,39 @@ export function DeltaGradient<T>({
         color1: Option<Color>,
         color2: Option<Color>,
     ) => {
-        color1 = color1 ?? [0, 0, 0, 0];
-        color2 = color2 ?? color1;
+        const rgba1: Color = color1 ?? [0, 0, 0, 0];
+        const rgba2: Color = color2 ?? rgba1;
         switch (type) {
             case "Transparent":
                 return factory.fromTransparentGradient();
             case "Plain":
                 return factory.fromColor(
-                    color1[0],
-                    color1[1],
-                    color1[2],
-                    color1[3],
+                    rgba1[0],
+                    rgba1[1],
+                    rgba1[2],
+                    rgba1[3],
                 );
             case "Vertical":
                 return factory.fromVerticalGradient(
-                    color1[0],
-                    color1[1],
-                    color1[2],
-                    color1[3],
-                    color2[0],
-                    color2[1],
-                    color2[2],
-                    color2[3],
+                    rgba1[0],
+                    rgba1[1],
+                    rgba1[2],
+                    rgba1[3],
+                    rgba2[0],
+                    rgba2[1],
+                    rgba2[2],
+                    rgba2[3],
                 );
             case "Horizontal":
                 return factory.fromHorizontalGradient(
-                    color1[0],
-                    color1[1],
-                    color1[2],
-                    color1[3],
-                    color2[0],
-                    color2[1],
-                    color2[2],
-                    color2[3],
+                    rgba1[0],
+                    rgba1[1],
+                    rgba1[2],
+                    rgba1[3],
+                    rgba2[0],
+                    rgba2[1],
+                    rgba2[2],
+                    rgba2[3],
                 );
             default:
                 return expect(
@@ -315,12 +323,12 @@ export function ListGradient<T>({
     let color2: Color | undefined;
 
     if ("Alternating" in value) {
-        type = Object.keys(value)[0];
+        type = firstGradientKey(value);
         [color1, color2] = value.Alternating;
     } else {
         const gradient = value.Same;
         if (gradient !== "Transparent") {
-            type = Object.keys(gradient)[0];
+            type = firstGradientKey(gradient);
             if ("Plain" in gradient) {
                 color1 = gradient.Plain;
             } else if ("Vertical" in gradient) {
@@ -340,50 +348,50 @@ export function ListGradient<T>({
         color1: Option<Color>,
         color2: Option<Color>,
     ) => {
-        color1 = color1 ?? [0, 0, 0, 0];
-        color2 = color2 ?? color1;
+        const rgba1: Color = color1 ?? [0, 0, 0, 0];
+        const rgba2: Color = color2 ?? rgba1;
         switch (type) {
             case "Transparent":
                 return factory.fromTransparentGradient();
             case "Plain":
                 return factory.fromColor(
-                    color1[0],
-                    color1[1],
-                    color1[2],
-                    color1[3],
+                    rgba1[0],
+                    rgba1[1],
+                    rgba1[2],
+                    rgba1[3],
                 );
             case "Vertical":
                 return factory.fromVerticalGradient(
-                    color1[0],
-                    color1[1],
-                    color1[2],
-                    color1[3],
-                    color2[0],
-                    color2[1],
-                    color2[2],
-                    color2[3],
+                    rgba1[0],
+                    rgba1[1],
+                    rgba1[2],
+                    rgba1[3],
+                    rgba2[0],
+                    rgba2[1],
+                    rgba2[2],
+                    rgba2[3],
                 );
             case "Horizontal":
                 return factory.fromHorizontalGradient(
-                    color1[0],
-                    color1[1],
-                    color1[2],
-                    color1[3],
-                    color2[0],
-                    color2[1],
-                    color2[2],
-                    color2[3],
+                    rgba1[0],
+                    rgba1[1],
+                    rgba1[2],
+                    rgba1[3],
+                    rgba2[0],
+                    rgba2[1],
+                    rgba2[2],
+                    rgba2[3],
                 );
             case "Alternating":
                 return factory.fromAlternatingGradient(
-                    color1[0],
-                    color1[1],
-                    color1[2],
-                    color1[3],
-                    color2[0],
-                    color2[1],
-                    color2[2],
-                    color2[3],
+                    rgba1[0],
+                    rgba1[1],
+                    rgba1[2],
+                    rgba1[3],
+                    rgba2[0],
+                    rgba2[1],
+                    rgba2[2],
+                    rgba2[3],
                 );
             default:
                 throw new Error("Unexpected Gradient Type");

@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Option } from "../util/OptionUtil";
+import { type Option } from "../util/OptionUtil";
 
 import runEditorClasses from "../css/RunEditor.module.css";
 
@@ -29,7 +29,10 @@ function tryYoutubeFromUri(uri: string): Option<React.JSX.Element> {
         result = youtubeBase2.exec(uri);
     }
     if (result !== null) {
-        return resolveYoutube(result[1]);
+        const videoId = result[1];
+        if (videoId !== undefined) {
+            return resolveYoutube(videoId);
+        }
     }
     return null;
 }
@@ -42,7 +45,10 @@ function tryTwitchFromUri(uri: string): Option<React.JSX.Element> {
         result = twitchBase2.exec(uri);
     }
     if (result !== null) {
-        return resolveTwitch(result[3]);
+        const videoId = result[3];
+        if (videoId !== undefined) {
+            return resolveTwitch(videoId);
+        }
     }
     return null;
 }

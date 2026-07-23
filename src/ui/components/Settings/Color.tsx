@@ -1,6 +1,6 @@
 import * as React from "react";
 import type { Color } from "../../../livesplit-core";
-import { SettingValueFactory } from ".";
+import { type SettingValueFactory } from ".";
 import { ColorPicker } from "../ColorPicker";
 import { Switch } from "../Switch";
 

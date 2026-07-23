@@ -146,6 +146,10 @@ jobs:
               if: matrix.platform == 'web'
               run: npm run lint
 
+            - name: Run TypeScript type checking (Web)
+              if: matrix.platform == 'web'
+              run: npm run typecheck
+
             - name: Build Frontend (Web)
               if: matrix.platform == 'web'
               env:

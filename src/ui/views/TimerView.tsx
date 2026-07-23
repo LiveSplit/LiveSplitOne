@@ -2,21 +2,21 @@ import React, { useState } from "react";
 import {
     TimingMethod,
     TimeSpan,
-    LayoutStateRefMut,
+    type LayoutStateRefMut,
     TimerPhase,
 } from "../../livesplit-core";
 import * as LiveSplit from "../../livesplit-core";
-import { Option, expect } from "../../util/OptionUtil";
+import { type Option, expect } from "../../util/OptionUtil";
 import { DragUpload } from "../components/DragUpload";
 import { Layout } from "../components/Layout";
-import { UrlCache } from "../../util/UrlCache";
-import { WebRenderer } from "../../livesplit-core/livesplit_core";
+import { type UrlCache } from "../../util/UrlCache";
+import { type WebRenderer } from "../../livesplit-core/livesplit_core";
 import {
-    GeneralSettings,
+    type GeneralSettings,
     MANUAL_GAME_TIME_MODE_SEGMENT_TIMES,
 } from "./MainSettings";
-import { LiveSplitServer } from "../../api/LiveSplitServer";
-import { LSOCommandSink } from "../../util/LSOCommandSink";
+import { type LiveSplitServer } from "../../api/LiveSplitServer";
+import { type LSOCommandSink } from "../../util/LSOCommandSink";
 import {
     ArrowDown,
     ArrowUp,

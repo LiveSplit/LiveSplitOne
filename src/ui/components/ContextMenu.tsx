@@ -1,8 +1,8 @@
-import React, { createContext, useContext, ReactNode } from "react";
+import React, { createContext, useContext, type ReactNode } from "react";
 import { expect } from "../../util/OptionUtil";
 
 import classes from "../../css/ContextMenu.module.css";
-import { Language } from "../../livesplit-core";
+import { type Language } from "../../livesplit-core";
 
 export interface Position {
     x: number;

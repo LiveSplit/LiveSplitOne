@@ -1,4 +1,4 @@
-import { Language } from "../livesplit-core";
+import { type Language } from "../livesplit-core";
 import { getLocale } from "../localization";
 
 export function formatLeaderboardTime(
