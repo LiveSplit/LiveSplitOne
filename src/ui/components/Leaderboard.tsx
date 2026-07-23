@@ -1,11 +1,11 @@
 import * as React from "react";
-import { expect, map, Option } from "../../util/OptionUtil";
+import { expect, map, type Option } from "../../util/OptionUtil";
 import {
-    Category,
-    Game,
-    PlayersEmbedded,
-    Run,
-    Variable,
+    type Category,
+    type Game,
+    type PlayersEmbedded,
+    type Run,
+    type Variable,
 } from "../../api/SpeedrunCom";
 import { getGameInfo, getPlatforms, getRegions } from "../../api/GameList";
 import { resolveEmbed } from "../Embed";
@@ -17,7 +17,7 @@ import classes from "../../css/Leaderboard.module.css";
 import runEditorClasses from "../../css/RunEditor.module.css";
 import tableClasses from "../../css/Table.module.css";
 import markdownClasses from "../../css/Markdown.module.css";
-import { Language } from "../../livesplit-core";
+import { type Language } from "../../livesplit-core";
 
 export interface Filters {
     region?: string;
@@ -195,10 +195,10 @@ export function Leaderboard({
                             run.videos.links != null &&
                             run.videos.links.length > 0
                         ) {
-                            const videoUri =
-                                run.videos.links[run.videos.links.length - 1]
-                                    .uri;
-                            embed = resolveEmbed(videoUri);
+                            const video = run.videos.links.at(-1);
+                            if (video !== undefined) {
+                                embed = resolveEmbed(video.uri);
+                            }
                         }
                         const comment = run.comment ?? "";
 
@@ -340,10 +340,15 @@ export function Leaderboard({
                                         let name = p.name;
                                         let flag;
                                         if (possibleMatch !== null) {
-                                            flag = replaceFlag(
-                                                possibleMatch[1],
-                                            );
-                                            name = possibleMatch[2];
+                                            const [, countryCode, matchedName] =
+                                                possibleMatch;
+                                            if (
+                                                countryCode !== undefined &&
+                                                matchedName !== undefined
+                                            ) {
+                                                flag = replaceFlag(countryCode);
+                                                name = matchedName;
+                                            }
                                         }
                                         return [
                                             i !== 0 ? ", " : null,
@@ -515,7 +520,7 @@ export function LeaderboardButtons({
                             } else if (value === "no") {
                                 filters.isEmulated = false;
                             } else {
-                                filters.isEmulated = undefined;
+                                delete filters.isEmulated;
                             }
                             updateFilters();
                         }}
@@ -553,12 +558,15 @@ export function LeaderboardButtons({
                     } else {
                         const defaultValueId = variable.values.default;
                         if (defaultValueId != null) {
-                            currentFilterValue =
-                                variable.values.values[defaultValueId].label;
-                            filters.variables.set(
-                                variable.name,
-                                currentFilterValue,
-                            );
+                            const defaultValue =
+                                variable.values.values[defaultValueId];
+                            if (defaultValue !== undefined) {
+                                currentFilterValue = defaultValue.label;
+                                filters.variables.set(
+                                    variable.name,
+                                    currentFilterValue,
+                                );
+                            }
                         }
                     }
                 }

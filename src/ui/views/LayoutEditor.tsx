@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import * as LiveSplit from "../../livesplit-core";
 import { SettingsComponent } from "../components/Settings";
-import { UrlCache } from "../../util/UrlCache";
+import { type UrlCache } from "../../util/UrlCache";
 import { Layout } from "../components/Layout";
-import { WebRenderer } from "../../livesplit-core/livesplit_core";
-import { GeneralSettings } from "./MainSettings";
-import { LSOCommandSink } from "../../util/LSOCommandSink";
+import { type WebRenderer } from "../../livesplit-core/livesplit_core";
+import { type GeneralSettings } from "./MainSettings";
+import { type LSOCommandSink } from "../../util/LSOCommandSink";
 import {
     ContextMenu,
     MenuItem,
     Separator,
-    Position,
+    type Position,
 } from "../components/ContextMenu";
 import { ArrowDown, ArrowUp, Check, Copy, Plus, Trash, X } from "lucide-react";
 import { Label, orAutoLang, resolve } from "../../localization";
@@ -136,6 +136,12 @@ export function View({
         }
         const indent = state.indent_levels[i];
         const isPlaceholder = state.is_placeholder[i];
+        if (indent === undefined) {
+            // Components and indentation levels are parallel arrays produced
+            // by livesplit-core. Fail at the binding boundary if that invariant
+            // is broken instead of rendering with an undefined offset.
+            throw new Error("Layout editor state has no component indentation.");
+        }
         return (
             <tr
                 key={i}
@@ -315,7 +321,7 @@ export function SideBar({
     lang,
 }: {
     callbacks: Callbacks;
-    lang?: LiveSplit.Language;
+    lang: LiveSplit.Language | undefined;
 }) {
     return (
         <>
@@ -346,7 +352,7 @@ function AddComponentButton({
     addVariable: (name: string) => void;
     addComponent: (componentClass: ComponentClass) => void;
     layoutDirection: LiveSplit.LayoutDirection;
-    lang?: LiveSplit.Language;
+    lang: LiveSplit.Language | undefined;
 }) {
     const [position, setPosition] = useState<Position | null>(null);
 

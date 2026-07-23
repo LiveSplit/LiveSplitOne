@@ -7,7 +7,7 @@ import type {
     ColumnUpdateTrigger,
     Language,
 } from "../../../livesplit-core";
-import { SettingValueFactory } from ".";
+import { type SettingValueFactory } from ".";
 import { Label, resolve } from "../../../localization";
 
 import tableClasses from "../../../css/Table.module.css";

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { expect } from "../../../util/OptionUtil";
 import type { Font, Language } from "../../../livesplit-core";
-import { SettingValueFactory } from ".";
+import { type SettingValueFactory } from ".";
 import { Switch } from "../Switch";
 import * as FontList from "../../../util/FontList";
 import { Label, resolve } from "../../../localization";

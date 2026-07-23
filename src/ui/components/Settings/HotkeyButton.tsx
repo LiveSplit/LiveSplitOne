@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { Option, expect } from "../../../util/OptionUtil";
+import { type Option, expect } from "../../../util/OptionUtil";
 import { hotkeySystem } from "../../LiveSplit";
 import { Circle, Trash } from "lucide-react";
 import { Label, resolve } from "../../../localization";
-import { Language } from "../../../livesplit-core";
+import { type Language } from "../../../livesplit-core";
 
 import classes from "../../../css/HotkeyButton.module.css";
 import tooltipClasses from "../../../css/Tooltip.module.css";
@@ -38,10 +38,15 @@ export function HotkeyButton({
             if (value != null) {
                 const matches = value.match(/(.+)\+\s*(.+)$/);
                 if (matches != null) {
-                    resolvedKey = `${matches[1]}+ ${await resolveKey(
-                        matches[2],
-                        lang,
-                    )}`;
+                    const [, modifiers, keyCode] = matches;
+                    if (modifiers !== undefined && keyCode !== undefined) {
+                        resolvedKey = `${modifiers}+ ${await resolveKey(
+                            keyCode,
+                            lang,
+                        )}`;
+                    } else {
+                        resolvedKey = await resolveKey(value, lang);
+                    }
                 } else {
                     resolvedKey = await resolveKey(value, lang);
                 }
@@ -110,22 +115,19 @@ export function HotkeyButton({
 
                 let gamepadIdx = 0;
                 for (const gamepad of gamepads) {
-                    if (gamepadIdx >= oldButtonState.length) {
-                        oldButtonState[gamepadIdx] = [];
-                    }
+                    const gamepadState = oldButtonState[gamepadIdx] ?? [];
+                    oldButtonState[gamepadIdx] = gamepadState;
 
                     if (gamepad != null) {
                         let buttonIdx = 0;
                         for (const button of gamepad.buttons) {
                             const oldState =
-                                oldButtonState[gamepadIdx]?.[buttonIdx] ??
-                                false;
+                                gamepadState[buttonIdx] ?? false;
                             if (button.pressed && !oldState) {
                                 setValue(`Gamepad${buttonIdx}`);
                             }
 
-                            oldButtonState[gamepadIdx][buttonIdx] =
-                                button.pressed;
+                            gamepadState[buttonIdx] = button.pressed;
 
                             buttonIdx++;
                         }

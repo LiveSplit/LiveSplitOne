@@ -5,22 +5,22 @@ import {
     SettingsComponent,
 } from "../components/Settings";
 import {
-    SettingsDescriptionJson,
+    type SettingsDescriptionJson,
     SettingValue,
-    HotkeyConfig,
+    type HotkeyConfig,
     Lang,
     Language,
 } from "../../livesplit-core";
 import { toast } from "react-toastify";
-import { UrlCache } from "../../util/UrlCache";
+import { type UrlCache } from "../../util/UrlCache";
 import {
     FRAME_RATE_AUTOMATIC as FRAME_RATE_BATTERY_AWARE,
     FRAME_RATE_MATCH_SCREEN as FRAME_RATE_MATCH_SCREEN,
-    FrameRateSetting,
+    type FrameRateSetting,
 } from "../../util/FrameRate";
 import { LiveSplitServer } from "../../api/LiveSplitServer";
-import { Option } from "../../util/OptionUtil";
-import { LSOCommandSink } from "../../util/LSOCommandSink";
+import { type Option } from "../../util/OptionUtil";
+import { type LSOCommandSink } from "../../util/LSOCommandSink";
 import { Check, ExternalLink, FlaskConical, X } from "lucide-react";
 
 import buttonGroupClasses from "../../css/ButtonGroup.module.css";
@@ -33,9 +33,9 @@ export interface GeneralSettings {
     showManualGameTime: ManualGameTimeSettings | false;
     saveOnReset: boolean;
     speedrunComIntegration: boolean;
-    serverUrl?: string;
-    theRunGgIntegration?: TheRunGgSettings;
-    alwaysOnTop?: boolean;
+    serverUrl: string | undefined;
+    theRunGgIntegration: TheRunGgSettings | undefined;
+    alwaysOnTop: boolean | undefined;
     lang: Language | undefined;
 }
 
@@ -377,10 +377,7 @@ export function View({
                                             : value.String ===
                                                 FRAME_RATE_BATTERY_AWARE
                                               ? FRAME_RATE_BATTERY_AWARE
-                                              : parseInt(
-                                                    value.String.split(" ")[0],
-                                                    10,
-                                                ),
+                                              : parseInt(value.String, 10),
                                 });
                             }
                             break;

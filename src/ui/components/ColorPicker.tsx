@@ -1,6 +1,7 @@
-import React, { ChangeEvent, MouseEvent } from "react";
+import React, { type ChangeEvent, type MouseEvent } from "react";
 import { useEffect, useState } from "react";
-import { Color } from "../../livesplit-core";
+import { type Color } from "../../livesplit-core";
+import { type RgbaColor, toRgbaColor } from "../../util/Color";
 import { Pipette } from "lucide-react";
 
 import classes from "../../css/ColorPicker.module.css";
@@ -8,7 +9,7 @@ import classes from "../../css/ColorPicker.module.css";
 const EyeDropper = (window as any).EyeDropper;
 const hasEyeDropper = !!EyeDropper;
 
-function colorToCss(color: Color): string {
+function colorToCss(color: RgbaColor): string {
     const r = Math.round(color[0] * 255);
     const g = Math.round(color[1] * 255);
     const b = Math.round(color[2] * 255);
@@ -22,20 +23,21 @@ export function ColorPicker({
     setColor,
 }: {
     color: Color;
-    setColor: (color: Color) => void;
+    setColor: (color: RgbaColor) => void;
 }) {
+    const rgbaColor = toRgbaColor(color);
     const [isShowing, setIsShowing] = useState(false);
     return (
         <div>
             <div
                 className={classes.colorPickerButton}
-                style={{ background: colorToCss(color) }}
+                style={{ background: colorToCss(rgbaColor) }}
                 onClick={() => setIsShowing(true)}
             />
             <div className={classes.colorPickerDialogPositioning}>
                 {isShowing && (
                     <ColorPickerDialog
-                        color={color}
+                        color={rgbaColor}
                         setColor={setColor}
                         close={() => setIsShowing(false)}
                     />
@@ -50,8 +52,8 @@ function ColorPickerDialog({
     setColor,
     close,
 }: {
-    color: Color;
-    setColor: (color: Color) => void;
+    color: RgbaColor;
+    setColor: (color: RgbaColor) => void;
     close: () => void;
 }) {
     return (
@@ -76,8 +78,8 @@ function GradientSelector({
     color,
     setColor,
 }: {
-    color: Color;
-    setColor: (color: Color) => void;
+    color: RgbaColor;
+    setColor: (color: RgbaColor) => void;
 }) {
     const [r, g, b, a] = color;
     const [h, s, v] = rgbToHsv(r, g, b);
@@ -150,8 +152,8 @@ function ControlPanel({
     color,
     setColor,
 }: {
-    color: Color;
-    setColor: (color: Color) => void;
+    color: RgbaColor;
+    setColor: (color: RgbaColor) => void;
 }) {
     const [r, g, b, a] = color;
     const [h, s, v] = rgbToHsv(r, g, b);
@@ -246,8 +248,8 @@ function ColorPreview({
     color,
     setColor,
 }: {
-    color: Color;
-    setColor: (color: Color) => void;
+    color: RgbaColor;
+    setColor: (color: RgbaColor) => void;
 }) {
     const [r, g, b, a] = color;
     return (
@@ -292,8 +294,8 @@ function Hsva({
     color,
     setColor,
 }: {
-    color: Color;
-    setColor: (color: Color) => void;
+    color: RgbaColor;
+    setColor: (color: RgbaColor) => void;
 }) {
     const [r, g, b, a] = color;
     const [h, s, v] = rgbToHsv(r, g, b);
@@ -347,8 +349,8 @@ function Rgba({
     color,
     setColor,
 }: {
-    color: Color;
-    setColor: (color: Color) => void;
+    color: RgbaColor;
+    setColor: (color: RgbaColor) => void;
 }) {
     const [r, g, b, a] = color;
 
@@ -398,8 +400,8 @@ function Hex({
     color,
     setColor,
 }: {
-    color: Color;
-    setColor: (color: Color) => void;
+    color: RgbaColor;
+    setColor: (color: RgbaColor) => void;
 }) {
     const [r, g, b, a] = color;
 
@@ -417,10 +419,10 @@ function Hex({
                             .toString(16)
                             .padStart(2, "0")}`.toUpperCase()
                     }
-                    parse={(value) => {
+                    parse={(value): RgbaColor | undefined => {
                         const parsed = parseHex(value);
                         if (parsed) {
-                            return [...parsed, a];
+                            return [parsed[0], parsed[1], parsed[2], a];
                         }
                         return undefined;
                     }}
@@ -541,8 +543,14 @@ function ColorComponent({
     );
 }
 
-function PredefinedColors({ setColor }: { setColor: (color: Color) => void }) {
-    const predefinedColors = [
+function PredefinedColors({
+    setColor,
+}: {
+    setColor: (color: RgbaColor) => void;
+}) {
+    const predefinedColors: ReadonlyArray<
+        ReadonlyArray<readonly [string, number, number, number]>
+    > = [
         [
             ["Red", 244, 67, 54],
             ["Pink", 233, 30, 99],
@@ -570,7 +578,7 @@ function PredefinedColors({ setColor }: { setColor: (color: Color) => void }) {
             ["Black", 0, 0, 0],
             ["White", 255, 255, 255],
         ],
-    ] as unknown as [[[string, number, number, number]]];
+    ];
 
     return (
         <div className={classes.predefinedColors}>
@@ -593,8 +601,8 @@ function PredefinedColor({
     color: [title, r, g, b],
     setColor,
 }: {
-    color: [string, number, number, number];
-    setColor: (color: Color) => void;
+    color: readonly [string, number, number, number];
+    setColor: (color: RgbaColor) => void;
 }) {
     return (
         <button
@@ -606,7 +614,7 @@ function PredefinedColor({
     );
 }
 
-function hsvToRgb(h: number, s: number, v: number) {
+function hsvToRgb(h: number, s: number, v: number): [number, number, number] {
     const xDivC = 1 - Math.abs(((h / 60) % 2) - 1);
 
     const [rc, rx, gc, gx, bc, bx] =
@@ -633,7 +641,7 @@ function hsvToRgb(h: number, s: number, v: number) {
     return [r, g, b];
 }
 
-function rgbToHsv(r: number, g: number, b: number) {
+function rgbToHsv(r: number, g: number, b: number): [number, number, number] {
     const max = Math.max(r, g, b);
     const min = Math.min(r, g, b);
     const delta = max - min;

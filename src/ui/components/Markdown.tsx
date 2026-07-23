@@ -9,34 +9,46 @@ const SAFE = markdownit({ html: false, breaks: true, linkify: true });
 let isSpeedrunCom = false;
 
 const unsafeDefault =
-    UNSAFE.renderer.rules.link_open ||
+    UNSAFE.renderer.rules["link_open"] ||
     function (tokens, idx, options, _env, self) {
         return self.renderToken(tokens, idx, options);
     };
-UNSAFE.renderer.rules.link_open = function (tokens, idx, options, env, self) {
-    tokens[idx].attrSet("target", "_blank");
+UNSAFE.renderer.rules["link_open"] = function (tokens, idx, options, env, self) {
+    const token = tokens[idx];
+    if (token === undefined) {
+        throw new Error("Markdown renderer provided an invalid token index.");
+    }
+    token.attrSet("target", "_blank");
     return unsafeDefault(tokens, idx, options, env, self);
 };
 
 const safeLinkDefault =
-    SAFE.renderer.rules.link_open ||
+    SAFE.renderer.rules["link_open"] ||
     function (tokens, idx, options, _env, self) {
         return self.renderToken(tokens, idx, options);
     };
-SAFE.renderer.rules.link_open = function (tokens, idx, options, env, self) {
-    tokens[idx].attrSet("target", "_blank");
+SAFE.renderer.rules["link_open"] = function (tokens, idx, options, env, self) {
+    const token = tokens[idx];
+    if (token === undefined) {
+        throw new Error("Markdown renderer provided an invalid token index.");
+    }
+    token.attrSet("target", "_blank");
     return safeLinkDefault(tokens, idx, options, env, self);
 };
 const safeImageDefault =
-    SAFE.renderer.rules.image ||
+    SAFE.renderer.rules["image"] ||
     function (tokens, idx, options, _env, self) {
         return self.renderToken(tokens, idx, options);
     };
-SAFE.renderer.rules.image = function (tokens, idx, options, env, self) {
+SAFE.renderer.rules["image"] = function (tokens, idx, options, env, self) {
+    const token = tokens[idx];
+    if (token === undefined) {
+        throw new Error("Markdown renderer provided an invalid token index.");
+    }
     if (isSpeedrunCom) {
-        const src = tokens[idx].attrGet("src");
+        const src = token.attrGet("src");
         if (src?.startsWith("/")) {
-            tokens[idx].attrSet("src", `https://www.speedrun.com${src}`);
+            token.attrSet("src", `https://www.speedrun.com${src}`);
         }
     }
     return safeImageDefault(tokens, idx, options, env, self);

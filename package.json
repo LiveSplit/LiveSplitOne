@@ -7,6 +7,7 @@
     "build:core:release": "node buildCore.js --release",
     "build:core:deploy": "node buildCore.js --max-opt --nightly",
     "lint": "eslint src",
+    "typecheck": "tsc -p tsconfig.json && tsc -p tsconfig.node.json",
     "publish": "vite build",
     "serve": "vite",
     "tauri:icons": "tauri icon src/assets/icon.png",

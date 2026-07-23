@@ -1,4 +1,4 @@
-import { Option } from "./OptionUtil";
+import { type Option } from "./OptionUtil";
 
 // Workaround for Chrome sometimes garbage collecting the input element while it
 // is being used, preventing the onchange event from triggering.

@@ -1,10 +1,10 @@
 import React from "react";
 import { toast } from "react-toastify";
 
-import * as LiveSplit from "../../../livesplit-core";
+import type * as LiveSplit from "../../../livesplit-core";
 import { FILE_EXT_IMAGES, openFileAsArrayBuffer } from "../../../util/FileUtil";
 import { Label, resolve } from "../../../localization";
-import { ContextMenu, MenuItem, Position } from "../../components/ContextMenu";
+import { ContextMenu, MenuItem, type Position } from "../../components/ContextMenu";
 
 import classes from "../../../css/RunEditor.module.css";
 import tooltipClasses from "../../../css/Tooltip.module.css";

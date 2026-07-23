@@ -1,4 +1,4 @@
-import { Option, map } from "../util/OptionUtil";
+import { type Option, map } from "../util/OptionUtil";
 
 const BASE_URI = "https://www.speedrun.com/api/v1/";
 

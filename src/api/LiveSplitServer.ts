@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
-import { LSOCommandSink } from "../util/LSOCommandSink";
+import { type LSOCommandSink } from "../util/LSOCommandSink";
 import { ServerProtocol } from "../livesplit-core/livesplit_core";
-import { Event } from "../livesplit-core";
+import { type Event } from "../livesplit-core";
 
 export class LiveSplitServer {
     private connection: WebSocket;

@@ -26,23 +26,23 @@ import {
     platformListLength,
     regionListLength,
 } from "../../api/GameList";
-import { Category, Run, getRun } from "../../api/SpeedrunCom";
-import { Option, expect, map } from "../../util/OptionUtil";
+import { type Category, type Run, getRun } from "../../api/SpeedrunCom";
+import { type Option, expect, map } from "../../util/OptionUtil";
 import {
     SettingsComponent,
     JsonSettingValueFactory,
-    ExtendedSettingsDescriptionFieldJson,
-    ExtendedSettingsDescriptionValueJson,
+    type ExtendedSettingsDescriptionFieldJson,
+    type ExtendedSettingsDescriptionValueJson,
 } from "../components/Settings";
 import { Markdown } from "../components/Markdown";
-import { UrlCache } from "../../util/UrlCache";
-import { GeneralSettings } from "./MainSettings";
+import { type UrlCache } from "../../util/UrlCache";
+import { type GeneralSettings } from "./MainSettings";
 import { showDialog } from "../components/Dialog";
 import { corsBustingFetch } from "../../platform/CORS";
-import { ContextMenu, MenuItem, Position } from "../components/ContextMenu";
+import { ContextMenu, MenuItem, type Position } from "../components/ContextMenu";
 import { Check, X } from "lucide-react";
 import {
-    Filters,
+    type Filters,
     isVariableValidForCategory,
     Leaderboard,
     LeaderboardButtons,
@@ -1053,18 +1053,34 @@ function VariablesTab({
                         editor.setEmulatorUsage(emulatorUsage);
                     } else if (index < customVariablesOffset) {
                         const stringValue = unwrapString(value);
-                        const key = speedrunComVariables[
+                        const variable = speedrunComVariables[
                             index - speedrunComVariablesOffset
-                        ].text as string;
+                        ];
+                        if (
+                            variable === undefined ||
+                            typeof variable.text !== "string"
+                        ) {
+                            throw new Error(
+                                "Expected a speedrun.com variable setting.",
+                            );
+                        }
+                        const key = variable.text;
                         if (stringValue !== "") {
                             editor.setSpeedrunComVariable(key, stringValue);
                         } else {
                             editor.removeSpeedrunComVariable(key);
                         }
                     } else {
-                        const key = customVariables[
+                        const variable = customVariables[
                             index - customVariablesOffset
-                        ].text as string;
+                        ];
+                        if (
+                            variable === undefined ||
+                            typeof variable.text !== "string"
+                        ) {
+                            throw new Error("Expected a custom variable setting.");
+                        }
+                        const key = variable.text;
                         const stringValue = unwrapRemovableString(value);
                         if (stringValue !== null) {
                             editor.setCustomVariable(key, stringValue);
@@ -2044,6 +2060,10 @@ async function interactiveAssociateRunOrOpenPage(
         return;
     }
     const runId = matches[1];
+    if (runId === undefined) {
+        toast.error(resolve(Label.InvalidSpeedrunUrl, lang));
+        return;
+    }
     try {
         const run = await getRun(runId);
         const gameInfo = await downloadGameInfoByGameId(run.game);

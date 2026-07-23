@@ -1,18 +1,18 @@
 import * as React from "react";
 import {
-    Language,
-    Layout,
-    LayoutStateRefMut,
-    TimerPhase,
-    TimingMethod,
+    type Language,
+    type Layout,
+    type LayoutStateRefMut,
+    type TimerPhase,
+    type TimingMethod,
 } from "../../livesplit-core";
 import { TimerView } from "./TimerView";
-import { UrlCache } from "../../util/UrlCache";
-import { WebRenderer } from "../../livesplit-core/livesplit_core";
-import { GeneralSettings } from "./MainSettings";
-import { LiveSplitServer } from "../../api/LiveSplitServer";
-import { Option } from "../../util/OptionUtil";
-import { LSOCommandSink } from "../../util/LSOCommandSink";
+import { type UrlCache } from "../../util/UrlCache";
+import { type WebRenderer } from "../../livesplit-core/livesplit_core";
+import { type GeneralSettings } from "./MainSettings";
+import { type LiveSplitServer } from "../../api/LiveSplitServer";
+import { type Option } from "../../util/OptionUtil";
+import { type LSOCommandSink } from "../../util/LSOCommandSink";
 import {
     ArrowLeft,
     Circle,

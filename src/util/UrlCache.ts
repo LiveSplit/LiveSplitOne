@@ -1,4 +1,4 @@
-import { ImageCache, ImageId } from "../livesplit-core";
+import { ImageCache, type ImageId } from "../livesplit-core";
 
 export class UrlCache {
     private urls: Map<ImageId, string> = new Map();

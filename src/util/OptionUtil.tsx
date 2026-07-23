@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 
 import toastClasses from "../css/Toast.module.css";
 import { Label, resolve } from "../localization";
-import { Language } from "../livesplit-core";
+import { type Language } from "../livesplit-core";
 
 export type Option<T> = T | null | undefined;
 

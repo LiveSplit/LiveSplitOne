@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
-import * as LiveSplit from "../../../livesplit-core";
+import type * as LiveSplit from "../../../livesplit-core";
 import { Label, orAutoLang, resolve } from "../../../localization";
-import { UrlCache } from "../../../util/UrlCache";
+import { type UrlCache } from "../../../util/UrlCache";
 import {
     changeSegmentGroupIcon,
     changeSegmentIcon,
@@ -900,6 +900,12 @@ function handleComparisonTimeBlur(
     if (rowState.comparisonTimesChanged[comparisonIndex]) {
         const comparisonName = editorState.comparison_names[comparisonIndex];
         const comparisonTime = rowState.comparisonTimes[comparisonIndex];
+        if (comparisonName === undefined || comparisonTime === undefined) {
+            // The comparison names and row-local edit values are parallel
+            // arrays. A missing entry means the editor state is inconsistent,
+            // so fail before sending an invalid comparison to livesplit-core.
+            throw new Error("Missing comparison time editor state.");
+        }
         editor.activeParseAndSetComparisonTime(
             comparisonName,
             comparisonTime,

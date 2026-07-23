@@ -6,7 +6,9 @@ export const knownStyles = new Map<string, Set<string>>();
 // 1. What to look for in the style specifier of the loaded font list.
 // 2. The value to tell livesplit-core.
 // 3. The label to display in the UI.
-export const FONT_WEIGHTS = [
+export const FONT_WEIGHTS: ReadonlyArray<
+    readonly [keyword: string, value: string, label: string]
+> = [
     ["thin", "thin", "Thin"],
     ["extralight", "extra-light", "Extra Light"],
     ["light", "light", "Light"],
@@ -20,7 +22,9 @@ export const FONT_WEIGHTS = [
     ["extrablack", "extra-black", "Extra Black"],
 ];
 
-export const FONT_STRETCHES = [
+export const FONT_STRETCHES: ReadonlyArray<
+    readonly [keyword: string, value: string, label: string]
+> = [
     ["ultracondensed", "ultra-condensed", "Ultra Condensed"],
     ["extracondensed", "extra-condensed", "Extra Condensed"],
     ["condensed", "condensed", "Condensed"],

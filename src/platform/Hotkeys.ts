@@ -1,4 +1,4 @@
-import { CommandSinkRef, HotkeyConfig, HotkeySystem, Language } from "../livesplit-core";
+import { type CommandSinkRef, HotkeyConfig, HotkeySystem, type Language } from "../livesplit-core";
 import { expect } from "../util/OptionUtil";
 
 export interface HotkeyImplementation {

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { expect } from "../../../util/OptionUtil";
-import { DigitsFormatJson, Language } from "../../../livesplit-core";
-import { SettingValueFactory } from ".";
+import { type DigitsFormatJson, type Language } from "../../../livesplit-core";
+import { type SettingValueFactory } from ".";
 
 import tableClasses from "../../../css/Table.module.css";
 
