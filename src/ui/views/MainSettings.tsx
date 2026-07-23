@@ -377,10 +377,10 @@ export function View({
                                             : value.String ===
                                                 FRAME_RATE_BATTERY_AWARE
                                               ? FRAME_RATE_BATTERY_AWARE
-                                              : (parseInt(
+                                              : parseInt(
                                                     value.String.split(" ")[0],
                                                     10,
-                                                ) as FrameRateSetting),
+                                                ),
                                 });
                             }
                             break;
