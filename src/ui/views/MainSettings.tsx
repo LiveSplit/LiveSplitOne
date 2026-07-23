@@ -161,32 +161,62 @@ export function View({
                             : "Auto",
                     list: [
                         ["Auto", resolve(Label.LanguageAuto, lang)],
-                        [`${Language.English}`, Lang.name(Language.English)],
-                        [`${Language.Dutch}`, Lang.name(Language.Dutch)],
-                        [`${Language.French}`, Lang.name(Language.French)],
-                        [`${Language.German}`, Lang.name(Language.German)],
-                        [`${Language.Italian}`, Lang.name(Language.Italian)],
+                        [
+                            `${Language.English}`,
+                            Lang.displayName(Language.English),
+                        ],
+                        [
+                            `${Language.Dutch}`,
+                            Lang.displayName(Language.Dutch),
+                        ],
+                        [
+                            `${Language.French}`,
+                            Lang.displayName(Language.French),
+                        ],
+                        [
+                            `${Language.German}`,
+                            Lang.displayName(Language.German),
+                        ],
+                        [
+                            `${Language.Italian}`,
+                            Lang.displayName(Language.Italian),
+                        ],
                         [
                             `${Language.Portuguese}`,
-                            Lang.name(Language.Portuguese),
+                            Lang.displayName(Language.Portuguese),
                         ],
-                        [`${Language.Polish}`, Lang.name(Language.Polish)],
-                        [`${Language.Russian}`, Lang.name(Language.Russian)],
-                        [`${Language.Spanish}`, Lang.name(Language.Spanish)],
+                        [
+                            `${Language.Polish}`,
+                            Lang.displayName(Language.Polish),
+                        ],
+                        [
+                            `${Language.Russian}`,
+                            Lang.displayName(Language.Russian),
+                        ],
+                        [
+                            `${Language.Spanish}`,
+                            Lang.displayName(Language.Spanish),
+                        ],
                         [
                             `${Language.BrazilianPortuguese}`,
-                            Lang.name(Language.BrazilianPortuguese),
+                            Lang.displayName(Language.BrazilianPortuguese),
                         ],
                         [
                             `${Language.ChineseSimplified}`,
-                            Lang.name(Language.ChineseSimplified),
+                            Lang.displayName(Language.ChineseSimplified),
                         ],
                         [
                             `${Language.ChineseTraditional}`,
-                            Lang.name(Language.ChineseTraditional),
+                            Lang.displayName(Language.ChineseTraditional),
                         ],
-                        [`${Language.Japanese}`, Lang.name(Language.Japanese)],
-                        [`${Language.Korean}`, Lang.name(Language.Korean)],
+                        [
+                            `${Language.Japanese}`,
+                            Lang.displayName(Language.Japanese),
+                        ],
+                        [
+                            `${Language.Korean}`,
+                            Lang.displayName(Language.Korean),
+                        ],
                     ] as [string, string][],
                     mandatory: true,
                 },

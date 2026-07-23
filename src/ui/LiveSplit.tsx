@@ -327,7 +327,7 @@ export class LiveSplit extends React.Component<Props, State> {
         }
     }
 
-    public componentDidMount() {
+    public override componentDidMount() {
         this.scrollEvent = { handleEvent: (e: WheelEvent) => this.onScroll(e) };
         window.addEventListener("wheel", this.scrollEvent);
         this.rightClickEvent = {
@@ -367,11 +367,11 @@ export class LiveSplit extends React.Component<Props, State> {
         }
     }
 
-    public componentDidUpdate() {
+    public override componentDidUpdate() {
         this.handleAutomaticResize();
     }
 
-    public componentWillUnmount() {
+    public override componentWillUnmount() {
         window.removeEventListener(
             "wheel",
             expect(
@@ -420,7 +420,7 @@ export class LiveSplit extends React.Component<Props, State> {
         }
     }
 
-    public render() {
+    public override render() {
         let view: React.JSX.Element | undefined;
 
         if (this.state.menu.kind === MenuKind.RunEditor) {

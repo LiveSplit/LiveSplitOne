@@ -9,7 +9,6 @@ import type {
 import { type SettingValueFactory } from ".";
 import { assertNever, expect, type Option } from "../../../util/OptionUtil";
 import { ColorPicker } from "../ColorPicker";
-import { toRgbaColor } from "../../../util/Color";
 import { Label, resolve } from "../../../localization";
 
 import tableClasses from "../../../css/Table.module.css";
@@ -57,8 +56,8 @@ export function Gradient<T>({
         color1: Option<Color>,
         color2: Option<Color>,
     ) => {
-        const rgba1 = toRgbaColor(color1 ?? [0, 0, 0, 0]);
-        const rgba2 = toRgbaColor(color2 ?? rgba1);
+        const rgba1: Color = color1 ?? [0, 0, 0, 0];
+        const rgba2: Color = color2 ?? rgba1;
         switch (type) {
             case "Transparent":
                 return factory.fromTransparentGradient();
@@ -193,8 +192,8 @@ export function DeltaGradient<T>({
         color1: Option<Color>,
         color2: Option<Color>,
     ) => {
-        const rgba1 = toRgbaColor(color1 ?? [0, 0, 0, 0]);
-        const rgba2 = toRgbaColor(color2 ?? rgba1);
+        const rgba1: Color = color1 ?? [0, 0, 0, 0];
+        const rgba2: Color = color2 ?? rgba1;
         switch (type) {
             case "Transparent":
                 return factory.fromTransparentGradient();
@@ -349,8 +348,8 @@ export function ListGradient<T>({
         color1: Option<Color>,
         color2: Option<Color>,
     ) => {
-        const rgba1 = toRgbaColor(color1 ?? [0, 0, 0, 0]);
-        const rgba2 = toRgbaColor(color2 ?? rgba1);
+        const rgba1: Color = color1 ?? [0, 0, 0, 0];
+        const rgba2: Color = color2 ?? rgba1;
         switch (type) {
             case "Transparent":
                 return factory.fromTransparentGradient();

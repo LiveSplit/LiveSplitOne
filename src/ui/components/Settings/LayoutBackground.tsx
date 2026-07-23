@@ -11,7 +11,6 @@ import { type UrlCache } from "../../../util/UrlCache";
 import { toast } from "react-toastify";
 import { FILE_EXT_IMAGES, openFileAsArrayBuffer } from "../../../util/FileUtil";
 import { Label, resolve } from "../../../localization";
-import { toRgbaColor } from "../../../util/Color";
 
 import colorPickerClasses from "../../../css/ColorPicker.module.css";
 import tableClasses from "../../../css/Table.module.css";
@@ -53,8 +52,8 @@ export function LayoutBackground<T>({
         color1: Option<Color>,
         color2: Option<Color>,
     ) => {
-        const rgba1 = toRgbaColor(color1 ?? [0, 0, 0, 0]);
-        const rgba2 = toRgbaColor(color2 ?? rgba1);
+        const rgba1: Color = color1 ?? [0, 0, 0, 0];
+        const rgba2: Color = color2 ?? rgba1;
         switch (type) {
             case "Transparent":
                 return factory.fromTransparentGradient();

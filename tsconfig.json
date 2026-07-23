@@ -15,8 +15,7 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "noFallthroughCasesInSwitch": true,
-        // Generated livesplit-core classes do not currently emit the override
-        // modifiers required to enable noImplicitOverride for this project.
+        "noImplicitOverride": true,
         "allowUnreachableCode": false,
         "allowUnusedLabels": false,
         "alwaysStrict": true,

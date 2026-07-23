@@ -1,7 +1,6 @@
 import React, { type ChangeEvent, type MouseEvent } from "react";
 import { useEffect, useState } from "react";
 import { type Color } from "../../livesplit-core";
-import { type RgbaColor, toRgbaColor } from "../../util/Color";
 import { Pipette } from "lucide-react";
 
 import classes from "../../css/ColorPicker.module.css";
@@ -9,7 +8,7 @@ import classes from "../../css/ColorPicker.module.css";
 const EyeDropper = (window as any).EyeDropper;
 const hasEyeDropper = !!EyeDropper;
 
-function colorToCss(color: RgbaColor): string {
+function colorToCss(color: Color): string {
     const r = Math.round(color[0] * 255);
     const g = Math.round(color[1] * 255);
     const b = Math.round(color[2] * 255);
@@ -23,21 +22,20 @@ export function ColorPicker({
     setColor,
 }: {
     color: Color;
-    setColor: (color: RgbaColor) => void;
+    setColor: (color: Color) => void;
 }) {
-    const rgbaColor = toRgbaColor(color);
     const [isShowing, setIsShowing] = useState(false);
     return (
         <div>
             <div
                 className={classes.colorPickerButton}
-                style={{ background: colorToCss(rgbaColor) }}
+                style={{ background: colorToCss(color) }}
                 onClick={() => setIsShowing(true)}
             />
             <div className={classes.colorPickerDialogPositioning}>
                 {isShowing && (
                     <ColorPickerDialog
-                        color={rgbaColor}
+                        color={color}
                         setColor={setColor}
                         close={() => setIsShowing(false)}
                     />
@@ -52,8 +50,8 @@ function ColorPickerDialog({
     setColor,
     close,
 }: {
-    color: RgbaColor;
-    setColor: (color: RgbaColor) => void;
+    color: Color;
+    setColor: (color: Color) => void;
     close: () => void;
 }) {
     return (
@@ -78,8 +76,8 @@ function GradientSelector({
     color,
     setColor,
 }: {
-    color: RgbaColor;
-    setColor: (color: RgbaColor) => void;
+    color: Color;
+    setColor: (color: Color) => void;
 }) {
     const [r, g, b, a] = color;
     const [h, s, v] = rgbToHsv(r, g, b);
@@ -152,8 +150,8 @@ function ControlPanel({
     color,
     setColor,
 }: {
-    color: RgbaColor;
-    setColor: (color: RgbaColor) => void;
+    color: Color;
+    setColor: (color: Color) => void;
 }) {
     const [r, g, b, a] = color;
     const [h, s, v] = rgbToHsv(r, g, b);
@@ -248,8 +246,8 @@ function ColorPreview({
     color,
     setColor,
 }: {
-    color: RgbaColor;
-    setColor: (color: RgbaColor) => void;
+    color: Color;
+    setColor: (color: Color) => void;
 }) {
     const [r, g, b, a] = color;
     return (
@@ -294,8 +292,8 @@ function Hsva({
     color,
     setColor,
 }: {
-    color: RgbaColor;
-    setColor: (color: RgbaColor) => void;
+    color: Color;
+    setColor: (color: Color) => void;
 }) {
     const [r, g, b, a] = color;
     const [h, s, v] = rgbToHsv(r, g, b);
@@ -349,8 +347,8 @@ function Rgba({
     color,
     setColor,
 }: {
-    color: RgbaColor;
-    setColor: (color: RgbaColor) => void;
+    color: Color;
+    setColor: (color: Color) => void;
 }) {
     const [r, g, b, a] = color;
 
@@ -400,8 +398,8 @@ function Hex({
     color,
     setColor,
 }: {
-    color: RgbaColor;
-    setColor: (color: RgbaColor) => void;
+    color: Color;
+    setColor: (color: Color) => void;
 }) {
     const [r, g, b, a] = color;
 
@@ -419,7 +417,7 @@ function Hex({
                             .toString(16)
                             .padStart(2, "0")}`.toUpperCase()
                     }
-                    parse={(value): RgbaColor | undefined => {
+                    parse={(value): Color | undefined => {
                         const parsed = parseHex(value);
                         if (parsed) {
                             return [parsed[0], parsed[1], parsed[2], a];
@@ -546,7 +544,7 @@ function ColorComponent({
 function PredefinedColors({
     setColor,
 }: {
-    setColor: (color: RgbaColor) => void;
+    setColor: (color: Color) => void;
 }) {
     const predefinedColors: ReadonlyArray<
         ReadonlyArray<readonly [string, number, number, number]>
@@ -602,7 +600,7 @@ function PredefinedColor({
     setColor,
 }: {
     color: readonly [string, number, number, number];
-    setColor: (color: RgbaColor) => void;
+    setColor: (color: Color) => void;
 }) {
     return (
         <button

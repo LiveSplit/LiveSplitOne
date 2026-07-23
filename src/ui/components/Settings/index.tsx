@@ -277,7 +277,7 @@ export class JsonSettingValueFactory implements SettingValueFactory<ExtendedSett
 }
 
 export class SettingsComponent<T> extends React.Component<Props<T>> {
-    public render() {
+    public override render() {
         const settingsRows: React.JSX.Element[] = [];
         const { factory } = this.props;
 
