@@ -47,7 +47,6 @@ import { ToastContainer, toast } from "react-toastify";
 import * as Storage from "../storage";
 import { UrlCache } from "../util/UrlCache";
 import {
-    HotkeySystem_add_window,
     ServerProtocol,
     TheRunClient,
     WebRenderer,
@@ -1318,6 +1317,10 @@ async function popOut(
 
     childDoc.title = "LiveSplit One";
 
+    // Register the window before doing any asynchronous popup setup so its
+    // shortcuts work immediately, even while fonts and rendering are loading.
+    hotkeySystem?.addWindow(childWindow);
+
     const link = childDoc.createElement("link");
     link.rel = "icon";
     link.type = "image/svg+xml";
@@ -1352,10 +1355,6 @@ async function popOut(
     const element = renderer.element();
     element.style.width = "100%";
     element.style.height = "100%";
-
-    if (hotkeySystem?.ptr) {
-        HotkeySystem_add_window(hotkeySystem.ptr, childWindow);
-    }
 
     createRoot(childDoc.body).render(
         <ShowLayout
