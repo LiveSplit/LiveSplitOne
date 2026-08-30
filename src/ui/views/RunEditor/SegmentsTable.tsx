@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
 import type * as LiveSplit from "../../../livesplit-core";
-import { Label, orAutoLang, resolve } from "../../../localization";
+import { Label, resolve } from "../../../localization";
 import { type UrlCache } from "../../../util/UrlCache";
 import {
     changeSegmentGroupIcon,
@@ -10,36 +10,39 @@ import {
     removeSegmentIcon,
     SegmentIcon,
 } from "./SegmentTableCells";
+import {
+    changeSegmentSelection,
+    createRowState,
+    focusSegment,
+    getActiveSegmentIndex,
+    handleBestSegmentTimeBlur,
+    handleComparisonTimeBlur,
+    handleSegmentTimeBlur,
+    handleSplitTimeBlur,
+    type RowState,
+    type SegmentSelectionState,
+    setFocusedSegmentRowState,
+} from "./SegmentTableRowState";
 
 import classes from "../../../css/RunEditor.module.css";
 import tableClasses from "../../../css/Table.module.css";
 
-interface RowState {
-    splitTime: string;
-    splitTimeChanged: boolean;
-    segmentTime: string;
-    segmentTimeChanged: boolean;
-    bestSegmentTime: string;
-    bestSegmentTimeChanged: boolean;
-    comparisonTimes: string[];
-    comparisonTimesChanged: boolean[];
-    index: number;
-}
-
-type SegmentSelectionState = LiveSplit.RunEditorSegmentRowJson["selected"];
 type SegmentGroupSelectionMode = "Exclusive" | "Toggle" | "Range";
 
 function commitFocusedInputBeforeSelectionChange() {
     const focusedElement = document.activeElement;
     if (focusedElement instanceof HTMLInputElement) {
-        // The time editors deliberately commit their parsed value on blur. A
-        // group header prevents the browser's default mouse-down behavior so
-        // that the header itself never takes focus, which also suppresses the
-        // browser-generated blur. Trigger it explicitly while the old segment
-        // is still active; its handler runs synchronously and commits the edit
-        // before selecting the group's range resets the row-local draft state.
+        // Time editors commit through livesplit-core's `active_*` APIs on blur.
+        // Row selection moved to mouse-down to support modifier selection, but
+        // the browser normally blurs the old input only after mouse-down. Blur
+        // it explicitly so its handler still sees the segment that owns the
+        // draft, before selection changes the active segment and clears the
+        // shared row-local edit state.
         focusedElement.blur();
+        return focusedElement;
     }
+
+    return undefined;
 }
 
 function selectSegmentGroup(
@@ -107,23 +110,15 @@ export function SegmentsTable({
     const [dragIndex, setDragIndex] = useState(0);
     const skipNextFocusedSelection = useRef(false);
     const segmentNameInputRefs = useRef<(HTMLInputElement | null)[]>([]);
-    const [rowState, setRowState] = useState<RowState>(() => ({
-        bestSegmentTime: "",
-        bestSegmentTimeChanged: false,
-        comparisonTimes: [],
-        comparisonTimesChanged: [],
-        index: 0,
-        segmentTime: "",
-        segmentTimeChanged: false,
-        splitTime: "",
-        splitTimeChanged: false,
-    }));
+    const [rowState, setRowState] = useState<RowState>(createRowState);
 
     const handleSegmentInputMouseDown = (
         event: React.MouseEvent<HTMLInputElement, MouseEvent>,
         index: number,
         selectionState: SegmentSelectionState,
     ) => {
+        const previouslyFocusedInput =
+            commitFocusedInputBeforeSelectionChange();
         event.stopPropagation();
 
         const preserveCurrentFocus = shouldPreserveCurrentFocus(
@@ -152,7 +147,14 @@ export function SegmentsTable({
             update,
         );
 
-        if (event.shiftKey && focusClickedRow) {
+        if (preserveCurrentFocus && previouslyFocusedInput?.isConnected) {
+            // Ctrl / Command deselection deliberately preserves the field the
+            // user was editing. The explicit pre-selection blur above is only
+            // needed to commit it in the correct order, so restore that focus
+            // without letting its focus handler collapse the multi-selection.
+            skipNextFocusedSelection.current = true;
+            previouslyFocusedInput.focus({ preventScroll: true });
+        } else if (event.shiftKey && focusClickedRow) {
             event.currentTarget.focus();
         }
     };
@@ -170,6 +172,8 @@ export function SegmentsTable({
         index: number,
         selectionState: SegmentSelectionState,
     ) => {
+        const previouslyFocusedInput =
+            commitFocusedInputBeforeSelectionChange();
         const preserveCurrentFocus = shouldPreserveCurrentFocus(
             event,
             selectionState,
@@ -196,7 +200,10 @@ export function SegmentsTable({
             update,
         );
 
-        if (focusClickedRow) {
+        if (preserveCurrentFocus && previouslyFocusedInput?.isConnected) {
+            skipNextFocusedSelection.current = true;
+            previouslyFocusedInput.focus({ preventScroll: true });
+        } else if (focusClickedRow) {
             segmentNameInput?.focus();
         }
     };
@@ -709,38 +716,6 @@ export function SegmentsTable({
     );
 }
 
-function changeSegmentSelection(
-    event:
-        | React.MouseEvent<HTMLElement, MouseEvent>
-        | React.MouseEvent<HTMLTableRowElement, MouseEvent>,
-    index: number,
-    selectionState: SegmentSelectionState,
-    editor: LiveSplit.RunEditorRefMut,
-    rowState: RowState,
-    setRowState: (rowState: RowState) => void,
-    update: () => LiveSplit.RunEditorStateJson,
-) {
-    if (event.shiftKey) {
-        editor.selectRange(index);
-    } else if (event.ctrlKey || event.metaKey) {
-        if (selectionState === "Selected") {
-            editor.unselect(index);
-        } else {
-            editor.selectAdditionally(index);
-        }
-    } else {
-        editor.selectOnly(index);
-    }
-
-    const editorState = update();
-    setFocusedSegmentRowState(
-        editorState,
-        getActiveSegmentIndex(editorState, index),
-        rowState,
-        setRowState,
-    );
-}
-
 function shouldPreserveCurrentFocus(
     event: React.MouseEvent<HTMLElement, MouseEvent>,
     selectionState: SegmentSelectionState,
@@ -761,160 +736,4 @@ function shouldFocusClickedRow(
     }
 
     return true;
-}
-
-function getSegmentRow(
-    editorState: LiveSplit.RunEditorStateJson,
-    segmentIndex: number,
-): LiveSplit.RunEditorSegmentRowJson | undefined {
-    return editorState.rows.find(
-        (row): row is LiveSplit.RunEditorSegmentRowJson =>
-            row.kind === "Segment" && row.segment_index === segmentIndex,
-    );
-}
-
-function getActiveSegmentIndex(
-    editorState: LiveSplit.RunEditorStateJson,
-    fallbackIndex: number,
-) {
-    const activeSegment = editorState.rows.find(
-        (row): row is LiveSplit.RunEditorSegmentRowJson =>
-            row.kind === "Segment" && row.selected === "Active",
-    );
-
-    return activeSegment?.segment_index ?? fallbackIndex;
-}
-
-function focusSegment(
-    index: number,
-    editor: LiveSplit.RunEditorRefMut,
-    skipNextFocusedSelection: React.MutableRefObject<boolean>,
-    rowState: RowState,
-    setRowState: (rowState: RowState) => void,
-    update: () => LiveSplit.RunEditorStateJson,
-) {
-    // Mouse-based selection is handled on mousedown so modifier keys can change
-    // selection without the subsequent focus event collapsing it back to a
-    // single row. Keyboard focus still falls back to exclusive selection.
-    if (skipNextFocusedSelection.current) {
-        skipNextFocusedSelection.current = false;
-        const editorState = update();
-        setFocusedSegmentRowState(
-            editorState,
-            getActiveSegmentIndex(editorState, index),
-            rowState,
-            setRowState,
-        );
-        return;
-    }
-
-    editor.selectOnly(index);
-    const editorState = update();
-    setFocusedSegmentRowState(
-        editorState,
-        getActiveSegmentIndex(editorState, index),
-        rowState,
-        setRowState,
-    );
-}
-
-function setFocusedSegmentRowState(
-    editorState: LiveSplit.RunEditorStateJson,
-    index: number,
-    rowState: RowState,
-    setRowState: (rowState: RowState) => void,
-) {
-    const segment = getSegmentRow(editorState, index);
-    if (segment === undefined) {
-        return;
-    }
-    const comparisonTimes = segment.comparison_times;
-    setRowState({
-        ...rowState,
-        splitTimeChanged: false,
-        segmentTimeChanged: false,
-        bestSegmentTimeChanged: false,
-        comparisonTimes,
-        comparisonTimesChanged: comparisonTimes.map(() => false),
-        index,
-    });
-}
-
-function handleSplitTimeBlur(
-    editor: LiveSplit.RunEditorRefMut,
-    rowState: RowState,
-    setRowState: (rowState: RowState) => void,
-    update: () => void,
-    lang: LiveSplit.Language | undefined,
-) {
-    if (rowState.splitTimeChanged) {
-        editor.activeParseAndSetSplitTime(rowState.splitTime, orAutoLang(lang));
-        update();
-        setRowState({ ...rowState, splitTimeChanged: false });
-    }
-}
-
-function handleSegmentTimeBlur(
-    editor: LiveSplit.RunEditorRefMut,
-    rowState: RowState,
-    setRowState: (rowState: RowState) => void,
-    update: () => void,
-    lang: LiveSplit.Language | undefined,
-) {
-    if (rowState.segmentTimeChanged) {
-        editor.activeParseAndSetSegmentTime(
-            rowState.segmentTime,
-            orAutoLang(lang),
-        );
-        update();
-        setRowState({ ...rowState, segmentTimeChanged: false });
-    }
-}
-
-function handleBestSegmentTimeBlur(
-    editor: LiveSplit.RunEditorRefMut,
-    rowState: RowState,
-    setRowState: (rowState: RowState) => void,
-    update: () => void,
-    lang: LiveSplit.Language | undefined,
-) {
-    if (rowState.bestSegmentTimeChanged) {
-        editor.activeParseAndSetBestSegmentTime(
-            rowState.bestSegmentTime,
-            orAutoLang(lang),
-        );
-        update();
-        setRowState({ ...rowState, bestSegmentTimeChanged: false });
-    }
-}
-
-function handleComparisonTimeBlur(
-    comparisonIndex: number,
-    editor: LiveSplit.RunEditorRefMut,
-    editorState: LiveSplit.RunEditorStateJson,
-    rowState: RowState,
-    setRowState: (rowState: RowState) => void,
-    update: () => void,
-    lang: LiveSplit.Language | undefined,
-) {
-    if (rowState.comparisonTimesChanged[comparisonIndex]) {
-        const comparisonName = editorState.comparison_names[comparisonIndex];
-        const comparisonTime = rowState.comparisonTimes[comparisonIndex];
-        if (comparisonName === undefined || comparisonTime === undefined) {
-            // The comparison names and row-local edit values are parallel
-            // arrays. A missing entry means the editor state is inconsistent,
-            // so fail before sending an invalid comparison to livesplit-core.
-            throw new Error("Missing comparison time editor state.");
-        }
-        editor.activeParseAndSetComparisonTime(
-            comparisonName,
-            comparisonTime,
-            orAutoLang(lang),
-        );
-        update();
-
-        const comparisonTimesChanged = [...rowState.comparisonTimesChanged];
-        comparisonTimesChanged[comparisonIndex] = false;
-        setRowState({ ...rowState, comparisonTimesChanged });
-    }
 }
