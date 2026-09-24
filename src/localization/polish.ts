@@ -114,6 +114,8 @@ export function resolvePolish(text: Label): string {
             return "Czas gry";
         case Label.PopOut:
             return "Otwórz w oknie";
+        case Label.PopOutFailed:
+            return "Nie udało się otworzyć nowego okna.";
         case Label.About:
             return "O programie";
         case Label.Back:

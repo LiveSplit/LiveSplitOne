@@ -114,6 +114,8 @@ export function resolveSpanish(text: Label): string {
             return "Tiempo de juego";
         case Label.PopOut:
             return "Ventana emergente";
+        case Label.PopOutFailed:
+            return "No se pudo abrir una nueva ventana.";
         case Label.About:
             return "Acerca de";
         case Label.Back:
