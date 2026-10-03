@@ -20,7 +20,7 @@
     "@babel/runtime": "^7.29.7",
     "idb": "^8.0.0",
     "lucide-react": "^1.7.0",
-    "markdown-it": "^14.1.0",
+    "markdown-it": "^14.3.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-sidebar": "^3.0.2",
