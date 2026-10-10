@@ -8,10 +8,10 @@ use std::{
 };
 
 use livesplit_core::{
-    event::{CommandSink, Event, Result},
+    event::{CommandSink, Error, Event, Result},
     hotkey::KeyCode,
     networking::server_protocol::Command,
-    HotkeyConfig, HotkeySystem, TimeSpan, TimingMethod,
+    HotkeyConfig, HotkeySystem, StoredAutoSplitterSettings, TimeSpan, TimingMethod,
 };
 use tauri::{Emitter, Manager, WebviewWindow};
 
@@ -200,6 +200,17 @@ impl CommandSink for TauriCommandSink {
     ) -> impl Future<Output = Result> + 'static {
         self.send(Command::SetCustomVariable { key, value });
         async { Ok(Event::Unknown) }
+    }
+
+    fn set_auto_splitter_settings(
+        &self,
+        _settings: StoredAutoSplitterSettings,
+    ) -> impl Future<Output = Result> + 'static {
+        // The desktop sink forwards server-protocol commands to the web timer,
+        // but that protocol has no command for storing Auto Splitter Settings.
+        // TODO: Forward this command once the protocol supports it.
+        // https://github.com/LiveSplit/livesplit-core/issues/964
+        std::future::ready(Err(Error::Unsupported))
     }
 }
 
