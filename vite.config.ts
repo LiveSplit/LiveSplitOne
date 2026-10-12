@@ -208,7 +208,7 @@ async function getContributorsForRepo(
 function preloadPlugin() {
     let base = "/";
 
-    return <Plugin>{
+    return {
         name: "lso-preload-plugin",
         enforce: "post",
         configResolved(config) {
@@ -274,16 +274,20 @@ function preloadPlugin() {
                 }
             }
         },
-    };
+    } satisfies Plugin;
 }
 
 export default defineConfig(async ({ mode }) => {
     const isTauri = mode === "tauri";
     const isProduction = mode === "production";
+    const isPreview = mode === "preview";
 
     await ensureFavicons();
 
-    const isBuildOptimized = isProduction || isTauri;
+    // Previews use the real optimized frontend and WASM/font preloading, but
+    // never install the production service worker. A review should load the
+    // new build immediately rather than retain an earlier PR in its cache.
+    const isBuildOptimized = isProduction || isTauri || isPreview;
 
     let contributorsList: { id: number; name: string }[] = [];
     const changelog = parseChangelog();
@@ -329,7 +333,9 @@ export default defineConfig(async ({ mode }) => {
                 return { id: user.id, name: user.login };
             });
     } catch (e) {
-        if (isBuildOptimized) {
+        // Contributor credits are useful but must not block a PR preview if
+        // GitHub is unavailable or rate-limits its read-only build token.
+        if (isBuildOptimized && !isPreview) {
             throw e;
         }
         console.warn("Failed to load GitHub data, skipping:", e);

@@ -1,0 +1,142 @@
+name: Publish PR preview
+
+on:
+    workflow_run:
+        workflows: [CI]
+        types: [completed]
+
+permissions:
+    contents: read
+    actions: read
+    pull-requests: read
+
+jobs:
+    identify:
+        # Until the one-time hosting setup is complete, CI still builds and
+        # uploads downloadable previews without trying to deploy them.
+        if: >-
+            github.event.workflow_run.event == 'pull_request' &&
+            github.event.workflow_run.conclusion == 'success' &&
+            vars.CLOUDFLARE_ACCOUNT_ID != '' &&
+            vars.CLOUDFLARE_PAGES_PROJECT != ''
+        runs-on: ubuntu-latest
+        outputs:
+            number: ${{ steps.preview.outputs.number }}
+            sha: ${{ steps.preview.outputs.sha }}
+            artifact: ${{ steps.preview.outputs.artifact }}
+        steps:
+            # workflow_run runs trusted code from the default branch. Never
+            # check out or execute the PR in a job with deployment credentials.
+            - uses: actions/checkout@v6
+              with:
+                  ref: ${{ github.event.repository.default_branch }}
+                  persist-credentials: false
+            - uses: actions/github-script@v8
+              id: preview
+              with:
+                  script: |
+                      const { findPreview } = await import(`${process.cwd()}/.github/scripts/preview-github.mts`);
+                      const preview = await findPreview(github, context.payload.workflow_run, context.repo);
+                      if (preview) {
+                          for (const [key, value] of Object.entries(preview)) core.setOutput(key, value);
+                      } else {
+                          core.notice('No current open PR preview to publish.');
+                      }
+
+    deploy:
+        needs: identify
+        if: needs.identify.outputs.number != ''
+        runs-on: ubuntu-latest
+        permissions:
+            contents: read
+            actions: read
+            pull-requests: write
+            checks: write
+        # Cleanup uses this same group. A close waits for an upload already in
+        # progress, then removes it; newer runs cannot recreate a closed PR.
+        concurrency:
+            group: pr-preview-${{ needs.identify.outputs.number }}
+            cancel-in-progress: false
+        steps:
+            - uses: actions/checkout@v6
+              with:
+                  ref: ${{ github.event.repository.default_branch }}
+                  persist-credentials: false
+            - uses: actions/setup-node@v6
+              with:
+                  node-version: "lts/*"
+            # Handle a closed PR before downloading its files. An expired or
+            # unavailable artifact must not prevent a late publisher from
+            # cleaning up if it replaced the pending close job.
+            - name: Recheck the PR and preview project
+              uses: actions/github-script@v8
+              id: ready
+              env:
+                  PR_NUMBER: ${{ needs.identify.outputs.number }}
+                  PR_SHA: ${{ needs.identify.outputs.sha }}
+                  CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+                  CLOUDFLARE_PAGES_PROJECT: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+                  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+              with:
+                  script: |
+                      const { isCurrentPullRequest } = await import(`${process.cwd()}/.github/scripts/preview-github.mts`);
+                      const { cloudflareClient, checkPreviewProject, removeClosedPreview } = await import(`${process.cwd()}/.github/scripts/preview-cloudflare.mts`);
+                      const number = Number(process.env.PR_NUMBER);
+                      const { data: pr } = await github.rest.pulls.get({ ...context.repo, pull_number: number });
+                      const client = cloudflareClient(process.env.CLOUDFLARE_ACCOUNT_ID, process.env.CLOUDFLARE_PAGES_PROJECT, process.env.CLOUDFLARE_API_TOKEN);
+                      if (pr.state === 'closed') {
+                          await removeClosedPreview(github, context.repo, number, client);
+                          core.notice('PR closed while waiting; removed its previews.');
+                          return;
+                      }
+                      if (!isCurrentPullRequest(pr, process.env.PR_SHA, `${context.repo.owner}/${context.repo.repo}`)) {
+                          core.notice('PR closed or changed while the preview was waiting.');
+                          return;
+                      }
+                      await checkPreviewProject(client, number);
+                      core.setOutput('publish', 'true');
+            - uses: actions/download-artifact@v6
+              if: steps.ready.outputs.publish == 'true'
+              with:
+                  artifact-ids: ${{ needs.identify.outputs.artifact }}
+                  merge-multiple: true
+                  path: ${{ runner.temp }}/preview-site
+                  run-id: ${{ github.event.workflow_run.id }}
+                  github-token: ${{ github.token }}
+            - name: Validate the static preview
+              if: steps.ready.outputs.publish == 'true'
+              uses: actions/github-script@v8
+              with:
+                  script: |
+                      const fs = await import('node:fs/promises');
+                      const { validateStaticSite } = await import(`${process.cwd()}/.github/scripts/preview-github.mts`);
+                      await validateStaticSite(`${process.env.RUNNER_TEMP}/preview-site`);
+                      await fs.mkdir(`${process.env.RUNNER_TEMP}/preview-publisher`, { recursive: true });
+            - name: Upload preview
+              if: steps.ready.outputs.publish == 'true'
+              id: upload
+              # Pin the third-party action used with the deployment token.
+              uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4
+              with:
+                  apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+                  accountId: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+                  workingDirectory: ${{ runner.temp }}/preview-publisher
+                  packageManager: npm
+                  wranglerVersion: "4.149.0"
+                  command: >-
+                      pages deploy ${{ runner.temp }}/preview-site
+                      --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+                      --branch=pr-${{ needs.identify.outputs.number }}
+                      --commit-hash=${{ needs.identify.outputs.sha }}
+            - name: Link the preview in the PR conversation and checks
+              if: steps.ready.outputs.publish == 'true'
+              uses: actions/github-script@v8
+              env:
+                  PR_NUMBER: ${{ needs.identify.outputs.number }}
+                  PR_SHA: ${{ needs.identify.outputs.sha }}
+                  PREVIEW_URL: ${{ steps.upload.outputs.pages-deployment-alias-url }}
+              with:
+                  script: |
+                      const { reportPreview } = await import(`${process.cwd()}/.github/scripts/preview-github.mts`);
+                      await reportPreview(github, context.repo, Number(process.env.PR_NUMBER), process.env.PR_SHA, process.env.PREVIEW_URL);
+                      await core.summary.addLink('View LiveSplit One preview', process.env.PREVIEW_URL).write();

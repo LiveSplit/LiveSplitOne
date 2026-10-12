@@ -38,6 +38,7 @@ export default tseslint.config({
                     "buildCore.ts",
                     "eslint.config.ts",
                     "vite.config.ts",
+                    ".github/scripts/*.mts",
                 ],
                 defaultProject: "tsconfig.node.json",
             },
