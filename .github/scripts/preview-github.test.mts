@@ -37,6 +37,7 @@ function githubFixture(
         current?: typeof pr;
         workflow?: string;
         expired?: boolean;
+        comments?: { id: number; body: string; user: { login: string } }[];
     } = {},
 ) {
     const calls: {
@@ -87,6 +88,10 @@ function githubFixture(
             url.pathname.endsWith("/check-runs/99")
         ) {
             result = { id: 99 };
+        } else if (url.pathname.endsWith("/issues/42/comments")) {
+            result = method === "GET" ? (options.comments ?? []) : { id: 101 };
+        } else if (url.pathname.endsWith("/issues/comments/101")) {
+            result = { id: 101 };
         } else {
             throw new Error(`Unexpected GitHub request: ${url.pathname}`);
         }
@@ -170,6 +175,73 @@ test("links the stable preview origin to the actual PR commit", async () => {
             reportPreview(github, repo, 42, sha, bad),
             /Unexpected/,
         );
+    }
+});
+
+test("the first preview posts a ready link directly in the PR conversation", async () => {
+    const { github, calls } = githubFixture();
+    const url = "https://pr-42.livesplit-one-previews.pages.dev/";
+    await reportPreview(github, repo, 42, sha, url);
+    const created = calls.filter(
+        (call) =>
+            call.method === "POST" && call.path.endsWith("/issues/42/comments"),
+    );
+    assert.equal(created.length, 1);
+    assert.match(String(created[0]?.body["body"]), /\[Open preview\]/);
+    assert(String(created[0]?.body["body"]).includes(url));
+    assert(String(created[0]?.body["body"]).includes(`/commit/${sha}`));
+});
+
+test("new builds update only the existing preview comment owned by the bot", async () => {
+    const marker = "<!-- livesplit-one-pr-preview -->";
+    const { github, calls } = githubFixture({
+        comments: [
+            { id: 102, body: marker, user: { login: "contributor" } },
+            {
+                id: 103,
+                body: "An unrelated bot comment.",
+                user: { login: "github-actions[bot]" },
+            },
+            { id: 101, body: marker, user: { login: "github-actions[bot]" } },
+        ],
+    });
+    const url = "https://pr-42.livesplit-one-previews.pages.dev/";
+    await reportPreview(github, repo, 42, sha, url);
+    const updates = calls.filter((call) => call.method === "PATCH");
+    assert.equal(updates.length, 1);
+    assert(updates[0]?.path.endsWith("/issues/comments/101"));
+    assert(String(updates[0]?.body["body"]).includes(url));
+    assert(
+        !calls.some(
+            (call) =>
+                call.method === "POST" &&
+                call.path.endsWith("/issues/42/comments"),
+        ),
+    );
+});
+
+test("cleanup removes the comment link without posting to PRs that never had a preview", async () => {
+    for (const comments of [
+        [],
+        [
+            {
+                id: 101,
+                body: "<!-- livesplit-one-pr-preview -->\n\n[Open preview](https://pr-42.lso.pages.dev)",
+                user: { login: "github-actions[bot]" },
+            },
+        ],
+    ]) {
+        const { github, calls } = githubFixture({ comments });
+        await markPreviewRemoved(github, repo, 42, sha);
+        const updates = calls.filter((call) =>
+            call.path.endsWith("/issues/comments/101"),
+        );
+        assert.equal(updates.length, comments.length);
+        if (updates[0]) {
+            assert.match(String(updates[0].body["body"]), /removed/);
+            assert(!String(updates[0].body["body"]).includes("pages.dev"));
+        }
+        assert(!calls.some((call) => call.method === "POST"));
     }
 });
 

@@ -50,7 +50,7 @@ jobs:
         permissions:
             contents: read
             actions: read
-            pull-requests: read
+            pull-requests: write
             checks: write
         # Cleanup uses this same group. A close waits for an upload already in
         # progress, then removes it; newer runs cannot recreate a closed PR.
@@ -128,7 +128,7 @@ jobs:
                       --project-name=${{ vars.CLOUDFLARE_PAGES_PROJECT }}
                       --branch=pr-${{ needs.identify.outputs.number }}
                       --commit-hash=${{ needs.identify.outputs.sha }}
-            - name: Add the preview link to the PR checks
+            - name: Link the preview in the PR conversation and checks
               if: steps.ready.outputs.publish == 'true'
               uses: actions/github-script@v8
               env:

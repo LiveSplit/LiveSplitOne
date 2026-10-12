@@ -23,7 +23,9 @@ test("merged and unmerged closes clean up; a reopened PR keeps its preview", asy
                     );
                     const data = url.pathname.endsWith("/pulls/42")
                         ? { state, merged, head: { sha: "a".repeat(40) } }
-                        : { total_count: 0, check_runs: [] };
+                        : url.pathname.endsWith("/issues/42/comments")
+                          ? []
+                          : { total_count: 0, check_runs: [] };
                     const response = new Response(JSON.stringify(data), {
                         headers: { "content-type": "application/json" },
                     });

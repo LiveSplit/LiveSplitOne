@@ -19,6 +19,7 @@ type PullRequest = {
 };
 
 export const ARTIFACT_NAME = "livesplit-one-preview";
+const PREVIEW_COMMENT_MARKER = "<!-- livesplit-one-pr-preview -->";
 
 export function previewBranch(number: number): string {
     if (!Number.isSafeInteger(number) || number <= 0) {
@@ -161,6 +162,51 @@ export async function reportPreview(
             summary: `[View preview](${url}) — automatically removed when this PR closes or merges.`,
         },
     });
+    await updatePreviewComment(
+        github,
+        repo,
+        number,
+        `### LiveSplit One preview\n\n[Open preview](${url})\n\nBuilt from [${sha.slice(0, 7)}](https://github.com/${repo.owner}/${repo.repo}/commit/${sha}). Updated automatically for this PR and removed when it closes or merges.`,
+        { createIfMissing: true },
+    );
+}
+
+// Keep the link in the PR conversation itself, where reviewers can open it
+// without visiting Actions. Update one bot-owned comment instead of posting
+// another notification on every build, and leave other comments untouched.
+// Cleanup only updates existing comments: PRs that never had a preview should
+// not receive a new "preview removed" comment when they close.
+async function updatePreviewComment(
+    github: GitHubClient,
+    repo: Repository,
+    number: number,
+    text: string,
+    { createIfMissing = false } = {},
+) {
+    const comments = await github.paginate(github.rest.issues.listComments, {
+        ...repo,
+        issue_number: number,
+        per_page: 100,
+    });
+    const comment = comments.find(
+        (comment) =>
+            comment.user?.login === "github-actions[bot]" &&
+            comment.body?.startsWith(PREVIEW_COMMENT_MARKER),
+    );
+    const body = `${PREVIEW_COMMENT_MARKER}\n\n${text}`;
+    if (comment) {
+        await github.rest.issues.updateComment({
+            ...repo,
+            comment_id: comment.id,
+            body,
+        });
+    } else if (createIfMissing) {
+        await github.rest.issues.createComment({
+            ...repo,
+            issue_number: number,
+            body,
+        });
+    }
 }
 
 export async function markPreviewRemoved(
@@ -193,4 +239,10 @@ export async function markPreviewRemoved(
             });
         }
     }
+    await updatePreviewComment(
+        github,
+        repo,
+        number,
+        "### LiveSplit One preview removed\n\nThis PR has closed or merged, so its preview deployments were deleted.",
+    );
 }
