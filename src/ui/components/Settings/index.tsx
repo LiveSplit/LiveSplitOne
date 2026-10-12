@@ -21,6 +21,7 @@ import {
 } from "./Column";
 import { Alignment } from "./Alignment";
 import { SubsplitDisplayMode } from "./SubsplitDisplayMode";
+import { IconDisplayMode } from "./IconDisplayMode";
 import { OptionalTimingMethod } from "./TimingMethod";
 import { DeltaGradient, Gradient, ListGradient } from "./Gradient";
 import { Color, OptionalColor } from "./Color";
@@ -127,6 +128,7 @@ export interface SettingValueFactory<T> {
     fromColumnUpdateTrigger(value: string): T | null;
     fromLayoutDirection(value: string): T | null;
     fromSubsplitDisplayMode(value: string): T | null;
+    fromIconDisplayMode(value: string): T | null;
     fromFont(
         name: string,
         style: string,
@@ -249,6 +251,18 @@ export class JsonSettingValueFactory implements SettingValueFactory<ExtendedSett
         _: string,
     ): ExtendedSettingsDescriptionValueJson | null {
         throw new Error("Not implemented");
+    }
+    public fromIconDisplayMode(
+        value: string,
+    ): ExtendedSettingsDescriptionValueJson | null {
+        if (
+            value === "Hidden" ||
+            value === "BothRows" ||
+            value === "FirstRow"
+        ) {
+            return { IconDisplayMode: value };
+        }
+        return null;
     }
     public fromFont(
         _name: string,
@@ -672,6 +686,17 @@ export class SettingsComponent<T> extends React.Component<Props<T>> {
                         }
                         factory={this.props.factory}
                         editorUrlCache={this.props.editorUrlCache}
+                        lang={this.props.lang}
+                    />
+                );
+            } else if ("IconDisplayMode" in value) {
+                component = (
+                    <IconDisplayMode
+                        value={value.IconDisplayMode}
+                        setValue={(value) =>
+                            this.props.setValue(valueIndex, value)
+                        }
+                        factory={this.props.factory}
                         lang={this.props.lang}
                     />
                 );
