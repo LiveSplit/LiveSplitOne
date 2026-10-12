@@ -27,6 +27,7 @@ const run: SourceRun = {
 const pr = {
     number: 42,
     state: "open",
+    draft: true,
     head: { sha },
     base: { repo: { full_name: "LiveSplit/LiveSplitOne" } },
 };
@@ -60,8 +61,12 @@ function githubFixture(
         let result: unknown;
         if (url.pathname.endsWith("/actions/workflows/1")) {
             result = { path: options.workflow ?? ".github/workflows/ci.yml" };
-        } else if (url.pathname.endsWith(`/commits/${sha}/pulls`)) {
+        } else if (url.pathname === `/repos/${repo.owner}/${repo.repo}/pulls`) {
             result = options.candidates ?? [pr];
+        } else if (url.pathname.endsWith(`/commits/${sha}/pulls`)) {
+            // GitHub returned no associations for the first live fork PR,
+            // despite its current head and uploaded artifact matching CI.
+            result = [];
         } else if (url.pathname.endsWith("/pulls/42")) {
             result = options.current ?? pr;
         } else if (url.pathname.endsWith("/actions/runs/9/artifacts")) {
@@ -106,14 +111,37 @@ function githubFixture(
     return { github: new Octokit({ request: { fetch: fetcher } }), calls };
 }
 
-test("discovers fork PRs through signed commit metadata without artifact-supplied identity", async () => {
+test("discovers a draft fork PR even when its commit has no PR associations", async () => {
     const { github, calls } = githubFixture();
     assert.deepEqual(await findPreview(github, run, repo), {
         number: 42,
         sha,
         artifact: 7,
     });
-    assert(calls.some((call) => call.path.endsWith(`/commits/${sha}/pulls`)));
+    assert(
+        calls.some(
+            (call) => call.path === `/repos/${repo.owner}/${repo.repo}/pulls`,
+        ),
+    );
+});
+
+test("ignores open PRs with a different head or base repository", async () => {
+    const { github } = githubFixture({
+        candidates: [
+            { ...pr, number: 43, head: { sha: "b".repeat(40) } },
+            {
+                ...pr,
+                number: 44,
+                base: { repo: { full_name: "other/repo" } },
+            },
+            pr,
+        ],
+    });
+    assert.deepEqual(await findPreview(github, run, repo), {
+        number: 42,
+        sha,
+        artifact: 7,
+    });
 });
 
 test("ignores runs from other repositories, failed CI, and non-PR events", async () => {
