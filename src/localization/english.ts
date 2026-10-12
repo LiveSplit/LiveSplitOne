@@ -572,6 +572,10 @@ export function resolveEnglish(text: Label): string {
             return "Comparison Segment Time";
         case Label.ColumnStartWithPossibleTimeSave:
             return "Possible Time Save";
+        case Label.IconDisplayModeBothRows:
+            return "Both Rows";
+        case Label.IconDisplayModeFirstRow:
+            return "First Row Only";
         case Label.SubsplitDisplayModeFlat:
             return "Flat";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:

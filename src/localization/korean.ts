@@ -572,6 +572,10 @@ export function resolveKorean(text: Label): string {
             return "비교 세그먼트 시간";
         case Label.ColumnStartWithPossibleTimeSave:
             return "절약 가능한 시간";
+        case Label.IconDisplayModeBothRows:
+            return "두 행 모두";
+        case Label.IconDisplayModeFirstRow:
+            return "첫 번째 행만";
         case Label.SubsplitDisplayModeFlat:
             return "플랫";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:

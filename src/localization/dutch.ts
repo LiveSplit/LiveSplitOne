@@ -572,6 +572,10 @@ export function resolveDutch(text: Label): string {
             return "Vergelijking segmenttijd";
         case Label.ColumnStartWithPossibleTimeSave:
             return "Mogelijke tijdswinst";
+        case Label.IconDisplayModeBothRows:
+            return "Beide rijen";
+        case Label.IconDisplayModeFirstRow:
+            return "Alleen de eerste rij";
         case Label.SubsplitDisplayModeFlat:
             return "Plat";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:
