@@ -41,8 +41,9 @@ export function isCurrentPullRequest(
 }
 
 // Determine identity exclusively through GitHub's API, never through files
-// uploaded by PR code. workflow_run.pull_requests can be empty for fork PRs,
-// so resolve associated PRs through the commit API in that case as well.
+// uploaded by PR code. Both workflow_run.pull_requests and the commit's PR
+// associations can be empty for a fork, including a draft PR. Query current
+// open PR heads directly and require an exact repository and SHA match.
 export async function findPreview(
     github: GitHubClient,
     run: SourceRun,
@@ -63,10 +64,11 @@ export async function findPreview(
     if (workflow.path !== ".github/workflows/ci.yml") {
         return null;
     }
-    const prs = await github.paginate(
-        github.rest.repos.listPullRequestsAssociatedWithCommit,
-        { ...repo, commit_sha: run.head_sha, per_page: 100 },
-    );
+    const prs = await github.paginate(github.rest.pulls.list, {
+        ...repo,
+        state: "open",
+        per_page: 100,
+    });
     const candidates = prs.filter((pr) =>
         isCurrentPullRequest(pr, run.head_sha, repository),
     );
