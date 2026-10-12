@@ -1,0 +1,41 @@
+name: Remove PR preview
+
+on:
+    # This includes merges and closes without merging. Only metadata and
+    # trusted default-branch scripts are used; PR source is never checked out.
+    pull_request_target:
+        types: [closed]
+
+permissions:
+    contents: read
+    pull-requests: read
+    checks: write
+
+jobs:
+    cleanup:
+        if: vars.CLOUDFLARE_ACCOUNT_ID != '' && vars.CLOUDFLARE_PAGES_PROJECT != ''
+        runs-on: ubuntu-latest
+        concurrency:
+            group: pr-preview-${{ github.event.pull_request.number }}
+            cancel-in-progress: false
+        steps:
+            - uses: actions/checkout@v6
+              with:
+                  ref: ${{ github.event.repository.default_branch }}
+                  persist-credentials: false
+            - name: Delete every deployment for the closed PR
+              uses: actions/github-script@v8
+              env:
+                  CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+                  CLOUDFLARE_PAGES_PROJECT: ${{ vars.CLOUDFLARE_PAGES_PROJECT }}
+                  CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+              with:
+                  script: |
+                      const { cloudflareClient, removeClosedPreview } = await import(`${process.cwd()}/.github/scripts/preview-cloudflare.mts`);
+                      const number = context.payload.pull_request.number;
+                      const deleted = await removeClosedPreview(github, context.repo, number, cloudflareClient(process.env.CLOUDFLARE_ACCOUNT_ID, process.env.CLOUDFLARE_PAGES_PROJECT, process.env.CLOUDFLARE_API_TOKEN));
+                      if (deleted === null) {
+                          core.notice('PR reopened before cleanup; preserve its preview.');
+                          return;
+                      }
+                      await core.summary.addRaw(`Removed ${deleted} preview deployments for PR #${number}.`).write();

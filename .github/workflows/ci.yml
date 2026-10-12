@@ -150,11 +150,27 @@ jobs:
               if: matrix.platform == 'web'
               run: npm run typecheck
 
+            - name: Test preview deployment helpers (Web)
+              if: matrix.platform == 'web'
+              run: npm run test:previews
+
             - name: Build Frontend (Web)
               if: matrix.platform == 'web'
               env:
-                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: npm run publish
+                  GITHUB_TOKEN: ${{ github.token }}
+              run: npm run ${{ github.event_name == 'pull_request' && 'publish:preview' || 'publish' }}
+
+            # The existing web job produces the preview. PR code never receives
+            # Cloudflare credentials; a separate, trusted workflow uploads
+            # these static files after CI has finished successfully.
+            - name: Upload pull request preview (Web)
+              if: matrix.platform == 'web' && github.event_name == 'pull_request'
+              uses: actions/upload-artifact@v6
+              with:
+                  name: livesplit-one-preview
+                  path: dist
+                  if-no-files-found: error
+                  retention-days: 7
 
             - name: Build Frontend (Tauri)
               if: matrix.platform == 'tauri'
