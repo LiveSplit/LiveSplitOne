@@ -114,6 +114,8 @@ export function resolveRussian(text: Label): string {
             return "Игровое время";
         case Label.PopOut:
             return "Окно отдельно";
+        case Label.PopOutFailed:
+            return "Не удалось открыть новое окно.";
         case Label.About:
             return "О программе";
         case Label.Back:

@@ -114,6 +114,8 @@ export function resolveChineseSimplified(text: Label): string {
             return "游戏时间";
         case Label.PopOut:
             return "弹出窗口";
+        case Label.PopOutFailed:
+            return "无法打开新窗口。";
         case Label.About:
             return "关于";
         case Label.Back:

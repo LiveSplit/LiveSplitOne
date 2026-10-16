@@ -114,6 +114,8 @@ export function resolveJapanese(text: Label): string {
             return "ゲーム時間";
         case Label.PopOut:
             return "ポップアウト";
+        case Label.PopOutFailed:
+            return "新しいウィンドウを開けませんでした。";
         case Label.About:
             return "このアプリについて";
         case Label.Back:
