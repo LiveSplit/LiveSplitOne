@@ -302,6 +302,8 @@ export enum Label {
     ColumnStartWithComparisonSegmentTime,
     ColumnStartWithPossibleTimeSave,
     SubsplitDisplayModeFlat,
+    IconDisplayModeBothRows,
+    IconDisplayModeFirstRow,
     SubsplitDisplayModeCurrentGroupExpanded,
     SubsplitDisplayModeAllGroupsExpanded,
     ColumnUpdateWithDontUpdate,

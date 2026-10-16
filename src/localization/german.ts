@@ -574,6 +574,10 @@ export function resolveGerman(text: Label): string {
             return "Vergleichs‑Segmentzeit";
         case Label.ColumnStartWithPossibleTimeSave:
             return "Mögliche Zeitersparnis";
+        case Label.IconDisplayModeBothRows:
+            return "Beide Zeilen";
+        case Label.IconDisplayModeFirstRow:
+            return "Nur erste Zeile";
         case Label.SubsplitDisplayModeFlat:
             return "Flach";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:

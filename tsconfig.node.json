@@ -19,6 +19,8 @@
         "forceConsistentCasingInFileNames": true,
         "isolatedModules": true,
         "noEmit": true,
+        "allowImportingTsExtensions": true,
+        "erasableSyntaxOnly": true,
         // DOM, WebWorker, and Workbox declarations currently conflict when
         // TypeScript checks their third-party declaration files together.
         "skipLibCheck": true,
@@ -30,6 +32,7 @@
         "buildCore.ts",
         "eslint.config.ts",
         "vite.config.ts",
+        ".github/scripts/*.mts",
         "src/type-definitions/babel-core-shim.d.ts"
     ]
 }

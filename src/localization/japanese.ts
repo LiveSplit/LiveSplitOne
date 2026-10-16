@@ -574,6 +574,10 @@ export function resolveJapanese(text: Label): string {
             return "比較対象区間タイム";
         case Label.ColumnStartWithPossibleTimeSave:
             return "更新余地";
+        case Label.IconDisplayModeBothRows:
+            return "両方の行";
+        case Label.IconDisplayModeFirstRow:
+            return "最初の行のみ";
         case Label.SubsplitDisplayModeFlat:
             return "フラット";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:

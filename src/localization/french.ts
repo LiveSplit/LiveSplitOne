@@ -574,6 +574,10 @@ export function resolveFrench(text: Label): string {
             return "Temps du segment de comparaison";
         case Label.ColumnStartWithPossibleTimeSave:
             return "Gain de temps possible";
+        case Label.IconDisplayModeBothRows:
+            return "Les deux lignes";
+        case Label.IconDisplayModeFirstRow:
+            return "Première ligne uniquement";
         case Label.SubsplitDisplayModeFlat:
             return "À plat";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:

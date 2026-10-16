@@ -574,6 +574,10 @@ export function resolveBrazilianPortuguese(text: Label): string {
             return "Tempo de segmento de comparação";
         case Label.ColumnStartWithPossibleTimeSave:
             return "Tempo possível de economizar";
+        case Label.IconDisplayModeBothRows:
+            return "Ambas as linhas";
+        case Label.IconDisplayModeFirstRow:
+            return "Apenas a primeira linha";
         case Label.SubsplitDisplayModeFlat:
             return "Plano";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:

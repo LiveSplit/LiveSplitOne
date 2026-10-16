@@ -574,6 +574,10 @@ export function resolvePolish(text: Label): string {
             return "Czas segmentu porównania";
         case Label.ColumnStartWithPossibleTimeSave:
             return "Możliwa oszczędność czasu";
+        case Label.IconDisplayModeBothRows:
+            return "Oba wiersze";
+        case Label.IconDisplayModeFirstRow:
+            return "Tylko pierwszy wiersz";
         case Label.SubsplitDisplayModeFlat:
             return "Płasko";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:

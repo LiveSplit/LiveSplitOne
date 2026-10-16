@@ -574,6 +574,10 @@ export function resolveRussian(text: Label): string {
             return "Время сегмента сравнения";
         case Label.ColumnStartWithPossibleTimeSave:
             return "Возможная экономия времени";
+        case Label.IconDisplayModeBothRows:
+            return "Обе строки";
+        case Label.IconDisplayModeFirstRow:
+            return "Только первая строка";
         case Label.SubsplitDisplayModeFlat:
             return "Плоский список";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:
