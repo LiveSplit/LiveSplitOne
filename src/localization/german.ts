@@ -23,7 +23,7 @@ export function resolveGerman(text: Label): string {
         case Label.ThemeDarkMode:
             return "Dunkler Modus";
         case Label.HotkeysHeading:
-            return "Tastenkürzel";
+            return "Hotkeys";
         case Label.GeneralHeading:
             return "Allgemein";
         case Label.NetworkHeading:
@@ -45,7 +45,7 @@ export function resolveGerman(text: Label): string {
         case Label.ShowControlButtonsDescription:
             return "Legt fest, ob unter dem Timer Schaltflächen angezeigt werden, mit denen er gesteuert werden kann. Wenn deaktiviert, müssen die Hotkeys verwendet werden.";
         case Label.ShowManualGameTimeInput:
-            return "Manuelle Spielzeit‑Eingabe anzeigen";
+            return "Manuelle Spielzeit-Eingabe anzeigen";
         case Label.ShowManualGameTimeInputDescription:
             return "Zeigt ein Textfeld unter dem Timer an, mit dem du die Spielzeit manuell eingeben kannst. Du startest den Timer und machst Splits, indem du im Textfeld die Eingabetaste drückst. Vergleiche mit „Spielzeit“.";
         case Label.ManualGameTimeMode:
@@ -61,17 +61,17 @@ export function resolveGerman(text: Label): string {
         case Label.AlwaysOnTopDescription:
             return "Hält das Fenster immer über anderen Fenstern.";
         case Label.SpeedrunComIntegration:
-            return "Speedrun.com‑Integration";
+            return "Speedrun.com-Integration";
         case Label.SpeedrunComIntegrationDescription:
-            return "Fragt die Liste der Spiele, Kategorien und Bestenlisten von speedrun.com ab.";
+            return "Fragt die Liste der Spiele, Kategorien und Bestenlisten von Speedrun.com ab.";
         case Label.ServerConnection:
             return "Serververbindung";
         case Label.ServerConnectionDescription:
-            return "Ermöglicht die Verbindung zu einem WebSocket‑Server, der den Timer durch das Senden verschiedener Befehle steuern kann. Die Befehle sind derzeit eine Teilmenge der Befehle, die das ursprüngliche LiveSplit unterstützt.";
+            return "Ermöglicht die Verbindung zu einem WebSocket-Server, der den Timer durch das Senden verschiedener Befehle steuern kann. Die Befehle sind derzeit eine Teilmenge der Befehle, die das ursprüngliche LiveSplit unterstützt.";
         case Label.ServerConnectionExperimental:
             return "Diese Funktion ist experimentell und das Protokoll wird sich wahrscheinlich in Zukunft ändern.";
         case Label.TheRunGgIntegration:
-            return "TheRun.gg-Integration";
+            return "therun.gg-Integration";
         case Label.TheRunGgIntegrationDescription:
             return "Integriert sich mit therun.gg für Live-Run-Tracking und automatisches Hochladen von Statistiken. Für diese Funktion benötigst du einen Upload-Schlüssel von therun.gg.";
         case Label.TheRunGgLiveTracking:
@@ -99,7 +99,7 @@ export function resolveGerman(text: Label): string {
         case Label.ManualGameTimePlaceholder:
             return "Manuelle Spielzeit";
         case Label.LiveSplitLogoAlt:
-            return "LiveSplit‑Logo";
+            return "LiveSplit-Logo";
         case Label.LiveSplitOne:
             return "LiveSplit One";
         case Label.Splits:
@@ -113,7 +113,7 @@ export function resolveGerman(text: Label): string {
         case Label.GameTime:
             return "Spielzeit";
         case Label.PopOut:
-            return "Pop‑out";
+            return "Pop-out";
         case Label.About:
             return "Über";
         case Label.Back:
@@ -129,7 +129,7 @@ export function resolveGerman(text: Label): string {
         case Label.AboutContributors:
             return "Mitwirkende";
         case Label.Loading:
-            return "Wird geladen...";
+            return "Wird geladen…";
         case Label.Add:
             return "Hinzufügen";
         case Label.Import:
@@ -183,7 +183,7 @@ export function resolveGerman(text: Label): string {
         case Label.EditWhileRunningError:
             return "Du kannst deine Splits nicht bearbeiten, während der Timer läuft.";
         case Label.Edit:
-            return "Bearbeiten";
+            return "Bearbeiten…";
         case Label.Save:
             return "Speichern";
         case Label.Export:
@@ -201,7 +201,7 @@ export function resolveGerman(text: Label): string {
         case Label.Attempts:
             return "Versuche";
         case Label.SplitsEditor:
-            return "Splits‑Editor";
+            return "Splits-Editor";
         case Label.Variables:
             return "Variablen";
         case Label.Rules:
@@ -225,7 +225,7 @@ export function resolveGerman(text: Label): string {
         case Label.AddVariable:
             return "Variable hinzufügen";
         case Label.OpenPbPage:
-            return "PB‑Seite öffnen";
+            return "PB-Seite öffnen";
         case Label.AssociateRun:
             return "Run verknüpfen";
         case Label.Icon:
@@ -239,7 +239,7 @@ export function resolveGerman(text: Label): string {
         case Label.BestSegment:
             return "Bestes Segment";
         case Label.SpeedrunComVariableTooltip:
-            return "Eine speedrun.com‑Variable, die zum Spiel gehört.";
+            return "Eine Speedrun.com-Variable, die zum Spiel gehört.";
         case Label.Region:
             return "Region";
         case Label.RegionDescription:
@@ -253,11 +253,11 @@ export function resolveGerman(text: Label): string {
         case Label.UsesEmulatorDescription:
             return "Ob ein Emulator zum Spielen verwendet wird.";
         case Label.CustomVariableTooltip:
-            return "Eine von dir definierte Variable. Diese kann im Text‑Komponent angezeigt werden.";
+            return "Eine benutzerdefinierte Variable, die du festgelegt hast. Diese kann mit der Text-Komponente angezeigt werden.";
         case Label.NoVariables:
             return "Derzeit gibt es keine benutzerdefinierten Variablen für dieses Spiel.";
         case Label.NoVariablesWithSpeedrunCom:
-            return "Derzeit gibt es keine speedrun.com‑Variablen oder benutzerdefinierten Variablen für dieses Spiel.";
+            return "Derzeit gibt es keine Speedrun.com-Variablen oder benutzerdefinierten Variablen für dieses Spiel.";
         case Label.TimedWithoutLoads:
             return "werden ohne Ladezeiten getimt";
         case Label.TimedWithGameTime:
@@ -277,11 +277,11 @@ export function resolveGerman(text: Label): string {
         case Label.DownloadBoxArt:
             return "Cover herunterladen";
         case Label.DownloadBoxArtDescription:
-            return "Versucht, das Cover von speedrun.com herunterzuladen und als Spielsymbol zu setzen.";
+            return "Versucht, das Cover von Speedrun.com herunterzuladen und als Spielsymbol zu setzen.";
         case Label.DownloadIcon:
             return "Symbol herunterladen";
         case Label.DownloadIconDescription:
-            return "Versucht, das Symbol des Spiels von speedrun.com herunterzuladen.";
+            return "Versucht, das Symbol des Spiels von Speedrun.com herunterzuladen.";
         case Label.RemoveIcon:
             return "Symbol entfernen";
         case Label.RemoveIconDescription:
@@ -291,39 +291,39 @@ export function resolveGerman(text: Label): string {
         case Label.ClearOnlyHistory:
             return "Nur Verlauf löschen";
         case Label.ClearOnlyHistoryDescription:
-            return "Splits speichern den gesamten Verlauf aller Runs. Damit kannst du den Verlauf löschen, ohne PB, beste Segmente oder Vergleiche zu beeinflussen.";
+            return "Splits speichern den gesamten Verlauf aller Runs, einschließlich jeder Segmentzeit. Diese Informationen werden von verschiedenen Komponenten verwendet. Hiermit kannst du den Verlauf löschen. Die persönliche Bestzeit, die besten Segmentzeiten und die Vergleiche bleiben davon unberührt.";
         case Label.ClearAllTimes:
             return "Alle Zeiten löschen";
         case Label.ClearAllTimesDescription:
-            return "Entfernt alle Zeiten inklusive Verlauf, sodass die Splits komplett leer sind.";
+            return "Entfernt alle Zeiten aus den Splits, einschließlich des gesamten Verlaufs, sodass die Splits komplett leer sind, als wären sie gerade erst erstellt worden.";
         case Label.CleanSumOfBest:
             return "Summe der Besten bereinigen";
         case Label.CleanSumOfBestDescription:
-            return "Ermöglicht das interaktive Entfernen von Problemen in der Segmenthistorie, die eine ungenaue Summe der besten Segmente verursachen.";
+            return "Ermöglicht es dir, mögliche Probleme im Segmentverlauf interaktiv zu entfernen, die zu einer ungenauen Summe der besten Segmente führen. Wenn du einen Split überspringst, kann die kombinierte Segmentzeit beim nächsten Split schneller sein als die Summe der einzelnen besten Segmente. Alle solchen Fälle werden aufgezeigt, sodass du sie einzeln löschen kannst, falls sie falsch erscheinen.";
         case Label.ComparisonsMenu:
             return "Vergleiche…";
         case Label.AddComparison:
             return "Vergleich hinzufügen";
         case Label.AddComparisonDescription:
-            return "Fügt einen benutzerdefinierten Vergleich hinzu, in dem du Zeiten speichern kannst.";
+            return "Fügt einen neuen benutzerdefinierten Vergleich hinzu, in dem du beliebige Zeiten speichern kannst.";
         case Label.ImportComparison:
             return "Vergleich importieren";
         case Label.ImportComparisonDescription:
-            return "Importiert die Personal Best aus einer Splits‑Datei als Vergleich.";
+            return "Importiert die persönliche Bestzeit einer von dir angegebenen Splits-Datei als Vergleich.";
         case Label.GenerateGoalComparison:
             return "Zielvergleich erzeugen";
         case Label.GenerateGoalComparisonDescription:
-            return "Erzeugt einen Zielvergleich basierend auf einer Zielzeit.";
+            return "Erzeugt einen benutzerdefinierten Zielvergleich auf Basis einer Zielzeit, die du angeben kannst. Die Zeiten des Vergleichs werden anhand des Segmentverlaufs automatisch so verteilt, dass sie ungefähr den Splitzeiten für die Zielzeit entsprechen. Da der Vergleich aus dem Segmentverlauf berechnet wird, ist die Zielzeit auf den Bereich zwischen der Summe der besten und der Summe der schlechtesten Segmente begrenzt. Der Vergleich wird nur für die ausgewählte Zeitmessmethode erzeugt. Die Vergleichszeiten der anderen Zeitmessmethode bleiben unverändert, sodass du ihn mit der anderen Zeitmessmethode erneut erzeugen kannst, um Vergleichszeiten für beide Zeitmessmethoden zu erhalten.";
         case Label.CopyComparison:
             return "Vergleich kopieren";
         case Label.CopyComparisonDescription:
-            return "Kopiert einen vorhandenen Vergleich als neuen benutzerdefinierten Vergleich.";
+            return "Kopiert einen vorhandenen Vergleich, auch die persönliche Bestzeit oder einen anderen automatisch bereitgestellten Vergleich, als neuen benutzerdefinierten Vergleich. So kannst du zum Beispiel den letzten Run so lange als Vergleich behalten, wie du möchtest.";
         case Label.SetSegmentIcon:
-            return "Symbol festlegen";
+            return "Segmentsymbol festlegen";
         case Label.SetSegmentIconDescription:
             return "Wähle eine Bilddatei als Segmentsymbol. Manche Formate funktionieren nicht überall.";
         case Label.RemoveSegmentIcon:
-            return "Symbol entfernen";
+            return "Segmentsymbol entfernen";
         case Label.RemoveSegmentIconDescription:
             return "Entfernt das Segmentsymbol.";
         case Label.Rename:
@@ -349,7 +349,7 @@ export function resolveGerman(text: Label): string {
         case Label.AddComparisonPrompt:
             return "Gib den Namen des Vergleichs an, den du hinzufügen möchtest:";
         case Label.ComparisonAddError:
-            return "Der Vergleich konnte nicht hinzugefügt werden. Möglicherweise Duplikat oder reservierter Name.";
+            return "Der Vergleich konnte nicht hinzugefügt werden. Möglicherweise ist der Name doppelt vergeben oder reserviert.";
         case Label.ImportComparisonPrompt:
             return "Gib den Namen des Vergleichs an, den du importieren möchtest:";
         case Label.GenerateGoalComparisonPrompt:
@@ -357,21 +357,21 @@ export function resolveGerman(text: Label): string {
         case Label.Generate:
             return "Erzeugen";
         case Label.GenerateGoalComparisonError:
-            return "Zielvergleich konnte nicht erzeugt werden. Bitte eine gültige Zeit angeben.";
+            return "Der Zielvergleich konnte nicht erzeugt werden. Gib eine gültige Zeit an.";
         case Label.CopyComparisonPrompt:
             return "Gib den Namen des Vergleichs an, den du kopieren möchtest:";
         case Label.CopyComparisonError:
-            return "Vergleich konnte nicht kopiert werden. Er existiert möglicherweise nicht.";
+            return "Der Vergleich konnte nicht kopiert werden. Möglicherweise existiert er nicht.";
         case Label.NothingToCleanUp:
             return "Es gibt nichts zu bereinigen.";
         case Label.CleanPrompt:
             return "Bereinigen?";
         case Label.AssociateRunPrompt:
-            return "Gib die speedrun.com‑ID oder URL des Runs an:";
+            return "Gib die Speedrun.com-ID oder URL des Runs an:";
         case Label.Associate:
             return "Verknüpfen";
         case Label.InvalidSpeedrunUrl:
-            return "Ungültige speedrun.com‑ID oder URL.";
+            return "Ungültige Speedrun.com-ID oder URL.";
         case Label.AssociateRunError:
             return "Run konnte nicht verknüpft werden. Die ID ist möglicherweise ungültig.";
         case Label.AddVariablePrompt:
@@ -389,7 +389,7 @@ export function resolveGerman(text: Label): string {
         case Label.DownloadBoxArtError:
             return "Cover konnte nicht heruntergeladen werden.";
         case Label.NoGameIcon:
-            return "Das Spiel hat kein Symbol.";
+            return "Kein Spielsymbol";
         case Label.DownloadIconError:
             return "Symbol konnte nicht heruntergeladen werden.";
         case Label.Rank:
@@ -415,7 +415,7 @@ export function resolveGerman(text: Label): string {
         case Label.Filters:
             return "Filter";
         case Label.LayoutEditor:
-            return "Layout‑Editor";
+            return "Layout-Editor";
         case Label.Component:
             return "Komponente";
         case Label.AddComponent:
@@ -441,7 +441,7 @@ export function resolveGerman(text: Label): string {
         case Label.ComponentDetailedTimer:
             return "Detaillierter Timer";
         case Label.ComponentDetailedTimerDescription:
-            return "Zeigt Gesamt‑ und Segmentzeit sowie optionale Infos.";
+            return "Zeigt Gesamt- und Segmentzeit sowie optionale Infos.";
         case Label.ComponentTimer:
             return "Timer";
         case Label.ComponentTimerDescription:
@@ -459,7 +459,7 @@ export function resolveGerman(text: Label): string {
         case Label.ComponentDeltaDescription:
             return "Zeigt Vorsprung/Rückstand zum Vergleich.";
         case Label.ComponentPbChance:
-            return "PB‑Chance";
+            return "PB-Chance";
         case Label.ComponentPbChanceDescription:
             return "Zeigt die Wahrscheinlichkeit für ein PB, dynamisch während des Runs.";
         case Label.ComponentPossibleTimeSave:
@@ -477,7 +477,7 @@ export function resolveGerman(text: Label): string {
         case Label.ComponentSumOfBest:
             return "Summe der Besten";
         case Label.ComponentSumOfBestDescription:
-            return "Zeigt die schnellstmögliche Zeit basierend auf der Historie.";
+            return "Zeigt die schnellstmögliche Zeit basierend auf der Verlauf.";
         case Label.ComponentText:
             return "Text";
         case Label.ComponentTextDescription:
@@ -569,13 +569,13 @@ export function resolveGerman(text: Label): string {
         case Label.ColumnStartWithComparisonTime:
             return "Vergleichszeit";
         case Label.ColumnStartWithComparisonSegmentTime:
-            return "Vergleichs‑Segmentzeit";
+            return "Vergleichs-Segmentzeit";
         case Label.ColumnStartWithPossibleTimeSave:
             return "Mögliche Zeitersparnis";
         case Label.IconDisplayModeBothRows:
             return "Beide Zeilen";
         case Label.IconDisplayModeFirstRow:
-            return "Nur erste Zeile";
+            return "Erste Zeile";
         case Label.SubsplitDisplayModeFlat:
             return "Flach";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:
@@ -607,21 +607,21 @@ export function resolveGerman(text: Label): string {
         case Label.CustomVariableNoneAvailable:
             return "Keine Variablen verfügbar";
         case Label.CustomVariableNoneAvailableTooltip:
-            return "Benutzerdefinierte Variablen können im Tab Variablen beim Bearbeiten der Splits definiert werden. Zusätzliche benutzerdefinierte Variablen können automatisch durch Auto‑Splitter bereitgestellt werden.";
+            return "Benutzerdefinierte Variablen können beim Bearbeiten der Splits im Tab „Variablen“ definiert werden. Zusätzliche benutzerdefinierte Variablen können automatisch durch Auto-Splitter bereitgestellt werden.";
         case Label.HotkeyButtonTooltip:
-            return "Klicken, um eine Hotkey‑Taste aufzunehmen. Du kannst auch Gamepad‑Tasten verwenden. Globale Hotkeys sind derzeit nicht möglich. Gamepad‑Tasten funktionieren global.";
+            return "Klicken, um eine Hotkey-Taste aufzunehmen. Du kannst auch Gamepad-Tasten verwenden. Globale Hotkeys sind derzeit nicht möglich. Gamepad-Tasten funktionieren global.";
         case Label.ServerConnect:
             return "Verbinden";
         case Label.ServerDisconnect:
             return "Trennen";
         case Label.ServerConnecting:
-            return "Verbinde...";
+            return "Verbinde…";
         case Label.ServerDisconnecting:
-            return "Trenne...";
+            return "Trenne…";
         case Label.ConnectToServerTitle:
             return "Mit Server verbinden";
         case Label.ConnectToServerDescription:
-            return "WebSocket‑URL angeben:";
+            return "WebSocket-URL angeben:";
         case Label.Connect:
             return "Verbinden";
         case Label.UpdateAvailable:
@@ -655,6 +655,6 @@ export function resolveGerman(text: Label): string {
         case Label.LoadFailedPrivateBrowsing:
             return "LiveSplit One konnte nicht geladen werden.\nDu bist möglicherweise im privaten Modus.\nLiveSplit One kann aufgrund der Einschränkungen des privaten Modus keine Splits, Layouts oder andere Einstellungen speichern.\nDiese Einschränkungen könnten in Zukunft aufgehoben werden.\nUm LiveSplit One vorerst zu nutzen, deaktiviere den privaten Modus in den Einstellungen.";
         case Label.LoadFailedOutdatedBrowser:
-            return "LiveSplit One konnte nicht geladen werden.\nDu verwendest möglicherweise einen veralteten Browser.\nBitte aktualisiere deinen Browser oder deine iOS‑Version und versuche es erneut.\nEine andere Ursache könnte eine Browser‑Erweiterung sein, z. B. ein Werbeblocker, der den Zugriff auf wichtige Skripte blockiert.";
+            return "LiveSplit One konnte nicht geladen werden.\nDu verwendest möglicherweise einen veralteten Browser.\nBitte aktualisiere deinen Browser oder deine iOS-Version und versuche es erneut.\nEine andere Ursache könnte eine Browser-Erweiterung sein, z. B. ein Werbeblocker, der den Zugriff auf wichtige Skripte blockiert.";
     }
 }

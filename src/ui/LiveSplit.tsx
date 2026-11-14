@@ -1117,7 +1117,12 @@ export class LiveSplit extends React.Component<Props, State> {
                 this.onReset();
                 break;
             case Event.PausesUndoneAndResumed:
+            case Event.PausesUndone:
+                // Undoing pauses can change previously recorded splits, even
+                // after the attempt finishes. Refresh the unsaved-changes
+                // indicator as well as the phase so these edits are visible.
                 this.currentPhaseChanged();
+                this.splitsModifiedChanged();
                 break;
             case Event.ComparisonChanged:
                 this.currentComparisonChanged();
@@ -1125,7 +1130,6 @@ export class LiveSplit extends React.Component<Props, State> {
             case Event.TimingMethodChanged:
                 this.currentTimingMethodChanged();
                 break;
-            case Event.PausesUndone:
             case Event.GameTimeInitialized:
             case Event.GameTimeSet:
             case Event.GameTimePaused:

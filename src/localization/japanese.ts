@@ -5,7 +5,7 @@ export function resolveJapanese(text: Label): string {
         case Label.Ok:
             return "OK";
         case Label.Cancel:
-            return "取消";
+            return "キャンセル";
         case Label.Settings:
             return "設定";
         case Label.Language:
@@ -63,7 +63,7 @@ export function resolveJapanese(text: Label): string {
         case Label.SpeedrunComIntegration:
             return "Speedrun.com 連携";
         case Label.SpeedrunComIntegrationDescription:
-            return "speedrun.com からゲーム、カテゴリー、リーダーボードの一覧を取得します。";
+            return "Speedrun.com からゲーム、カテゴリー、リーダーボードの一覧を取得します。";
         case Label.ServerConnection:
             return "サーバー接続";
         case Label.ServerConnectionDescription:
@@ -71,7 +71,7 @@ export function resolveJapanese(text: Label): string {
         case Label.ServerConnectionExperimental:
             return "この機能は実験的で、プロトコルは将来変更される可能性があります。";
         case Label.TheRunGgIntegration:
-            return "TheRun.gg 連携";
+            return "therun.gg 連携";
         case Label.TheRunGgIntegrationDescription:
             return "therun.gg と連携し、ランのライブ追跡と統計情報の自動アップロードを行います。この機能を使うには therun.gg のアップロードキーが必要です。";
         case Label.TheRunGgLiveTracking:
@@ -91,7 +91,7 @@ export function resolveJapanese(text: Label): string {
         case Label.Pause:
             return "ポーズ";
         case Label.UndoSplit:
-            return "スプリットを戻す";
+            return "スプリットを取り消す";
         case Label.Reset:
             return "リセット";
         case Label.SkipSplit:
@@ -129,7 +129,7 @@ export function resolveJapanese(text: Label): string {
         case Label.AboutContributors:
             return "貢献者";
         case Label.Loading:
-            return "読み込み中...";
+            return "読み込み中…";
         case Label.Add:
             return "追加";
         case Label.Import:
@@ -183,7 +183,7 @@ export function resolveJapanese(text: Label): string {
         case Label.EditWhileRunningError:
             return "タイマーが動作中はスプリットを編集できません。";
         case Label.Edit:
-            return "編集";
+            return "編集…";
         case Label.Save:
             return "保存";
         case Label.Export:
@@ -213,7 +213,7 @@ export function resolveJapanese(text: Label): string {
         case Label.InsertBelow:
             return "下に挿入";
         case Label.RemoveSegment:
-            return "区間削除";
+            return "区間を削除";
         case Label.MoveUp:
             return "上へ移動";
         case Label.MoveDown:
@@ -239,7 +239,7 @@ export function resolveJapanese(text: Label): string {
         case Label.BestSegment:
             return "区間ベスト";
         case Label.SpeedrunComVariableTooltip:
-            return "speedrun.com のゲーム固有の変数。";
+            return "Speedrun.com のゲーム固有の変数。";
         case Label.Region:
             return "地域";
         case Label.RegionDescription:
@@ -257,7 +257,7 @@ export function resolveJapanese(text: Label): string {
         case Label.NoVariables:
             return "このゲームには現在カスタム変数がありません。";
         case Label.NoVariablesWithSpeedrunCom:
-            return "このゲームには speedrun.com 変数またはカスタム変数がありません。";
+            return "このゲームには Speedrun.com 変数またはカスタム変数がありません。";
         case Label.TimedWithoutLoads:
             return "ロード時間を除いて計測されます";
         case Label.TimedWithGameTime:
@@ -271,19 +271,19 @@ export function resolveJapanese(text: Label): string {
         case Label.And:
             return "と";
         case Label.SetIcon:
-            return "アイコン設定";
+            return "アイコンを設定";
         case Label.SetIconDescription:
             return "画像ファイルを選択してゲームのアイコンに設定します。形式によっては対応していない場合があります。";
         case Label.DownloadBoxArt:
             return "ボックスアートをダウンロード";
         case Label.DownloadBoxArtDescription:
-            return "speedrun.com からボックスアートをダウンロードしてゲームのアイコンに設定します。";
+            return "Speedrun.com からボックスアートをダウンロードしてゲームのアイコンに設定します。";
         case Label.DownloadIcon:
             return "アイコンをダウンロード";
         case Label.DownloadIconDescription:
-            return "speedrun.com からゲームのアイコンをダウンロードします。";
+            return "Speedrun.com からゲームのアイコンをダウンロードします。";
         case Label.RemoveIcon:
-            return "アイコン削除";
+            return "アイコンを削除";
         case Label.RemoveIconDescription:
             return "ゲームのアイコンを削除します。";
         case Label.CleaningMenu:
@@ -291,43 +291,43 @@ export function resolveJapanese(text: Label): string {
         case Label.ClearOnlyHistory:
             return "履歴のみ削除";
         case Label.ClearOnlyHistoryDescription:
-            return "すべての履歴（各区間タイム）を削除します。自己ベスト、区間ベスト、比較対象には影響しません。";
+            return "スプリットには、各区間タイムを含むすべてのランの履歴が保存されています。この情報はさまざまなコンポーネントで使用されます。この操作で履歴を削除できます。自己ベスト、区間ベスト、比較対象には影響しません。";
         case Label.ClearAllTimes:
-            return "全てのタイムを削除";
+            return "すべてのタイムを削除";
         case Label.ClearAllTimesDescription:
-            return "履歴を含むすべてのタイムを削除し、スプリットを初期状態に戻します。";
+            return "履歴を含むすべてのタイムをスプリットから削除し、作成したばかりのような完全に空の状態にします。";
         case Label.CleanSumOfBest:
-            return "区間ベストの合計をクリーニング";
+            return "合計区間ベストをクリーンアップ";
         case Label.CleanSumOfBestDescription:
-            return "区間の履歴の問題を対話的に修正し、区間ベストの合計が不正確になるのを解消します。（スプリットをスキップした場合に、次に行うスプリットでは複数区間のタイムが結合されて記録され、区間ベストの合計が正しい合計よりも速くなってしまう可能性があります）";
+            return "区間の履歴にある、合計区間ベストを不正確にする問題を対話的に取り除けます。スプリットをスキップすると、次のスプリットで記録される結合された区間タイムが、個々の区間ベストの合計よりも速くなることがあります。この機能はそのような箇所をすべて示し、誤っていると思われるものを個別に削除できるようにします。";
         case Label.ComparisonsMenu:
             return "比較対象…";
         case Label.AddComparison:
             return "比較対象を追加";
         case Label.AddComparisonDescription:
-            return "任意のタイムを保持できるカスタム比較対象を追加します。";
+            return "任意のタイムを保存できる新しいカスタム比較対象を追加します。";
         case Label.ImportComparison:
             return "比較対象をインポート";
         case Label.ImportComparisonDescription:
-            return "スプリットファイルの自己ベストを比較対象としてインポートします。";
+            return "指定したスプリットファイルの自己ベストを比較対象としてインポートします。";
         case Label.GenerateGoalComparison:
             return "目標比較対象を生成";
         case Label.GenerateGoalComparisonDescription:
-            return "目標タイムに基づく比較対象を生成します。比較対象タイムは履歴に基づき自動的に調整されます。（区間ベストの合計と区間ワーストの合計との間のタイムとなります）比較対象は選択した計測方法（実時間・ゲーム時間）に対してのみ生成されます。";
+            return "指定した目標タイムに基づいて、カスタムの目標比較対象を生成します。比較対象のタイムは区間の履歴に基づいて自動的に配分され、目標タイムを達成する場合のおおよそのスプリットタイムを表します。区間の履歴から算出されるため、目標タイムは合計区間ベストから最遅区間の合計までの範囲に制限されます。比較対象は選択中の計測方法についてのみ生成されます。もう一方の計測方法の比較対象タイムは変更されないため、もう一方の計測方法で再度生成すると、両方の計測方法の比較対象タイムを作成できます。";
         case Label.CopyComparison:
             return "比較対象をコピー";
         case Label.CopyComparisonDescription:
-            return "自己ベストやその他の自動生成されたものを含む既存の比較対象を新しい比較対象としてコピーします。";
+            return "自己ベストやその他の自動的に提供される比較対象を含め、既存の比較対象を新しいカスタム比較対象としてコピーします。たとえば、最新のランを好きなだけ比較対象として残しておくことができます。";
         case Label.SetSegmentIcon:
-            return "アイコン設定";
+            return "区間アイコンを設定";
         case Label.SetSegmentIconDescription:
             return "画像ファイルを選択して区間のアイコンに設定します。一部の画像形式はすべての環境では正しく表示できない場合があります。";
         case Label.RemoveSegmentIcon:
-            return "アイコン削除";
+            return "区間アイコンを削除";
         case Label.RemoveSegmentIconDescription:
             return "区間のアイコンを削除します。";
         case Label.Rename:
-            return "名前変更";
+            return "名前を変更";
         case Label.RenameDescription:
             return "比較対象の新しい名前を入力します。予約名や重複名は使用できません。";
         case Label.CopyAction:
@@ -367,11 +367,11 @@ export function resolveJapanese(text: Label): string {
         case Label.CleanPrompt:
             return "クリーンアップしますか？";
         case Label.AssociateRunPrompt:
-            return "speedrun.com のラン ID または URL を入力してください：";
+            return "Speedrun.com のラン ID または URL を入力してください：";
         case Label.Associate:
             return "関連付け";
         case Label.InvalidSpeedrunUrl:
-            return "speedrun.com の ID または URL が無効です。";
+            return "Speedrun.com の ID または URL が無効です。";
         case Label.AssociateRunError:
             return "ランを関連付けできませんでした。ID が無効な可能性があります。";
         case Label.AddVariablePrompt:
@@ -389,7 +389,7 @@ export function resolveJapanese(text: Label): string {
         case Label.DownloadBoxArtError:
             return "ボックスアートをダウンロードできませんでした。";
         case Label.NoGameIcon:
-            return "このゲームにはアイコンがありません。";
+            return "ゲームアイコンなし";
         case Label.DownloadIconError:
             return "アイコンをダウンロードできませんでした。";
         case Label.Rank:
@@ -419,11 +419,11 @@ export function resolveJapanese(text: Label): string {
         case Label.Component:
             return "コンポーネント";
         case Label.AddComponent:
-            return "コンポーネント追加";
+            return "コンポーネントを追加";
         case Label.RemoveComponent:
-            return "コンポーネント削除";
+            return "コンポーネントを削除";
         case Label.DuplicateComponent:
-            return "コンポーネント複製";
+            return "コンポーネントを複製";
         case Label.MoveComponentUp:
             return "コンポーネントを上へ";
         case Label.MoveComponentDown:
@@ -575,7 +575,7 @@ export function resolveJapanese(text: Label): string {
         case Label.IconDisplayModeBothRows:
             return "両方の行";
         case Label.IconDisplayModeFirstRow:
-            return "最初の行のみ";
+            return "最初の行";
         case Label.SubsplitDisplayModeFlat:
             return "フラット";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:
@@ -615,9 +615,9 @@ export function resolveJapanese(text: Label): string {
         case Label.ServerDisconnect:
             return "切断";
         case Label.ServerConnecting:
-            return "接続中...";
+            return "接続中…";
         case Label.ServerDisconnecting:
-            return "切断中...";
+            return "切断中…";
         case Label.ConnectToServerTitle:
             return "サーバーに接続";
         case Label.ConnectToServerDescription:

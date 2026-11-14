@@ -61,9 +61,9 @@ export function resolveRussian(text: Label): string {
         case Label.AlwaysOnTopDescription:
             return "Держит окно поверх других окон.";
         case Label.SpeedrunComIntegration:
-            return "Интеграция Speedrun.com";
+            return "Интеграция со Speedrun.com";
         case Label.SpeedrunComIntegrationDescription:
-            return "Запрашивает список игр, категорий и таблиц лидеров с speedrun.com.";
+            return "Запрашивает список игр, категорий и таблиц лидеров с Speedrun.com.";
         case Label.ServerConnection:
             return "Подключение к серверу";
         case Label.ServerConnectionDescription:
@@ -71,7 +71,7 @@ export function resolveRussian(text: Label): string {
         case Label.ServerConnectionExperimental:
             return "Эта функция экспериментальная, и протокол, вероятно, изменится в будущем.";
         case Label.TheRunGgIntegration:
-            return "Интеграция с TheRun.gg";
+            return "Интеграция с therun.gg";
         case Label.TheRunGgIntegrationDescription:
             return "Интегрируется с therun.gg для отслеживания забегов в реальном времени и автоматической загрузки статистики. Для использования этой функции нужен ключ загрузки из therun.gg.";
         case Label.TheRunGgLiveTracking:
@@ -129,11 +129,11 @@ export function resolveRussian(text: Label): string {
         case Label.AboutContributors:
             return "Участники";
         case Label.Loading:
-            return "Загрузка...";
+            return "Загрузка…";
         case Label.Add:
             return "Добавить";
         case Label.Import:
-            return "Импорт";
+            return "Импортировать";
         case Label.OpenSplits:
             return "Открыть сплиты";
         case Label.EditSplits:
@@ -183,7 +183,7 @@ export function resolveRussian(text: Label): string {
         case Label.EditWhileRunningError:
             return "Нельзя редактировать сплиты, пока таймер запущен.";
         case Label.Edit:
-            return "Редактировать";
+            return "Редактировать…";
         case Label.Save:
             return "Сохранить";
         case Label.Export:
@@ -239,7 +239,7 @@ export function resolveRussian(text: Label): string {
         case Label.BestSegment:
             return "Лучший сегмент";
         case Label.SpeedrunComVariableTooltip:
-            return "Переменная speedrun.com, специфичная для игры.";
+            return "Переменная Speedrun.com, специфичная для игры.";
         case Label.Region:
             return "Регион";
         case Label.RegionDescription:
@@ -253,17 +253,17 @@ export function resolveRussian(text: Label): string {
         case Label.UsesEmulatorDescription:
             return "Используется ли эмулятор для игры.";
         case Label.CustomVariableTooltip:
-            return "Пользовательская переменная, заданная вами. Можно отображать в текстовом компоненте.";
+            return "Пользовательская переменная, заданная вами. Её можно отображать в компоненте «Текст».";
         case Label.NoVariables:
             return "Сейчас нет пользовательских переменных для этой игры.";
         case Label.NoVariablesWithSpeedrunCom:
-            return "Сейчас нет переменных speedrun.com или пользовательских переменных для этой игры.";
+            return "Сейчас нет переменных Speedrun.com или пользовательских переменных для этой игры.";
         case Label.TimedWithoutLoads:
             return "измеряются без времени загрузок";
         case Label.TimedWithGameTime:
             return "измеряются по игровому времени";
         case Label.RequireVideoProof:
-            return "требуют видео‑доказательство";
+            return "требуют видео-доказательство";
         case Label.RunsOfThisGamePrefix:
             return "Забеги этой игры ";
         case Label.RunsOfThisGameSuffix:
@@ -277,11 +277,11 @@ export function resolveRussian(text: Label): string {
         case Label.DownloadBoxArt:
             return "Скачать обложку";
         case Label.DownloadBoxArtDescription:
-            return "Пытается скачать обложку игры с speedrun.com и установить как иконку.";
+            return "Пытается скачать обложку игры с Speedrun.com и установить как иконку.";
         case Label.DownloadIcon:
             return "Скачать иконку";
         case Label.DownloadIconDescription:
-            return "Пытается скачать иконку игры с speedrun.com.";
+            return "Пытается скачать иконку игры с Speedrun.com.";
         case Label.RemoveIcon:
             return "Удалить иконку";
         case Label.RemoveIconDescription:
@@ -291,39 +291,39 @@ export function resolveRussian(text: Label): string {
         case Label.ClearOnlyHistory:
             return "Очистить только историю";
         case Label.ClearOnlyHistoryDescription:
-            return "Сплиты хранят всю историю забегов. Эта операция очищает историю, не затрагивая PB, лучшие сегменты и сравнения.";
+            return "Сплиты хранят полную историю всех забегов, включая время каждого сегмента. Эти данные используются различными компонентами. С помощью этой функции можно очистить историю. Личный рекорд, лучшие времена сегментов и сравнения не будут затронуты.";
         case Label.ClearAllTimes:
             return "Очистить все времена";
         case Label.ClearAllTimesDescription:
-            return "Удаляет все времена и историю, делая сплиты пустыми.";
+            return "Удаляет из сплитов все времена, включая всю историю, так что сплиты становятся полностью пустыми, как будто их только что создали.";
         case Label.CleanSumOfBest:
             return "Очистить сумму лучших";
         case Label.CleanSumOfBestDescription:
-            return "Позволяет интерактивно удалять проблемы в истории сегментов, влияющие на точность суммы лучших сегментов.";
+            return "Позволяет интерактивно устранить возможные проблемы в истории сегментов, из-за которых сумма лучших сегментов становится неточной. Если пропустить сплит, то при следующем сплите общее время сегментов может оказаться быстрее суммы отдельных лучших сегментов. Эта функция находит все такие случаи и позволяет удалить их по отдельности, если какие-то из них выглядят неверными.";
         case Label.ComparisonsMenu:
             return "Сравнения…";
         case Label.AddComparison:
             return "Добавить сравнение";
         case Label.AddComparisonDescription:
-            return "Добавляет пользовательское сравнение для хранения времен.";
+            return "Добавляет новое пользовательское сравнение, в котором можно хранить любые времена.";
         case Label.ImportComparison:
             return "Импортировать сравнение";
         case Label.ImportComparisonDescription:
-            return "Импортирует Personal Best из файла сплитов как сравнение.";
+            return "Импортирует в качестве сравнения личный рекорд из указанного файла сплитов.";
         case Label.GenerateGoalComparison:
             return "Сгенерировать сравнение цели";
         case Label.GenerateGoalComparisonDescription:
-            return "Создает сравнение на основе целевого времени.";
+            return "Генерирует пользовательское сравнение цели на основе заданного целевого времени. Времена сравнения автоматически распределяются по истории сегментов так, чтобы примерно соответствовать временам сплитов для целевого времени. Поскольку сравнение рассчитывается по истории сегментов, целевое время ограничено диапазоном между суммой лучших и суммой худших сегментов. Сравнение генерируется только для выбранного метода тайминга. Времена сравнения для другого метода не изменяются, поэтому его можно сгенерировать повторно с другим методом, чтобы получить времена сравнения для обоих методов тайминга.";
         case Label.CopyComparison:
             return "Копировать сравнение";
         case Label.CopyComparisonDescription:
-            return "Копирует существующее сравнение в новое пользовательское сравнение.";
+            return "Копирует любое существующее сравнение, включая личный рекорд или любое другое автоматически предоставляемое сравнение, как новое пользовательское сравнение. Например, так можно сохранить последний забег в качестве сравнения на любой срок.";
         case Label.SetSegmentIcon:
-            return "Установить иконку";
+            return "Установить иконку сегмента";
         case Label.SetSegmentIconDescription:
             return "Выберите изображение для иконки сегмента. Некоторые форматы могут не поддерживаться.";
         case Label.RemoveSegmentIcon:
-            return "Удалить иконку";
+            return "Удалить иконку сегмента";
         case Label.RemoveSegmentIconDescription:
             return "Удаляет иконку сегмента.";
         case Label.Rename:
@@ -367,11 +367,11 @@ export function resolveRussian(text: Label): string {
         case Label.CleanPrompt:
             return "Очистить?";
         case Label.AssociateRunPrompt:
-            return "Укажите ID или URL speedrun.com для забега:";
+            return "Укажите ID или URL Speedrun.com для забега:";
         case Label.Associate:
             return "Связать";
         case Label.InvalidSpeedrunUrl:
-            return "Недействительный ID или URL speedrun.com.";
+            return "Недействительный ID или URL Speedrun.com.";
         case Label.AssociateRunError:
             return "Не удалось связать забег. ID может быть неверным.";
         case Label.AddVariablePrompt:
@@ -389,7 +389,7 @@ export function resolveRussian(text: Label): string {
         case Label.DownloadBoxArtError:
             return "Не удалось скачать обложку.";
         case Label.NoGameIcon:
-            return "У игры нет иконки.";
+            return "Нет иконки игры";
         case Label.DownloadIconError:
             return "Не удалось скачать иконку.";
         case Label.Rank:
@@ -575,7 +575,7 @@ export function resolveRussian(text: Label): string {
         case Label.IconDisplayModeBothRows:
             return "Обе строки";
         case Label.IconDisplayModeFirstRow:
-            return "Только первая строка";
+            return "Первая строка";
         case Label.SubsplitDisplayModeFlat:
             return "Плоский список";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:
@@ -607,7 +607,7 @@ export function resolveRussian(text: Label): string {
         case Label.CustomVariableNoneAvailable:
             return "Нет доступных переменных";
         case Label.CustomVariableNoneAvailableTooltip:
-            return "Пользовательские переменные можно определить на вкладке «Переменные» при редактировании сплитов. Дополнительные пользовательские переменные могут автоматически предоставляться авто‑сплиттерами.";
+            return "Пользовательские переменные можно определить на вкладке «Переменные» при редактировании сплитов. Дополнительные пользовательские переменные могут автоматически предоставляться автосплиттерами.";
         case Label.HotkeyButtonTooltip:
             return "Нажмите, чтобы записать горячую клавишу. Также можно использовать кнопки геймпада. Глобальные горячие клавиши сейчас невозможны. Кнопки геймпада работают глобально.";
         case Label.ServerConnect:
@@ -615,9 +615,9 @@ export function resolveRussian(text: Label): string {
         case Label.ServerDisconnect:
             return "Отключиться";
         case Label.ServerConnecting:
-            return "Подключение...";
+            return "Подключение…";
         case Label.ServerDisconnecting:
-            return "Отключение...";
+            return "Отключение…";
         case Label.ConnectToServerTitle:
             return "Подключиться к серверу";
         case Label.ConnectToServerDescription:
@@ -653,7 +653,7 @@ export function resolveRussian(text: Label): string {
         case Label.BugReportInstructions:
             return "Чтобы помочь нам исправить эту проблему, укажите шаги для воспроизведения и приложите сплиты и раскладку, которые вы использовали, когда возникла проблема.";
         case Label.LoadFailedPrivateBrowsing:
-            return "Не удалось загрузить LiveSplit One.\nВозможно, вы используете режим приватного просмотра.\nLiveSplit One не может сохранять сплиты, раскладки или другие настройки из‑за ограничений приватного режима браузера.\nЭти ограничения могут быть сняты в будущем.\nЧтобы использовать LiveSplit One сейчас, отключите приватный режим в настройках.";
+            return "Не удалось загрузить LiveSplit One.\nВозможно, вы используете режим приватного просмотра.\nLiveSplit One не может сохранять сплиты, раскладки или другие настройки из-за ограничений приватного режима браузера.\nЭти ограничения могут быть сняты в будущем.\nЧтобы использовать LiveSplit One сейчас, отключите приватный режим в настройках.";
         case Label.LoadFailedOutdatedBrowser:
             return "Не удалось загрузить LiveSplit One.\nВозможно, вы используете устаревший браузер.\nОбновите браузер или версию iOS и попробуйте снова.\nДругая причина может быть в расширении браузера, например блокировщике рекламы, которое блокирует доступ к важным скриптам.";
     }

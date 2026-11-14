@@ -63,7 +63,7 @@ export function resolveKorean(text: Label): string {
         case Label.SpeedrunComIntegration:
             return "Speedrun.com 통합";
         case Label.SpeedrunComIntegrationDescription:
-            return "speedrun.com에서 게임, 카테고리, 리더보드 목록을 조회합니다.";
+            return "Speedrun.com에서 게임, 카테고리, 리더보드 목록을 조회합니다.";
         case Label.ServerConnection:
             return "서버 연결";
         case Label.ServerConnectionDescription:
@@ -71,7 +71,7 @@ export function resolveKorean(text: Label): string {
         case Label.ServerConnectionExperimental:
             return "이 기능은 실험적이며 프로토콜은 향후 변경될 가능성이 있습니다.";
         case Label.TheRunGgIntegration:
-            return "TheRun.gg 통합";
+            return "therun.gg 통합";
         case Label.TheRunGgIntegrationDescription:
             return "therun.gg와 통합하여 런 실시간 추적과 통계 자동 업로드를 제공합니다. 이 기능을 사용하려면 therun.gg 업로드 키가 필요합니다.";
         case Label.TheRunGgLiveTracking:
@@ -129,7 +129,7 @@ export function resolveKorean(text: Label): string {
         case Label.AboutContributors:
             return "기여자";
         case Label.Loading:
-            return "불러오는 중...";
+            return "불러오는 중…";
         case Label.Add:
             return "추가";
         case Label.Import:
@@ -183,7 +183,7 @@ export function resolveKorean(text: Label): string {
         case Label.EditWhileRunningError:
             return "타이머가 실행 중일 때는 스플릿을 편집할 수 없습니다.";
         case Label.Edit:
-            return "편집";
+            return "편집…";
         case Label.Save:
             return "저장";
         case Label.Export:
@@ -239,7 +239,7 @@ export function resolveKorean(text: Label): string {
         case Label.BestSegment:
             return "최고 세그먼트";
         case Label.SpeedrunComVariableTooltip:
-            return "게임에 대한 speedrun.com 변수입니다.";
+            return "게임에 대한 Speedrun.com 변수입니다.";
         case Label.Region:
             return "지역";
         case Label.RegionDescription:
@@ -253,11 +253,11 @@ export function resolveKorean(text: Label): string {
         case Label.UsesEmulatorDescription:
             return "에뮬레이터 사용 여부입니다.";
         case Label.CustomVariableTooltip:
-            return "사용자가 지정한 변수입니다. 텍스트 구성 요소로 표시할 수 있습니다.";
+            return "사용자가 지정한 변수입니다. 텍스트 컴포넌트로 표시할 수 있습니다.";
         case Label.NoVariables:
             return "이 게임에는 현재 사용자 지정 변수가 없습니다.";
         case Label.NoVariablesWithSpeedrunCom:
-            return "이 게임에는 speedrun.com 변수 또는 사용자 지정 변수가 없습니다.";
+            return "이 게임에는 Speedrun.com 변수 또는 사용자 지정 변수가 없습니다.";
         case Label.TimedWithoutLoads:
             return "로드 시간을 제외하여 측정됩니다";
         case Label.TimedWithGameTime:
@@ -277,11 +277,11 @@ export function resolveKorean(text: Label): string {
         case Label.DownloadBoxArt:
             return "박스 아트 다운로드";
         case Label.DownloadBoxArtDescription:
-            return "speedrun.com에서 박스 아트를 다운로드하여 게임 아이콘으로 설정합니다.";
+            return "Speedrun.com에서 박스 아트를 다운로드하여 게임 아이콘으로 설정합니다.";
         case Label.DownloadIcon:
             return "아이콘 다운로드";
         case Label.DownloadIconDescription:
-            return "speedrun.com에서 게임 아이콘을 다운로드합니다.";
+            return "Speedrun.com에서 게임 아이콘을 다운로드합니다.";
         case Label.RemoveIcon:
             return "아이콘 제거";
         case Label.RemoveIconDescription:
@@ -291,39 +291,39 @@ export function resolveKorean(text: Label): string {
         case Label.ClearOnlyHistory:
             return "기록만 지우기";
         case Label.ClearOnlyHistoryDescription:
-            return "모든 런의 기록을 지웁니다. PB, 최고 세그먼트, 비교에는 영향이 없습니다.";
+            return "스플릿에는 모든 세그먼트 시간을 포함하여 모든 런의 전체 기록이 저장됩니다. 이 정보는 여러 컴포넌트에서 사용됩니다. 이 기능으로 기록을 지울 수 있습니다. 개인 최고 기록, 최고 세그먼트 시간, 비교는 영향을 받지 않습니다.";
         case Label.ClearAllTimes:
             return "모든 시간 지우기";
         case Label.ClearAllTimesDescription:
-            return "모든 시간과 기록을 제거하여 스플릿을 초기 상태로 만듭니다.";
+            return "모든 기록을 포함하여 스플릿의 모든 시간을 제거해, 방금 만든 것처럼 스플릿을 완전히 비웁니다.";
         case Label.CleanSumOfBest:
-            return "베스트 합계 정리";
+            return "최고 합계 정리";
         case Label.CleanSumOfBestDescription:
-            return "세그먼트 기록의 문제를 제거해 베스트 세그먼트 합계의 정확성을 개선합니다.";
+            return "최고 세그먼트 합계를 부정확하게 만드는 세그먼트 기록의 잠재적인 문제를 대화형으로 제거할 수 있습니다. 스플릿을 건너뛰면 다음 스플릿에서 합쳐진 세그먼트 시간이 개별 최고 세그먼트의 합보다 빨라질 수 있습니다. 이 기능은 이러한 경우를 모두 찾아 보여 주며, 잘못된 것으로 보이는 항목을 하나씩 삭제할 수 있게 해 줍니다.";
         case Label.ComparisonsMenu:
             return "비교…";
         case Label.AddComparison:
             return "비교 추가";
         case Label.AddComparisonDescription:
-            return "시간을 저장할 수 있는 사용자 지정 비교를 추가합니다.";
+            return "임의의 시간을 저장할 수 있는 새 사용자 지정 비교를 추가합니다.";
         case Label.ImportComparison:
             return "비교 가져오기";
         case Label.ImportComparisonDescription:
-            return "스플릿 파일의 PB를 비교로 가져옵니다.";
+            return "지정한 스플릿 파일의 개인 최고 기록을 비교로 가져옵니다.";
         case Label.GenerateGoalComparison:
             return "목표 비교 생성";
         case Label.GenerateGoalComparisonDescription:
-            return "목표 시간에 기반한 비교를 생성합니다.";
+            return "지정한 목표 시간을 바탕으로 사용자 지정 목표 비교를 생성합니다. 비교의 시간은 세그먼트 기록을 바탕으로 자동으로 배분되어, 목표 시간을 달성할 때의 스플릿 시간을 대략적으로 나타냅니다. 세그먼트 기록을 바탕으로 계산되므로 목표 시간은 최고 세그먼트 합계와 최악 세그먼트 합계 사이의 범위로 제한됩니다. 비교는 선택한 타이밍 방법에 대해서만 생성됩니다. 다른 타이밍 방법의 비교 시간은 변경되지 않으므로, 다른 타이밍 방법으로 다시 생성하면 두 타이밍 방법 모두의 비교 시간을 만들 수 있습니다.";
         case Label.CopyComparison:
             return "비교 복사";
         case Label.CopyComparisonDescription:
-            return "기존 비교를 새 사용자 지정 비교로 복사합니다.";
+            return "개인 최고 기록이나 자동으로 제공되는 다른 비교를 포함하여 기존 비교를 새 사용자 지정 비교로 복사합니다. 예를 들어 최근 런을 원하는 기간 동안 비교로 유지할 수 있습니다.";
         case Label.SetSegmentIcon:
-            return "아이콘 설정";
+            return "세그먼트 아이콘 설정";
         case Label.SetSegmentIconDescription:
             return "이미지 파일을 선택해 세그먼트 아이콘으로 설정합니다.";
         case Label.RemoveSegmentIcon:
-            return "아이콘 제거";
+            return "세그먼트 아이콘 제거";
         case Label.RemoveSegmentIconDescription:
             return "세그먼트 아이콘을 제거합니다.";
         case Label.Rename:
@@ -367,11 +367,11 @@ export function resolveKorean(text: Label): string {
         case Label.CleanPrompt:
             return "정리할까요?";
         case Label.AssociateRunPrompt:
-            return "speedrun.com 런 ID 또는 URL을 입력하세요:";
+            return "Speedrun.com 런 ID 또는 URL을 입력하세요:";
         case Label.Associate:
             return "연결";
         case Label.InvalidSpeedrunUrl:
-            return "speedrun.com ID 또는 URL이 잘못되었습니다.";
+            return "Speedrun.com ID 또는 URL이 잘못되었습니다.";
         case Label.AssociateRunError:
             return "런을 연결할 수 없습니다. ID가 잘못되었을 수 있습니다.";
         case Label.AddVariablePrompt:
@@ -389,7 +389,7 @@ export function resolveKorean(text: Label): string {
         case Label.DownloadBoxArtError:
             return "박스 아트 다운로드에 실패했습니다.";
         case Label.NoGameIcon:
-            return "이 게임에는 아이콘이 없습니다.";
+            return "게임 아이콘 없음";
         case Label.DownloadIconError:
             return "아이콘 다운로드에 실패했습니다.";
         case Label.Rank:
@@ -437,7 +437,7 @@ export function resolveKorean(text: Label): string {
         case Label.ComponentGraphDescription:
             return "전체 스플릿에 걸친 비교 대비 앞/뒤를 표시합니다.";
         case Label.ComponentSplitsDescription:
-            return "스플릿 시간의 주요 구성 요소입니다. 표 형식으로 스크롤할 수 있습니다.";
+            return "스플릿 시간의 주요 컴포넌트입니다. 표 형식으로 스크롤할 수 있습니다.";
         case Label.ComponentDetailedTimer:
             return "상세 타이머";
         case Label.ComponentDetailedTimerDescription:
@@ -503,11 +503,11 @@ export function resolveKorean(text: Label): string {
         case Label.Row:
             return "행";
         case Label.RowDescription:
-            return "수평으로 배치된 구성 요소의 행으로, 내부 구성 요소의 레이아웃 방향을 변경합니다.";
+            return "수평으로 배치된 컴포넌트의 행으로, 내부 컴포넌트의 레이아웃 방향을 변경합니다.";
         case Label.Column:
             return "열";
         case Label.ColumnDescription:
-            return "수직으로 배치된 구성 요소의 열로, 내부 구성 요소의 레이아웃 방향을 변경합니다.";
+            return "수직으로 배치된 컴포넌트의 열로, 내부 컴포넌트의 레이아웃 방향을 변경합니다.";
         case Label.AccuracySeconds:
             return "초";
         case Label.AccuracyTenths:
@@ -575,7 +575,7 @@ export function resolveKorean(text: Label): string {
         case Label.IconDisplayModeBothRows:
             return "두 행 모두";
         case Label.IconDisplayModeFirstRow:
-            return "첫 번째 행만";
+            return "첫 번째 행";
         case Label.SubsplitDisplayModeFlat:
             return "플랫";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:
@@ -607,7 +607,7 @@ export function resolveKorean(text: Label): string {
         case Label.CustomVariableNoneAvailable:
             return "사용 가능한 변수가 없습니다";
         case Label.CustomVariableNoneAvailableTooltip:
-            return "스플릿 편집의 변수 탭에서 사용자 지정 변수를 정의할 수 있습니다. 추가 사용자 지정 변수는 자동 분할기가 자동으로 제공할 수 있습니다.";
+            return "스플릿 편집의 변수 탭에서 사용자 지정 변수를 정의할 수 있습니다. 추가 사용자 지정 변수는 자동 스플리터가 자동으로 제공할 수 있습니다.";
         case Label.HotkeyButtonTooltip:
             return "클릭하여 단축키를 기록합니다. 게임패드 버튼도 사용할 수 있습니다. 전역 단축키는 현재 불가능합니다. 게임패드 버튼은 전역으로 동작합니다.";
         case Label.ServerConnect:
@@ -615,9 +615,9 @@ export function resolveKorean(text: Label): string {
         case Label.ServerDisconnect:
             return "연결 해제";
         case Label.ServerConnecting:
-            return "연결 중...";
+            return "연결 중…";
         case Label.ServerDisconnecting:
-            return "연결 해제 중...";
+            return "연결 해제 중…";
         case Label.ConnectToServerTitle:
             return "서버에 연결";
         case Label.ConnectToServerDescription:

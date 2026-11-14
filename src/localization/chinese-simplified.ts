@@ -23,7 +23,7 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.ThemeDarkMode:
             return "深色模式";
         case Label.HotkeysHeading:
-            return "热键";
+            return "快捷键";
         case Label.GeneralHeading:
             return "常规";
         case Label.NetworkHeading:
@@ -43,7 +43,7 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.ShowControlButtons:
             return "显示控制按钮";
         case Label.ShowControlButtonsDescription:
-            return "确定是否在计时器下方显示用于控制的按钮。禁用后需要使用热键。";
+            return "确定是否在计时器下方显示用于控制的按钮。禁用后需要使用快捷键。";
         case Label.ShowManualGameTimeInput:
             return "显示手动游戏时间输入";
         case Label.ShowManualGameTimeInputDescription:
@@ -51,11 +51,11 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.ManualGameTimeMode:
             return "手动游戏时间模式";
         case Label.ManualGameTimeModeDescription:
-            return "确定将手动游戏时间输入为分段时间还是拆分时间。";
+            return "确定将手动游戏时间输入为分段时间还是累计时间。";
         case Label.ManualGameTimeModeSegmentTimes:
             return "分段时间";
         case Label.ManualGameTimeModeSplitTimes:
-            return "拆分时间";
+            return "累计时间";
         case Label.AlwaysOnTop:
             return "置顶";
         case Label.AlwaysOnTopDescription:
@@ -63,7 +63,7 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.SpeedrunComIntegration:
             return "Speedrun.com 集成";
         case Label.SpeedrunComIntegrationDescription:
-            return "从 speedrun.com 查询游戏、类别和排行榜列表。";
+            return "从 Speedrun.com 查询游戏、类别和排行榜列表。";
         case Label.ServerConnection:
             return "服务器连接";
         case Label.ServerConnectionDescription:
@@ -71,7 +71,7 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.ServerConnectionExperimental:
             return "此功能为实验性，协议未来可能会更改。";
         case Label.TheRunGgIntegration:
-            return "TheRun.gg 集成";
+            return "therun.gg 集成";
         case Label.TheRunGgIntegrationDescription:
             return "与 therun.gg 集成，用于实时追踪跑图并自动上传统计数据。使用此功能需要 therun.gg 的上传密钥。";
         case Label.TheRunGgLiveTracking:
@@ -83,7 +83,7 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.TheRunGgStatsUploadingDescription:
             return "启用后，每次重置或完成跑图后都会将分段文件上传到 therun.gg，自动将你的跑图与网站同步。";
         case Label.HotkeyAlreadyInUse:
-            return "该热键已被使用。";
+            return "该快捷键已被使用。";
         case Label.Start:
             return "开始";
         case Label.Resume:
@@ -103,11 +103,11 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.LiveSplitOne:
             return "LiveSplit One";
         case Label.Splits:
-            return "分段";
+            return "分段列表";
         case Label.Layout:
             return "布局";
         case Label.CompareAgainst:
-            return "对比对象";
+            return "比较对象";
         case Label.RealTime:
             return "实时时间";
         case Label.GameTime:
@@ -129,7 +129,7 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.AboutContributors:
             return "贡献者";
         case Label.Loading:
-            return "加载中...";
+            return "加载中…";
         case Label.Add:
             return "添加";
         case Label.Import:
@@ -183,7 +183,7 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.EditWhileRunningError:
             return "计时器运行时无法编辑分段。";
         case Label.Edit:
-            return "编辑";
+            return "编辑…";
         case Label.Save:
             return "保存";
         case Label.Export:
@@ -233,13 +233,13 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.SegmentName:
             return "分段名称";
         case Label.SplitTime:
-            return "分段时间";
+            return "累计时间";
         case Label.SegmentTime:
-            return "段时间";
+            return "分段时间";
         case Label.BestSegment:
             return "最佳分段";
         case Label.SpeedrunComVariableTooltip:
-            return "speedrun.com 上与游戏相关的变量。";
+            return "Speedrun.com 上与游戏相关的变量。";
         case Label.Region:
             return "地区";
         case Label.RegionDescription:
@@ -253,11 +253,11 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.UsesEmulatorDescription:
             return "是否使用模拟器进行游戏。";
         case Label.CustomVariableTooltip:
-            return "你自定义的变量，可用于文本组件显示。";
+            return "由你指定的自定义变量。可以通过文本组件显示。";
         case Label.NoVariables:
             return "当前没有此游戏的自定义变量。";
         case Label.NoVariablesWithSpeedrunCom:
-            return "当前没有 speedrun.com 变量或自定义变量。";
+            return "当前没有 Speedrun.com 变量或自定义变量。";
         case Label.TimedWithoutLoads:
             return "计时不含加载时间";
         case Label.TimedWithGameTime:
@@ -277,11 +277,11 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.DownloadBoxArt:
             return "下载封面";
         case Label.DownloadBoxArtDescription:
-            return "尝试从 speedrun.com 下载封面并设置为游戏图标。";
+            return "尝试从 Speedrun.com 下载封面并设置为游戏图标。";
         case Label.DownloadIcon:
             return "下载图标";
         case Label.DownloadIconDescription:
-            return "尝试从 speedrun.com 下载图标。";
+            return "尝试从 Speedrun.com 下载图标。";
         case Label.RemoveIcon:
             return "移除图标";
         case Label.RemoveIconDescription:
@@ -289,17 +289,17 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.CleaningMenu:
             return "清理…";
         case Label.ClearOnlyHistory:
-            return "仅清理历史";
+            return "仅清除历史";
         case Label.ClearOnlyHistoryDescription:
-            return "分段保存所有跑图历史（含每段时间）。此操作只清理历史，不影响个人最佳、最佳分段和比较。";
+            return "分段会保存所有跑图的完整历史，包括每个分段时间。这些信息会被多个组件使用。你可以通过此操作清除历史。个人最佳、最佳分段时间和比较不会受到影响。";
         case Label.ClearAllTimes:
             return "清除所有时间";
         case Label.ClearAllTimesDescription:
-            return "移除所有时间和历史，使分段如同刚创建。";
+            return "移除分段中的所有时间，包括全部历史，使分段完全清空，如同刚刚创建一样。";
         case Label.CleanSumOfBest:
-            return "清理最优总和";
+            return "清理最佳分段总和";
         case Label.CleanSumOfBestDescription:
-            return "允许交互式移除导致最佳分段总和不准确的分段历史问题。";
+            return "以交互方式移除分段历史中可能导致最佳分段总和不准确的问题。如果你跳过了一个分段，那么在下一次分段时，合并后的分段时间可能会快于各个最佳分段之和。此功能会列出所有此类情况，并在其中某些看起来有误时让你逐个删除。";
         case Label.ComparisonsMenu:
             return "比较…";
         case Label.AddComparison:
@@ -309,21 +309,21 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.ImportComparison:
             return "导入比较";
         case Label.ImportComparisonDescription:
-            return "将分段文件的个人最佳作为比较导入。";
+            return "将你提供的分段文件中的个人最佳作为比较导入。";
         case Label.GenerateGoalComparison:
             return "生成目标比较";
         case Label.GenerateGoalComparisonDescription:
-            return "根据目标时间生成自定义比较，并根据历史自动平衡分段时间。";
+            return "根据你指定的目标时间生成自定义目标比较。比较中的时间会根据分段历史自动分配，大致反映达到目标时间时各分段的累计时间。由于它是根据分段历史计算的，目标时间被限制在最佳分段总和与最差分段总和之间。比较只会针对当前选择的计时方式生成。另一种计时方式的比较时间不会被修改，因此你可以使用另一种计时方式再次生成，以获得两种计时方式的比较时间。";
         case Label.CopyComparison:
             return "复制比较";
         case Label.CopyComparisonDescription:
-            return "复制现有比较（含个人最佳或自动比较）。";
+            return "将任何现有比较（包括个人最佳或任何其他自动提供的比较）复制为新的自定义比较。例如，你可以借此将最近一次跑图作为比较保留任意长的时间。";
         case Label.SetSegmentIcon:
-            return "设置图标";
+            return "设置分段图标";
         case Label.SetSegmentIconDescription:
             return "选择图像文件作为分段图标。某些格式可能不被支持。";
         case Label.RemoveSegmentIcon:
-            return "移除图标";
+            return "移除分段图标";
         case Label.RemoveSegmentIconDescription:
             return "移除分段图标。";
         case Label.Rename:
@@ -367,11 +367,11 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.CleanPrompt:
             return "清理？";
         case Label.AssociateRunPrompt:
-            return "请输入 speedrun.com 跑图 ID 或 URL：";
+            return "请输入 Speedrun.com 跑图 ID 或 URL：";
         case Label.Associate:
             return "关联";
         case Label.InvalidSpeedrunUrl:
-            return "speedrun.com ID 或 URL 无效。";
+            return "Speedrun.com ID 或 URL 无效。";
         case Label.AssociateRunError:
             return "无法关联跑图，ID 可能无效。";
         case Label.AddVariablePrompt:
@@ -389,7 +389,7 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.DownloadBoxArtError:
             return "无法下载封面。";
         case Label.NoGameIcon:
-            return "该游戏没有图标。";
+            return "无游戏图标";
         case Label.DownloadIconError:
             return "无法下载图标。";
         case Label.Rank:
@@ -435,11 +435,11 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.ComponentGraph:
             return "图表";
         case Label.ComponentGraphDescription:
-            return "可视化整段跑图相对比较的领先/落后，显示各分段差值点。";
+            return "可视化整段跑图相比较较的领先/落后，显示各分段差值点。";
         case Label.ComponentSplitsDescription:
             return "显示所有分段时间的主要组件，表格展示图标、名称、差值与时间，可滚动。";
         case Label.ComponentDetailedTimer:
-            return "详细计时";
+            return "详细计时器";
         case Label.ComponentDetailedTimerDescription:
             return "显示总时间与当前分段时间，还可显示比较时间、分段图标和名称等。";
         case Label.ComponentTimer:
@@ -457,9 +457,9 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.ComponentDelta:
             return "差值";
         case Label.ComponentDeltaDescription:
-            return "显示相对比较的领先/落后。";
+            return "显示相比较较的领先/落后。";
         case Label.ComponentPbChance:
-            return "PB 概率";
+            return "PB概率";
         case Label.ComponentPbChanceDescription:
             return "显示当前跑图击败个人最佳的概率，跑图中动态变化。";
         case Label.ComponentPossibleTimeSave:
@@ -467,7 +467,7 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.ComponentPossibleTimeSaveDescription:
             return "显示当前分段可节省时间，并可显示剩余总可节省时间。";
         case Label.ComponentPreviousSegment:
-            return "上一分段";
+            return "上一个分段";
         case Label.ComponentPreviousSegmentDescription:
             return "显示上一分段得失时间，可显示潜在节省时间，并在当前分段落后时显示实时分段。";
         case Label.ComponentSegmentTime:
@@ -567,15 +567,15 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.ColumnStartWithEmpty:
             return "空";
         case Label.ColumnStartWithComparisonTime:
-            return "对比时间";
+            return "比较时间";
         case Label.ColumnStartWithComparisonSegmentTime:
-            return "对比区间时间";
+            return "比较分段时间";
         case Label.ColumnStartWithPossibleTimeSave:
             return "可节省时间";
         case Label.IconDisplayModeBothRows:
             return "两行";
         case Label.IconDisplayModeFirstRow:
-            return "仅第一行";
+            return "第一行";
         case Label.SubsplitDisplayModeFlat:
             return "平铺";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:
@@ -609,15 +609,15 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.CustomVariableNoneAvailableTooltip:
             return "可在编辑分段时的变量标签页中定义自定义变量。自动分段器也可自动提供额外的自定义变量。";
         case Label.HotkeyButtonTooltip:
-            return "点击以录制热键。也可以使用手柄按钮。全局热键目前不可用。手柄按钮可全局使用。";
+            return "点击以录制快捷键。也可以使用手柄按钮。全局快捷键目前不可用。手柄按钮可全局使用。";
         case Label.ServerConnect:
             return "连接";
         case Label.ServerDisconnect:
             return "断开连接";
         case Label.ServerConnecting:
-            return "正在连接...";
+            return "正在连接…";
         case Label.ServerDisconnecting:
-            return "正在断开连接...";
+            return "正在断开连接…";
         case Label.ConnectToServerTitle:
             return "连接到服务器";
         case Label.ConnectToServerDescription:
@@ -633,7 +633,7 @@ export function resolveChineseSimplified(text: Label): string {
         case Label.FailedToSaveLayout:
             return "保存布局失败。";
         case Label.FailedToSaveHotkeys:
-            return "保存热键设置失败。";
+            return "保存快捷键设置失败。";
         case Label.FailedToSaveGeneralSettings:
             return "保存常规设置失败。";
         case Label.FailedToSaveSplits:
