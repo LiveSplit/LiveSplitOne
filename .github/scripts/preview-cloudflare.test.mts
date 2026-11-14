@@ -128,6 +128,70 @@ test("removes every PR build and its alias without touching other PRs or product
     );
 });
 
+test("uses supported page sizes and collects every page before deleting", async () => {
+    for (const includePaginationInfo of [true, false]) {
+        const deployments = [
+            deployment("latest", "pr-42"),
+            ...Array.from({ length: 24 }, (_, index) =>
+                deployment(`other-${index}`, "pr-43"),
+            ),
+            deployment("old", "pr-42"),
+        ];
+        const pages: number[] = [];
+        const deleted: string[] = [];
+        const client = cloudflareClient(
+            account,
+            "lso-previews",
+            "test-token",
+            (input, init) => {
+                const url = new URL(
+                    input instanceof Request ? input.url : input.toString(),
+                );
+                let result: unknown = { production_branch: "master" };
+                let resultInfo: { total_pages: number } | undefined;
+                if (init?.method === "DELETE") {
+                    assert.deepEqual(pages, [1, 2]);
+                    deleted.push(url.pathname.split("/").at(-1)!);
+                    result = null;
+                } else if (url.pathname.endsWith("/deployments")) {
+                    const perPage = Number(url.searchParams.get("per_page"));
+                    // Model the endpoint's limit rather than accepting an
+                    // oversized request that Cloudflare rejects with HTTP 400.
+                    if (perPage < 1 || perPage > 25) {
+                        return Promise.resolve(
+                            new Response(null, { status: 400 }),
+                        );
+                    }
+                    const page = Number(url.searchParams.get("page"));
+                    pages.push(page);
+                    result = deployments.slice(
+                        (page - 1) * perPage,
+                        page * perPage,
+                    );
+                    if (includePaginationInfo) {
+                        resultInfo = {
+                            total_pages: Math.ceil(
+                                deployments.length / perPage,
+                            ),
+                        };
+                    }
+                }
+                return Promise.resolve(
+                    new Response(
+                        JSON.stringify({
+                            success: true,
+                            result,
+                            result_info: resultInfo,
+                        }),
+                    ),
+                );
+            },
+        );
+        assert.equal(await deletePreviewDeployments(client, 42), 2);
+        assert.deepEqual(deleted, ["latest", "old"]);
+    }
+});
+
 test("empty and already-deleted previews are safe to clean up repeatedly", async () => {
     for (const entries of [[], [deployment("gone", "pr-42")]]) {
         const client = cloudflareClient(

@@ -91,11 +91,14 @@ export async function deletePreviewDeployments(
 ) {
     const branch = await checkPreviewProject(client, number);
     const deployments: Deployment[] = [];
+    // Pages rejects deployment lists larger than 25 with HTTP 400. Use the
+    // same size to detect the final page when pagination metadata is absent.
+    const perPage = 25;
     // Collect every page before deleting anything. Otherwise deletions shift
     // the remaining pages and can leave older PR builds behind.
     for (let page = 1; ; page++) {
         const response = await client.get<Deployment[]>(
-            `/deployments?env=preview&per_page=100&page=${page}`,
+            `/deployments?env=preview&per_page=${perPage}&page=${page}`,
         );
         deployments.push(
             ...response.result.filter(
@@ -108,7 +111,7 @@ export async function deletePreviewDeployments(
         if (
             totalPages !== undefined
                 ? page >= totalPages
-                : response.result.length < 100
+                : response.result.length < perPage
         ) {
             break;
         }
