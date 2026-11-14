@@ -1,5 +1,11 @@
-import { type CommandSinkRef, HotkeyConfig, HotkeySystem, type Language } from "../livesplit-core";
+import {
+    type CommandSinkRef,
+    HotkeyConfig,
+    HotkeySystem,
+    type Language,
+} from "../livesplit-core";
 import { expect } from "../util/OptionUtil";
+import { getLocale } from "../localization";
 
 export interface HotkeyImplementation {
     ptr?: number;
@@ -7,11 +13,11 @@ export interface HotkeyImplementation {
     setConfig(config: HotkeyConfig): void;
     activate(): void;
     deactivate(): void;
-    resolve(keyCode: string): Promise<string> | string;
+    resolveHotkey(hotkey: string, lang: Language): Promise<string> | string;
 }
 
 class GlobalHotkeys implements HotkeyImplementation {
-    constructor(private hotkeySystem?: HotkeySystem) { }
+    constructor(private hotkeySystem?: HotkeySystem) {}
 
     public async config(lang: Language | undefined): Promise<HotkeyConfig> {
         return expect(
@@ -60,8 +66,13 @@ class GlobalHotkeys implements HotkeyImplementation {
         this.hotkeySystem?.deactivate();
     }
 
-    public resolve(keyCode: string): Promise<string> {
-        return window.__TAURI__!.core.invoke("resolve_hotkey", { keyCode });
+    public resolveHotkey(hotkey: string, lang: Language): Promise<string> {
+        // Send a locale rather than the WebAssembly enum's numeric value so
+        // the native core can select the language independently of its build.
+        return window.__TAURI__!.core.invoke("resolve_hotkey", {
+            hotkey,
+            locale: getLocale(lang),
+        });
     }
 }
 

@@ -63,7 +63,7 @@ export function resolveEnglish(text: Label): string {
         case Label.SpeedrunComIntegration:
             return "Speedrun.com Integration";
         case Label.SpeedrunComIntegrationDescription:
-            return "Queries the list of games, categories, and the leaderboards from speedrun.com.";
+            return "Queries the list of games, categories, and the leaderboards from Speedrun.com.";
         case Label.ServerConnection:
             return "Server Connection";
         case Label.ServerConnectionDescription:
@@ -71,7 +71,7 @@ export function resolveEnglish(text: Label): string {
         case Label.ServerConnectionExperimental:
             return "This feature is experimental and the protocol will likely change in the future.";
         case Label.TheRunGgIntegration:
-            return "TheRun.gg Integration";
+            return "therun.gg Integration";
         case Label.TheRunGgIntegrationDescription:
             return "Integrates with therun.gg for live run tracking and automatic stats uploading. You need an upload key from therun.gg to use this feature.";
         case Label.TheRunGgLiveTracking:
@@ -129,7 +129,7 @@ export function resolveEnglish(text: Label): string {
         case Label.AboutContributors:
             return "Contributors";
         case Label.Loading:
-            return "Loading...";
+            return "Loading…";
         case Label.Add:
             return "Add";
         case Label.Import:
@@ -181,9 +181,9 @@ export function resolveEnglish(text: Label): string {
         case Label.NewSegmentName:
             return "Time";
         case Label.EditWhileRunningError:
-            return "You can't edit your splits while the timer is running.";
+            return "You cannot edit your splits while the timer is running.";
         case Label.Edit:
-            return "Edit";
+            return "Edit…";
         case Label.Save:
             return "Save";
         case Label.Export:
@@ -239,7 +239,7 @@ export function resolveEnglish(text: Label): string {
         case Label.BestSegment:
             return "Best Segment";
         case Label.SpeedrunComVariableTooltip:
-            return "A variable on speedrun.com specific to the game.";
+            return "A variable on Speedrun.com specific to the game.";
         case Label.Region:
             return "Region";
         case Label.RegionDescription:
@@ -277,11 +277,11 @@ export function resolveEnglish(text: Label): string {
         case Label.DownloadBoxArt:
             return "Download Box Art";
         case Label.DownloadBoxArtDescription:
-            return "Attempts to download the box art of the game from speedrun.com, to set as the game's icon.";
+            return "Attempts to download the box art of the game from Speedrun.com, to set as the game's icon.";
         case Label.DownloadIcon:
             return "Download Icon";
         case Label.DownloadIconDescription:
-            return "Attempts to download the icon of the game from speedrun.com.";
+            return "Attempts to download the icon of the game from Speedrun.com.";
         case Label.RemoveIcon:
             return "Remove Icon";
         case Label.RemoveIconDescription:
@@ -319,11 +319,11 @@ export function resolveEnglish(text: Label): string {
         case Label.CopyComparisonDescription:
             return "Copies any existing comparison, including the Personal Best or even any other automatically provided comparison as a new custom comparison. You could for example use this to keep the Latest Run around as a comparison that exists for as long as you want it to.";
         case Label.SetSegmentIcon:
-            return "Set Icon";
+            return "Set Segment Icon";
         case Label.SetSegmentIconDescription:
             return "Allows you to choose an image file to set as the segment's icon. Certain file formats may not work everywhere.";
         case Label.RemoveSegmentIcon:
-            return "Remove Icon";
+            return "Remove Segment Icon";
         case Label.RemoveSegmentIconDescription:
             return "Removes the segment's icon.";
         case Label.Rename:
@@ -357,21 +357,21 @@ export function resolveEnglish(text: Label): string {
         case Label.Generate:
             return "Generate";
         case Label.GenerateGoalComparisonError:
-            return "Failed generating the goal comparison. Make sure to specify a valid time.";
+            return "Could not generate the goal comparison. Make sure to specify a valid time.";
         case Label.CopyComparisonPrompt:
             return "Specify the name of the comparison you want to copy:";
         case Label.CopyComparisonError:
-            return "Failed copying the comparison. The comparison may not exist.";
+            return "Could not copy the comparison. The comparison may not exist.";
         case Label.NothingToCleanUp:
             return "There is nothing to clean up.";
         case Label.CleanPrompt:
             return "Clean?";
         case Label.AssociateRunPrompt:
-            return "Specify the speedrun.com ID or URL of the run:";
+            return "Specify the Speedrun.com ID or URL of the run:";
         case Label.Associate:
             return "Associate";
         case Label.InvalidSpeedrunUrl:
-            return "Invalid speedrun.com ID or URL.";
+            return "Invalid Speedrun.com ID or URL.";
         case Label.AssociateRunError:
             return "Couldn't associate the run. The ID may be invalid.";
         case Label.AddVariablePrompt:
@@ -389,7 +389,7 @@ export function resolveEnglish(text: Label): string {
         case Label.DownloadBoxArtError:
             return "Couldn't download the box art.";
         case Label.NoGameIcon:
-            return "The game doesn't have an icon.";
+            return "No Game Icon";
         case Label.DownloadIconError:
             return "Couldn't download the icon.";
         case Label.Rank:
@@ -419,15 +419,15 @@ export function resolveEnglish(text: Label): string {
         case Label.Component:
             return "Component";
         case Label.AddComponent:
-            return "Add Component";
+            return "Add component";
         case Label.RemoveComponent:
-            return "Remove Component";
+            return "Remove component";
         case Label.DuplicateComponent:
-            return "Duplicate Component";
+            return "Duplicate component";
         case Label.MoveComponentUp:
-            return "Move Component Up";
+            return "Move component up";
         case Label.MoveComponentDown:
-            return "Move Component Down";
+            return "Move component down";
         case Label.ComponentTitle:
             return "Title";
         case Label.ComponentTitleDescription:
@@ -575,7 +575,7 @@ export function resolveEnglish(text: Label): string {
         case Label.IconDisplayModeBothRows:
             return "Both Rows";
         case Label.IconDisplayModeFirstRow:
-            return "First Row Only";
+            return "First Row";
         case Label.SubsplitDisplayModeFlat:
             return "Flat";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:
@@ -615,9 +615,9 @@ export function resolveEnglish(text: Label): string {
         case Label.ServerDisconnect:
             return "Disconnect";
         case Label.ServerConnecting:
-            return "Connecting...";
+            return "Connecting…";
         case Label.ServerDisconnecting:
-            return "Disconnecting...";
+            return "Disconnecting…";
         case Label.ConnectToServerTitle:
             return "Connect to Server";
         case Label.ConnectToServerDescription:

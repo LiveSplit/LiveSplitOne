@@ -11,7 +11,7 @@ export function resolveFrench(text: Label): string {
         case Label.Language:
             return "Langue";
         case Label.LanguageDescription:
-            return "Définit la langue utilisée dans l'application.";
+            return "Définit la langue utilisée dans l’application.";
         case Label.LanguageAuto:
             return "Automatique";
         case Label.Theme:
@@ -31,7 +31,7 @@ export function resolveFrench(text: Label): string {
         case Label.FrameRate:
             return "Fréquence d’images";
         case Label.FrameRateDescription:
-            return "Détermine la fréquence d’images à laquelle afficher le minuteur. « Adapté à la batterie » tente de déterminer le type d’appareil et l’état de charge pour choisir une bonne fréquence d’images. « Adapter à l’écran » fait correspondre le minuteur au taux de rafraîchissement de l’écran.";
+            return "Détermine la fréquence d’images à laquelle afficher le timer. « Adapté à la batterie » tente de déterminer le type d’appareil et l’état de charge pour choisir une bonne fréquence d’images. « Adapter à l’écran » fait correspondre le timer au taux de rafraîchissement de l’écran.";
         case Label.FrameRateBatteryAware:
             return "Adapté à la batterie";
         case Label.FrameRateMatchScreen:
@@ -39,15 +39,15 @@ export function resolveFrench(text: Label): string {
         case Label.SaveOnReset:
             return "Enregistrer lors de la réinitialisation";
         case Label.SaveOnResetDescription:
-            return "Détermine s’il faut enregistrer automatiquement les splits lors de la réinitialisation du minuteur.";
+            return "Détermine s’il faut enregistrer automatiquement les splits lors de la réinitialisation du timer.";
         case Label.ShowControlButtons:
             return "Afficher les boutons de contrôle";
         case Label.ShowControlButtonsDescription:
-            return "Détermine s’il faut afficher des boutons sous le minuteur pour le contrôler. Lorsqu’ils sont désactivés, vous devez utiliser les raccourcis.";
+            return "Détermine s’il faut afficher des boutons sous le timer pour le contrôler. Lorsqu’ils sont désactivés, vous devez utiliser les raccourcis.";
         case Label.ShowManualGameTimeInput:
             return "Afficher la saisie manuelle du temps de jeu";
         case Label.ShowManualGameTimeInputDescription:
-            return "Affiche une zone de texte sous le minuteur qui vous permet de saisir manuellement le temps de jeu. Vous démarrez le minuteur et faites des splits en appuyant sur la touche Entrée dans la zone de texte. Assurez‑vous de comparer avec « Game Time ».";
+            return "Affiche une zone de texte sous le timer qui vous permet de saisir manuellement le temps de jeu. Vous démarrez le timer et faites des splits en appuyant sur la touche Entrée dans la zone de texte. Assurez-vous de comparer avec « Temps de jeu ».";
         case Label.ManualGameTimeMode:
             return "Mode de temps de jeu manuel";
         case Label.ManualGameTimeModeDescription:
@@ -59,19 +59,19 @@ export function resolveFrench(text: Label): string {
         case Label.AlwaysOnTop:
             return "Toujours au premier plan";
         case Label.AlwaysOnTopDescription:
-            return "Garde la fenêtre au‑dessus des autres fenêtres.";
+            return "Garde la fenêtre au-dessus des autres fenêtres.";
         case Label.SpeedrunComIntegration:
             return "Intégration Speedrun.com";
         case Label.SpeedrunComIntegrationDescription:
-            return "Interroge la liste des jeux, catégories et classements depuis speedrun.com.";
+            return "Interroge la liste des jeux, catégories et classements depuis Speedrun.com.";
         case Label.ServerConnection:
             return "Connexion au serveur";
         case Label.ServerConnectionDescription:
-            return "Permet de se connecter à un serveur WebSocket qui peut contrôler le minuteur en envoyant diverses commandes. Les commandes sont actuellement un sous‑ensemble de celles que le LiveSplit original prend en charge.";
+            return "Permet de se connecter à un serveur WebSocket qui peut contrôler le timer en envoyant diverses commandes. Les commandes sont actuellement un sous-ensemble de celles que le LiveSplit original prend en charge.";
         case Label.ServerConnectionExperimental:
             return "Cette fonctionnalité est expérimentale et le protocole changera probablement à l’avenir.";
         case Label.TheRunGgIntegration:
-            return "Intégration TheRun.gg";
+            return "Intégration therun.gg";
         case Label.TheRunGgIntegrationDescription:
             return "S’intègre à therun.gg pour le suivi en direct des runs et l’envoi automatique des statistiques. Vous avez besoin d’une clé d’envoi therun.gg pour utiliser cette fonctionnalité.";
         case Label.TheRunGgLiveTracking:
@@ -105,7 +105,7 @@ export function resolveFrench(text: Label): string {
         case Label.Splits:
             return "Splits";
         case Label.Layout:
-            return "Disposition";
+            return "Layout";
         case Label.CompareAgainst:
             return "Comparer à";
         case Label.RealTime:
@@ -121,7 +121,7 @@ export function resolveFrench(text: Label): string {
         case Label.AboutVersionPrefix:
             return "Version :";
         case Label.AboutDescription:
-            return "LiveSplit One est une version multiplateforme de LiveSplit, le minuteur élégant et hautement personnalisable pour les speedrunners.";
+            return "LiveSplit One est une version multiplateforme de LiveSplit, le timer élégant et hautement personnalisable pour les speedrunners.";
         case Label.AboutViewSource:
             return "Voir le code source sur GitHub";
         case Label.AboutRecentChanges:
@@ -129,7 +129,7 @@ export function resolveFrench(text: Label): string {
         case Label.AboutContributors:
             return "Contributeurs";
         case Label.Loading:
-            return "Chargement...";
+            return "Chargement…";
         case Label.Add:
             return "Ajouter";
         case Label.Import:
@@ -181,9 +181,9 @@ export function resolveFrench(text: Label): string {
         case Label.NewSegmentName:
             return "Temps";
         case Label.EditWhileRunningError:
-            return "Vous ne pouvez pas modifier vos splits pendant que le minuteur fonctionne.";
+            return "Vous ne pouvez pas modifier vos splits pendant que le timer tourne.";
         case Label.Edit:
-            return "Modifier";
+            return "Modifier…";
         case Label.Save:
             return "Enregistrer";
         case Label.Export:
@@ -209,9 +209,9 @@ export function resolveFrench(text: Label): string {
         case Label.Leaderboard:
             return "Classement";
         case Label.InsertAbove:
-            return "Insérer au‑dessus";
+            return "Insérer au-dessus";
         case Label.InsertBelow:
-            return "Insérer au‑dessous";
+            return "Insérer au-dessous";
         case Label.RemoveSegment:
             return "Supprimer le segment";
         case Label.MoveUp:
@@ -239,7 +239,7 @@ export function resolveFrench(text: Label): string {
         case Label.BestSegment:
             return "Meilleur segment";
         case Label.SpeedrunComVariableTooltip:
-            return "Variable speedrun.com spécifique au jeu.";
+            return "Variable Speedrun.com spécifique au jeu.";
         case Label.Region:
             return "Région";
         case Label.RegionDescription:
@@ -251,17 +251,17 @@ export function resolveFrench(text: Label): string {
         case Label.UsesEmulator:
             return "Utilise un émulateur";
         case Label.UsesEmulatorDescription:
-            return "Indique si un émulateur est utilisé.";
+            return "Indique si un émulateur est utilisé pour jouer au jeu.";
         case Label.CustomVariableTooltip:
-            return "Variable personnalisée que vous avez définie. Peut être affichée avec le composant texte.";
+            return "Variable personnalisée que vous avez définie. Elle peut être affichée avec le composant Texte.";
         case Label.NoVariables:
             return "Il n’y a actuellement aucune variable personnalisée pour ce jeu.";
         case Label.NoVariablesWithSpeedrunCom:
-            return "Il n’y a actuellement aucune variable speedrun.com ou personnalisée pour ce jeu.";
+            return "Il n’y a actuellement aucune variable Speedrun.com ou personnalisée pour ce jeu.";
         case Label.TimedWithoutLoads:
             return "sont chronométrées sans les temps de chargement";
         case Label.TimedWithGameTime:
-            return "sont chronométrées avec le Game Time";
+            return "sont chronométrées avec le Temps de jeu";
         case Label.RequireVideoProof:
             return "exigent une preuve vidéo";
         case Label.RunsOfThisGamePrefix:
@@ -277,11 +277,11 @@ export function resolveFrench(text: Label): string {
         case Label.DownloadBoxArt:
             return "Télécharger la jaquette";
         case Label.DownloadBoxArtDescription:
-            return "Tente de télécharger la jaquette depuis speedrun.com pour l’utiliser comme icône du jeu.";
+            return "Tente de télécharger la jaquette depuis Speedrun.com pour l’utiliser comme icône du jeu.";
         case Label.DownloadIcon:
             return "Télécharger l’icône";
         case Label.DownloadIconDescription:
-            return "Tente de télécharger l’icône du jeu depuis speedrun.com.";
+            return "Tente de télécharger l’icône du jeu depuis Speedrun.com.";
         case Label.RemoveIcon:
             return "Retirer l’icône";
         case Label.RemoveIconDescription:
@@ -291,39 +291,39 @@ export function resolveFrench(text: Label): string {
         case Label.ClearOnlyHistory:
             return "Effacer uniquement l’historique";
         case Label.ClearOnlyHistoryDescription:
-            return "Les splits stockent tout l’historique des runs, y compris chaque segment. Cette action efface l’historique sans affecter le PB, les meilleurs segments ni les comparaisons.";
+            return "Les splits stockent l’historique complet de toutes les runs, y compris chaque temps de segment. Ces informations sont utilisées par divers composants. Cette action permet d’effacer l’historique. Le record personnel, les meilleurs temps de segment et les comparaisons ne sont pas affectés.";
         case Label.ClearAllTimes:
             return "Effacer tous les temps";
         case Label.ClearAllTimesDescription:
-            return "Supprime tous les temps et l’historique pour réinitialiser complètement les splits.";
+            return "Supprime tous les temps des splits, y compris tout l’historique, de sorte que les splits soient complètement vides, comme s’ils venaient d’être créés.";
         case Label.CleanSumOfBest:
             return "Nettoyer la somme des meilleurs";
         case Label.CleanSumOfBestDescription:
-            return "Permet de supprimer des anomalies dans l’historique des segments qui rendent la somme des meilleurs segments inexacte.";
+            return "Permet de supprimer de manière interactive les problèmes potentiels de l’historique des segments qui rendent la somme des meilleurs segments inexacte. Si vous passez un split, le temps de segment combiné obtenu au split suivant peut être plus rapide que la somme des meilleurs segments individuels. Cette fonction signale toutes ces occurrences et vous permet de les supprimer une par une si certaines semblent incorrectes.";
         case Label.ComparisonsMenu:
             return "Comparaisons…";
         case Label.AddComparison:
             return "Ajouter une comparaison";
         case Label.AddComparisonDescription:
-            return "Ajoute une comparaison personnalisée où vous pouvez stocker des temps.";
+            return "Ajoute une nouvelle comparaison personnalisée dans laquelle vous pouvez stocker les temps de votre choix.";
         case Label.ImportComparison:
             return "Importer une comparaison";
         case Label.ImportComparisonDescription:
-            return "Importe le Personal Best d’un fichier de splits comme comparaison.";
+            return "Importe comme comparaison le record personnel d’un fichier de splits que vous fournissez.";
         case Label.GenerateGoalComparison:
             return "Générer une comparaison d’objectif";
         case Label.GenerateGoalComparisonDescription:
-            return "Génère une comparaison d’objectif basée sur un temps cible.";
+            return "Génère une comparaison d’objectif personnalisée à partir d’un temps cible que vous pouvez indiquer. Les temps de la comparaison sont automatiquement répartis selon l’historique des segments, de sorte qu’ils représentent approximativement les temps de split correspondant au temps cible. Comme la comparaison est calculée à partir de l’historique des segments, le temps cible est limité à l’intervalle entre la somme des meilleurs segments et la somme des pires segments. La comparaison n’est générée que pour la méthode de chronométrage sélectionnée. Les temps de comparaison de l’autre méthode ne sont pas modifiés : vous pouvez donc la générer à nouveau avec l’autre méthode pour obtenir des temps de comparaison pour les deux méthodes de chronométrage.";
         case Label.CopyComparison:
             return "Copier la comparaison";
         case Label.CopyComparisonDescription:
-            return "Copie une comparaison existante en nouvelle comparaison personnalisée.";
+            return "Copie une comparaison existante, y compris le record personnel ou toute autre comparaison fournie automatiquement, en tant que nouvelle comparaison personnalisée. Vous pouvez par exemple vous en servir pour conserver la dernière run comme comparaison aussi longtemps que vous le souhaitez.";
         case Label.SetSegmentIcon:
-            return "Définir l’icône";
+            return "Définir l’icône du segment";
         case Label.SetSegmentIconDescription:
             return "Choisir une image comme icône du segment. Certains formats peuvent ne pas fonctionner partout.";
         case Label.RemoveSegmentIcon:
-            return "Retirer l’icône";
+            return "Retirer l’icône du segment";
         case Label.RemoveSegmentIconDescription:
             return "Retire l’icône du segment.";
         case Label.Rename:
@@ -349,7 +349,7 @@ export function resolveFrench(text: Label): string {
         case Label.AddComparisonPrompt:
             return "Indiquez le nom de la comparaison à ajouter :";
         case Label.ComparisonAddError:
-            return "La comparaison n’a pas pu être ajoutée. Elle est peut‑être en double ou réservée.";
+            return "La comparaison n’a pas pu être ajoutée. Le nom est peut-être en double ou réservé.";
         case Label.ImportComparisonPrompt:
             return "Indiquez le nom de la comparaison à importer :";
         case Label.GenerateGoalComparisonPrompt:
@@ -357,23 +357,23 @@ export function resolveFrench(text: Label): string {
         case Label.Generate:
             return "Générer";
         case Label.GenerateGoalComparisonError:
-            return "Échec de génération de la comparaison d’objectif. Vérifiez que le temps est valide.";
+            return "Impossible de générer la comparaison d’objectif. Vérifiez que le temps est valide.";
         case Label.CopyComparisonPrompt:
             return "Indiquez le nom de la comparaison à copier :";
         case Label.CopyComparisonError:
-            return "Échec de copie de la comparaison. Elle n’existe peut‑être pas.";
+            return "Impossible de copier la comparaison. Elle n’existe peut-être pas.";
         case Label.NothingToCleanUp:
             return "Il n’y a rien à nettoyer.";
         case Label.CleanPrompt:
             return "Nettoyer ?";
         case Label.AssociateRunPrompt:
-            return "Indiquez l’ID ou l’URL speedrun.com de la run :";
+            return "Indiquez l’ID ou l’URL Speedrun.com de la run :";
         case Label.Associate:
             return "Associer";
         case Label.InvalidSpeedrunUrl:
-            return "ID ou URL speedrun.com invalide.";
+            return "ID ou URL Speedrun.com invalide.";
         case Label.AssociateRunError:
-            return "Impossible d’associer la run. L’ID est peut‑être invalide.";
+            return "Impossible d’associer la run. L’ID est peut-être invalide.";
         case Label.AddVariablePrompt:
             return "Indiquez le nom de la variable personnalisée à ajouter :";
         case Label.RenameComparison:
@@ -381,7 +381,7 @@ export function resolveFrench(text: Label): string {
         case Label.RenameComparisonPrompt:
             return "Indiquez le nouveau nom de la comparaison :";
         case Label.ComparisonRenameError:
-            return "La comparaison n’a pas pu être renommée. Elle est peut‑être en double ou réservée.";
+            return "La comparaison n’a pas pu être renommée. Elle est peut-être en double ou réservée.";
         case Label.GameNotFound:
             return "Jeu introuvable.";
         case Label.NoBoxArt:
@@ -389,7 +389,7 @@ export function resolveFrench(text: Label): string {
         case Label.DownloadBoxArtError:
             return "Impossible de télécharger la jaquette.";
         case Label.NoGameIcon:
-            return "Le jeu n’a pas d’icône.";
+            return "Aucune icône de jeu";
         case Label.DownloadIconError:
             return "Impossible de télécharger l’icône.";
         case Label.Rank:
@@ -503,11 +503,11 @@ export function resolveFrench(text: Label): string {
         case Label.Row:
             return "Ligne";
         case Label.RowDescription:
-            return "Une ligne de composants disposés horizontalement, changeant la direction du layout pour les composants à l'intérieur.";
+            return "Une ligne de composants disposés horizontalement, changeant la direction du layout pour les composants à l’intérieur.";
         case Label.Column:
             return "Colonne";
         case Label.ColumnDescription:
-            return "Une colonne de composants disposés verticalement, changeant la direction du layout pour les composants à l'intérieur.";
+            return "Une colonne de composants disposés verticalement, changeant la direction du layout pour les composants à l’intérieur.";
         case Label.AccuracySeconds:
             return "Secondes";
         case Label.AccuracyTenths:
@@ -575,7 +575,7 @@ export function resolveFrench(text: Label): string {
         case Label.IconDisplayModeBothRows:
             return "Les deux lignes";
         case Label.IconDisplayModeFirstRow:
-            return "Première ligne uniquement";
+            return "Première ligne";
         case Label.SubsplitDisplayModeFlat:
             return "À plat";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:
@@ -615,9 +615,9 @@ export function resolveFrench(text: Label): string {
         case Label.ServerDisconnect:
             return "Se déconnecter";
         case Label.ServerConnecting:
-            return "Connexion...";
+            return "Connexion…";
         case Label.ServerDisconnecting:
-            return "Déconnexion...";
+            return "Déconnexion…";
         case Label.ConnectToServerTitle:
             return "Se connecter au serveur";
         case Label.ConnectToServerDescription:
@@ -631,7 +631,7 @@ export function resolveFrench(text: Label): string {
         case Label.OpenSidebarAriaLabel:
             return "Ouvrir la barre latérale";
         case Label.FailedToSaveLayout:
-            return "Échec de l’enregistrement de la disposition.";
+            return "Échec de l’enregistrement du layout.";
         case Label.FailedToSaveHotkeys:
             return "Échec de l’enregistrement des raccourcis clavier.";
         case Label.FailedToSaveGeneralSettings:
@@ -639,7 +639,7 @@ export function resolveFrench(text: Label): string {
         case Label.FailedToSaveSplits:
             return "Échec de l’enregistrement des splits.";
         case Label.LayoutCouldNotBeLoaded:
-            return "La disposition n’a pas pu être chargée. Il se peut que ce ne soit pas une disposition LiveSplit ou LiveSplit One valide.";
+            return "Le layout n’a pas pu être chargé. Il se peut que ce ne soit pas un layout LiveSplit ou LiveSplit One valide.";
         case Label.EmptySplitsNotSupported:
             return "Les splits vides ne sont pas pris en charge.";
         case Label.BugEncountered:
@@ -651,10 +651,10 @@ export function resolveFrench(text: Label): string {
         case Label.PleaseReportIssueEnd:
             return ".";
         case Label.BugReportInstructions:
-            return "Afin de nous aider à corriger ce problème, veuillez indiquer les étapes pour le reproduire et joindre les splits et la disposition que vous utilisiez lorsque le problème est survenu.";
+            return "Afin de nous aider à corriger ce problème, veuillez indiquer les étapes pour le reproduire et joindre les splits et le layout que vous utilisiez lorsque le problème est survenu.";
         case Label.LoadFailedPrivateBrowsing:
-            return "Impossible de charger LiveSplit One.\nVous êtes peut‑être en navigation privée.\nLiveSplit One ne peut pas enregistrer les splits, les dispositions ou d’autres paramètres à cause des limitations de la navigation privée.\nCes limitations pourraient être levées à l’avenir.\nPour utiliser LiveSplit One pour l’instant, désactivez la navigation privée dans vos paramètres.";
+            return "Impossible de charger LiveSplit One.\nVous êtes peut-être en navigation privée.\nLiveSplit One ne peut pas enregistrer les splits, les layouts ou d’autres paramètres à cause des limitations de la navigation privée.\nCes limitations pourraient être levées à l’avenir.\nPour utiliser LiveSplit One pour l’instant, désactivez la navigation privée dans vos paramètres.";
         case Label.LoadFailedOutdatedBrowser:
-            return "Impossible de charger LiveSplit One.\nVotre navigateur n’est peut‑être pas à jour.\nMettez à jour votre navigateur ou votre version d’iOS et réessayez.\nUne autre raison possible est qu’une extension de navigateur, comme un bloqueur de publicité, bloque l’accès à des scripts importants.";
+            return "Impossible de charger LiveSplit One.\nVotre navigateur n’est peut-être pas à jour.\nMettez à jour votre navigateur ou votre version d’iOS et réessayez.\nUne autre raison possible est qu’une extension de navigateur, comme un bloqueur de publicité, bloque l’accès à des scripts importants.";
     }
 }

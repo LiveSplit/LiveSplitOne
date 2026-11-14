@@ -63,7 +63,7 @@ export function resolveDutch(text: Label): string {
         case Label.SpeedrunComIntegration:
             return "Speedrun.com-integratie";
         case Label.SpeedrunComIntegrationDescription:
-            return "Vraagt de lijst met games, categorieën en ranglijsten op van speedrun.com.";
+            return "Vraagt de lijst met spellen, categorieën en ranglijsten op van Speedrun.com.";
         case Label.ServerConnection:
             return "Serververbinding";
         case Label.ServerConnectionDescription:
@@ -71,7 +71,7 @@ export function resolveDutch(text: Label): string {
         case Label.ServerConnectionExperimental:
             return "Deze functie is experimenteel en het protocol zal waarschijnlijk in de toekomst veranderen.";
         case Label.TheRunGgIntegration:
-            return "TheRun.gg-integratie";
+            return "therun.gg-integratie";
         case Label.TheRunGgIntegrationDescription:
             return "Integreert met therun.gg voor live run-tracking en automatisch uploaden van statistieken. Je hebt een uploadsleutel van therun.gg nodig om deze functie te gebruiken.";
         case Label.TheRunGgLiveTracking:
@@ -99,21 +99,21 @@ export function resolveDutch(text: Label): string {
         case Label.ManualGameTimePlaceholder:
             return "Handmatige speltijd";
         case Label.LiveSplitLogoAlt:
-            return "LiveSplit‑logo";
+            return "LiveSplit-logo";
         case Label.LiveSplitOne:
             return "LiveSplit One";
         case Label.Splits:
             return "Splits";
         case Label.Layout:
-            return "Lay‑out";
+            return "Lay-out";
         case Label.CompareAgainst:
             return "Vergelijken met";
         case Label.RealTime:
-            return "Realtime";
+            return "Echte tijd";
         case Label.GameTime:
             return "Speltijd";
         case Label.PopOut:
-            return "Pop‑out";
+            return "Pop-out";
         case Label.About:
             return "Over";
         case Label.Back:
@@ -121,7 +121,7 @@ export function resolveDutch(text: Label): string {
         case Label.AboutVersionPrefix:
             return "Versie:";
         case Label.AboutDescription:
-            return "LiveSplit One is een multiplatform‑versie van LiveSplit, de strakke en zeer aanpasbare timer voor speedrunners.";
+            return "LiveSplit One is een multiplatform-versie van LiveSplit, de strakke en zeer aanpasbare timer voor speedrunners.";
         case Label.AboutViewSource:
             return "Bekijk de broncode op GitHub";
         case Label.AboutRecentChanges:
@@ -129,7 +129,7 @@ export function resolveDutch(text: Label): string {
         case Label.AboutContributors:
             return "Bijdragers";
         case Label.Loading:
-            return "Laden...";
+            return "Laden…";
         case Label.Add:
             return "Toevoegen";
         case Label.Import:
@@ -183,7 +183,7 @@ export function resolveDutch(text: Label): string {
         case Label.EditWhileRunningError:
             return "Je kunt je splits niet bewerken terwijl de timer loopt.";
         case Label.Edit:
-            return "Bewerken";
+            return "Bewerken…";
         case Label.Save:
             return "Opslaan";
         case Label.Export:
@@ -193,7 +193,7 @@ export function resolveDutch(text: Label): string {
         case Label.Default:
             return "Standaard";
         case Label.Game:
-            return "Game";
+            return "Spel";
         case Label.Category:
             return "Categorie";
         case Label.StartTimerAt:
@@ -201,7 +201,7 @@ export function resolveDutch(text: Label): string {
         case Label.Attempts:
             return "Pogingen";
         case Label.SplitsEditor:
-            return "Splits‑editor";
+            return "Splits-editor";
         case Label.Variables:
             return "Variabelen";
         case Label.Rules:
@@ -225,7 +225,7 @@ export function resolveDutch(text: Label): string {
         case Label.AddVariable:
             return "Variabele toevoegen";
         case Label.OpenPbPage:
-            return "PB‑pagina openen";
+            return "PB-pagina openen";
         case Label.AssociateRun:
             return "Run koppelen";
         case Label.Icon:
@@ -233,31 +233,31 @@ export function resolveDutch(text: Label): string {
         case Label.SegmentName:
             return "Segmentnaam";
         case Label.SplitTime:
-            return "Split‑tijd";
+            return "Splittijd";
         case Label.SegmentTime:
             return "Segmenttijd";
         case Label.BestSegment:
             return "Beste segment";
         case Label.SpeedrunComVariableTooltip:
-            return "Een speedrun.com‑variabele specifiek voor de game.";
+            return "Een Speedrun.com-variabele specifiek voor het spel.";
         case Label.Region:
             return "Regio";
         case Label.RegionDescription:
-            return "De regio van de game die wordt gespeeld.";
+            return "De regio van het spel dat wordt gespeeld.";
         case Label.Platform:
             return "Platform";
         case Label.PlatformDescription:
-            return "Het platform waarop de game wordt gespeeld.";
+            return "Het platform waarop het spel wordt gespeeld.";
         case Label.UsesEmulator:
             return "Emulator gebruikt";
         case Label.UsesEmulatorDescription:
             return "Of er een emulator wordt gebruikt om te spelen.";
         case Label.CustomVariableTooltip:
-            return "Een door jou opgegeven variabele. Deze kan worden weergegeven met de tekstcomponent.";
+            return "Een door jou opgegeven variabele. Deze kan worden weergegeven met de component Tekst.";
         case Label.NoVariables:
-            return "Er zijn momenteel geen aangepaste variabelen voor deze game.";
+            return "Er zijn momenteel geen aangepaste variabelen voor dit spel.";
         case Label.NoVariablesWithSpeedrunCom:
-            return "Er zijn momenteel geen speedrun.com‑variabelen of aangepaste variabelen voor deze game.";
+            return "Er zijn momenteel geen Speedrun.com-variabelen of aangepaste variabelen voor deze spel.";
         case Label.TimedWithoutLoads:
             return "worden getimed zonder laadtijden";
         case Label.TimedWithGameTime:
@@ -265,7 +265,7 @@ export function resolveDutch(text: Label): string {
         case Label.RequireVideoProof:
             return "vereisen videobewijs";
         case Label.RunsOfThisGamePrefix:
-            return "Runs van deze game ";
+            return "Runs van deze spel ";
         case Label.RunsOfThisGameSuffix:
             return ".";
         case Label.And:
@@ -273,33 +273,33 @@ export function resolveDutch(text: Label): string {
         case Label.SetIcon:
             return "Pictogram instellen";
         case Label.SetIconDescription:
-            return "Kies een afbeeldingsbestand als game‑pictogram. Bepaalde bestandsindelingen werken mogelijk niet overal.";
+            return "Kies een afbeeldingsbestand als spelpictogram. Bepaalde bestandsindelingen werken mogelijk niet overal.";
         case Label.DownloadBoxArt:
-            return "Box‑art downloaden";
+            return "Box-art downloaden";
         case Label.DownloadBoxArtDescription:
-            return "Probeert box‑art van speedrun.com te downloaden en als game‑pictogram in te stellen.";
+            return "Probeert box-art van Speedrun.com te downloaden en als spelpictogram in te stellen.";
         case Label.DownloadIcon:
             return "Pictogram downloaden";
         case Label.DownloadIconDescription:
-            return "Probeert het pictogram van de game te downloaden van speedrun.com.";
+            return "Probeert het pictogram van de spel te downloaden van Speedrun.com.";
         case Label.RemoveIcon:
             return "Pictogram verwijderen";
         case Label.RemoveIconDescription:
-            return "Verwijdert het game‑pictogram.";
+            return "Verwijdert het spelpictogram.";
         case Label.CleaningMenu:
             return "Opschonen…";
         case Label.ClearOnlyHistory:
             return "Alleen geschiedenis wissen";
         case Label.ClearOnlyHistoryDescription:
-            return "Splits bewaren de volledige geschiedenis van alle runs, inclusief elke segmenttijd. Je kunt hiermee de geschiedenis wissen. Personal best, beste segmenttijden en vergelijkingen blijven intact.";
+            return "Splits bewaren de volledige geschiedenis van alle runs, inclusief elke segmenttijd. Deze informatie wordt door verschillende componenten gebruikt. Hiermee kun je de geschiedenis wissen. Het persoonlijk record, de beste segmenttijden en de vergelijkingen blijven ongewijzigd.";
         case Label.ClearAllTimes:
             return "Alle tijden wissen";
         case Label.ClearAllTimesDescription:
-            return "Verwijdert alle tijden uit de splits, inclusief de geschiedenis, zodat de splits volledig leeg zijn.";
+            return "Verwijdert alle tijden uit de splits, inclusief de volledige geschiedenis, zodat de splits volledig leeg zijn, alsof ze net zijn aangemaakt.";
         case Label.CleanSumOfBest:
             return "Som van beste opschonen";
         case Label.CleanSumOfBestDescription:
-            return "Laat je interactief problemen in de segmentgeschiedenis verwijderen die tot een onjuiste som van beste segmenten leiden.";
+            return "Laat je interactief mogelijke problemen in de segmentgeschiedenis verwijderen die tot een onjuiste som van beste segmenten leiden. Als je een split overslaat, kan de gecombineerde segmenttijd bij de volgende split sneller zijn dan de som van de afzonderlijke beste segmenten. Alle zulke gevallen worden aangewezen, zodat je ze afzonderlijk kunt verwijderen als ze onjuist lijken.";
         case Label.ComparisonsMenu:
             return "Vergelijkingen…";
         case Label.AddComparison:
@@ -309,23 +309,23 @@ export function resolveDutch(text: Label): string {
         case Label.ImportComparison:
             return "Vergelijking importeren";
         case Label.ImportComparisonDescription:
-            return "Importeert de Personal Best van een splits‑bestand als vergelijking.";
+            return "Importeert het persoonlijk record van een splitsbestand dat je opgeeft als vergelijking.";
         case Label.GenerateGoalComparison:
             return "Doelvergelijking genereren";
         case Label.GenerateGoalComparisonDescription:
-            return "Genereert een aangepaste doelvergelijking op basis van een doel‑tijd die je opgeeft.";
+            return "Genereert een aangepaste doelvergelijking op basis van een doeltijd die je kunt opgeven. De tijden van de vergelijking worden automatisch verdeeld op basis van de segmentgeschiedenis, zodat ze ongeveer weergeven hoe de splittijden voor de doeltijd eruit zouden zien. Omdat de vergelijking uit de segmentgeschiedenis wordt berekend, is de doeltijd beperkt tot het bereik tussen de som van de beste segmenten en de som van de slechtste segmenten. De vergelijking wordt alleen voor de geselecteerde timingmethode gegenereerd. De vergelijkingstijden van de andere timingmethode worden niet gewijzigd, dus je kunt hem opnieuw genereren met de andere timingmethode om vergelijkingstijden voor beide timingmethoden te krijgen.";
         case Label.CopyComparison:
             return "Vergelijking kopiëren";
         case Label.CopyComparisonDescription:
-            return "Maakt een kopie van een bestaande vergelijking.";
+            return "Kopieert een bestaande vergelijking, inclusief het persoonlijk record of een andere automatisch geleverde vergelijking, als nieuwe aangepaste vergelijking. Zo kun je bijvoorbeeld de laatste run als vergelijking bewaren zolang je wilt.";
         case Label.SetSegmentIcon:
-            return "Pictogram instellen";
+            return "Segmentpictogram instellen";
         case Label.SetSegmentIconDescription:
-            return "Kies een afbeeldingsbestand als segment‑pictogram. Bepaalde indelingen werken mogelijk niet overal.";
+            return "Kies een afbeeldingsbestand als segment-pictogram. Bepaalde indelingen werken mogelijk niet overal.";
         case Label.RemoveSegmentIcon:
-            return "Pictogram verwijderen";
+            return "Segmentpictogram verwijderen";
         case Label.RemoveSegmentIconDescription:
-            return "Verwijdert het segment‑pictogram.";
+            return "Verwijdert het segment-pictogram.";
         case Label.Rename:
             return "Hernoemen";
         case Label.RenameDescription:
@@ -349,7 +349,7 @@ export function resolveDutch(text: Label): string {
         case Label.AddComparisonPrompt:
             return "Geef de naam van de vergelijking op die je wilt toevoegen:";
         case Label.ComparisonAddError:
-            return "De vergelijking kon niet worden toegevoegd. Mogelijk is de naam duplicaat of gereserveerd.";
+            return "De vergelijking kon niet worden toegevoegd. Mogelijk is de naam een duplicaat of gereserveerd.";
         case Label.ImportComparisonPrompt:
             return "Geef de naam van de vergelijking op die je wilt importeren:";
         case Label.GenerateGoalComparisonPrompt:
@@ -367,11 +367,11 @@ export function resolveDutch(text: Label): string {
         case Label.CleanPrompt:
             return "Opschonen?";
         case Label.AssociateRunPrompt:
-            return "Geef de speedrun.com‑ID of URL van de run op:";
+            return "Geef de Speedrun.com-ID of URL van de run op:";
         case Label.Associate:
             return "Koppelen";
         case Label.InvalidSpeedrunUrl:
-            return "Ongeldige speedrun.com‑ID of URL.";
+            return "Ongeldige Speedrun.com-ID of URL.";
         case Label.AssociateRunError:
             return "Run koppelen mislukt. De ID is mogelijk ongeldig.";
         case Label.AddVariablePrompt:
@@ -385,11 +385,11 @@ export function resolveDutch(text: Label): string {
         case Label.GameNotFound:
             return "Game niet gevonden.";
         case Label.NoBoxArt:
-            return "De game heeft geen box‑art.";
+            return "De spel heeft geen box-art.";
         case Label.DownloadBoxArtError:
-            return "Box‑art downloaden mislukt.";
+            return "Box-art downloaden mislukt.";
         case Label.NoGameIcon:
-            return "De game heeft geen pictogram.";
+            return "Geen spelpictogram";
         case Label.DownloadIconError:
             return "Pictogram downloaden mislukt.";
         case Label.Rank:
@@ -415,7 +415,7 @@ export function resolveDutch(text: Label): string {
         case Label.Filters:
             return "Filters";
         case Label.LayoutEditor:
-            return "Lay‑outeditor";
+            return "Lay-outeditor";
         case Label.Component:
             return "Component";
         case Label.AddComponent:
@@ -431,13 +431,13 @@ export function resolveDutch(text: Label): string {
         case Label.ComponentTitle:
             return "Titel";
         case Label.ComponentTitleDescription:
-            return "Toont de naam van de game en de categorie, plus eventueel icoon, pogingen en voltooide runs.";
+            return "Toont de naam van de spel en de categorie, plus eventueel icoon, pogingen en voltooide runs.";
         case Label.ComponentGraph:
             return "Grafiek";
         case Label.ComponentGraphDescription:
             return "Visualiseert hoe ver de run voor/achter ligt t.o.v. de vergelijking, met punten per delta.";
         case Label.ComponentSplitsDescription:
-            return "Hoofdcomponent voor split‑tijden met icoon, naam, delta en tijd; bevat scrollen.";
+            return "Hoofdcomponent voor split-tijden met icoon, naam, delta en tijd; bevat scrollen.";
         case Label.ComponentDetailedTimer:
             return "Gedetailleerde timer";
         case Label.ComponentDetailedTimerDescription:
@@ -459,7 +459,7 @@ export function resolveDutch(text: Label): string {
         case Label.ComponentDeltaDescription:
             return "Toont hoeveel je voor/achter ligt t.o.v. de vergelijking.";
         case Label.ComponentPbChance:
-            return "PB‑kans";
+            return "PB-kans";
         case Label.ComponentPbChanceDescription:
             return "Toont de kans om PB te halen; verandert tijdens de run.";
         case Label.ComponentPossibleTimeSave:
@@ -575,7 +575,7 @@ export function resolveDutch(text: Label): string {
         case Label.IconDisplayModeBothRows:
             return "Beide rijen";
         case Label.IconDisplayModeFirstRow:
-            return "Alleen de eerste rij";
+            return "Eerste rij";
         case Label.SubsplitDisplayModeFlat:
             return "Plat";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:
@@ -585,11 +585,11 @@ export function resolveDutch(text: Label): string {
         case Label.ColumnUpdateWithDontUpdate:
             return "Niet bijwerken";
         case Label.ColumnUpdateWithSplitTime:
-            return "Split‑tijd";
+            return "Split-tijd";
         case Label.ColumnUpdateWithDelta:
             return "Tijd voor/achter";
         case Label.ColumnUpdateWithDeltaWithFallback:
-            return "Tijd voor/achter of split‑tijd indien leeg";
+            return "Tijd voor/achter of split-tijd indien leeg";
         case Label.ColumnUpdateWithSegmentTime:
             return "Segmenttijd";
         case Label.ColumnUpdateWithSegmentDelta:
@@ -615,9 +615,9 @@ export function resolveDutch(text: Label): string {
         case Label.ServerDisconnect:
             return "Verbinding verbreken";
         case Label.ServerConnecting:
-            return "Bezig met verbinden...";
+            return "Bezig met verbinden…";
         case Label.ServerDisconnecting:
-            return "Bezig met verbreken...";
+            return "Bezig met verbreken…";
         case Label.ConnectToServerTitle:
             return "Verbinden met server";
         case Label.ConnectToServerDescription:
@@ -651,10 +651,10 @@ export function resolveDutch(text: Label): string {
         case Label.PleaseReportIssueEnd:
             return ".";
         case Label.BugReportInstructions:
-            return "Om ons te helpen dit probleem op te lossen, voeg de stappen toe om het te reproduceren en voeg de splits en lay‑out toe die je gebruikte toen het probleem optrad.";
+            return "Om ons te helpen dit probleem op te lossen, voeg de stappen toe om het te reproduceren en voeg de splits en lay-out toe die je gebruikte toen het probleem optrad.";
         case Label.LoadFailedPrivateBrowsing:
-            return "LiveSplit One kon niet worden geladen.\nMogelijk gebruik je de privé‑modus.\nLiveSplit One kan geen splits, lay‑outs of andere instellingen opslaan door beperkingen van privé‑browsen.\nDeze beperkingen kunnen in de toekomst worden opgeheven.\nOm LiveSplit One nu te gebruiken, schakel privé‑browsen uit in je instellingen.";
+            return "LiveSplit One kon niet worden geladen.\nMogelijk gebruik je de privé-modus.\nLiveSplit One kan geen splits, lay-outs of andere instellingen opslaan door beperkingen van privé-browsen.\nDeze beperkingen kunnen in de toekomst worden opgeheven.\nOm LiveSplit One nu te gebruiken, schakel privé-browsen uit in je instellingen.";
         case Label.LoadFailedOutdatedBrowser:
-            return "LiveSplit One kon niet worden geladen.\nMogelijk gebruik je een verouderde browser.\nWerk je browser of iOS‑versie bij en probeer het opnieuw.\nEen andere oorzaak kan een browserextensie zijn, zoals een adblocker, die de toegang tot belangrijke scripts blokkeert.";
+            return "LiveSplit One kon niet worden geladen.\nMogelijk gebruik je een verouderde browser.\nWerk je browser of iOS-versie bij en probeer het opnieuw.\nEen andere oorzaak kan een browserextensie zijn, zoals een adblocker, die de toegang tot belangrijke scripts blokkeert.";
     }
 }

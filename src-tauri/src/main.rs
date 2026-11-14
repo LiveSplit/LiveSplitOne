@@ -9,9 +9,9 @@ use std::{
 
 use livesplit_core::{
     event::{CommandSink, Error, Event, Result},
-    hotkey::KeyCode,
+    hotkey::Hotkey,
     networking::server_protocol::Command,
-    HotkeyConfig, HotkeySystem, StoredAutoSplitterSettings, TimeSpan, TimingMethod,
+    HotkeyConfig, HotkeySystem, Lang, StoredAutoSplitterSettings, TimeSpan, TimingMethod,
 };
 use tauri::{Emitter, Manager, WebviewWindow};
 
@@ -53,13 +53,18 @@ fn get_hotkey_config(state: tauri::State<'_, State>) -> HotkeyConfig {
 }
 
 #[tauri::command]
-fn resolve_hotkey(state: tauri::State<'_, State>, key_code: String) -> Cow<'static, str> {
+fn resolve_hotkey(state: tauri::State<'_, State>, hotkey: String, locale: String) -> String {
     if let Some(hotkey_system) = &*state.hotkey_system.read().unwrap() {
-        if let Ok(key_code) = KeyCode::from_str(&key_code) {
-            return hotkey_system.resolve(key_code);
+        if let Ok(binding) = Hotkey::from_str(&hotkey) {
+            // Resolve modifiers along with the key using the native keyboard
+            // layout. This label is display-only; the saved binding stays in
+            // the stable format shared by the web and desktop hotkey systems.
+            return hotkey_system
+                .resolve_hotkey(binding, Lang::parse_locale(&locale))
+                .to_string();
         }
     }
-    key_code.into()
+    hotkey
 }
 
 #[tauri::command]

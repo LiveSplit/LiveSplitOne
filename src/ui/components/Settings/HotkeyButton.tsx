@@ -2,21 +2,21 @@ import React, { useCallback, useEffect, useState } from "react";
 import { type Option, expect } from "../../../util/OptionUtil";
 import { hotkeySystem } from "../../LiveSplit";
 import { Circle, Trash } from "lucide-react";
-import { Label, resolve } from "../../../localization";
+import { Label, orAutoLang, resolve } from "../../../localization";
 import { type Language } from "../../../livesplit-core";
 
 import classes from "../../../css/HotkeyButton.module.css";
 import tooltipClasses from "../../../css/Tooltip.module.css";
 
-function resolveKey(
-    keyCode: string,
+function resolveHotkey(
+    hotkey: string,
     lang: Language | undefined,
 ): Promise<string> | string {
     return expect(
         hotkeySystem,
         "The Hotkey System should always be initialized.",
         lang,
-    ).resolve(keyCode);
+    ).resolveHotkey(hotkey, orAutoLang(lang));
 }
 
 export function HotkeyButton({
@@ -34,26 +34,14 @@ export function HotkeyButton({
 
     const updateResolvedKey = useCallback(
         async (value: Option<string>): Promise<void> => {
-            let resolvedKey = "";
-            if (value != null) {
-                const matches = value.match(/(.+)\+\s*(.+)$/);
-                if (matches != null) {
-                    const [, modifiers, keyCode] = matches;
-                    if (modifiers !== undefined && keyCode !== undefined) {
-                        resolvedKey = `${modifiers}+ ${await resolveKey(
-                            keyCode,
-                            lang,
-                        )}`;
-                    } else {
-                        resolvedKey = await resolveKey(value, lang);
-                    }
-                } else {
-                    resolvedKey = await resolveKey(value, lang);
-                }
-            }
-            setResolvedKey(resolvedKey);
+            // Resolve the entire binding in core so modifier names and their
+            // order follow the selected language and native platform. Keep
+            // `value` unchanged: only stable identifiers belong in the config.
+            setResolvedKey(
+                value != null ? await resolveHotkey(value, lang) : "",
+            );
         },
-        [],
+        [lang],
     );
 
     useEffect(() => {
@@ -121,8 +109,7 @@ export function HotkeyButton({
                     if (gamepad != null) {
                         let buttonIdx = 0;
                         for (const button of gamepad.buttons) {
-                            const oldState =
-                                gamepadState[buttonIdx] ?? false;
+                            const oldState = gamepadState[buttonIdx] ?? false;
                             if (button.pressed && !oldState) {
                                 setValue(`Gamepad${buttonIdx}`);
                             }

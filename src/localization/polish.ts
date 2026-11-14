@@ -61,9 +61,9 @@ export function resolvePolish(text: Label): string {
         case Label.AlwaysOnTopDescription:
             return "Utrzymuje okno zawsze na wierzchu innych okien.";
         case Label.SpeedrunComIntegration:
-            return "Integracja ze speedrun.com";
+            return "Integracja ze Speedrun.com";
         case Label.SpeedrunComIntegrationDescription:
-            return "Pobiera listę gier, kategorii i rankingi ze speedrun.com.";
+            return "Pobiera listę gier, kategorii i rankingi ze Speedrun.com.";
         case Label.ServerConnection:
             return "Połączenie z serwerem";
         case Label.ServerConnectionDescription:
@@ -71,7 +71,7 @@ export function resolvePolish(text: Label): string {
         case Label.ServerConnectionExperimental:
             return "Ta funkcja jest eksperymentalna i protokół prawdopodobnie zmieni się w przyszłości.";
         case Label.TheRunGgIntegration:
-            return "Integracja z TheRun.gg";
+            return "Integracja z therun.gg";
         case Label.TheRunGgIntegrationDescription:
             return "Integruje z therun.gg, zapewniając śledzenie biegu na żywo oraz automatyczne przesyłanie statystyk. Aby korzystać z tej funkcji, potrzebujesz klucza przesyłania z therun.gg.";
         case Label.TheRunGgLiveTracking:
@@ -129,7 +129,7 @@ export function resolvePolish(text: Label): string {
         case Label.AboutContributors:
             return "Współtwórcy";
         case Label.Loading:
-            return "Wczytywanie...";
+            return "Wczytywanie…";
         case Label.Add:
             return "Dodaj";
         case Label.Import:
@@ -183,7 +183,7 @@ export function resolvePolish(text: Label): string {
         case Label.EditWhileRunningError:
             return "Nie możesz edytować splitów, gdy timer działa.";
         case Label.Edit:
-            return "Edytuj";
+            return "Edytuj…";
         case Label.Save:
             return "Zapisz";
         case Label.Export:
@@ -239,7 +239,7 @@ export function resolvePolish(text: Label): string {
         case Label.BestSegment:
             return "Najlepszy segment";
         case Label.SpeedrunComVariableTooltip:
-            return "Zmienna speedrun.com specyficzna dla gry.";
+            return "Zmienna Speedrun.com specyficzna dla gry.";
         case Label.Region:
             return "Region";
         case Label.RegionDescription:
@@ -253,11 +253,11 @@ export function resolvePolish(text: Label): string {
         case Label.UsesEmulatorDescription:
             return "Czy do grania używany jest emulator.";
         case Label.CustomVariableTooltip:
-            return "Niestandardowa zmienna określona przez ciebie. Można ją wyświetlać za pomocą komponentu tekstowego.";
+            return "Niestandardowa zmienna określona przez Ciebie. Można ją wyświetlać za pomocą komponentu Tekst.";
         case Label.NoVariables:
             return "Obecnie brak niestandardowych zmiennych dla tej gry.";
         case Label.NoVariablesWithSpeedrunCom:
-            return "Obecnie brak zmiennych speedrun.com lub niestandardowych zmiennych dla tej gry.";
+            return "Obecnie brak zmiennych Speedrun.com lub niestandardowych zmiennych dla tej gry.";
         case Label.TimedWithoutLoads:
             return "są mierzone bez czasów ładowania";
         case Label.TimedWithGameTime:
@@ -277,11 +277,11 @@ export function resolvePolish(text: Label): string {
         case Label.DownloadBoxArt:
             return "Pobierz okładkę";
         case Label.DownloadBoxArtDescription:
-            return "Próbuje pobrać okładkę gry ze speedrun.com, aby ustawić ją jako ikonę gry.";
+            return "Próbuje pobrać okładkę gry ze Speedrun.com, aby ustawić ją jako ikonę gry.";
         case Label.DownloadIcon:
             return "Pobierz ikonę";
         case Label.DownloadIconDescription:
-            return "Próbuje pobrać ikonę gry ze speedrun.com.";
+            return "Próbuje pobrać ikonę gry ze Speedrun.com.";
         case Label.RemoveIcon:
             return "Usuń ikonę";
         case Label.RemoveIconDescription:
@@ -291,7 +291,7 @@ export function resolvePolish(text: Label): string {
         case Label.ClearOnlyHistory:
             return "Wyczyść tylko historię";
         case Label.ClearOnlyHistoryDescription:
-            return "Splity przechowują pełną historię wszystkich biegów, w tym każdy czas segmentu. Te informacje są używane przez różne komponenty. Możesz je wyczyścić. Rekord osobisty, najlepsze czasy segmentów i porównania nie zostaną zmienione.";
+            return "Splity przechowują pełną historię wszystkich biegów, w tym każdy czas segmentu. Te informacje są używane przez różne komponenty. Za pomocą tej opcji możesz wyczyścić historię. Rekord osobisty, najlepsze czasy segmentów i porównania nie zostaną zmienione.";
         case Label.ClearAllTimes:
             return "Wyczyść wszystkie czasy";
         case Label.ClearAllTimesDescription:
@@ -313,17 +313,17 @@ export function resolvePolish(text: Label): string {
         case Label.GenerateGoalComparison:
             return "Wygeneruj porównanie celu";
         case Label.GenerateGoalComparisonDescription:
-            return "Generuje niestandardowe porównanie celu na podstawie docelowego czasu, który możesz podać. Czasy porównania są automatycznie zbalansowane na podstawie historii segmentów, tak aby w przybliżeniu odpowiadały czasom splitów dla docelowego czasu. Ponieważ są wypełniane na podstawie historii segmentów, docelowe czasy są ograniczone do zakresu między sumą najlepszych segmentów a sumą najgorszych segmentów. Porównanie jest wypełniane tylko dla wybranej metody pomiaru czasu. Czasy porównania dla drugiej metody nie są przez to modyfikowane, więc możesz wygenerować je ponownie, wybierając drugą metodę, aby wygenerować czasy porównania dla obu metod.";
+            return "Generuje niestandardowe porównanie celu na podstawie podanego przez Ciebie czasu docelowego. Czasy porównania są automatycznie rozkładane na podstawie historii segmentów, tak aby w przybliżeniu odpowiadały czasom splitów dla czasu docelowego. Ponieważ porównanie jest obliczane na podstawie historii segmentów, czas docelowy jest ograniczony do zakresu między sumą najlepszych a sumą najgorszych segmentów. Porównanie jest generowane tylko dla wybranej metody pomiaru czasu. Czasy porównania drugiej metody nie są zmieniane, więc możesz wygenerować je ponownie z drugą metodą, aby uzyskać czasy porównania dla obu metod pomiaru czasu.";
         case Label.CopyComparison:
             return "Kopiuj porównanie";
         case Label.CopyComparisonDescription:
-            return "Kopiuje dowolne istniejące porównanie, w tym rekord osobisty lub nawet inne automatycznie dostarczone porównanie, jako nowe niestandardowe porównanie. Możesz na przykład użyć tego, aby zachować Ostatni bieg jako porównanie tak długo, jak chcesz.";
+            return "Kopiuje dowolne istniejące porównanie, w tym rekord osobisty lub inne automatycznie dostarczane porównanie, jako nowe niestandardowe porównanie. Możesz w ten sposób na przykład zachować ostatni bieg jako porównanie tak długo, jak chcesz.";
         case Label.SetSegmentIcon:
-            return "Ustaw ikonę";
+            return "Ustaw ikonę segmentu";
         case Label.SetSegmentIconDescription:
             return "Pozwala wybrać plik obrazu jako ikonę segmentu. Niektóre formaty mogą nie działać wszędzie.";
         case Label.RemoveSegmentIcon:
-            return "Usuń ikonę";
+            return "Usuń ikonę segmentu";
         case Label.RemoveSegmentIconDescription:
             return "Usuwa ikonę segmentu.";
         case Label.Rename:
@@ -367,11 +367,11 @@ export function resolvePolish(text: Label): string {
         case Label.CleanPrompt:
             return "Wyczyścić?";
         case Label.AssociateRunPrompt:
-            return "Podaj identyfikator speedrun.com lub URL biegu:";
+            return "Podaj identyfikator Speedrun.com lub URL biegu:";
         case Label.Associate:
             return "Powiąż";
         case Label.InvalidSpeedrunUrl:
-            return "Nieprawidłowy identyfikator lub URL speedrun.com.";
+            return "Nieprawidłowy identyfikator lub URL Speedrun.com.";
         case Label.AssociateRunError:
             return "Nie udało się powiązać biegu. Identyfikator może być nieprawidłowy.";
         case Label.AddVariablePrompt:
@@ -389,7 +389,7 @@ export function resolvePolish(text: Label): string {
         case Label.DownloadBoxArtError:
             return "Nie udało się pobrać okładki.";
         case Label.NoGameIcon:
-            return "Gra nie ma ikony.";
+            return "Brak ikony gry";
         case Label.DownloadIconError:
             return "Nie udało się pobrać ikony.";
         case Label.Rank:
@@ -575,7 +575,7 @@ export function resolvePolish(text: Label): string {
         case Label.IconDisplayModeBothRows:
             return "Oba wiersze";
         case Label.IconDisplayModeFirstRow:
-            return "Tylko pierwszy wiersz";
+            return "Pierwszy wiersz";
         case Label.SubsplitDisplayModeFlat:
             return "Płasko";
         case Label.SubsplitDisplayModeCurrentGroupExpanded:
@@ -607,7 +607,7 @@ export function resolvePolish(text: Label): string {
         case Label.CustomVariableNoneAvailable:
             return "Brak dostępnych zmiennych";
         case Label.CustomVariableNoneAvailableTooltip:
-            return "Zmienne niestandardowe można zdefiniować na karcie Zmienne podczas edycji splitów. Dodatkowe zmienne niestandardowe mogą być dostarczane automatycznie przez autosplity.";
+            return "Zmienne niestandardowe można zdefiniować na karcie Zmienne podczas edycji splitów. Dodatkowe zmienne niestandardowe mogą być dostarczane automatycznie przez auto splittery.";
         case Label.HotkeyButtonTooltip:
             return "Kliknij, aby nagrać skrót klawiszowy. Możesz też używać przycisków pada. Globalne skróty klawiszowe są obecnie niemożliwe. Przyciski pada działają globalnie.";
         case Label.ServerConnect:
@@ -615,9 +615,9 @@ export function resolvePolish(text: Label): string {
         case Label.ServerDisconnect:
             return "Rozłącz";
         case Label.ServerConnecting:
-            return "Łączenie...";
+            return "Łączenie…";
         case Label.ServerDisconnecting:
-            return "Rozłączanie...";
+            return "Rozłączanie…";
         case Label.ConnectToServerTitle:
             return "Połącz z serwerem";
         case Label.ConnectToServerDescription:
